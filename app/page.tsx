@@ -1,12 +1,11 @@
-// src/app/page.tsx
 'use client';
 
-import { Button } from '@heroui/react';
+import { Hero } from "@/app/components/landing/hero";
 
-export default function HomePage() {
+export default function LandingPage() {
   return (
-    <main className="flex min-h-screen items-center justify-center">
-      <Button color="primary">NextUI is ready 🚀</Button>
-    </main>
+    <div className="flex-col space-y-48">
+      <Hero />
+    </div>
   );
 }

@@ -2,7 +2,8 @@ import "./globals.css";
 import { notoSans } from '../config/fonts';
 
 import type { Metadata } from "next";
-import {Providers} from "./providers";
+import { Providers } from "./providers";
+import Navbar from "@/app/components/Navbar";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -15,15 +16,19 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html 
-      lang="en" 
-      className='dark'
-      style={{colorScheme:"dark"}}
-      >
+    <html
+      lang="en"
+      suppressHydrationWarning
+    >
       <body
         className={`${notoSans.variable} antialiased`}
       >
-        <Providers>{children}</Providers>
+        <Providers>
+          <Navbar />
+          <main className="mx-auto">
+            {children}
+          </main>
+        </Providers>
       </body>
     </html>
   );
