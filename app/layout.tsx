@@ -24,7 +24,6 @@ export default function RootLayout({
         className={`${notoSans.variable} antialiased`}
       >
         <Providers>
-          <Navbar />
           <main className="mx-auto">
             {children}
           </main>

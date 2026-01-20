@@ -6,24 +6,23 @@ export default function Navbar() {
         <header className="bg-transparent border-b border-gray-200">
             <div className="max-w-350 mx-auto px-6 h-16 flex items-center justify-between">
                 <Link href="/" className="flex items-center justify-center gap-3">
-                    <span className="font-semibold text-xl text-white">
-                        Zona<span className="text-white">Raiz</span>
+                    <span className="font-semibold text-xl ">
+                        Zona Raiz
                     </span>
                 </Link>
                 <nav className="hidden md:flex gap-8 text-sm font-medium">
-                    <Link href="#" className="text-white hover:text-primary">
+                    <Link href="#">
                         Buy
                     </Link>
                     <Link
                         href="#"
-                        className="text-white relative after:absolute after:-bottom-2 after:left-0 after:h-1 after:w-1 after:bg-primary after:rounded-full"
                     >
                         Rent
                     </Link>
-                    <Link href="#" className="text-white hover:text-primary">
+                    <Link href="#">
                         Sell
                     </Link>
-                    <Link href="#" className="text-white hover:text-primary">
+                    <Link href="#">
                         Rent out
                     </Link>
                 </nav>
