@@ -3,7 +3,7 @@ import { notoSans } from '../config/fonts';
 
 import type { Metadata } from "next";
 import { Providers } from "./providers";
-import Navbar from "@/app/components/Navbar";
+import { ReactNode } from 'react'
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 export default function RootLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode;
+  children: ReactNode;
 }>) {
   return (
     <html
