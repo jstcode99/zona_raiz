@@ -27,14 +27,13 @@ const NULL = ts.factory.createLiteralTypeNode(
 // -----------------------------
 // Validación de ENV
 // -----------------------------
-const API_URL = process.env.API_URL
-const API_DOCS_TOKEN = process.env.API_DOCS_TOKEN
+const API_URL = process.env.NEXT_PUBLIC_API_URL
+// const API_DOCS_TOKEN = process.env.API_DOCS_TOKEN
 
-if (!API_URL || !API_DOCS_TOKEN) {
+if (!API_URL) {
   console.error('❌ Missing required environment variables')
   console.error({
-    API_URL,
-    API_DOCS_TOKEN: API_DOCS_TOKEN ? '***' : undefined,
+    API_URL
   })
   process.exit(1)
 }
@@ -68,7 +67,7 @@ async function generateSchemas() {
 
     const response = await fetch(urlJson, {
       headers: {
-        Authorization: `Bearer ${API_DOCS_TOKEN}`,
+        // Authorization: `Bearer ${API_DOCS_TOKEN}`,
         'Content-Type': 'application/json',
       },
     })

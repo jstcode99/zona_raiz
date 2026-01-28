@@ -1,3 +1,5 @@
+'use client'
+
 import { Middleware } from 'openapi-fetch'
 
 export const timeoutMiddleware: Middleware = {

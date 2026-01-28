@@ -6,6 +6,7 @@ import { GoogleOAuthProvider } from '@react-oauth/google'
 import { createQueryClient } from '@/lib/queryClient'
 import AppToaster from '@/app/components/ui/toast'
 import { ReactNode, useState } from 'react'
+import '@/lib/i18n'
 
 export function Providers({
   children,
@@ -14,9 +15,13 @@ export function Providers({
   children: ReactNode,
   dehydratedState?: unknown
 }) {
-  const clientIdGoogle = ``
+  const clientIdGoogle = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID
   const [queryClient] = useState(createQueryClient)
 
+  if (!clientIdGoogle) {
+    throw new Error('NEXT_PUBLIC_GOOGLE_CLIENT_ID is not defined')
+  }
+  
   return (
     <ThemeProvider
       attribute="class"

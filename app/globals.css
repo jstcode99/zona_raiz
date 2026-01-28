@@ -186,3 +186,9 @@
     cursor: pointer;
   }
 }
+
+@layer components {
+  .icon-option {
+    @apply h-[32px] w-[32px] bg-primary dark:bg-primary/60 dark:hover:bg-primary/80 dark:text-white hover:bg-primary/20 text-primary p-[5px] rounded-lg cursor-pointer;
+  }
+}

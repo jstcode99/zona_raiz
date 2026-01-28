@@ -89,7 +89,24 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/auth/sign-in/social/{driver}": {
+    "/auth/sign-out": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Sign Out */
+        post: operations["signOut"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/auth/social/{driver}": {
         parameters: {
             query?: never;
             header?: never;
@@ -102,23 +119,6 @@ export interface paths {
         put?: never;
         /** Sign in with social media */
         post: operations["signInSocial"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/auth/sign-out": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Sign Out */
-        post: operations["signOut"];
         delete?: never;
         options?: never;
         head?: never;
@@ -970,7 +970,7 @@ export interface components {
                      */
                     address: string;
                     /**
-                     * @description Last name of user
+                     * @description Document of user
                      * @example Doe
                      */
                     dni: string;
@@ -989,6 +989,11 @@ export interface components {
                      * @example 3154621821
                      */
                     phone: string;
+                    /**
+                     * @description Type of document of user
+                     * @example CC
+                     */
+                    type_dni?: string;
                 } & {
                     [key: string]: unknown;
                 };
@@ -1713,6 +1718,42 @@ export interface operations {
             };
         };
     };
+    signOut: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Logged out */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UnauthorizedErrorSchema"];
+                };
+            };
+            /** @description Validation error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ValidationErrorSchema"];
+                };
+            };
+        };
+    };
     signInSocial: {
         parameters: {
             query?: never;
@@ -1744,42 +1785,6 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ForbiddenErrorSchema"];
-                };
-            };
-            /** @description Validation error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ValidationErrorSchema"];
-                };
-            };
-        };
-    };
-    signOut: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Logged out */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Unauthorized */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["UnauthorizedErrorSchema"];
                 };
             };
             /** @description Validation error */
@@ -3225,7 +3230,7 @@ export enum ApiPaths {
     resetPassword = "/recovery/reset-password",
     refreshToken = "/auth/refresh",
     signIn = "/auth/sign-in",
-    signInSocial = "/auth/sign-in/social/{driver}",
+    signInSocial = "/auth/social/{driver}",
     signOut = "/auth/sign-out",
     leadList = "/leads",
     leadStore = "/leads",
