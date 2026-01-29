@@ -21,12 +21,12 @@ export function Providers({
   if (!clientIdGoogle) {
     throw new Error('NEXT_PUBLIC_GOOGLE_CLIENT_ID is not defined')
   }
-  
+
   return (
     <ThemeProvider
       attribute="class"
-      defaultTheme="dark"
-      enableSystem={false}
+      defaultTheme="system"
+      enableSystem
       disableTransitionOnChange
     >
       <QueryClientProvider client={queryClient}>
