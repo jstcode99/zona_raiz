@@ -9,7 +9,6 @@ import {
   FieldSeparator,
 } from "@/app/components/ui/field"
 import { Input } from "@/app/components/ui/input"
-import { cn } from "@/utils/utils"
 import { Controller, useForm } from "react-hook-form"
 import * as yup from 'yup'
 import { yupResolver } from '@hookform/resolvers/yup'
@@ -121,7 +120,7 @@ export function SingInForm({
 
           />
           <a
-            href="/recovery/send-code"
+            href="otp"
             className="ml-auto text-right text-sm underline-offset-2 hover:underline"
           >
             {i18next.t('forms.sign-in.fields.forgot-password.label')}

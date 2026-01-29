@@ -311,6 +311,43 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/otp/generate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Generate OTP code for user with type */
+        post: operations["generateOTP"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/otp/verify": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Verification of code OTP
+         * @description Verify code OTP
+         */
+        post: operations["verifyOTP"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/properties": {
         parameters: {
             query?: never;
@@ -483,97 +520,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/recovery/resend-code": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Resend code */
-        post: operations["resendResetCode"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/recovery/reset-password": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Reset password
-         * @description Reset password
-         */
-        post: operations["resetPassword"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/recovery/send-code": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Recovery account with email code */
-        post: operations["sendResetCode"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/recovery/verify-code": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Recovery account, verify code */
-        post: operations["verifyResetCode"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/register/send-verification-email": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Verification of sign up with email
-         * @description Send verification email
-         */
-        post: operations["sendVerificationEmail"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/register/sign-up": {
         parameters: {
             query?: never;
@@ -585,26 +531,6 @@ export interface paths {
         put?: never;
         /** Sign up with email & password */
         post: operations["signUp"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/register/verify-account": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Verification account
-         * @description Verify account
-         */
-        post: operations["verifyAccount"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1010,6 +936,25 @@ export interface components {
                 };
             };
         };
+        /** @description Payload to verify sign up */
+        GenerateOTPRequest: {
+            content: {
+                "multipart/form-data": {
+                    /**
+                     * @description Email of user
+                     * @example joe_doe@mail.com
+                     */
+                    email: string;
+                    /**
+                     * @description type otp
+                     * @example auth
+                     */
+                    type: string;
+                } & {
+                    [key: string]: unknown;
+                };
+            };
+        };
         /** @description Payload to refresh token with refresh token session */
         RefreshTokenRequest: {
             content: {
@@ -1019,77 +964,6 @@ export interface components {
                      * @example 134531123SA!@#ASDDfsa@GDSS
                      */
                     refresh_token: string;
-                } & {
-                    [key: string]: unknown;
-                };
-            };
-        };
-        /** @description Payload to re send recovery code at email account */
-        ResendResetPasswordRequest: {
-            content: {
-                "multipart/form-data": {
-                    /**
-                     * @description Email of user
-                     * @example joe_doe@mail.com
-                     */
-                    email: string;
-                } & {
-                    [key: string]: unknown;
-                };
-            };
-        };
-        /** @description Payload to send recovery code at email account */
-        ResetPasswordAttemptRequest: {
-            content: {
-                "multipart/form-data": {
-                    /**
-                     * @description Email of user
-                     * @example joe_doe@mail.com
-                     */
-                    email: string;
-                } & {
-                    [key: string]: unknown;
-                };
-            };
-        };
-        /** @description Payload to send recovery code at email account */
-        ResetPasswordRequest: {
-            content: {
-                "multipart/form-data": {
-                    /**
-                     * @description Code of user
-                     * @example 125464
-                     */
-                    code: string;
-                    /**
-                     * @description Email of user
-                     * @example joe_doe@mail.com
-                     */
-                    email: string;
-                    /**
-                     * @description Password of user
-                     * @example !@#ASDxDas123
-                     */
-                    password: string;
-                    /**
-                     * @description Password of user
-                     * @example !@#ASDxDas123
-                     */
-                    password_confirmation?: string;
-                } & {
-                    [key: string]: unknown;
-                };
-            };
-        };
-        /** @description Payload to verify sign up */
-        SendEmailVerifyRequest: {
-            content: {
-                "multipart/form-data": {
-                    /**
-                     * @description Email of user
-                     * @example joe_doe@mail.com
-                     */
-                    email: string;
                 } & {
                     [key: string]: unknown;
                 };
@@ -1385,29 +1259,25 @@ export interface components {
                 };
             };
         };
-        /** @description Payload to verify account */
-        VerifyAccountRequest: {
+        /** @description Payload to verify OTP */
+        VerifyOTPRequest: {
             content: {
                 "multipart/form-data": {
                     /**
                      * @description code
-                     * @example 1323
-                     */
-                    code: number;
-                } & {
-                    [key: string]: unknown;
-                };
-            };
-        };
-        /** @description Payload to verify code for password reset */
-        VerifyResetCodeRequest: {
-            content: {
-                "multipart/form-data": {
-                    /**
-                     * @description Refresh Token provided in sign in
-                     * @example 13453
+                     * @example 133323
                      */
                     code: string;
+                    /**
+                     * @description Email of user
+                     * @example joe_doe@mail.com
+                     */
+                    email: string;
+                    /**
+                     * @description type
+                     * @example auth
+                     */
+                    type?: string;
                 } & {
                     [key: string]: unknown;
                 };
@@ -1454,11 +1324,8 @@ export type RequestBodyAccountAvatarRequest = components['requestBodies']['Accou
 export type RequestBodyAccountPasswordRequest = components['requestBodies']['AccountPasswordRequest'];
 export type RequestBodyAccountRequest = components['requestBodies']['AccountRequest'];
 export type RequestBodyBulkDeleteRequest = components['requestBodies']['BulkDeleteRequest'];
+export type RequestBodyGenerateOtpRequest = components['requestBodies']['GenerateOTPRequest'];
 export type RequestBodyRefreshTokenRequest = components['requestBodies']['RefreshTokenRequest'];
-export type RequestBodyResendResetPasswordRequest = components['requestBodies']['ResendResetPasswordRequest'];
-export type RequestBodyResetPasswordAttemptRequest = components['requestBodies']['ResetPasswordAttemptRequest'];
-export type RequestBodyResetPasswordRequest = components['requestBodies']['ResetPasswordRequest'];
-export type RequestBodySendEmailVerifyRequest = components['requestBodies']['SendEmailVerifyRequest'];
 export type RequestBodySignInRequest = components['requestBodies']['SignInRequest'];
 export type RequestBodySignInSocialRequest = components['requestBodies']['SignInSocialRequest'];
 export type RequestBodySignUpRequest = components['requestBodies']['SignUpRequest'];
@@ -1472,8 +1339,7 @@ export type RequestBodyUpdateListingRequest = components['requestBodies']['Updat
 export type RequestBodyUpdateLocationRequest = components['requestBodies']['UpdateLocationRequest'];
 export type RequestBodyUpdatePropertyRequest = components['requestBodies']['UpdatePropertyRequest'];
 export type RequestBodyUpdateRealEstateRequest = components['requestBodies']['UpdateRealEstateRequest'];
-export type RequestBodyVerifyAccountRequest = components['requestBodies']['VerifyAccountRequest'];
-export type RequestBodyVerifyResetCodeRequest = components['requestBodies']['VerifyResetCodeRequest'];
+export type RequestBodyVerifyOtpRequest = components['requestBodies']['VerifyOTPRequest'];
 export type $defs = Record<string, never>;
 export interface operations {
     accountShow: {
@@ -2364,6 +2230,69 @@ export interface operations {
             };
         };
     };
+    generateOTP: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: components["requestBodies"]["GenerateOTPRequest"];
+        responses: {
+            /** @description Validation error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ValidationErrorSchema"];
+                };
+            };
+            /** @description Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    verifyOTP: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: components["requestBodies"]["VerifyOTPRequest"];
+        responses: {
+            /** @description Valid OTP */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["JwtTokenResource"];
+                };
+            };
+            /** @description Validation error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ValidationErrorSchema"];
+                };
+            };
+            /** @description Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     propertyList: {
         parameters: {
             query?: {
@@ -3009,142 +2938,6 @@ export interface operations {
             };
         };
     };
-    resendResetCode: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: components["requestBodies"]["ResendResetPasswordRequest"];
-        responses: {
-            /** @description Code was re sended */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Server Error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    resetPassword: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: components["requestBodies"]["ResetPasswordRequest"];
-        responses: {
-            /** @description Reset password successful */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Server Error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    sendResetCode: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: components["requestBodies"]["ResetPasswordAttemptRequest"];
-        responses: {
-            /** @description Code was sended */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Server Error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    verifyResetCode: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: components["requestBodies"]["VerifyResetCodeRequest"];
-        responses: {
-            /** @description Code is valid" */
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["EmailUserResource"];
-                };
-            };
-            /** @description Server Error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    sendVerificationEmail: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: components["requestBodies"]["SendEmailVerifyRequest"];
-        responses: {
-            /** @description Email verification send */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Validation error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ValidationErrorSchema"];
-                };
-            };
-            /** @description Server Error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
     signUp: {
         parameters: {
             query?: never;
@@ -3181,42 +2974,6 @@ export interface operations {
             };
         };
     };
-    verifyAccount: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: components["requestBodies"]["VerifyAccountRequest"];
-        responses: {
-            /** @description Sing in success */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["JwtTokenResource"];
-                };
-            };
-            /** @description Validation error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ValidationErrorSchema"];
-                };
-            };
-            /** @description Server Error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
 }
 export enum ApiPaths {
     accountShow = "/account",
@@ -3224,10 +2981,6 @@ export enum ApiPaths {
     accountDestroy = "/account",
     accountUpdatePassword = "/account/password",
     accountUpdateAvatar = "/account/avatar",
-    sendResetCode = "/recovery/send-code",
-    verifyResetCode = "/recovery/verify-code",
-    resendResetCode = "/recovery/resend-code",
-    resetPassword = "/recovery/reset-password",
     refreshToken = "/auth/refresh",
     signIn = "/auth/sign-in",
     signInSocial = "/auth/social/{driver}",
@@ -3242,6 +2995,8 @@ export enum ApiPaths {
     listingShow = "/listing/{listing}",
     ListingUpdate = "/listing/{listing}",
     ListingDestroy = "/listing/{listing}",
+    generateOTP = "/otp/generate",
+    verifyOTP = "/otp/verify",
     locationStore = "/locations",
     locationUpdate = "/locations/{location}",
     propertyList = "/properties",
@@ -3260,8 +3015,6 @@ export enum ApiPaths {
     realEstateUpdate = "/real-estates/{realEstate}",
     realEstateDestroy = "/real-estates/{realEstate}",
     signUp = "/register/sign-up",
-    sendVerificationEmail = "/register/send-verification-email",
-    verifyAccount = "/register/verify-account",
     favoriteList = "/favorites",
     favoriteSync = "/favorite/{property}"
 }

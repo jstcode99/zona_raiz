@@ -42,6 +42,8 @@ export function SignUpForm({
       last_name: '',
       email: '',
       password: '',
+      password_confirmation: '',
+      phone: '',
     },
   })
 
@@ -201,12 +203,12 @@ export function SignUpForm({
               </FieldLabel>
               <InputGroup>
                 <InputGroupInput
-                  {...field}
                   id="form-password-confirmation"
                   type={showPassword ? 'text' : 'password'}
                   aria-invalid={fieldState.invalid}
                   placeholder={i18next.t('forms.sign-up.fields.password-confirmation.placeholder')}
                   autoComplete="off"
+                  {...field}
                 />
                 <InputGroupAddon
                   className="cursor-pointer"

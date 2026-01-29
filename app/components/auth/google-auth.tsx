@@ -2,25 +2,23 @@
 
 import { Icon } from '@iconify/react'
 import { useGoogleLogin } from '@react-oauth/google'
-import { useRouter } from 'next/navigation'
 import i18next from '@/lib/i18n'
-
 import { $api } from '@/lib/api/client'
 import { ApiPaths } from '@/types/api/schema'
 import { useApiMutation } from '@/lib/api/useApiMutation'
 import { setTokens, Tokens } from '@/lib/js-cookie'
 import { JSX } from 'react'
 import { Button } from '../ui/button'
+import { authAction } from './actions'
 
 export default function GoogleAuth(): JSX.Element {
-  const router = useRouter()
 
   const signInSocial = useApiMutation(
     () => $api.useMutation('post', ApiPaths.signInSocial),
     {
-      onSuccess: (tokens) => {
-        setTokens(tokens as Tokens)
-        router.push('/welcome')
+      onSuccess: async (tokens: Tokens) => {
+        setTokens(tokens)
+        await authAction(tokens)
       },
     },
   )
