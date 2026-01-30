@@ -14,22 +14,14 @@ import { Controller, useForm } from "react-hook-form"
 import * as yup from 'yup'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { verifyOTP } from "@/types/entities/verifyOTP"
-import { ComponentProps, useEffect, useState } from "react"
+import { ComponentProps, useEffect } from "react"
 import i18next from "i18next"
-import { useApiMutation } from "@/lib/api/useApiMutation"
-import { $api } from "@/lib/api/client"
 import { useRouter } from 'next/navigation'
-import { ApiPaths } from "@/types/api/schema"
 import {
   InputOTP,
   InputOTPGroup,
   InputOTPSlot,
 } from "@/app/components/ui/input-otp"
-import { RefreshCwIcon } from "lucide-react"
-import { toast } from "sonner"
-import { setTokens, Tokens } from "@/lib/js-cookie"
-import { authAction } from "../auth/actions"
-import { Spinner } from "../ui/spinner"
 
 export enum typeOTP {
   AUTH = 'auth',
@@ -46,7 +38,6 @@ export function OTPForm({
   ...props
 }: ComponentProps<"form"> & Props) {
 
-  const [error, setError] = useState<string | null>(null)
   const router = useRouter()
 
   const form = useForm<yup.InferType<typeof verifyOTP>>({
@@ -66,38 +57,27 @@ export function OTPForm({
   }, [props.email, props.type])
 
 
-  const generateOTP = useApiMutation(
-    () => $api.useMutation('post', ApiPaths.generateOTP),
-    {
-      setFormError: form.setError,
-      onSuccess: () => {
-        toast.info(i18next.t('forms.otp.send-verification-email'))
-      },
-    },
-  )
-
-  async function auth(tokens: Tokens) {
-    const res = await authAction(tokens)
-    if (res?.error) setError(res.error)
-    router.push('/dashboard/')
+  const onGenerateOTP = async (payload: any) => {
+    try {
+    } catch (error) {
+      console.log(error)
+    }
   }
 
-  const verifyOTPMutation = useApiMutation(
-    () => $api.useMutation('post', ApiPaths.verifyOTP),
-    {
-      setFormError: form.setError,
-      onSuccess: async (tokens: Tokens) => {
-        setTokens(tokens)
-        await auth(tokens)
-      },
-    },
-  )
+  const onSubmit = async (payload: any) => {
+
+    try {
+      router.push('/dashboard')
+    } catch (error) {
+      console.log(error)
+    }
+  }
 
   return (
     <form
       {...props}
       className={cn("flex flex-col gap-6 p-6 md:p-8", className)}
-      onSubmit={form.handleSubmit((data) => verifyOTPMutation.mutate({ body: data }))}
+      onSubmit={form.handleSubmit((payload) => onSubmit(payload))}
     >
       <FieldGroup>
         <div className="flex flex-col items-center gap-1 text-center">
@@ -107,20 +87,16 @@ export function OTPForm({
           <p className="text-muted-foreground text-sm text-balance">
             {i18next.t('forms.otp.subtitle')}
           </p>
-          {error && <p className='text-red-500'>{error}</p>}
         </div>
         <Button
           type="button"
           variant="outline"
           size="sm"
-          disabled={generateOTP.isPending}
           onClick={() => {
-            generateOTP.mutate({
-              body: props,
-            })
+            onGenerateOTP(props)
           }}
         >
-          {generateOTP.isPending ? <Spinner /> : <RefreshCwIcon />}
+          {/* {generateOTP.isPending ? <Spinner /> : <RefreshCwIcon />} */}
           {i18next.t('forms.otp.alternatives.title')}
         </Button>
         <Controller
@@ -157,11 +133,9 @@ export function OTPForm({
         <Field>
           <Button
             type="submit"
-            disabled={verifyOTPMutation.isPending}
           >
-            {props.type == typeOTP.AUTH ?
-              i18next.t('forms.sign-in.submit') : i18next.t('forms.otp.submit')}
-            {verifyOTPMutation.isPending && <Spinner data-icon="inline-start" />}
+            {props.type == typeOTP.AUTH ? i18next.t('forms.sign-in.submit') : i18next.t('forms.otp.submit')}
+            {/* {verifiedOTP.isPending && <Spinner data-icon="inline-start" />} */}
           </Button>
         </Field>
         <FieldSeparator>

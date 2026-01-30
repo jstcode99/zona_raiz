@@ -3,38 +3,25 @@
 import { Icon } from '@iconify/react'
 import { useGoogleLogin } from '@react-oauth/google'
 import i18next from '@/lib/i18n'
-import { $api } from '@/lib/api/client'
-import { ApiPaths } from '@/types/api/schema'
-import { useApiMutation } from '@/lib/api/useApiMutation'
-import { setTokens, Tokens } from '@/lib/js-cookie'
 import { JSX } from 'react'
 import { Button } from '../ui/button'
-import { authAction } from './actions'
+import { useRouter } from 'next/navigation'
 
 export default function GoogleAuth(): JSX.Element {
+  const router = useRouter()
 
-  const signInSocial = useApiMutation(
-    () => $api.useMutation('post', ApiPaths.signInSocial),
-    {
-      onSuccess: async (tokens: Tokens) => {
-        setTokens(tokens)
-        await authAction(tokens)
-      },
-    },
-  )
+  const onSubmit = async (token: string) => {
+    try {
 
-  const login = useGoogleLogin({
+      router.push('/dashboard')
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  const signInGoogle = useGoogleLogin({
     onSuccess: (data) => {
-      signInSocial.mutate({
-        body: {
-          token: data.access_token,
-        },
-        params: {
-          path: {
-            driver: 'google',
-          },
-        },
-      })
+      onSubmit(data.access_token)
     },
     onError: () => {
       console.error('Google login failed')
@@ -43,20 +30,19 @@ export default function GoogleAuth(): JSX.Element {
 
   return (
     <Button
-      onClick={() => login()}
+      onClick={() => signInGoogle()}
       variant="outline"
       type='button'
       className="w-full flex gap-2"
-      disabled={signInSocial.isPending}
     >
-      {signInSocial.isPending ? (
+      {/* {false ? (
         <Icon
           icon="lucide:loader-circle"
           className="text-[16px] animate-spin"
         />
       ) : (
-        <Icon icon="flat-color-icons:google" className="text-[16px]" />
-      )}
+      )} */}
+      <Icon icon="flat-color-icons:google" className="text-[16px]" />
       {i18next.t('forms.sign-in.alternatives.google')}
     </Button>
   )

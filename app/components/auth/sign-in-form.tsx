@@ -18,17 +18,14 @@ import i18next from "i18next"
 import GoogleAuth from "./google-auth"
 import { InputGroup, InputGroupAddon, InputGroupInput } from "../ui/input-group"
 import { EyeClosed, Eye } from "lucide-react"
-import { $api } from "@/lib/api/api"
-import { ApiPaths } from "@/types/api/schema"
 import { Spinner } from "../ui/spinner"
-import { authAction } from "./actions"
+import { useRouter } from "next/navigation"
 
 export function SingInForm({
   className,
   ...props
 }: ComponentProps<"form">) {
-
-  const [error, setError] = useState<string | null>(null)
+  const router= useRouter()
   const [showPassword, setShowPassword] = useState<boolean>(false)
 
   const form = useForm<yup.InferType<typeof schemaSignIn>>({
@@ -39,20 +36,18 @@ export function SingInForm({
     },
   })
 
-  const signUp = useApiMutation(
-    () => $api.useMutation('post', ApiPaths.signIn),
-    {
-      setFormError: form.setError,
-      onSuccess: async (tokens: Tokens) => {
-        await authAction(tokens)
-      },
-    },
-  )
+  const onSubmit = async (payload: any) => {
+    try {
+      router.push('/dashboard')
+    } catch (error) {
+      console.log(error)
+    }
+  }
 
   return (
     <form
       className="p-6 md:p-8"
-      onSubmit={form.handleSubmit((data) => signUp.mutate({ body: data }))}
+      onSubmit={form.handleSubmit((payload) => onSubmit(payload))}
       {...props}
     >
       <FieldGroup>
@@ -61,7 +56,6 @@ export function SingInForm({
           <p className="text-muted-foreground text-balance">
             {i18next.t('forms.sign-in.subtitle')}
           </p>
-          {error && <p className='text-red-500'>{error}</p>}
         </div>
         <Controller
           name="email"
@@ -127,7 +121,7 @@ export function SingInForm({
         <Field>
           <Button type='submit' className='w-full'>
             {i18next.t('forms.sign-in.submit')}
-            {signUp.isPending && <Spinner data-icon="inline-start" />}
+            {/* {mutation.isPending && <Spinner data-icon="inline-start" />} */}
 
           </Button>
         </Field>
