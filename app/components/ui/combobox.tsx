@@ -4,7 +4,7 @@ import * as React from "react"
 import { CheckIcon, ChevronsUpDownIcon } from "lucide-react"
 
 import { cn } from "@/utils/utils"
-import { Button } from "@/app/components/ui/button"
+import { Button } from "@/components/ui/button"
 import {
     Command,
     CommandEmpty,
@@ -12,13 +12,13 @@ import {
     CommandInput,
     CommandItem,
     CommandList,
-} from "@/app/components/ui/command"
+} from "@/components/ui/command"
 import {
     Popover,
     PopoverContent,
     PopoverTrigger,
-} from "@/app/components/ui/popover"
-import { Field, FieldLabel } from "@/app/components/ui/field"
+} from "@/components/ui/popover"
+import { Field, FieldLabel } from "@/components/ui/field"
 
 type Props = {
     label: string

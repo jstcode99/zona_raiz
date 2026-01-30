@@ -1,6 +1,6 @@
 'use client'
 
-import { OTPForm, typeOTP } from "@/app/components/otp/otp-form"
+import { OTPForm, typeOTP } from "@/components/otp/otp-form"
 import i18next from "i18next"
 import { useRouter } from "next/navigation"
 import { use } from 'react'

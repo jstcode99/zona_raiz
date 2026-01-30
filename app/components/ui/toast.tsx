@@ -1,5 +1,5 @@
 import { Icon } from '@iconify/react'
-import { Toaster } from '@/app/components/ui/sonner'
+import { Toaster } from '@/components/ui/sonner'
 
 const AppToaster = () => {
   return (

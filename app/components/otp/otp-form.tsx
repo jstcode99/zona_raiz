@@ -1,6 +1,6 @@
 "use client"
 
-import { Button } from "@/app/components/ui/button"
+import { Button } from "@/components/ui/button"
 import {
   Field,
   FieldDescription,
@@ -8,12 +8,12 @@ import {
   FieldGroup,
   FieldLabel,
   FieldSeparator,
-} from "@/app/components/ui/field"
+} from "@/components/ui/field"
 import { cn } from "@/utils/utils"
 import { Controller, useForm } from "react-hook-form"
 import * as yup from 'yup'
 import { yupResolver } from '@hookform/resolvers/yup'
-import { verifyOTP } from "@/types/entities/verifyOTP"
+import { verifyOTP } from "@/types/schemas/verifyOTP"
 import { ComponentProps, useEffect } from "react"
 import i18next from "i18next"
 import { useRouter } from 'next/navigation'
@@ -21,7 +21,7 @@ import {
   InputOTP,
   InputOTPGroup,
   InputOTPSlot,
-} from "@/app/components/ui/input-otp"
+} from "@/components/ui/input-otp"
 
 export enum typeOTP {
   AUTH = 'auth',

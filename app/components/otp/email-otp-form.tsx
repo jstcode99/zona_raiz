@@ -1,17 +1,17 @@
 "use client"
 
-import { Button } from "@/app/components/ui/button"
+import { Button } from "@/components/ui/button"
 import {
   Field,
   FieldError,
   FieldGroup,
   FieldLabel,
-} from "@/app/components/ui/field"
+} from "@/components/ui/field"
 import { cn } from "@/utils/utils"
 import { Controller, useForm } from "react-hook-form"
 import * as yup from 'yup'
 import { yupResolver } from '@hookform/resolvers/yup'
-import { emailOTP } from "@/types/entities/emailOTP"
+import { emailOTP } from "@/types/schemas/emailOTP"
 import { ComponentProps } from "react"
 import i18next from "i18next"
 import { Spinner } from "../ui/spinner"

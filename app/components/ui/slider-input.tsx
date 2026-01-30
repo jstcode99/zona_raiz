@@ -4,8 +4,8 @@ import {
   Field,
   FieldDescription,
   FieldTitle,
-} from "@/app/components/ui/field"
-import { Slider } from "@/app/components/ui/slider"
+} from "@/components/ui/field"
+import { Slider } from "@/components/ui/slider"
 
 type FieldSliderProps = {
   value: number[]

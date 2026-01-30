@@ -1,5 +1,5 @@
 "use client"
-import { Button } from "@/app/components/ui/button"
+import { Button } from "@/components/ui/button"
 import {
   Field,
   FieldDescription,
@@ -7,12 +7,12 @@ import {
   FieldGroup,
   FieldLabel,
   FieldSeparator,
-} from "@/app/components/ui/field"
-import { Input } from "@/app/components/ui/input"
+} from "@/components/ui/field"
+import { Input } from "@/components/ui/input"
 import { Controller, useForm } from "react-hook-form"
 import * as yup from 'yup'
 import { yupResolver } from '@hookform/resolvers/yup'
-import { schemaSignIn } from "@/types/entities/signIn"
+import { schemaSignIn } from "@/types/schemas/signIn"
 import { ComponentProps, useState } from "react"
 import i18next from "i18next"
 import GoogleAuth from "./google-auth"

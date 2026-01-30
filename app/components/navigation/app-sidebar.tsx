@@ -2,8 +2,8 @@
 
 import * as React from "react"
 
-import { NavMain } from "@/app/components/navigation/nav-main"
-import { NavUser } from "@/app/components/navigation/nav-user"
+import { NavMain } from "@/components/navigation/nav-main"
+import { NavUser } from "@/components/navigation/nav-user"
 import {
   Sidebar,
   SidebarContent,
@@ -12,7 +12,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from "@/app/components/ui/sidebar"
+} from "@/components/ui/sidebar"
 import { Home, HomeIcon, LayoutDashboardIcon, Podcast, User } from "lucide-react"
 import i18next from "i18next"
 import { Separator } from "../ui/separator"

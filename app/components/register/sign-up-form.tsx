@@ -1,6 +1,6 @@
 "use client"
 
-import { Button } from "@/app/components/ui/button"
+import { Button } from "@/components/ui/button"
 import {
   Field,
   FieldDescription,
@@ -8,17 +8,17 @@ import {
   FieldGroup,
   FieldLabel,
   FieldSeparator,
-} from "@/app/components/ui/field"
-import { Input } from "@/app/components/ui/input"
+} from "@/components/ui/field"
+import { Input } from "@/components/ui/input"
 import { cn } from "@/utils/utils"
 import { Controller, useForm } from "react-hook-form"
 import * as yup from 'yup'
 import { yupResolver } from '@hookform/resolvers/yup'
-import { schemaSignUp } from "@/types/entities/signUp"
+import { schemaSignUp } from "@/types/schemas/signUp"
 import { ComponentProps, useState } from "react"
 import i18next from "i18next"
 import GoogleAuth from "../auth/google-auth"
-import { InputGroup, InputGroupAddon, InputGroupInput } from "@/app/components/ui/input-group"
+import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/input-group"
 import { Eye, EyeClosed } from "lucide-react"
 import { useApiMutation } from "@/lib/api/useApiMutation"
 import { $api } from "@/lib/api/client"

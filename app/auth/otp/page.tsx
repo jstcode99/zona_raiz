@@ -1,7 +1,7 @@
 'use client'
 
-import { EmailOTPForm } from '@/app/components/otp/email-otp-form'
-import { OTPForm, typeOTP } from '@/app/components/otp/otp-form'
+import { EmailOTPForm } from '@/components/otp/email-otp-form'
+import { OTPForm, typeOTP } from '@/components/otp/otp-form'
 import { useState } from 'react'
 
 export default function OTPPage() {

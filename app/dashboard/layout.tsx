@@ -1,9 +1,9 @@
-import { AppSidebar } from "@/app/components/navigation/app-sidebar"
-import { SiteHeader } from "@/app/components/navigation/site-header"
+import { AppSidebar } from "@/components/navigation/app-sidebar"
+import { SiteHeader } from "@/components/navigation/site-header"
 import {
     SidebarInset,
     SidebarProvider,
-} from "@/app/components/ui/sidebar"
+} from "@/components/ui/sidebar"
 import { CSSProperties, ReactNode } from "react"
 
 export default function DashboardLayout({

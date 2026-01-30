@@ -2,8 +2,8 @@
 
 import { ThemeProvider } from 'next-themes';
 import { GoogleOAuthProvider } from '@react-oauth/google'
-import AppToaster from '@/app/components/ui/toast'
-import { ReactNode, useState } from 'react'
+import AppToaster from '@/components/ui/toast'
+import { ReactNode } from 'react'
 import '@/lib/i18n'
 
 export function Providers({

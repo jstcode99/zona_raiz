@@ -5,7 +5,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from "@/app/components/ui/sidebar"
+} from "@/components/ui/sidebar"
 import { ReactNode } from "react"
 
 export function NavMain({
