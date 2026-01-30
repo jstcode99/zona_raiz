@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation"
 import { use } from 'react'
 import { toast } from "sonner"
 
-export default function VerifyAccountPage({
+export default async function VerifyAccountPage({
   params,
 }: {
   params: Promise<{ email: string }>
