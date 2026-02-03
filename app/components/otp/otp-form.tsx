@@ -13,7 +13,6 @@ import { cn } from "@/utils/utils"
 import { Controller, useForm } from "react-hook-form"
 import * as yup from 'yup'
 import { yupResolver } from '@hookform/resolvers/yup'
-import { verifyOTP } from "@/types/schemas/verifyOTP"
 import { ComponentProps, useEffect } from "react"
 import i18next from "i18next"
 import { useRouter } from 'next/navigation'
@@ -22,6 +21,7 @@ import {
   InputOTPGroup,
   InputOTPSlot,
 } from "@/components/ui/input-otp"
+import { verifyOTP } from "@/types/schemas/verifyOTP"
 
 export enum typeOTP {
   AUTH = 'auth',

@@ -1,9 +1,5 @@
 @import "tailwindcss";
 
-@plugin "tailwindcss-animate";
-@import "tw-animate-css";
-
-
 @theme inline {
   --color-jade-50: oklch(0.947 0.085 154.23);
   --color-jade-100: oklch(0.892 0.19 153.67);

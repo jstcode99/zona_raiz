@@ -1,35 +1,18 @@
-import i18next from 'i18next'
 import * as yup from 'yup'
-import YupPassword from 'yup-password'
-YupPassword(yup)
+import { nameSchema } from '@/shared/schemas/fields/name'
+import { last_nameSchema } from '@/shared/schemas/fields/last_name'
+import { emailSchema } from '@/shared/schemas/fields/email'
+import { phoneSchema } from '@/shared/schemas/fields/phone'
+import { passwordSchema } from '@/shared/schemas/fields/password'
+import { password_confirmationSchema } from '@/shared/schemas/fields/confirm_password'
 
-export const schemaSignUp = yup.object().shape({
-  name: yup
-    .string()
-    .required(i18next.t('forms.sign-up.fields.name.message'))
-    .min(3, i18next.t('forms.sign-up.fields.name.message'))
-    .max(80, i18next.t('forms.sign-up.fields.name.message1')),
-  last_name: yup
-    .string()
-    .min(3, i18next.t('forms.sign-up.fields.last_name.message'))
-    .max(80, i18next.t('forms.sign-up.fields.last_name.message1')),
-  email: yup
-    .string()
-    .required(i18next.t('forms.sign-up.fields.email.message'))
-    .email(`${i18next.t('commons.email')} ${i18next.t('invalid')}`)
-    .matches(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/, {
-      message: i18next.t('forms.sign-in.fields.email.message'),
-    }),
-  phone: yup
-    .string()
-    .required(i18next.t('forms.sign-up.fields.phone.message'))
-    .min(10, i18next.t('forms.sign-up.fields.phone.message'))
-    .max(16, i18next.t('forms.sign-up.fields.phone.message1')),
-  password: yup
-    .string()
-    .password()
-    .required(i18next.t('forms.sign-up.fields.password.message')),
-  password_confirmation: yup.string()
-    .required(i18next.t('forms.sign-up.fields.password-confirmation.message'))
-    .oneOf([yup.ref('password')],  i18next.t('forms.sign-up.fields.password-confirmation.message')),
+export const signUpSchema = yup.object().shape({
+  name: nameSchema,
+  last_name: last_nameSchema,
+  email: emailSchema,
+  phone: phoneSchema,
+  password: passwordSchema,
+  password_confirmation: password_confirmationSchema,
+  captchaToken: yup.string().nullable(),
+  // .required("Captcha requerido")
 })

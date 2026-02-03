@@ -11,12 +11,12 @@ import { cn } from "@/utils/utils"
 import { Controller, useForm } from "react-hook-form"
 import * as yup from 'yup'
 import { yupResolver } from '@hookform/resolvers/yup'
-import { emailOTP } from "@/types/schemas/emailOTP"
 import { ComponentProps } from "react"
 import i18next from "i18next"
 import { Spinner } from "../ui/spinner"
 import { Input } from "../ui/input"
 import { typeOTP } from "./otp-form"
+import { emailOTP } from "@/types/schemas/emailOTP"
 
 
 interface Props {

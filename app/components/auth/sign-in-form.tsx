@@ -10,44 +10,40 @@ import {
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { Controller, useForm } from "react-hook-form"
-import * as yup from 'yup'
 import { yupResolver } from '@hookform/resolvers/yup'
-import { schemaSignIn } from "@/types/schemas/signIn"
 import { ComponentProps, useState } from "react"
 import i18next from "i18next"
 import GoogleAuth from "./google-auth"
 import { InputGroup, InputGroupAddon, InputGroupInput } from "../ui/input-group"
 import { EyeClosed, Eye } from "lucide-react"
 import { Spinner } from "../ui/spinner"
-import { useRouter } from "next/navigation"
+import { useActionMutation } from "@/shared/actions/use-action-mutation"
+import { signInAction } from "@/actions/auth.actions"
+import { signInSchema } from "@/types/schemas/signIn"
 
 export function SingInForm({
   className,
   ...props
 }: ComponentProps<"form">) {
-  const router= useRouter()
+
   const [showPassword, setShowPassword] = useState<boolean>(false)
 
-  const form = useForm<yup.InferType<typeof schemaSignIn>>({
-    resolver: yupResolver(schemaSignIn),
+  const form = useForm({
+    resolver: yupResolver(signInSchema),
     defaultValues: {
       email: '',
       password: '',
     },
+    shouldUnregister: false,
   })
 
-  const onSubmit = async (payload: any) => {
-    try {
-      router.push('/dashboard')
-    } catch (error) {
-      console.log(error)
-    }
-  }
+  const mutation = useActionMutation(signInAction)
+
 
   return (
     <form
       className="p-6 md:p-8"
-      onSubmit={form.handleSubmit((payload) => onSubmit(payload))}
+      onSubmit={form.handleSubmit(v => mutation.submit(v, { setError: form.setError }))}
       {...props}
     >
       <FieldGroup>
@@ -119,10 +115,13 @@ export function SingInForm({
           </a>
         </Field>
         <Field>
-          <Button type='submit' className='w-full'>
+          <Button
+            type='submit'
+            className='w-full'
+            disabled={mutation.isPending}
+          >
             {i18next.t('forms.sign-in.submit')}
-            {/* {mutation.isPending && <Spinner data-icon="inline-start" />} */}
-
+            {mutation.isPending && <Spinner data-icon="inline-start" />}
           </Button>
         </Field>
         <FieldSeparator className="*:data-[slot=field-separator-content]:bg-card">
@@ -133,7 +132,7 @@ export function SingInForm({
         </Field>
         <FieldDescription className="text-center">
           <span>{i18next.t('forms.sign-in.fields.sign-up.placeholder')}</span>
-          <a href="/register/sign-up" className='ml-1 text-sm'>
+          <a href="/auth/sign-up" className='ml-1 text-sm'>
             {i18next.t('forms.sign-in.fields.sign-up.label')}
           </a>
         </FieldDescription>

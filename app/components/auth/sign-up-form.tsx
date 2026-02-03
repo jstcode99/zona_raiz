@@ -12,31 +12,29 @@ import {
 import { Input } from "@/components/ui/input"
 import { cn } from "@/utils/utils"
 import { Controller, useForm } from "react-hook-form"
-import * as yup from 'yup'
 import { yupResolver } from '@hookform/resolvers/yup'
-import { schemaSignUp } from "@/types/schemas/signUp"
-import { ComponentProps, useState } from "react"
+import { ComponentProps, useEffect, useRef, useState } from "react"
 import i18next from "i18next"
-import GoogleAuth from "../auth/google-auth"
+import GoogleAuth from "./google-auth"
 import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/input-group"
 import { Eye, EyeClosed } from "lucide-react"
-import { useApiMutation } from "@/lib/api/useApiMutation"
-import { $api } from "@/lib/api/client"
-import { useRouter } from 'next/navigation'
-import { ApiPaths } from "@/types/api/schema"
 import { Spinner } from "../ui/spinner"
+import { signUpSchema } from "@/types/schemas/signUp"
+import { signUpAction } from "@/actions/auth.actions"
+import { useActionMutation } from "@/shared/actions/use-action-mutation"
+import { toast } from "sonner"
+// import HCaptcha from '@hcaptcha/react-hcaptcha'
 
 export function SignUpForm({
   className,
   ...props
 }: ComponentProps<"form">) {
 
-  const [error, setError] = useState<string | null>(null)
   const [showPassword, setShowPassword] = useState<boolean>(false)
-  const router = useRouter()
+  // const captcha = useRef<any>(null)
 
-  const form = useForm<yup.InferType<typeof schemaSignUp>>({
-    resolver: yupResolver(schemaSignUp),
+  const form = useForm({
+    resolver: yupResolver(signUpSchema),
     defaultValues: {
       name: '',
       last_name: '',
@@ -44,26 +42,29 @@ export function SignUpForm({
       password: '',
       password_confirmation: '',
       phone: '',
+      captchaToken: '',
     },
   })
 
+  const mutation = useActionMutation(signUpAction)
 
-  const signUp = useApiMutation(
-    () => $api.useMutation('post', ApiPaths.signUp),
-    {
-      setFormError: form.setError,
-      onSuccess: () => {
-        let email = form.getValues('email')
-        router.push('verify-account/' + encodeURIComponent(email))
-      },
-    },
-  )
+  useEffect(() => {
+    if (!mutation.isPending) {
+      form.reset()
+    }
+    if (mutation.isSuccess) {
+      toast.success(i18next.t('forms.sign-up.success'))
+    }
+  }, [mutation.isPending])
+
 
   return (
     <form
-      className={cn("flex flex-col gap-6", className)}
+      className={cn("py-4 px-6", className)}
       {...props}
-      onSubmit={form.handleSubmit((data) => signUp.mutate({ body: data }))}
+      onSubmit={form.handleSubmit(v => {
+        mutation.submit(v, { setError: form.setError })
+      })}
     >
       <FieldGroup>
         <div className="flex flex-col items-center gap-1 text-center">
@@ -71,7 +72,6 @@ export function SignUpForm({
           <p className="text-muted-foreground text-sm text-balance">
             {i18next.t('forms.sign-up.subtitle')}
           </p>
-          {error && <p className='text-red-500'>{error}</p>}
         </div>
         <Controller
           name="name"
@@ -148,7 +148,6 @@ export function SignUpForm({
                 {...field}
                 type="tel"
                 id="form-phone"
-                pattern="[0-9]{2} [0-9]{3} [0-9]{4} [0-9]{3}"
                 maxLength={16}
                 minLength={10}
                 title={i18next.t('forms.sign-up.fields.phone.placeholder')}
@@ -224,10 +223,27 @@ export function SignUpForm({
             </Field>
           )}
         />
+        {/* <Controller
+          name="captchaToken"
+          control={form.control}
+          render={({ field, fieldState }) => (
+            <Field data-invalid={fieldState.invalid}>
+              <HCaptcha 
+                ref={captcha} 
+                sitekey={process.env.NEXT_PUBLIC_CAPTCHA_SITE_KEY || ''}
+                onVerify={(token) => field.onChange(token)} 
+              />
+              {fieldState.invalid && (
+                <FieldError errors={[fieldState.error]} />
+              )}
+            </Field>
+          )}
+        /> */}
+
         <Field>
-          <Button type="submit" disabled={signUp.isPending}>
+          <Button type="submit">
             {i18next.t('forms.sign-up.submit')}
-            {signUp.isPending && <Spinner data-icon="inline-start" />}
+            {mutation.isPending && <Spinner data-icon="inline-start" />}
           </Button>
         </Field>
         <FieldSeparator>

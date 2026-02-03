@@ -1,18 +1,10 @@
-import i18next from 'i18next'
 import * as yup from 'yup'
 import YupPassword from 'yup-password'
+import { emailSchema } from '@/shared/schemas/fields/email'
+import { passwordSchema } from '@/shared/schemas/fields/password'
 YupPassword(yup)
 
-export const schemaSignIn = yup.object().shape({
-  email: yup
-    .string()
-    .email(`${i18next.t('commons.email')} ${i18next.t('invalid')}`)
-    .matches(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/, {
-      message: i18next.t('forms.sign-in.fields.email.message'),
-    })
-    .required(),
-  password: yup
-    .string()
-    .password()
-    .required(i18next.t('forms.sign-in.fields.password.message')),
+export const signInSchema = yup.object().shape({
+  email: emailSchema,
+  password: passwordSchema,
 })
