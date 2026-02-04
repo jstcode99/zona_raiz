@@ -21,6 +21,7 @@
     "paths": {
       "@/*": ["./app/*"],
       "@/modules/*": ["./modules/*"],
+      "@/assets/*": ["./assets/*"],
       "@/infrastructure/*": ["./infrastructure/*"],
       "@/shared/*": ["./shared/*"]
     }

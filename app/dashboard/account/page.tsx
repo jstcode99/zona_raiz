@@ -1,28 +1,31 @@
-import AccountForm from '@/components/account/account-form'
-import { createSupabaseBrowser } from '@/infrastructure/db/supabase.browser'
-import { User } from '@/modules/user/user.types'
+import { AccountForm } from "@/components/account/account-form"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { getAccountProfileController } from "@/modules/account/controllers/account.controller"
+import { redirect } from 'next/navigation'
 
 export default async function Account() {
-  const supabase = createSupabaseBrowser()
+  const profile = await getAccountProfileController()
 
-  const {
-    data: { user: authUser },
-  } = await supabase.auth.getUser()
+  if (!profile) redirect('/auth/sign-in')
 
-  const { data: userProfile } = await supabase
-    .from('profiles')
-    .select('*')
-    .eq('id', authUser?.id)
-    .single()
+  return (
+    <div className='flex items-center justify-center overflow-x-hidden px-4 py-10 sm:px-6 lg:px-8'>
+      <Card className='w-full border-none shadow-md sm:max-w-lg'>
+        <CardHeader className='gap-6'>
+          {/* <Logo className='gap-3' /> */}
+        </CardHeader>
 
-  const user: User | null = authUser && userProfile && authUser.email
-    ? {
-        ...authUser,
-        email: authUser.email, // Ensure email is always a string
-        name: userProfile.name,
-        createdAt: userProfile.created_at,
-      }
-    : null
-
-  return <AccountForm user={user} />
+        <CardContent>
+          {/* Register Form */}
+          <div className='space-y-4'>
+            <AccountForm defaultValues={{
+              name: profile.ok ? profile.data?.name || '' : '',
+              last_name: profile.ok ? profile.data?.last_name || '' : '',
+              phone: profile.ok ? profile.data?.phone || '' : '',
+            }} />
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  )
 }

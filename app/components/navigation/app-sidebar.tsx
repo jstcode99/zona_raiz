@@ -21,7 +21,7 @@ const data = {
   user: {
     name: "shadcn",
     email: "m@example.com",
-    avatar: "/avatars/shadcn.jpg",
+    avatar: null,
   },
   navMain: [
     {
@@ -48,6 +48,7 @@ const data = {
 }
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  
   return (
     <Sidebar {...props}>
       <SidebarHeader>

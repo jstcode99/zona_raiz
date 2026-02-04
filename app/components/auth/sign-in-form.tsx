@@ -11,7 +11,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { Controller, useForm } from "react-hook-form"
 import { yupResolver } from '@hookform/resolvers/yup'
-import { ComponentProps, useState } from "react"
+import { ComponentProps, useEffect, useState } from "react"
 import i18next from "i18next"
 import GoogleAuth from "./google-auth"
 import { InputGroup, InputGroupAddon, InputGroupInput } from "../ui/input-group"
@@ -20,6 +20,7 @@ import { Spinner } from "../ui/spinner"
 import { useActionMutation } from "@/shared/actions/use-action-mutation"
 import { signInAction } from "@/actions/auth.actions"
 import { signInSchema } from "@/types/schemas/signIn"
+import { toast } from "sonner"
 
 export function SingInForm({
   className,
@@ -39,6 +40,11 @@ export function SingInForm({
 
   const mutation = useActionMutation(signInAction)
 
+  useEffect(() => {
+    if (mutation.isError) {
+      toast.error(i18next.t(mutation.error?.message || 'forms.sign-in.error'))
+    }
+  }, [mutation.isError])
 
   return (
     <form

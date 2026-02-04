@@ -1,141 +1,140 @@
-'use client'
-import { useCallback, useEffect, useState } from 'react'
-import AccountAvatar from './account-avatar'
-import { createSupabaseBrowser } from '@/infrastructure/db/supabase.browser'
-import { User } from '@/modules/user/user.types'
+"use client"
+import { Button } from "@/components/ui/button"
+import {
+  Field,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+} from "@/components/ui/field"
+import { Input } from "@/components/ui/input"
+import { Controller, useForm } from "react-hook-form"
+import { yupResolver } from '@hookform/resolvers/yup'
+import { ComponentProps, useEffect } from "react"
+import i18next from "i18next"
+import { Spinner } from "../ui/spinner"
+import { useActionMutation } from "@/shared/actions/use-action-mutation"
+import { toast } from "sonner"
+import { accountSchema } from "@/types/schemas/account"
+import { AccountProfileDTO } from "@/modules/account/types/account.types"
+import { updateAccountAction } from "@/actions/account.actions"
 
-export default function AccountForm({ user }: { user: User | null }) {
-  const supabase = createSupabaseBrowser()
-  const [loading, setLoading] = useState(true)
-  const [fullname, setFullname] = useState<string | null>(null)
-  const [username, setUsername] = useState<string | null>(null)
-  const [website, setWebsite] = useState<string | null>(null)
-  const [avatar_url, setAvatarUrl] = useState<string | null>(null)
 
-  const getProfile = useCallback(async () => {
-    try {
-      setLoading(true)
+export function AccountForm({
+  className,
+  defaultValues,
+  ...props
+}: ComponentProps<"form"> & {
+  defaultValues: AccountProfileDTO
+}) {
+  const form = useForm({
+    resolver: yupResolver(accountSchema),
+    defaultValues: {
+      name: '',
+      last_name: '',
+      phone: '',
+    },
+  })
 
-      const { data, error, status } = await supabase
-        .from('profiles')
-        .select(`full_name, username, website, avatar_url`)
-        .eq('id', user?.id)
-        .single()
-
-      if (error && status !== 406) {
-        console.log(error)
-        throw error
-      }
-
-      if (data) {
-        setFullname(data.full_name)
-        setUsername(data.username)
-        setWebsite(data.website)
-        setAvatarUrl(data.avatar_url)
-      }
-    } catch (error) {
-      alert('Error loading user data!')
-    } finally {
-      setLoading(false)
-    }
-  }, [user, supabase])
+  const mutation = useActionMutation(updateAccountAction)
 
   useEffect(() => {
-    getProfile()
-  }, [user, getProfile])
-
-  async function updateProfile({
-    username,
-    website,
-    avatar_url,
-  }: {
-    username: string | null
-    fullname: string | null
-    website: string | null
-    avatar_url: string | null
-  }) {
-    try {
-      setLoading(true)
-
-      const { error } = await supabase.from('profiles').upsert({
-        id: user?.id as string,
-        full_name: fullname,
-        username,
-        website,
-        avatar_url,
-        updated_at: new Date().toISOString(),
-      })
-      if (error) throw error
-      alert('Profile updated!')
-    } catch (error) {
-      alert('Error updating the data!')
-    } finally {
-      setLoading(false)
+    if (mutation.isError) {
+      toast.error(i18next.t(mutation.error?.message || 'forms.sign-in.error'))
+      console.log('Mutation Error:', mutation.error);
     }
-  }
+  }, [mutation.isError])
+
+  useEffect(() => {
+    if (defaultValues) {
+      form.reset(defaultValues)
+    }
+  }, [defaultValues])
 
   return (
-    <div className="form-widget">
-
-      <AccountAvatar
-        uid={user?.id ?? null}
-        url={avatar_url}
-        size={150}
-        onUpload={(url) => {
-          setAvatarUrl(url)
-          updateProfile({ fullname, username, website, avatar_url: url })
-        }}
-      />
-
-      <div>
-        <label htmlFor="email">Email</label>
-        <input id="email" type="text" value={user?.email} disabled />
-      </div>
-      <div>
-        <label htmlFor="fullName">Full Name</label>
-        <input
-          id="fullName"
-          type="text"
-          value={fullname || ''}
-          onChange={(e) => setFullname(e.target.value)}
+    <form
+      className="p-6 md:p-8"
+      onSubmit={form.handleSubmit(v => mutation.submit(v, { setError: form.setError }))}
+      {...props}
+    >
+      <FieldGroup>
+        <Controller
+          name="name"
+          control={form.control}
+          render={({ field, fieldState }) => (
+            <Field data-invalid={fieldState.invalid}>
+              <FieldLabel htmlFor="form-name">
+                {i18next.t('forms.sign-up.fields.name.label')}
+              </FieldLabel>
+              <Input
+                {...field}
+                id="form-name"
+                aria-invalid={fieldState.invalid}
+                placeholder={i18next.t('forms.sign-up.fields.name.placeholder')}
+                autoComplete="on"
+              />
+              {fieldState.invalid && (
+                <FieldError errors={[fieldState.error]} />
+              )}
+            </Field>
+          )}
         />
-      </div>
-      <div>
-        <label htmlFor="username">Username</label>
-        <input
-          id="username"
-          type="text"
-          value={username || ''}
-          onChange={(e) => setUsername(e.target.value)}
+        <Controller
+          name="last_name"
+          control={form.control}
+          render={({ field, fieldState }) => (
+            <Field data-invalid={fieldState.invalid}>
+              <FieldLabel htmlFor="form-last_name">
+                {i18next.t('forms.sign-up.fields.last_name.label')}
+              </FieldLabel>
+              <Input
+                {...field}
+                id="form-last_name"
+                aria-invalid={fieldState.invalid}
+                placeholder={i18next.t('forms.sign-up.fields.last_name.placeholder')}
+                autoComplete="on"
+              />
+              {fieldState.invalid && (
+                <FieldError errors={[fieldState.error]} />
+              )}
+            </Field>
+          )}
         />
-      </div>
-      <div>
-        <label htmlFor="website">Website</label>
-        <input
-          id="website"
-          type="url"
-          value={website || ''}
-          onChange={(e) => setWebsite(e.target.value)}
+        <Controller
+          name="phone"
+          control={form.control}
+          render={({ field, fieldState }) => (
+            <Field data-invalid={fieldState.invalid}>
+              <FieldLabel htmlFor="form-phone">
+                {i18next.t('forms.sign-up.fields.phone.label')}
+              </FieldLabel>
+              <Input
+                {...field}
+                type="tel"
+                id="form-phone"
+                maxLength={16}
+                minLength={10}
+                title={i18next.t('forms.sign-up.fields.phone.placeholder')}
+                aria-invalid={fieldState.invalid}
+                placeholder={i18next.t('forms.sign-up.fields.phone.placeholder')}
+                autoComplete="off"
+              />
+              {fieldState.invalid && (
+                <FieldError errors={[fieldState.error]} />
+              )}
+            </Field>
+          )}
         />
-      </div>
-
-      <div>
-        <button
-          className="button primary block"
-          onClick={() => updateProfile({ fullname, username, website, avatar_url })}
-          disabled={loading}
-        >
-          {loading ? 'Loading ...' : 'Update'}
-        </button>
-      </div>
-
-      <div>
-        <form action="/auth/signout" method="post">
-          <button className="button block" type="submit">
-            Sign out
-          </button>
-        </form>
-      </div>
-    </div>
+        <Field>
+          <Button
+            type='submit'
+            className='w-full'
+            disabled={mutation.isPending}
+          >
+            {i18next.t('words.save')}
+            {mutation.isPending && <Spinner data-icon="inline-start" />}
+          </Button>
+        </Field>
+      </FieldGroup>
+    </form>
   )
 }
