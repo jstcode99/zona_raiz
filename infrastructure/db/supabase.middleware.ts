@@ -1,46 +1,35 @@
-import { createServerClient } from '@supabase/ssr'
-import { NextResponse, type NextRequest } from 'next/server'
-import { SUPABASE_ANON_KEY, SUPABASE_URL } from '@/shared/env/keys'
+import { NextResponse, type NextRequest } from "next/server"
+import { createSupabaseMiddlewareClient } from "./supabase.middleware-client"
 
 export async function updateSession(request: NextRequest) {
+  const response = NextResponse.next({
+    request: {
+      headers: request.headers,
+    },
+  })
 
-    let supabaseResponse = NextResponse.next({
-        request,
-    })
+  const supabase = createSupabaseMiddlewareClient(request, response)
 
-    const supabase = createServerClient(
-        SUPABASE_URL!,
-        SUPABASE_ANON_KEY!,
-        {
-            cookies: {
-                getAll() {
-                    return request.cookies.getAll()
-                },
-                setAll(cookiesToSet) {
-                    cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value))
-                    supabaseResponse = NextResponse.next({
-                        request,
-                    })
-                    cookiesToSet.forEach(({ name, value }) => supabaseResponse.cookies.set(name, value))
-                },
-            },
-        }
-    )
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
 
-    const { data } = await supabase.auth.getClaims()
+  // 🔐 proteger dashboard
+  if (
+    !user &&
+    request.nextUrl.pathname.startsWith("/dashboard")
+  ) {
+    const url = request.nextUrl.clone()
+    url.pathname = "/login"
+    return NextResponse.redirect(url)
+  }
 
-    const user = data?.claims
+  // 🚫 evitar login si ya está logueado
+  if (user && request.nextUrl.pathname === "/login") {
+    const url = request.nextUrl.clone()
+    url.pathname = "/dashboard"
+    return NextResponse.redirect(url)
+  }
 
-    if (
-        !user &&
-        !request.nextUrl.pathname.startsWith('/login') &&
-        !request.nextUrl.pathname.startsWith('/auth')
-    ) {
-        // no user, potentially respond by redirecting the user to the login page
-        const url = request.nextUrl.clone()
-        url.pathname = '/login'
-        return NextResponse.redirect(url)
-    }
-
-    return supabaseResponse
+  return response
 }
