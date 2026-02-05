@@ -24,7 +24,6 @@ import {
 import Link from "next/dist/client/link"
 
 interface UserProps {
-  email: string
   name: string
   last_name?: string
   phone?: string
@@ -59,9 +58,6 @@ export function NavUser({
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
                 <span className="truncate font-medium">{user.name}</span>
-                <span className="text-muted-foreground truncate text-xs">
-                  {user.email}
-                </span>
               </div>
             </SidebarMenuButton>
           </DropdownMenuTrigger>
@@ -79,9 +75,6 @@ export function NavUser({
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-medium">{user.name}</span>
-                  <span className="text-muted-foreground truncate text-xs">
-                    {user.email}
-                  </span>
                 </div>
               </div>
             </DropdownMenuLabel>
