@@ -16,8 +16,7 @@ export const signInAction = withValidation<SignInDTO, any>(
     if (!result.ok) {
       return result
     }
-    revalidatePath('/dashboard')
-    redirect('/dashboard/account')
+    redirect('/dashboard')
   }
 )
 

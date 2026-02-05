@@ -44,7 +44,10 @@ export function SingInForm({
     if (mutation.isError) {
       toast.error(i18next.t(mutation.error?.message || 'forms.sign-in.error'))
     }
-  }, [mutation.isError])
+    // if (mutation.isSuccess) {
+    //   redirect("/dashboard")
+    // }
+  }, [mutation.isError, mutation.isSuccess])
 
   return (
     <form

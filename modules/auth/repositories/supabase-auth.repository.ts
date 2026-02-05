@@ -1,14 +1,10 @@
 import { createSupabaseServerClient } from "@/infrastructure/db/supabase.server"
 import { AuthRepository } from "./auth.repository"
-import { AuthUser, SignInDTO, SignUpDTO } from "../types/auth.types"
+import { AuthUser, SignInDTO, SignInOtpDTO, SignUpDTO } from "../types/auth.types"
 
 export class SupabaseAuthRepository implements AuthRepository {
-  private async client() {
-    return await createSupabaseServerClient()
-  }
-
   async signIn(data: SignInDTO): Promise<void> {
-    const supabase = await this.client()
+    const supabase = await createSupabaseServerClient()
     const { error } = await supabase.auth.signInWithPassword({
       email: data.email,
       password: data.password,
@@ -17,12 +13,12 @@ export class SupabaseAuthRepository implements AuthRepository {
   }
 
   async signUp(payload: SignUpDTO): Promise<void> {
-    const supabase = await this.client()
+    const supabase = await createSupabaseServerClient()
     const { data, error } = await supabase.auth.signUp({
       email: payload.email,
       password: payload.password,
       options: {
-        emailRedirectTo: 'http://localhost:3000/auth/confirm', // Redirect after email confirmation
+        emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/auth/callback`,
         // captchaToken: payload?.captchaToken,
         data: {
           name: payload.name,
@@ -34,21 +30,32 @@ export class SupabaseAuthRepository implements AuthRepository {
     if (error) throw error
   }
 
+    async signInOTP(data: SignInOtpDTO): Promise<void> {
+    const supabase = await createSupabaseServerClient()
+    const { error } = await supabase.auth.signInWithOtp({
+      email: data.email,
+      options: {
+        emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/auth/callback`,
+      },
+    })
+    if (error) throw error
+  }
+
   async signOut(): Promise<void> {
-    const supabase = await this.client()
+    const supabase = await createSupabaseServerClient()
     const { error } = await supabase.auth.signOut()
     if (error) throw error
   }
 
   async getCurrentUser(): Promise<AuthUser | null> {
-    const supabase = await this.client()
+    const supabase = await createSupabaseServerClient()
     const { data, error } = await supabase.auth.getUser()
     if (error) throw error
     return data.user as AuthUser | null
   }
 
   async loginWithGoogle(): Promise<string> {
-    const supabase = await this.client()
+    const supabase = await createSupabaseServerClient()
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: "google",
     })

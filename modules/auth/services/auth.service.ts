@@ -1,5 +1,5 @@
 import { AuthRepository } from "../repositories/auth.repository"
-import { AuthUser, IRole, SignInDTO, SignInOtpDTO, SignUpDTO } from "../types/auth.types"
+import { AuthUser, IRole, SignInDTO, SignUpDTO } from "../types/auth.types"
 
 export class AuthService {
   constructor(private readonly repository: AuthRepository) { }
@@ -19,22 +19,18 @@ export class AuthService {
   }
 
   signIn(data: SignInDTO) {
-    this.repository.signIn(data)
-  }
-
-  signInOTP(data: SignInOtpDTO) {
-    this.repository.signInOTP(data)
+    return this.repository.signIn(data)
   }
 
   signUp(data: SignUpDTO) {
-    this.repository.signUp(data)
+    return this.repository.signUp(data)
   }
 
   signOut() {
-    this.repository.signOut()
+    return this.repository.signOut()
   }
 
   loginWithGoogle() {
-    this.repository.loginWithGoogle()
+    return this.repository.loginWithGoogle()
   }
 }
