@@ -1,9 +1,10 @@
 "use server"
 
 import { withValidation } from "@/shared/actions/with-validations"
-import { AccountProfileUpdateDTO } from "@/modules/account/types/account.types"
-import { updateAccountProfileController } from "@/modules/account/controllers/account.controller"
-import { accountSchema } from "@/types/schemas/account"
+import { AccountAvatarUpdateDTO, AccountProfileUpdateDTO } from "@/modules/account/types/account.types"
+import { updateAccountAvatarController, updateAccountProfileController } from "@/modules/account/controllers/account.controller"
+import { accountAvatarSchema, accountSchema } from "@/types/schemas/account"
+import { revalidatePath } from "next/cache"
 
 export const updateAccountAction = withValidation<AccountProfileUpdateDTO, any>(
   accountSchema,
@@ -16,3 +17,17 @@ export const updateAccountAction = withValidation<AccountProfileUpdateDTO, any>(
   }
 )
 
+export const updateAccountAvatarAction = withValidation<
+  AccountAvatarUpdateDTO,
+  any
+>(
+  accountAvatarSchema,
+  async (input) => {
+    const result = await updateAccountAvatarController(input)
+    if (result.ok) {
+      revalidatePath("/(dashboard)", "layout")
+    }
+
+    return result
+  }
+)

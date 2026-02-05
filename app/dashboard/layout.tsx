@@ -1,37 +1,36 @@
-import { AppSidebar } from "@/components/navigation/app-sidebar"
+import { AppSidebarServer } from "@/components/navigation/app-sidebar/app-sidebar.server"
 import { SiteHeader } from "@/components/navigation/site-header"
 import {
-    SidebarInset,
-    SidebarProvider,
+  SidebarInset,
+  SidebarProvider,
 } from "@/components/ui/sidebar"
 import { CSSProperties, ReactNode } from "react"
 
 export default function DashboardLayout({
-    children,
+  children,
 }: {
-    children: ReactNode
+  children: ReactNode
 }) {
-    return (
-        <SidebarProvider
-            style={
-                {
-                    "--sidebar-width": "20rem",
-                    "--sidebar-width-mobile": "20rem",
-                } as CSSProperties
-            }
-        >
-            <AppSidebar variant="sidebar" />
-            <SidebarInset>
-                <SiteHeader />
-                <div className="flex flex-1 flex-col">
-                    <div className="@container/main flex flex-1 flex-col gap-2">
-                        <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
-                            {children}
-                        </div>
-                    </div>
-                </div>
-            </SidebarInset>
-        </SidebarProvider>
-    )
+  return (
+    <SidebarProvider
+      style={
+        {
+          "--sidebar-width": "20rem",
+          "--sidebar-width-mobile": "20rem",
+        } as CSSProperties
+      }
+    >
+      <AppSidebarServer variant="sidebar" />
+      <SidebarInset>
+        <SiteHeader />
+        <div className="flex flex-1 flex-col">
+          <div className="@container/main flex flex-1 flex-col gap-2">
+            <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
+              {children}
+            </div>
+          </div>
+        </div>
+      </SidebarInset>
+    </SidebarProvider>
+  )
 }
-

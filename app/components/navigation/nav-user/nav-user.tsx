@@ -1,5 +1,6 @@
 "use client"
 
+import { signOutAction } from "@/actions/auth.actions"
 import {
   Avatar,
   AvatarFallback,
@@ -20,17 +21,26 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar"
+import Link from "next/dist/client/link"
+
+interface UserProps {
+  email: string
+  name: string
+  last_name?: string
+  phone?: string
+  avatar_url?: string | null
+}
 
 export function NavUser({
   user,
 }: {
-  user: {
-    name: string
-    email: string
-    avatar: string
-  }
+  user: UserProps
 }) {
   const { isMobile } = useSidebar()
+
+  const handleSignOut = async () => {
+    await signOutAction()
+  }
 
   return (
     <SidebarMenu>
@@ -41,9 +51,11 @@ export function NavUser({
               size="lg"
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
             >
-              <Avatar className="h-8 w-8 rounded-lg grayscale">
-                <AvatarImage src={user.avatar} alt={user.name} />
-                <AvatarFallback className="rounded-lg">CN</AvatarFallback>
+              <Avatar>
+                <AvatarImage src={user.avatar_url ?? undefined} />
+                <AvatarFallback className="rounded-lg">
+                  {user.name.slice(0, 2).toUpperCase()}
+                </AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
                 <span className="truncate font-medium">{user.name}</span>
@@ -62,7 +74,7 @@ export function NavUser({
             <DropdownMenuLabel className="p-0 font-normal">
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                 <Avatar className="h-8 w-8 rounded-lg">
-                  <AvatarImage src={user.avatar} alt={user.name} />
+                  {/* <AvatarImage src={user.avatar} alt={user.name} /> */}
                   <AvatarFallback className="rounded-lg">CN</AvatarFallback>
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
@@ -76,14 +88,11 @@ export function NavUser({
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
               <DropdownMenuItem>
-                Account
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                Notifications
+                <Link href="/dashboard/account">Account</Link>
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
+            <DropdownMenuItem onClick={handleSignOut}>
               Log out
             </DropdownMenuItem>
           </DropdownMenuContent>

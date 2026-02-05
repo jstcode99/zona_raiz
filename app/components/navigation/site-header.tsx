@@ -23,14 +23,14 @@ export function SiteHeader() {
         />
         <h1 className="text-base font-medium">Documents</h1>
         <div className="ml-auto flex items-center gap-2">
-          <Button
+          {/* <Button
             variant="ghost"
             size="sm"
             className="hidden sm:flex"
             onClick={() => toggleTheme()}
           >
             {resolvedTheme == 'light' ? <Moon /> : <Sun />}
-          </Button>
+          </Button> */}
         </div>
       </div>
     </header>

@@ -52,7 +52,7 @@ export function AccountForm({
 
   return (
     <form
-      className="p-6 md:p-8"
+      className="px-6"
       onSubmit={form.handleSubmit(v => mutation.submit(v, { setError: form.setError }))}
       {...props}
     >

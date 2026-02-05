@@ -1,6 +1,6 @@
 "use server"
 
-import { signInController, signUpController } from "@/modules/auth/controllers/auth.controller"
+import { signInController, signOutController, signUpController } from "@/modules/auth/controllers/auth.controller"
 import { signInSchema } from "@/types/schemas/signIn"
 import { SignInDTO, SignUpDTO } from "@/modules/auth/types/auth.types"
 import { withValidation } from "@/shared/actions/with-validations"
@@ -25,3 +25,11 @@ export const signUpAction = withValidation<SignUpDTO, any>(
     return result
   }
 )
+
+export async function signOutAction() {
+  const result = await signOutController()
+  if (!result.ok) {
+    return result
+  }
+  redirect("/auth/sign-in")
+}
