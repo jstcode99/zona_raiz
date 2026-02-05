@@ -1,11 +1,13 @@
 "use server"
 
-import { signInController, signOutController, signUpController } from "@/modules/auth/controllers/auth.controller"
+import { signInController, signInOTPController, signOutController, signUpController } from "@/modules/auth/controllers/auth.controller"
 import { signInSchema } from "@/types/schemas/signIn"
-import { SignInDTO, SignUpDTO } from "@/modules/auth/types/auth.types"
+import { SignInDTO, SignInOtpDTO, SignUpDTO } from "@/modules/auth/types/auth.types"
 import { withValidation } from "@/shared/actions/with-validations"
 import { signUpSchema } from "@/types/schemas/signUp"
 import { redirect } from 'next/navigation'
+import { signInOtpSchema } from "@/types/schemas/signInOTP"
+import { revalidatePath } from "next/cache"
 
 export const signInAction = withValidation<SignInDTO, any>(
   signInSchema,
@@ -14,7 +16,19 @@ export const signInAction = withValidation<SignInDTO, any>(
     if (!result.ok) {
       return result
     }
-    redirect("/dashboard/account")
+    revalidatePath('/dashboard')
+    redirect('/dashboard/account')
+  }
+)
+
+export const signInOTPAction = withValidation<SignInOtpDTO, any>(
+  signInOtpSchema,
+  async (input) => {
+    const result = await signInOTPController(input)
+    if (!result.ok) {
+      return result
+    }
+    return result
   }
 )
 

@@ -20,12 +20,12 @@ export async function updateSession(request: NextRequest) {
     request.nextUrl.pathname.startsWith("/dashboard")
   ) {
     const url = request.nextUrl.clone()
-    url.pathname = "/login"
+    url.pathname = "/auth/sign-in"
     return NextResponse.redirect(url)
   }
 
   // 🚫 evitar login si ya está logueado
-  if (user && request.nextUrl.pathname === "/login") {
+  if (user && request.nextUrl.pathname === "/auth/sign-in") {
     const url = request.nextUrl.clone()
     url.pathname = "/dashboard"
     return NextResponse.redirect(url)

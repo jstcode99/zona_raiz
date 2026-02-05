@@ -8,7 +8,7 @@ export default async function Account() {
   const response = await getAccountProfileController()
 
   if (!response.ok || !response.data) {
-    redirect("/auth/sign-in")
+    redirect("/dashboard")
   }
 
   const profile = response.data

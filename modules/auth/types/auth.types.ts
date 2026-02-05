@@ -11,6 +11,10 @@ export interface SignInDTO {
   password: string
 }
 
+export interface SignInOtpDTO {
+  email: string
+}
+
 export interface SignUpDTO {
   email: string
   password: string
