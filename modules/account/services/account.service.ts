@@ -1,5 +1,9 @@
 import { AccountRepository } from "../repositories/account.repository"
-import { AccountProfileUpdateDTO, AccountProfileDTO } from "../types/account.types"
+import {
+  AccountProfileUpdateDTO,
+  AccountProfileDTO,
+  AccountAvatarUpdateDTO
+} from "../types/account.types"
 
 export class AccountService {
   constructor(private readonly repository: AccountRepository) { }
@@ -10,5 +14,8 @@ export class AccountService {
   }
   async updateAccountProfile(data: AccountProfileUpdateDTO): Promise<void> {
     await this.repository.updateAccountProfile(data)
+  }
+  async updateAccountAvatar(data: AccountAvatarUpdateDTO): Promise<void> {
+    await this.repository.updateAccountAvatar(data)
   }
 }

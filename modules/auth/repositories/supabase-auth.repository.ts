@@ -34,7 +34,7 @@ export class SupabaseAuthRepository implements AuthRepository {
     if (error) throw error
   }
 
-  async logout(): Promise<void> {
+  async signOut(): Promise<void> {
     const supabase = await this.client()
     const { error } = await supabase.auth.signOut()
     if (error) throw error

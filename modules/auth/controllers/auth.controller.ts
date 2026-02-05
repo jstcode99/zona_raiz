@@ -28,3 +28,16 @@ export async function signUpController(data: SignUpDTO) {
     })
   }
 }
+
+
+export async function signOutController() {
+  try {
+    await service.signOut()
+    return ok()
+  } catch (e: any) {
+    return fail({
+      code: "AUTH_ERROR",
+      message: e.message,
+    })
+  }
+}

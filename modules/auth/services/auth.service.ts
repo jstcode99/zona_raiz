@@ -26,8 +26,8 @@ export class AuthService {
     return this.repository.signUp(data)
   }
 
-  logout() {
-    return this.repository.logout()
+  signOut() {
+    return this.repository.signOut()
   }
 
   loginWithGoogle() {
