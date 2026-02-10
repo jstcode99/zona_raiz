@@ -85,7 +85,7 @@
         }
       },
       "submit": "Hacer registro",
-      "success": "Registro exitoso. Verifica tu correo electrónico.",
+      "success": "Si ya tienes una cuenta, intenta iniciar sesión.\nSi no, revisa tu correo para confirmar.",
       "alternatives": {
         "title": "O continúa con",
         "google": "Registrarme con Google"

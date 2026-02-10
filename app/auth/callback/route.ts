@@ -1,4 +1,3 @@
-import { createSupabaseServerClient } from '@/infrastructure/db/supabase.server'
 import { type NextRequest, NextResponse } from 'next/server'
 
 export async function GET(request: NextRequest) {
@@ -12,7 +11,6 @@ export async function GET(request: NextRequest) {
       `${origin}/auth/sign-in?error=missing_token`
     )
   }
-  const supabase = createSupabaseServerClient()
   const { error } = await (await supabase).auth.verifyOtp({
     type: type as 'signup' | 'recovery' | 'email_change' | 'email',
     token_hash,

@@ -23,6 +23,9 @@
       "@/modules/*": ["./modules/*"],
       "@/assets/*": ["./assets/*"],
       "@/infrastructure/*": ["./infrastructure/*"],
+      "@/domain/*": ["./domain/*"],
+      "@/features/*": ["./features/*"],
+      "@/application/*": ["./application/*"],
       "@/shared/*": ["./shared/*"]
     }
   },

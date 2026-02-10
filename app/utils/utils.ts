@@ -5,26 +5,40 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
-export async function optimizeImage(file: File): Promise<File> {
-  const imageBitmap = await createImageBitmap(file)
+export const optimizeImage = (file: File, maxWidth = 512): Promise<File> => {
+  return new Promise((resolve) => {
+    const img = new Image()
+    const reader = new FileReader()
 
-  const size = 256
-  const canvas = document.createElement("canvas")
-  canvas.width = size
-  canvas.height = size
+    reader.onload = () => {
+      img.src = reader.result as string
+    }
 
-  const ctx = canvas.getContext("2d")!
-  ctx.drawImage(imageBitmap, 0, 0, size, size)
+    img.onload = () => {
+      const scale = Math.min(maxWidth / img.width, 1)
+      const canvas = document.createElement("canvas")
 
-  const blob = await new Promise<Blob>((resolve) =>
-    canvas.toBlob(
-      (b) => resolve(b!),
-      "image/webp",
-      0.85 // Adjust quality as needed
-    )
-  )
+      canvas.width = img.width * scale
+      canvas.height = img.height * scale
 
-  return new File([blob], "avatar.webp", {
-    type: "image/webp",
+      const ctx = canvas.getContext("2d")!
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height)
+
+      canvas.toBlob(
+        (blob) => {
+          if (!blob) return
+          resolve(
+            new File([blob], file.name, {
+              type: "image/webp",
+              lastModified: Date.now(),
+            })
+          )
+        },
+        "image/webp",
+        0.8
+      )
+    }
+
+    reader.readAsDataURL(file)
   })
 }

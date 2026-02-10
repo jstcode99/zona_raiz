@@ -1,5 +1,5 @@
-import { AppSidebarServer } from "@/components/navigation/app-sidebar/app-sidebar.server"
-import { SiteHeader } from "@/components/navigation/site-header"
+import { AppSidebarServer } from "@/features/navigation/app-sidebar/app-sidebar.server"
+import { SiteHeader } from "@/features/navigation/site-header"
 import {
   SidebarInset,
   SidebarProvider,

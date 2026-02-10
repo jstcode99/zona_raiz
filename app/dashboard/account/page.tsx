@@ -1,17 +1,16 @@
-import { AccountForm } from "@/components/account/account-form"
-import { AvatarUpload } from "@/components/account/avatar-upload"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { getAccountProfileController } from "@/modules/account/controllers/account.controller"
+import { AvatarUpload } from "@/features/account/avatar-upload"
+import { AccountForm } from "@/features/account/account-form"
+import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { redirect } from 'next/navigation'
+import { getCurrentProfile } from "@/shared/auth/getCurrentProfile"
 
 export default async function Account() {
-  const response = await getAccountProfileController()
 
-  if (!response.ok || !response.data) {
-    redirect("/dashboard")
+  const profile = await getCurrentProfile()
+  
+  if (!profile) {
+    redirect("/auth/sign-in")
   }
-
-  const profile = response.data
 
   return (
     <div className='flex items-center justify-center overflow-x-hidden px-4 py-10 sm:px-6 lg:px-8'>
@@ -26,7 +25,6 @@ export default async function Account() {
         <CardContent>
           <div className='space-y-4'>
             <AccountForm defaultValues={{
-              ok: true,
               name: profile?.name || '',
               last_name: profile?.last_name || '',
               phone: profile?.phone || '',
