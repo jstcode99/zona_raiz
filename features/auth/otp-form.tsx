@@ -9,47 +9,56 @@ import {
 } from "@/components/ui/field"
 import { cn } from "@/utils/utils"
 import { Controller, useForm } from "react-hook-form"
-import * as yup from 'yup'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { ComponentProps, useEffect } from "react"
 import i18next from "i18next"
-import { Input } from "../ui/input"
-import { signInOtpSchema } from "@/domain/entities/schemas/signInOTP"
+import { Input } from "@/components/ui/input"
+import { otpSchema } from "@/domain/entities/schemas/OTP"
 import { toast } from "sonner"
-import { useActionMutation } from "@/shared/actions/use-action-mutation"
-import { signInOTPAction } from "@/actions/auth.actions"
-import { Spinner } from "../ui/spinner"
+import { Spinner } from "@/components/ui/spinner"
 import Link from "next/link"
+import { useServerMutation } from "@/shared/hooks/useServerMutation"
+import { otpAction } from "@/application/actions/otpAction"
+import { useFormStatus } from "react-dom"
 
 export function OTPForm({
   className,
   ...props
 }: ComponentProps<"form">) {
+  const { pending } = useFormStatus()
 
-  const form = useForm<yup.InferType<typeof signInOtpSchema>>({
-    resolver: yupResolver(signInOtpSchema),
+  const {
+    setError,
+    control,
+    reset
+  } = useForm({
+    resolver: yupResolver(otpSchema),
     mode: 'onBlur',
     defaultValues: {
       email: '',
-    }
+    },
+    shouldUnregister: false,
   })
 
-  const mutation = useActionMutation(signInOTPAction)
+  const mutation = useServerMutation({
+    action: otpAction,
+    initialState: { success: false },
+    setError,
+    onSuccess: () => toast.success(i18next.t('forms.otp.success')),
+  })
+
 
   useEffect(() => {
     if (!mutation.isPending) {
-      form.reset()
-    }
-    if (mutation.isSuccess) {
-      toast.success(i18next.t('forms.otp.send-verification-email'))
+      reset()
     }
   }, [mutation.isPending])
 
   return (
     <form
       className={cn("p-6 md:p-8", className)}
-      onSubmit={form.handleSubmit(v => mutation.submit(v, { setError: form.setError }))}
       {...props}
+      action={mutation.action}
     >
       <FieldGroup className="gap-4">
         <div className="flex flex-col items-center gap-2 text-center">
@@ -57,7 +66,7 @@ export function OTPForm({
         </div>
         <Controller
           name="email"
-          control={form.control}
+          control={control}
           render={({ field, fieldState }) => (
             <Field data-invalid={fieldState.invalid}>
               <FieldLabel htmlFor="form-email">
@@ -76,20 +85,20 @@ export function OTPForm({
             </Field>
           )}
         />
-          <Link
-            href="sign-in"
-            className="ml-auto text-right text-sm underline-offset-2 hover:underline"
-          >
-            {i18next.t('forms.otp.alternatives.bacic')}
-          </Link>
+        <Link
+          href="sign-in"
+          className="ml-auto text-right text-sm underline-offset-2 hover:underline"
+        >
+          {i18next.t('forms.otp.alternatives.bacic')}
+        </Link>
         <Field>
           <Button
             type='submit'
             className='w-full'
-            disabled={mutation.isPending}
+            disabled={pending || mutation.isPending}
           >
-            {i18next.t('words.request')}
-            {mutation.isPending && <Spinner data-icon="inline-start" />}
+            {i18next.t('forms.otp.submit')}
+            {pending || mutation.isPending && <Spinner data-icon="inline-start" />}
           </Button>
         </Field>
       </FieldGroup>

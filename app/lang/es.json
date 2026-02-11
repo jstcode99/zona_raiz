@@ -107,11 +107,11 @@
           "message": "Este campo debe ser un código válido"
         }
       },
-      "submit": "Validar codigo",
+      "submit": "Enviar código",
       "alternatives": {
-        "title": "Reenviar código de verificación"
+        "bacic": "Iniciar sesión con contraseña"
       },
-      "send-verification-email": "Se ha enviado el codigo de verificacion."
+      "success": "Se ha enviado el codigo de verificacion."
     }
   },
   "words": {

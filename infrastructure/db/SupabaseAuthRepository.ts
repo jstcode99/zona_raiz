@@ -40,6 +40,25 @@ export class SupabaseAuthRepository implements AuthRepository {
     }
   }
 
+
+  async otp(email: string): Promise<{ success: boolean }> {
+    const supabase = await createSupabaseServerClient()
+
+    const { data, error } = await supabase.auth.signInWithOtp({
+      email,
+      options: {
+        shouldCreateUser: true,
+        emailRedirectTo: `${process.env.NEXT_PUBLIC_BASE_URL}/auth/callback`,
+      },
+    })
+
+    if (error || !data.user) {
+      throw new Error("Sign up failed")
+    }
+
+    return { success: true }
+  }
+
   async signOut(): Promise<void> {
     const supabase = await createSupabaseServerClient()
     try {
