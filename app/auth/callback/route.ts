@@ -1,9 +1,9 @@
-import { createSupabaseServerClient } from '@/infrastructure/db/supabase.server'
+import { createSupabaseRouteClient } from '@/infrastructure/db/supabase.route'
 import { type NextRequest, NextResponse } from 'next/server'
 
 export async function GET(request: NextRequest) {
   const { searchParams, origin } = new URL(request.url)
-  const supabase = await createSupabaseServerClient()
+  const supabase = await createSupabaseRouteClient()
 
   const code = searchParams.get('code')
   const token_hash = searchParams.get('token_hash')

@@ -1,10 +1,10 @@
 import { UserRepository } from "@/domain/repositories/UserRepository"
 import { User } from "@/domain/entities/User"
-import { createSupabaseServerClient } from "./supabase.server"
+import { createSupabaseRouteClient } from "./supabase.route"
 
 export class SupabaseUserRepository implements UserRepository {
   async findById(id: string): Promise<User | null> {
-    const supabase = await createSupabaseServerClient()
+    const supabase = await createSupabaseRouteClient()
 
     const { data } = await supabase
       .from("profiles")
@@ -16,7 +16,7 @@ export class SupabaseUserRepository implements UserRepository {
   }
 
   async updateName(id: string, name: string) {
-    const supabase = await createSupabaseServerClient()
+    const supabase = await createSupabaseRouteClient()
 
     await supabase
       .from("profiles")

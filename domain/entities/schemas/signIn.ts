@@ -4,7 +4,9 @@ import { emailSchema } from '@/domain/entities/fields/email'
 import { passwordSchema } from '@/domain/entities/fields/password'
 YupPassword(yup)
 
-export const signInSchema = yup.object().shape({
+export const signInSchema = yup.object({
   email: emailSchema,
   password: passwordSchema,
 })
+
+export type SignInFormValues = yup.InferType<typeof signInSchema>

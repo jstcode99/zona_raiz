@@ -1,36 +1,85 @@
-import { AppSidebarServer } from "@/features/navigation/app-sidebar/app-sidebar.server"
 import { SiteHeader } from "@/features/navigation/site-header"
 import {
   SidebarInset,
   SidebarProvider,
 } from "@/components/ui/sidebar"
-import { CSSProperties, ReactNode } from "react"
+import { CSSProperties, ReactNode, Suspense } from "react"
+import { AppSidebar } from "@/features/navigation/app-sidebar"
+import { getCurrentProfile } from "@/shared/auth/getCurrentProfile"
+import { UserRole } from "@/domain/entities/Profile"
+import { PageLoader } from "@/features/loader/page-loader"
 
-export default function DashboardLayout({
+export default async function DashboardLayout({
   children,
 }: {
   children: ReactNode
 }) {
-  return (
-    <SidebarProvider
-      style={
-        {
-          "--sidebar-width": "20rem",
-          "--sidebar-width-mobile": "20rem",
-        } as CSSProperties
-      }
-    >
-      <AppSidebarServer variant="sidebar" />
-      <SidebarInset>
-        <SiteHeader />
-        <div className="flex flex-1 flex-col">
-          <div className="@container/main flex flex-1 flex-col gap-2">
-            <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
-              {children}
+
+  const profile = await getCurrentProfile()
+
+  const getMenuByRole = (role: string) => {
+    switch (role) {
+      case UserRole.Admin:
+        return [
+          {
+            title: "Dashboard",
+            url: "/dashboard",
+            icon: 'layout-dashboard',
+          },
+          {
+            title: "Propiedades",
+            url: "#",
+            icon: 'building-2',
+          },
+        ]
+      default:
+        return [
+          {
+            title: "Dashboard",
+            url: "/dashboard",
+            icon: 'layout-dashboard',
+          },
+          {
+            title: "Propiedades",
+            url: "/dashboard/properties",
+            icon: 'building-2',
+          },
+        ]
+    }
+  }
+
+    return (
+      <SidebarProvider
+        style={
+          {
+            "--sidebar-width": "calc(var(--spacing) * 72)",
+            "--header-height": "calc(var(--spacing) * 12)",
+          } as CSSProperties
+        }
+      >
+        <AppSidebar 
+            variant="inset" 
+            menu={getMenuByRole(profile.profile?.role || "")}
+            user={{
+              user: {
+                id: profile.user.id,
+                email: profile.user.email,
+              },
+              profile: profile.profile 
+            }}
+        />
+        <SidebarInset>
+          <SiteHeader />
+          <div className="flex flex-1 flex-col">
+            <div className="@container/main flex flex-1 flex-col gap-2">
+              <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
+                <Suspense fallback={<PageLoader />}>
+                  {children}
+                </Suspense>
+              </div>
             </div>
           </div>
-        </div>
-      </SidebarInset>
-    </SidebarProvider>
-  )
-}
+        </SidebarInset>
+      </SidebarProvider>
+    )
+  }

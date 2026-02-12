@@ -1,5 +1,5 @@
 import LogoSvg from '@/assets/svg/logo'
-import { cn } from '@/utils/utils'
+import { cn } from '@/lib/utils'
 import i18next from 'i18next'
 
 const Logo = ({ className }: { className?: string }) => {

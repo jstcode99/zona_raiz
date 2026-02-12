@@ -7,7 +7,7 @@ import {
   FieldGroup,
   FieldLabel,
 } from "@/components/ui/field"
-import { cn } from "@/utils/utils"
+import { cn } from "@/lib/utils"
 import { Controller, useForm } from "react-hook-form"
 import { yupResolver } from '@hookform/resolvers/yup'
 import { ComponentProps, useEffect } from "react"

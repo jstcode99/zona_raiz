@@ -91,6 +91,139 @@
         "google": "Registrarme con Google"
       }
     },
+    "property": {
+      "title": "Crear propiedad",
+      "subtitle": "Completa la información para publicar la propiedad",
+      "fields": {
+        "title": {
+          "label": "Título",
+          "placeholder": "Apartamento moderno en el centro",
+          "message": "El título es obligatorio",
+          "message1": "El título no puede tener más de 200 caracteres"
+        },
+        "slug": {
+          "label": "Slug",
+          "placeholder": "apartamento-moderno-centro",
+          "message": "El slug es obligatorio",
+          "message1": "El slug no puede tener más de 250 caracteres",
+          "message2": "Solo letras minúsculas, números y guiones"
+        },
+        "meta_title": {
+          "label": "Meta título",
+          "placeholder": "Compra apartamento moderno en el centro",
+          "message": "El meta título no puede tener más de 255 caracteres"
+        },
+        "meta_description": {
+          "label": "Meta descripción",
+          "placeholder": "Descubre este increíble apartamento...",
+          "message": "La meta descripción no puede tener más de 300 caracteres"
+        },
+        "description": {
+          "label": "Descripción",
+          "placeholder": "Describe las características principales de la propiedad",
+          "message": "La descripción es obligatoria"
+        },
+        "business_type": {
+          "label": "Tipo de negocio",
+          "placeholder": "Selecciona tipo de negocio",
+          "message": "Debes seleccionar un tipo de negocio válido"
+        },
+        "status": {
+          "label": "Estado",
+          "placeholder": "Selecciona estado",
+          "message": "Estado no válido"
+        },
+        "price": {
+          "label": "Precio",
+          "placeholder": "100000",
+          "message": "El precio es obligatorio",
+          "message1": "El precio debe ser un número válido",
+          "message2": "El precio debe ser positivo",
+          "message3": "El precio excede el máximo permitido"
+        },
+        "currency": {
+          "label": "Moneda",
+          "placeholder": "Selecciona moneda",
+          "message": "Moneda no válida"
+        },
+        "address": {
+          "label": "Dirección",
+          "placeholder": "CR 1 N° 11-22"
+        },
+        "neighborhood": {
+          "label": "Barrio",
+          "placeholder": "Chapinero",
+          "message": "El barrio no puede tener más de 150 caracteres"
+        },
+        "city": {
+          "label": "Ciudad",
+          "placeholder": "Bogotá",
+          "message": "La ciudad es obligatoria",
+          "message1": "La ciudad no puede tener más de 150 caracteres"
+        },
+        "state": {
+          "label": "Estado / Provincia",
+          "placeholder": "Cundinamarca",
+          "message": "El estado/provincia es obligatorio",
+          "message1": "No puede tener más de 150 caracteres"
+        },
+        "country": {
+          "label": "País",
+          "placeholder": "Colombia",
+          "message": "El país es obligatorio",
+          "message1": "No puede tener más de 150 caracteres"
+        },
+        "latitude": {
+          "label": "Latitud",
+          "placeholder": "4.7110",
+          "message": "La latitud debe ser un número válido",
+          "message1": "Latitud mínima -90",
+          "message2": "Latitud máxima 90"
+        },
+        "longitude": {
+          "label": "Longitud",
+          "placeholder": "-74.0721",
+          "message": "La longitud debe ser un número válido",
+          "message1": "Longitud mínima -180",
+          "message2": "Longitud máxima 180"
+        },
+        "google_maps_url": {
+          "label": "URL de Google Maps",
+          "placeholder": "https://maps.google.com/...",
+          "message": "Debe ser una URL válida"
+        },
+        "bedrooms": {
+          "label": "Habitaciones",
+          "placeholder": "3",
+          "message": "Debe ser un número válido",
+          "message1": "Debe ser un número entero",
+          "message2": "No puede ser negativo"
+        },
+        "bathrooms": {
+          "label": "Baños",
+          "placeholder": "2",
+          "message": "Debe ser un número válido",
+          "message1": "Debe ser un número entero",
+          "message2": "No puede ser negativo"
+        },
+        "area_m2": {
+          "label": "Área (m²)",
+          "placeholder": "120",
+          "message": "Debe ser un número válido",
+          "message1": "Debe ser un número entero",
+          "message2": "El área debe ser al menos 1 m²"
+        },
+        "whatsapp_contact": {
+          "label": "Contacto de WhatsApp",
+          "placeholder": "+57 300 123 4567",
+          "message": "El contacto de WhatsApp es obligatorio",
+          "message1": "Máximo 20 caracteres",
+          "message2": "Formato de teléfono no válido"
+        }
+      },
+      "submit": "Guardar propiedad",
+      "success": "La propiedad ha sido guardada correctamente."
+    },
     "errors": {
       "password_chart": "La contraseña debe tener al menos 8 caracteres, incluyendo una letra minúscula y una mayúscula.",
       "confirm_password": "La confirmación de la contraseña debe coincidir con la contraseña.",

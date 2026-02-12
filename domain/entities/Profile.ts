@@ -1,9 +1,13 @@
 export type Profile = {
-  id: string
-  email: string
   name: string
-  role: "admin" | "user"
+  role: UserRole
   last_name: string | null
   phone?: string
-  avatar_url: string | null
+  avatar_url?: string | null
 }
+
+export enum UserRole {
+  Admin = "PLATFORM_ADMIN",
+  Agent = "AGENT",
+  Client = "CLIENT",
+};   

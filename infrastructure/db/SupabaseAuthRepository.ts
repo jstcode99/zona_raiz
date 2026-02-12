@@ -2,10 +2,12 @@ import { AuthRepository } from "@/domain/repositories/AuthRepository"
 import { AuthUser } from "@/domain/entities/AuthUser"
 import { createSupabaseServerClient } from "./supabase.server"
 import { revalidatePath } from "next/cache"
+import { createSupabaseRouteClient } from "./supabase.route"
+import { encodedRedirect } from "@/shared/redirect"
 
 export class SupabaseAuthRepository implements AuthRepository {
   async signIn(email: string, password: string): Promise<AuthUser> {
-    const supabase = await createSupabaseServerClient()
+    const supabase = await createSupabaseRouteClient()
 
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
@@ -13,7 +15,7 @@ export class SupabaseAuthRepository implements AuthRepository {
     })
 
     if (error || !data.user) {
-      throw new Error("Invalid credentials")
+      return encodedRedirect("error", "/auth/sign-in", "Invalid credentials");
     }
 
     return {
@@ -23,7 +25,7 @@ export class SupabaseAuthRepository implements AuthRepository {
   }
 
   async signUp(email: string, password: string): Promise<AuthUser> {
-    const supabase = await createSupabaseServerClient()
+    const supabase = await createSupabaseRouteClient()
 
     const { data, error } = await supabase.auth.signUp({
       email,
@@ -31,7 +33,7 @@ export class SupabaseAuthRepository implements AuthRepository {
     })
 
     if (error || !data.user) {
-      throw new Error("Sign up failed")
+      return encodedRedirect("error", "/auth/sign-up", "Sign up failed");
     }
 
     return {
@@ -42,7 +44,7 @@ export class SupabaseAuthRepository implements AuthRepository {
 
 
   async otp(email: string): Promise<{ success: boolean }> {
-    const supabase = await createSupabaseServerClient()
+    const supabase = await createSupabaseRouteClient()
 
     const { data, error } = await supabase.auth.signInWithOtp({
       email,
@@ -53,19 +55,19 @@ export class SupabaseAuthRepository implements AuthRepository {
     })
 
     if (error || !data.user) {
-      throw new Error("Sign up failed")
+      return encodedRedirect("error", "/auth/sign-up", "Sign up failed");
     }
 
     return { success: true }
   }
 
   async signOut(): Promise<void> {
-    const supabase = await createSupabaseServerClient()
+    const supabase = await createSupabaseRouteClient()
     try {
       await supabase.auth.signOut()
       revalidatePath('/', 'layout')
     } catch (error) {
-      throw new Error("Failed to sign out")
+      return encodedRedirect("error", "/auth/sign-in", "Sign out failed");
     }
   }
 

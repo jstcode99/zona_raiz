@@ -6,13 +6,16 @@ import { phoneSchema } from '@/domain/entities/fields/phone'
 import { passwordSchema } from '@/domain/entities/fields/password'
 import { password_confirmationSchema } from '@/domain/entities/fields/confirm_password'
 
-export const signUpSchema = yup.object().shape({
-  name: nameSchema,
-  last_name: last_nameSchema,
-  email: emailSchema,
-  phone: phoneSchema,
-  password: passwordSchema,
-  password_confirmation: password_confirmationSchema,
-  captchaToken: yup.string().nullable(),
-  // .required("Captcha requerido")
-})
+export const signUpSchema = yup.object(
+  {
+    name: nameSchema,
+    last_name: last_nameSchema,
+    email: emailSchema,
+    phone: phoneSchema,
+    password: passwordSchema,
+    password_confirmation: password_confirmationSchema,
+    captchaToken: yup.string().nullable(),
+  }
+)
+
+export type SignUpFormValues = yup.InferType<typeof signUpSchema>

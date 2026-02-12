@@ -1,5 +1,7 @@
-import { Profile } from "@/domain/entities/Profile"
 import { createSupabaseServerClient } from "./supabase.server"
+import { createSupabaseRouteClient } from "./supabase.route"
+import { encodedRedirect } from "@/shared/redirect"
+import { UserWithProfile } from "@/domain/entities/User"
 
 type UpdateProfileInput = {
   name: string
@@ -8,7 +10,7 @@ type UpdateProfileInput = {
 }
 
 export class SupabaseProfileRepository {
-   async getCurrentProfile(): Promise<Profile> {
+  async getCurrentProfile(): Promise<UserWithProfile> {
     const supabase = await createSupabaseServerClient()
 
     const {
@@ -17,32 +19,38 @@ export class SupabaseProfileRepository {
     } = await supabase.auth.getUser()
 
     if (authError || !user) {
-      throw new Error("Unauthorized")
+      return encodedRedirect("error", "/auth/sign-in", "Invalid credentials");
     }
 
-    const { data, error } = await supabase
+    const { data: profile, error } = await supabase
       .from("profiles")
       .select("id, name, avatar_url, last_name, phone, role")
       .eq("id", user.id)
       .single()
 
     if (error) {
-      throw error
+      return encodedRedirect("error", "/auth/sign-in", "Failed to retrieve profile");
     }
 
     return {
-      id: data.id,
-      email: user.email!,
-      name: data.name,
-      last_name: data.last_name,
-      phone: data.phone,
-      avatar_url: data.avatar_url,
-      role: data.role,
+      user: {
+        id: user.id,
+        email: user.email,
+      },
+      profile: profile
+        ? {
+          role: profile.role,
+          name: profile.name,
+          last_name: profile.last_name,
+          phone: profile.phone,
+          avatar_url: profile.avatar_url,
+        }
+        : null,
     }
   }
 
   async updateProfile(data: UpdateProfileInput) {
-    const supabase = await createSupabaseServerClient()
+    const supabase = await createSupabaseRouteClient()
 
     const {
       data: { user },
@@ -50,7 +58,7 @@ export class SupabaseProfileRepository {
     } = await supabase.auth.getUser()
 
     if (authError || !user) {
-      throw new Error("Unauthorized")
+      return encodedRedirect("error", "/auth/sign-in", "Invalid credentials");
     }
 
     const { error } = await supabase
@@ -66,9 +74,9 @@ export class SupabaseProfileRepository {
       throw new Error(error.message)
     }
   }
-  
+
   async updateAvatar(file: File) {
-    const supabase = await createSupabaseServerClient()
+    const supabase = await createSupabaseRouteClient()
 
     const {
       data: { user },
@@ -76,7 +84,7 @@ export class SupabaseProfileRepository {
     } = await supabase.auth.getUser()
 
     if (authError || !user) {
-      throw new Error("Unauthorized")
+      return encodedRedirect("error", "/auth/sign-in", "Invalid credentials");
     }
 
     const path = `${user.id}/avatar.webp`
@@ -89,7 +97,7 @@ export class SupabaseProfileRepository {
       })
 
     if (uploadError) {
-      throw uploadError
+      return encodedRedirect("error", "/dashboard/account", "Failed to upload avatar");
     }
 
     const { data } = supabase.storage

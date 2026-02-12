@@ -3,25 +3,23 @@ import { Button } from "@/components/ui/button"
 import {
   Field,
   FieldDescription,
-  FieldError,
   FieldGroup,
-  FieldLabel,
   FieldSeparator,
 } from "@/components/ui/field"
-import { Input } from "@/components/ui/input"
-import { Controller, useForm } from "react-hook-form"
+import { Form } from "@/components/ui/form"
+import { useForm } from "react-hook-form"
 import { yupResolver } from '@hookform/resolvers/yup'
-import { ComponentProps, useState } from "react"
+import { ComponentProps } from "react"
 import i18next from "i18next"
 import GoogleAuth from "./google-auth"
-import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/input-group"
-import { EyeClosed, Eye } from "lucide-react"
 import { Spinner } from "@/components/ui/spinner"
-import { signInSchema } from "@/domain/entities/schemas/signIn"
+import { SignInFormValues, signInSchema } from "@/domain/entities/schemas/signIn"
 import { useServerMutation } from "@/shared/hooks/useServerMutation"
 import { signInAction } from "@/application/actions/signInAction"
 import { useRouter } from "next/navigation"
 import { useFormStatus } from "react-dom"
+import { startTransition } from "react"
+import { cn } from "@/lib/utils"
 
 export function SingInForm({
   className,
@@ -29,20 +27,18 @@ export function SingInForm({
 }: ComponentProps<"form">) {
   const router = useRouter()
 
-  const [showPassword, setShowPassword] = useState<boolean>(false)
   const { pending } = useFormStatus()
 
-  const {
-    setError,
-    control
-  } = useForm({
+  const form = useForm<SignInFormValues>({
     resolver: yupResolver(signInSchema),
     defaultValues: {
-      email: '',
-      password: '',
+      email: "",
+      password: "",
     },
     shouldUnregister: false,
   })
+
+  const { setError } = form
 
   const mutation = useServerMutation({
     action: signInAction,
@@ -51,80 +47,34 @@ export function SingInForm({
     onSuccess: () => router.push("/dashboard"),
   })
 
+  const onSubmit = (values: SignInFormValues) => {
+    const formData = new FormData()
+
+    Object.entries(values).forEach(([key, value]) => {
+      formData.append(key, String(value ?? ""))
+    })
+
+    startTransition(() => {
+      mutation.action(formData)
+    })
+  }
+
   return (
-    <form
-      className="p-6 md:p-8"
+    <Form
       {...props}
-      action={mutation.action}
+      form={form}
+       className={cn("py-4 px-6", className)}
+      onSubmit={onSubmit}
     >
-      <FieldGroup>
+      <FieldGroup className="gap-3">
         <div className="flex flex-col items-center gap-2 text-center">
           <h1 className="text-2xl font-bold">{i18next.t('forms.sign-in.title')}</h1>
           <p className="text-muted-foreground text-balance">
             {i18next.t('forms.sign-in.subtitle')}
           </p>
         </div>
-        <Controller
-          name="email"
-          control={control}
-          render={({ field, fieldState }) => (
-            <Field data-invalid={fieldState.invalid}>
-              <FieldLabel htmlFor="form-email">
-                {i18next.t('forms.sign-in.fields.email.label')}
-              </FieldLabel>
-              <Input
-                {...field}
-                id="form-email"
-                aria-invalid={fieldState.invalid}
-                placeholder="m@example.com"
-                autoComplete="on"
-              />
-              {fieldState.invalid && (
-                <FieldError errors={[fieldState.error]} />
-              )}
-            </Field>
-          )}
-        />
-        <Field>
-          <Controller
-            name="password"
-            control={control}
-            render={({ field, fieldState }) => (
-              <Field data-invalid={fieldState.invalid}>
-                <FieldLabel className="w-full" htmlFor="form-password">
-                  {i18next.t('forms.sign-up.fields.password.label')}
-                </FieldLabel>
-                <InputGroup>
-                  <InputGroupInput
-                    {...field}
-                    id="form-password"
-                    type={showPassword ? 'text' : 'password'}
-                    aria-invalid={fieldState.invalid}
-                    placeholder={i18next.t('forms.sign-up.fields.password.placeholder')}
-                    autoComplete="off"
-                  />
-                  <InputGroupAddon
-                    className="cursor-pointer"
-                    onClick={() => setShowPassword(!showPassword)}
-                    align="inline-end"
-                  >
-                    {showPassword ? <Eye /> : <EyeClosed />}
-                  </InputGroupAddon>
-                </InputGroup>
-                {fieldState.invalid && (
-                  <FieldError errors={[fieldState.error]} />
-                )}
-              </Field>
-            )}
-
-          />
-          <a
-            href="otp"
-            className="ml-auto text-right text-sm underline-offset-2 hover:underline"
-          >
-            {i18next.t('forms.sign-in.fields.forgot-password.label')}
-          </a>
-        </Field>
+        <Form.Input name="email" label={i18next.t('forms.sign-in.fields.email.label')} />
+        <Form.Input name="password" type="password" label={i18next.t('forms.sign-in.fields.password.label')} />
         <Field>
           <Button
             type='submit'
@@ -132,13 +82,13 @@ export function SingInForm({
             disabled={pending || mutation.isPending}
           >
             {i18next.t('forms.sign-in.submit')}
-            {pending ||  mutation.isPending && <Spinner data-icon="inline-start" />}
+            {pending || mutation.isPending && <Spinner data-icon="inline-start" />}
           </Button>
         </Field>
-        <FieldSeparator className="*:data-[slot=field-separator-content]:bg-card">
+        <FieldSeparator className="py-4">
           {i18next.t('forms.sign-in.alternatives.title')}
         </FieldSeparator>
-        <Field className="flex items-center gap-4">
+        <Field className="py-4">
           <GoogleAuth />
         </Field>
         <FieldDescription className="text-center">
@@ -148,6 +98,6 @@ export function SingInForm({
           </a>
         </FieldDescription>
       </FieldGroup>
-    </form>
+    </Form>
   )
 }

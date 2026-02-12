@@ -4,7 +4,7 @@ import { yupResolver } from "@hookform/resolvers/yup"
 import { useForm, Controller } from "react-hook-form"
 import { useRef, useTransition } from "react"
 import { profileAvatarSchema, AvatarFormValues } from "@/domain/entities/schemas/profile"
-import { optimizeImage } from "@/utils/utils"
+import { optimizeImage } from "@/lib/utils"
 import { FieldError } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { Spinner } from "@/components/ui/spinner"
@@ -14,14 +14,14 @@ import { updateAvatarAction } from "@/application/actions/updateAvatarAction"
 
 type Props = {
   avatarUrl?: string | null
-  name: string
+  name?: string | null
 }
 
 export function AvatarUpload({ avatarUrl, name }: Props) {
   const inputRef = useRef<HTMLInputElement>(null)
   const [isPending, startTransition] = useTransition()
 
-  const form = useForm<AvatarFormValues>({
+  const form = useForm({
     resolver: yupResolver(profileAvatarSchema),
   })
 

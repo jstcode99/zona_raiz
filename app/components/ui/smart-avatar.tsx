@@ -1,7 +1,7 @@
 "use client"
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { cn } from "@/utils/utils"
+import { cn } from "@/lib/utils"
 import { ReactNode, useEffect, useRef, useState } from "react"
 
 type SmartAvatarProps = React.ComponentProps<typeof AvatarImage> & {
