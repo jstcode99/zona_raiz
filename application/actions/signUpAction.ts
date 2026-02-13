@@ -3,7 +3,6 @@
 import { SupabaseAuthRepository } from "@/infrastructure/db/SupabaseAuthRepository"
 import { ActionResult } from "@/shared/hooks/useServerMutation"
 import { signUpSchema } from "@/domain/entities/schemas/signUp"
-import { signUp } from "../use-cases/signUp"
 
 export async function signUpAction(
   _: ActionResult,
@@ -17,7 +16,7 @@ export async function signUpAction(
     })
 
     const repo = new SupabaseAuthRepository()
-    await signUp(repo, data.email, data.password as string)
+    await repo.signUp(data.email, data.password as string)
 
     return { success: true }
   } catch (e: any) {

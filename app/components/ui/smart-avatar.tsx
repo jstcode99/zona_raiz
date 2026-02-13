@@ -7,6 +7,7 @@ import { ReactNode, useEffect, useRef, useState } from "react"
 type SmartAvatarProps = React.ComponentProps<typeof AvatarImage> & {
   fallback: string | ReactNode
   showSkeleton?: boolean
+  size?: "default" | "sm" | "lg"
 }
 
 export function SmartAvatar({
@@ -14,6 +15,7 @@ export function SmartAvatar({
   src,
   className,
   showSkeleton = true,
+  size,
   ...imgProps
 }: SmartAvatarProps) {
   const [displayedSrc, setDisplayedSrc] = useState<string | null>(null)
@@ -51,10 +53,11 @@ export function SmartAvatar({
   }, [src])
 
   return (
-    <Avatar className={cn("relative overflow-hidden", className)}>
+    
+    <Avatar className={className} size={size}>
       {/* 🦴 Skeleton */}
       {showSkeleton && !loaded && (
-        <div className="absolute inset-0 rounded-full bg-muted animate-pulse" />
+        <div className="rounded-full bg-muted animate-pulse" />
       )}
 
       {/* 🖼 Image */}
@@ -63,7 +66,7 @@ export function SmartAvatar({
           src={displayedSrc}
           {...imgProps}
           className={cn(
-            "absolute inset-0 transition-opacity duration-200 ease-out",
+            "transition-opacity duration-200 ease-out",
             loaded ? "opacity-100" : "opacity-0"
           )}
         />
@@ -72,7 +75,7 @@ export function SmartAvatar({
       {/* 🔤 Fallback */}
       <AvatarFallback
         className={cn(
-          "absolute inset-0 transition-opacity duration-200",
+          "transition-opacity duration-200",
           loaded ? "opacity-0" : "opacity-100"
         )}
       >

@@ -3,7 +3,6 @@ import { AuthUser } from "@/domain/entities/AuthUser"
 import { createSupabaseServerClient } from "./supabase.server"
 import { revalidatePath } from "next/cache"
 import { createSupabaseRouteClient } from "./supabase.route"
-import { encodedRedirect } from "@/shared/redirect"
 
 export class SupabaseAuthRepository implements AuthRepository {
   async signIn(email: string, password: string): Promise<AuthUser> {
@@ -15,7 +14,7 @@ export class SupabaseAuthRepository implements AuthRepository {
     })
 
     if (error || !data.user) {
-      return encodedRedirect("error", "/auth/sign-in", "Invalid credentials");
+      throw new Error("Invalid credentials")
     }
 
     return {
@@ -33,7 +32,7 @@ export class SupabaseAuthRepository implements AuthRepository {
     })
 
     if (error || !data.user) {
-      return encodedRedirect("error", "/auth/sign-up", "Sign up failed");
+      throw new Error("Sign up failed")
     }
 
     return {
@@ -55,7 +54,7 @@ export class SupabaseAuthRepository implements AuthRepository {
     })
 
     if (error || !data.user) {
-      return encodedRedirect("error", "/auth/sign-up", "Sign up failed");
+      throw new Error("Sign up failed")
     }
 
     return { success: true }
@@ -67,7 +66,7 @@ export class SupabaseAuthRepository implements AuthRepository {
       await supabase.auth.signOut()
       revalidatePath('/', 'layout')
     } catch (error) {
-      return encodedRedirect("error", "/auth/sign-in", "Sign out failed");
+      throw new Error("Sign v failed")
     }
   }
 

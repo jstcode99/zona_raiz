@@ -1,7 +1,5 @@
-import { searchPropertyUseCase } from "@/application/use-cases/searchPropertyUseCase";
 import { PropertyColumns, PropertyRow } from "@/features/properties/property-columns";
 import PropertiesTable from "@/features/properties/property-table";
-import { encodedRedirect } from "@/shared/redirect";
 import {
   Tabs,
   TabsContent,
@@ -13,20 +11,19 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { SupabasePropertyRepository } from "@/infrastructure/db/SupabasePropertyRepository";
+import { Suspense } from "react";
+import { Spinner } from "@/components/ui/spinner";
 
 
-export default async function Properties({
+export default async function page({
   searchParams,
 }: {
-  searchParams: { q?: string, sort: 'asc' | 'desc' }
+  searchParams: Promise<{ search?: string; sort?: 'asc' | 'desc' }>
 }) {
-  const { q = '', sort = 'asc' } = searchParams;
-  const useCase = new searchPropertyUseCase()
-  const data = await useCase.execute(q, sort)
-
-  if (!data) {
-    return encodedRedirect('error', '/dashboard/properties', 'No se pudo cargar las propiedades')
-  }
+  const { search = '', sort = 'asc' } = await searchParams;
+  const supabase = new SupabasePropertyRepository()
+  const data = supabase.search(search, sort)
 
   return (
     <main className="flex items-center justify-between px-4 lg:px-6">
@@ -72,7 +69,9 @@ export default async function Properties({
           </div>
         </div>
         <TabsContent value="outline" className="w-full">
-          <PropertiesTable properties={data as PropertyRow[]} columns={PropertyColumns} />
+          <Suspense fallback={<Spinner />}>
+            <PropertiesTable properties={data as Promise<PropertyRow[]>} columns={PropertyColumns} />
+          </Suspense>
         </TabsContent>
       </Tabs>
     </main>

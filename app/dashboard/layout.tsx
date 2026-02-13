@@ -5,9 +5,10 @@ import {
 } from "@/components/ui/sidebar"
 import { CSSProperties, ReactNode, Suspense } from "react"
 import { AppSidebar } from "@/features/navigation/app-sidebar"
-import { getCurrentProfile } from "@/shared/auth/getCurrentProfile"
 import { UserRole } from "@/domain/entities/Profile"
 import { PageLoader } from "@/features/loader/page-loader"
+import { SupabaseProfileRepository } from "@/infrastructure/db/SupabaseProfileRepository"
+import { encodedRedirect } from "@/shared/redirect"
 
 export default async function DashboardLayout({
   children,
@@ -15,7 +16,12 @@ export default async function DashboardLayout({
   children: ReactNode
 }) {
 
-  const profile = await getCurrentProfile()
+  const supabase = new SupabaseProfileRepository()
+  const profile = await supabase.getCurrentProfile()
+
+  if (!profile || !profile.profile) {
+    return encodedRedirect('error', '/auth/sign-in', 'No se pudo cargar el perfil')
+  }
 
   const getMenuByRole = (role: string) => {
     switch (role) {

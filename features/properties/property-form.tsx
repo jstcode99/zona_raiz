@@ -22,13 +22,16 @@ import { Spinner } from "@/components/ui/spinner"
 import { useServerMutation } from "@/shared/hooks/useServerMutation"
 import { createPropertyAction } from "@/application/actions/createPropertyAction"
 import { cn, slugify } from "@/lib/utils"
+import { updatePropertyAction } from "@/application/actions/updatePropertyAction"
 
 export function PropertyForm({
   className,
   defaultValues,
+  id,
   ...props
 }: ComponentProps<"form"> & {
   defaultValues?: PropertyFormData
+  id?:string
 }) {
   const { pending } = useFormStatus()
   const t = i18next.t
@@ -45,8 +48,17 @@ export function PropertyForm({
 
   const title = watch("title")
 
-  const mutation = useServerMutation({
+  const create = useServerMutation({
     action: createPropertyAction,
+    initialState: { success: false },
+    setError,
+    onSuccess: () => {
+      toast.success(t("forms.property.success"))
+    },
+  })
+
+  const update = useServerMutation({
+    action: updatePropertyAction,
     initialState: { success: false },
     setError,
     onSuccess: () => {
@@ -84,7 +96,12 @@ export function PropertyForm({
     })
 
     startTransition(() => {
-      mutation.action(formData)
+      if (id?.trim()) {
+        formData.append('id', String(id ?? ""))
+        update.action(formData)
+      } else { 
+        create.action(formData)
+      }
     })
   }
 
@@ -263,10 +280,10 @@ export function PropertyForm({
       <div className="flex justify-end pt-4">
         <Button
           type="submit"
-          disabled={pending || mutation.isPending}
+          disabled={pending || update.isPending || create.isPending }
         >
           {t("forms.property.submit")}
-          {(pending || mutation.isPending) && (
+          {(pending || update.isPending || create.isPending) && (
             <Spinner data-icon="inline-start" />
           )}
         </Button>

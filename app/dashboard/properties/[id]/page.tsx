@@ -1,17 +1,28 @@
+import { Spinner } from "@/components/ui/spinner";
 import { PropertyForm } from "@/features/properties/property-form";
+import { SupabasePropertyRepository } from "@/infrastructure/db/SupabasePropertyRepository";
+import { encodedRedirect } from "@/shared/redirect";
+import { Suspense } from "react";
 
-export default function Property() {
+export default async function page({
+  params,
+}: {
+  params: Promise<{ id: string }>
+}) {
+  const { id } = await params;
+
+  const supabase = new SupabasePropertyRepository()
+  const data = await supabase.findById(id)
+
+  if (!data) {
+    return encodedRedirect('error', '/dashboard/account', 'No se pudo cargar el perfil')
+  }
+
   return (
     <main className="min-h-screen bg-muted/40 py-10 px-4">
-      <div className="max-w-4xl mx-auto flex flex-col gap-2 mb-8">
-        <h1 className="text-2xl font-bold tracking-tight text-foreground text-balance">
-          Nueva propiedad
-        </h1>
-        <p className="text-muted-foreground text-sm">
-          Completa los campos para registrar una nueva propiedad en el sistema.
-        </p>
-      </div>
-      <PropertyForm />
+      <Suspense fallback={<Spinner />}>
+        <PropertyForm id={id} defaultValues={data} />
+      </Suspense>
     </main>
   );
 }

@@ -19,7 +19,7 @@ export class SupabaseProfileRepository {
     } = await supabase.auth.getUser()
 
     if (authError || !user) {
-      return encodedRedirect("error", "/auth/sign-in", "Invalid credentials");
+      throw new Error("Invalid credentials")
     }
 
     const { data: profile, error } = await supabase
@@ -29,7 +29,7 @@ export class SupabaseProfileRepository {
       .single()
 
     if (error) {
-      return encodedRedirect("error", "/auth/sign-in", "Failed to retrieve profile");
+      throw new Error("Failed to retrieve profile")
     }
 
     return {
@@ -58,7 +58,7 @@ export class SupabaseProfileRepository {
     } = await supabase.auth.getUser()
 
     if (authError || !user) {
-      return encodedRedirect("error", "/auth/sign-in", "Invalid credentials");
+      throw new Error("Invalid credentials")
     }
 
     const { error } = await supabase
@@ -84,7 +84,7 @@ export class SupabaseProfileRepository {
     } = await supabase.auth.getUser()
 
     if (authError || !user) {
-      return encodedRedirect("error", "/auth/sign-in", "Invalid credentials");
+      throw new Error("Invalid credentials")
     }
 
     const path = `${user.id}/avatar.webp`
@@ -97,7 +97,7 @@ export class SupabaseProfileRepository {
       })
 
     if (uploadError) {
-      return encodedRedirect("error", "/dashboard/account", "Failed to upload avatar");
+      throw new Error("Failed to upload avatar")
     }
 
     const { data } = supabase.storage

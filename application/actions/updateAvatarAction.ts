@@ -2,8 +2,8 @@
 
 import { ActionResult } from "@/shared/hooks/useServerMutation"
 import { profileAvatarSchema } from "@/domain/entities/schemas/profile"
-import { updateAvatar } from "../use-cases/updateAvatar"
 import { SupabaseProfileRepository } from "@/infrastructure/db/SupabaseProfileRepository"
+import { revalidatePath } from "next/cache"
 
 export async function updateAvatarAction(
   _: ActionResult,
@@ -23,7 +23,8 @@ export async function updateAvatarAction(
       }
     }
     const repo = new SupabaseProfileRepository()
-    await updateAvatar(repo, { file: avatar })
+    await repo.updateAvatar(avatar)
+    revalidatePath('/', 'layout');
 
     return { success: true }
   } catch (e: any) {

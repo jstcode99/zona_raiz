@@ -3,7 +3,6 @@
 import { SupabaseAuthRepository } from "@/infrastructure/db/SupabaseAuthRepository"
 import { ActionResult } from "@/shared/hooks/useServerMutation"
 import { otpSchema } from "@/domain/entities/schemas/OTP"
-import { otp } from "../use-cases/otp"
 
 export async function otpAction(
   _: ActionResult,
@@ -17,7 +16,7 @@ export async function otpAction(
     })
 
     const repo = new SupabaseAuthRepository()
-    await otp(repo, data.email)
+    await repo.otp(data.email)
 
     return { success: true }
   } catch (e: any) {

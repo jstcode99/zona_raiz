@@ -2,7 +2,7 @@
 
 import { ActionResult } from "@/shared/hooks/useServerMutation"
 import { profileSchema } from "@/domain/entities/schemas/profile"
-import { updateProfile } from "../use-cases/updateProfile"
+import { revalidatePath } from "next/cache"
 import { SupabaseProfileRepository } from "@/infrastructure/db/SupabaseProfileRepository"
 
 export async function updateProfileAction(
@@ -17,7 +17,9 @@ export async function updateProfileAction(
     })
 
     const repo = new SupabaseProfileRepository()
-    await updateProfile(repo, data)
+    await repo.updateProfile(data)
+
+    revalidatePath('/', 'layout');
 
     return { success: true }
   } catch (e: any) {

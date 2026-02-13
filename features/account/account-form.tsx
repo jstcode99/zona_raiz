@@ -2,14 +2,11 @@
 import { Button } from "@/components/ui/button"
 import {
   Field,
-  FieldError,
   FieldGroup,
-  FieldLabel,
 } from "@/components/ui/field"
-import { Input } from "@/components/ui/input"
-import { Controller, useForm } from "react-hook-form"
+import { useForm } from "react-hook-form"
 import { yupResolver } from '@hookform/resolvers/yup'
-import { ComponentProps, useEffect } from "react"
+import { ComponentProps, startTransition, useEffect } from "react"
 import i18next from "i18next"
 import { Spinner } from "@/components/ui/spinner"
 import { toast } from "sonner"
@@ -17,6 +14,9 @@ import { useFormStatus } from "react-dom"
 import { profileSchema } from "@/domain/entities/schemas/profile"
 import { useServerMutation } from "@/shared/hooks/useServerMutation"
 import { updateProfileAction } from "../../application/actions/updateProfileAction"
+import { PropertyFormData } from "@/domain/entities/schemas/property"
+import { Form } from "@/components/ui/form"
+import { cn } from "@/lib/utils"
 
 
 export function AccountForm({
@@ -33,11 +33,7 @@ export function AccountForm({
 
   const { pending } = useFormStatus()
 
-  const {
-    setError,
-    control,
-    reset
-  } = useForm({
+  const form = useForm({
     resolver: yupResolver(profileSchema),
     defaultValues: {
       name: '',
@@ -46,6 +42,8 @@ export function AccountForm({
     },
     shouldUnregister: false,
   })
+
+  const { setError, reset } = form
 
   const mutation = useServerMutation({
     action: updateProfileAction,
@@ -60,91 +58,40 @@ export function AccountForm({
     }
   }, [defaultValues])
 
+  const onSubmit = (values: PropertyFormData) => {
+    const formData = new FormData()
+
+    Object.entries(values).forEach(([key, value]) => {
+      formData.append(key, String(value ?? ""))
+    })
+
+    startTransition(() => {
+      mutation.action(formData)
+    })
+  }
+
   return (
-    <form
-      className="px-6"
+    <Form
       {...props}
-      action={mutation.action}
+      form={form}
+      className={cn("py-6 px-6 max-w-4xl mx-auto space-y-8", className)}
+      onSubmit={onSubmit}
     >
       <FieldGroup>
-        <Controller
-          name="name"
-          control={control}
-          render={({ field, fieldState }) => (
-            <Field data-invalid={fieldState.invalid}>
-              <FieldLabel htmlFor="form-name">
-                {i18next.t('forms.sign-up.fields.name.label')}
-              </FieldLabel>
-              <Input
-                {...field}
-                id="form-name"
-                aria-invalid={fieldState.invalid}
-                placeholder={i18next.t('forms.sign-up.fields.name.placeholder')}
-                autoComplete="on"
-              />
-              {fieldState.invalid && (
-                <FieldError errors={[fieldState.error]} />
-              )}
-            </Field>
-          )}
-        />
-        <Controller
-          name="last_name"
-          control={control}
-          render={({ field, fieldState }) => (
-            <Field data-invalid={fieldState.invalid}>
-              <FieldLabel htmlFor="form-last_name">
-                {i18next.t('forms.sign-up.fields.last_name.label')}
-              </FieldLabel>
-              <Input
-                {...field}
-                id="form-last_name"
-                aria-invalid={fieldState.invalid}
-                placeholder={i18next.t('forms.sign-up.fields.last_name.placeholder')}
-                autoComplete="on"
-              />
-              {fieldState.invalid && (
-                <FieldError errors={[fieldState.error]} />
-              )}
-            </Field>
-          )}
-        />
-        <Controller
-          name="phone"
-          control={control}
-          render={({ field, fieldState }) => (
-            <Field data-invalid={fieldState.invalid}>
-              <FieldLabel htmlFor="form-phone">
-                {i18next.t('forms.sign-up.fields.phone.label')}
-              </FieldLabel>
-              <Input
-                {...field}
-                type="tel"
-                id="form-phone"
-                maxLength={16}
-                minLength={10}
-                title={i18next.t('forms.sign-up.fields.phone.placeholder')}
-                aria-invalid={fieldState.invalid}
-                placeholder={i18next.t('forms.sign-up.fields.phone.placeholder')}
-                autoComplete="off"
-              />
-              {fieldState.invalid && (
-                <FieldError errors={[fieldState.error]} />
-              )}
-            </Field>
-          )}
-        />
+        <Form.Input name="name" label={i18next.t('forms.sign-up.fields.name.label')} />
+        <Form.Input name="last_name" label={i18next.t('forms.sign-up.fields.last_name.label')} />
+        <Form.Input name="phone" label={i18next.t('forms.sign-up.fields.phone.label')} />
         <Field>
           <Button
             type='submit'
             className='w-full'
-            disabled={pending ||mutation.isPending}
+            disabled={pending || mutation.isPending}
           >
             {i18next.t('words.save')}
             {pending || mutation.isPending && <Spinner data-icon="inline-start" />}
           </Button>
         </Field>
       </FieldGroup>
-    </form>
+    </Form>
   )
 }

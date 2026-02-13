@@ -63,7 +63,7 @@ export function SingInForm({
     <Form
       {...props}
       form={form}
-       className={cn("py-4 px-6", className)}
+      className={cn("py-4 px-6", className)}
       onSubmit={onSubmit}
     >
       <FieldGroup className="gap-3">

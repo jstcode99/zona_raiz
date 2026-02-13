@@ -1,23 +1,23 @@
 "use server"
 
 import { ActionResult } from "@/shared/hooks/useServerMutation"
-import { propertySchema } from "@/domain/entities/schemas/property"
-import { Property } from "@/domain/entities/Property"
+import { propertySchemaUpdate } from "@/domain/entities/schemas/property"
 import { SupabasePropertyRepository } from "@/infrastructure/db/SupabasePropertyRepository"
+import { Property } from "@/domain/entities/Property"
 
-export async function createPropertyAction(
+export async function updatePropertyAction(
   _: ActionResult,
-  formData: FormData
+  formData: FormData,
 ): Promise<ActionResult> {
   try {
     const values = Object.fromEntries(formData.entries())
 
-    const data = await propertySchema.validate(values, {
+    const data = await propertySchemaUpdate.validate(values, {
       abortEarly: false,
     })
 
     const repo = new SupabasePropertyRepository()
-    await repo.create(data as Omit<Property, "id">)
+    await repo.update(data as Partial<Property>)
 
     return { success: true }
   } catch (e: any) {

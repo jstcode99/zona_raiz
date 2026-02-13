@@ -1,7 +1,6 @@
 "use server"
 
 import { SupabaseAuthRepository } from "@/infrastructure/db/SupabaseAuthRepository"
-import { signIn } from "../use-cases/signIn"
 import { ActionResult } from "@/shared/hooks/useServerMutation"
 import { signInSchema } from "@/domain/entities/schemas/signIn"
 
@@ -17,7 +16,7 @@ export async function signInAction(
     })
 
     const repo = new SupabaseAuthRepository()
-    await signIn(repo, data.email, data.password as string)
+    await repo.signIn(data.email, data.password as string)
 
     return { success: true }
   } catch (e: any) {

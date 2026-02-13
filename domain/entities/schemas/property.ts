@@ -20,6 +20,7 @@ export const currencyOptions = [
   { value: "ARS", label: "ARS" },
 ] as const;
 
+
 export const propertySchema =
   yup.object({
     title: yup
@@ -171,6 +172,9 @@ export const propertySchema =
       ),
   });
 
+export const propertySchemaUpdate = yup.object({
+  id: yup.string().uuid().required()
+}).concat(propertySchema)
 
 export type PropertyFormData = yup.InferType<typeof propertySchema>;
 
