@@ -1,5 +1,3 @@
-import { PropertyColumns, PropertyRow } from "@/features/properties/property-columns";
-import PropertiesTable from "@/features/properties/property-table";
 import {
   Tabs,
   TabsContent,
@@ -11,9 +9,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { SupabasePropertyRepository } from "@/infrastructure/db/SupabasePropertyRepository";
 import { Suspense } from "react";
 import { Spinner } from "@/components/ui/spinner";
+import { SupabaseRealEstateRepository } from "@/infrastructure/db/SupabaseRealEstateRepository";
+import RealEstatesTable from "@/features/real-states/real-state-table";
+import { RealEstateColumns, RealEstateRow } from "@/features/real-states/real-state-columns";
 import { IconPlus } from "@tabler/icons-react";
 
 
@@ -23,8 +23,8 @@ export default async function page({
   searchParams: Promise<{ search?: string; sort?: 'asc' | 'desc' }>
 }) {
   const { search = '', sort = 'asc' } = await searchParams;
-  const supabase = new SupabasePropertyRepository()
-  const data = supabase.search(search, sort)
+  const supabase = new SupabaseRealEstateRepository()
+  const data = supabase.findAll()
 
   return (
     <main className="flex items-center justify-between px-4 lg:px-6">
@@ -62,7 +62,7 @@ export default async function page({
             <TabsTrigger value="focus-documents">Focus Documents</TabsTrigger>
           </TabsList>
           <div className="flex items-center gap-2">
-            <Link href={`/dashboard/properties/new`}>
+            <Link href={`/dashboard/real-states/new`}>
               <Button variant="outline" size="sm">
                 <span className="hidden lg:inline"><IconPlus /></span>
               </Button>
@@ -71,7 +71,7 @@ export default async function page({
         </div>
         <TabsContent value="outline" className="w-full">
           <Suspense fallback={<Spinner />}>
-            <PropertiesTable properties={data as Promise<PropertyRow[]>} columns={PropertyColumns} />
+            <RealEstatesTable realEstates={data as Promise<RealEstateRow[]>} columns={RealEstateColumns} />
           </Suspense>
         </TabsContent>
       </Tabs>

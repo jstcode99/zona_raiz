@@ -13,6 +13,23 @@ CREATE TABLE real_estates (
     created_at TIMESTAMP DEFAULT NOW()
 );
 
+-- Tabla de perfiles de usuario
+CREATE TABLE profiles (
+    id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
+    name VARCHAR(80) NOT NULL,
+    last_name VARCHAR(80),
+    phone VARCHAR(16),
+    avatar_url TEXT,
+    role VARCHAR(50) NOT NULL DEFAULT 'CLIENT',
+    real_estate_id UUID REFERENCES real_estates(id) ON DELETE SET NULL,
+    created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP DEFAULT NOW()
+);
+
+-- Índices para mejorar rendimiento
+CREATE INDEX idx_profiles_role ON profiles(role);
+CREATE INDEX idx_profiles_real_estate ON profiles(real_estate_id);
+
 CREATE TYPE property_business_type AS ENUM ('sale', 'rent');
 CREATE TYPE property_status AS ENUM ('draft', 'published', 'sold', 'rented');
 

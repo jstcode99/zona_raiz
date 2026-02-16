@@ -245,6 +245,95 @@
         "bacic": "Iniciar sesión con contraseña"
       },
       "success": "Se ha enviado el codigo de verificacion."
+    },
+     "realEstate": {
+      "title": "Inmobiliaria",
+      "subtitle": "Completa la información de la inmobiliaria",
+      "success": "Guardado correctamente",
+      "submit": "Guardar",
+      "fields": {
+        "name": {
+          "label": "Nombre",
+          "placeholder": "Nombre de la inmobiliaria"
+        },
+        "slug": {
+          "label": "Slug",
+          "placeholder": "identificador-url"
+        },
+        "logo_url": {
+          "label": "Logo",
+          "placeholder": "Sube el logo"
+        },
+        "description": {
+          "label": "Descripción",
+          "placeholder": "Descripción general"
+        },
+        "phone": {
+          "label": "Teléfono",
+          "placeholder": "+1 000 000 000"
+        },
+        "whatsapp": {
+          "label": "WhatsApp",
+          "placeholder": "+1 000 000 000"
+        },
+        "address": {
+          "label": "Dirección",
+          "placeholder": "Dirección completa"
+        },
+        "city": {
+          "label": "Ciudad",
+          "placeholder": "Ciudad"
+        },
+        "state": {
+          "label": "Estado / Provincia",
+          "placeholder": "Estado"
+        },
+        "country": {
+          "label": "País",
+          "placeholder": "País"
+        },
+        "latitude": {
+          "label": "Latitud",
+          "placeholder": "0.000000"
+        },
+        "longitude": {
+          "label": "Longitud",
+          "placeholder": "0.000000"
+        },
+        "google_maps_url": {
+          "label": "URL Google Maps",
+          "placeholder": "https://maps.google.com/..."
+        }
+      }
+    },
+    "userAdmin": {
+      "title": "Usuario",
+      "subtitle": "Administrar perfil y permisos",
+      "success": "Usuario actualizado",
+      "submit": "Guardar cambios",
+      "fields": {
+        "avatar": {
+          "label": "Avatar"
+        },
+        "name": {
+          "label": "Nombre",
+          "placeholder": "Nombre"
+        },
+        "last_name": {
+          "label": "Apellido",
+          "placeholder": "Apellido"
+        },
+        "phone": {
+          "label": "Teléfono",
+          "placeholder": "+1 000 000 000"
+        },
+        "role": {
+          "label": "Rol"
+        },
+        "real_estate": {
+          "label": "Inmobiliaria"
+        }
+      }
     }
   },
   "words": {

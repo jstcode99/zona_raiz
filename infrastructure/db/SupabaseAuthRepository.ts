@@ -32,6 +32,7 @@ export class SupabaseAuthRepository implements AuthRepository {
     })
 
     if (error || !data.user) {
+      console.log(error);
       throw new Error("Sign up failed")
     }
 
