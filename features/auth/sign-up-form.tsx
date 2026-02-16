@@ -29,12 +29,10 @@ export function SignUpForm({
 
   const { pending } = useFormStatus()
 
-
   const form = useForm<SignUpFormValues>({
     resolver: yupResolver(signUpSchema),
     defaultValues: {
-      name: '',
-      last_name: '',
+      full_name: '',
       email: '',
       password: '',
     },
@@ -77,8 +75,7 @@ export function SignUpForm({
             {i18next.t('forms.sign-up.subtitle')}
           </p>
         </div>
-        <Form.Input name="name" label={i18next.t('forms.sign-up.fields.name.label')} />
-        <Form.Input name="last_name" label={i18next.t('forms.sign-up.fields.last_name.label')} />
+        <Form.Input name="full_name" label={i18next.t('forms.sign-up.fields.full_name.label')} />
         <Form.Input name="email" label={i18next.t('forms.sign-up.fields.email.label')} />
         <Form.Input name="phone" label={i18next.t('forms.sign-up.fields.phone.label')} />
         <Form.Input name="password" type="password" label={i18next.t('forms.sign-up.fields.password.label')} />

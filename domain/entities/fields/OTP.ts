@@ -3,9 +3,6 @@ import * as yup from 'yup'
 
 export const otpSchema = yup
     .string()
-    .required(i18next.t('validations.required', {
-        attribute: 'otp'
-    }))
     .min(3, i18next.t('validations.min.string', {
         attribute: 'otp',
         min: '6'
@@ -13,4 +10,7 @@ export const otpSchema = yup
     .max(6, i18next.t('validations.max.string', {
         attribute: 'otp',
         max: '6'
+    }))
+    .required(i18next.t('validations.required', {
+        attribute: 'otp'
     }))

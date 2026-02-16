@@ -16,7 +16,7 @@ export async function signUpAction(
     })
 
     const repo = new SupabaseAuthRepository()
-    await repo.signUp(data.email, data.password as string)
+    await repo.signUp(data)
 
     return { success: true }
   } catch (e: any) {

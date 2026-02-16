@@ -14,15 +14,14 @@ export default async function Account() {
 
   return (
     <main className="min-h-screen flex-col items-center justify-center bg-muted/40 py-10 px-4">
-      <div className="px-6 max-w-4xl mx-auto flex items-center relative">
+      <div className="px-6 max-w-35 mx-auto flex items-center relative">
         <AvatarUpload
           avatarUrl={data?.profile.avatar_url || ''}
-          name={data?.profile.name || ''}
+          full_name={data?.profile.full_name || ''}
         />
       </div>
       <AccountForm defaultValues={{
-        name: data?.profile.name || '',
-        last_name: data?.profile.last_name || '',
+        full_name: data?.profile.full_name || '',
         phone: data?.profile.phone || '',
       }} />
     </main>

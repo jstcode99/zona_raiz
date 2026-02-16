@@ -14,10 +14,16 @@ const SUPPORTED_FORMATS = [
 ]
 
 export const profileSchema = yup.object({
-  name: nameSchema,
-  last_name: last_nameSchema,
+  full_name: nameSchema,
   phone: phoneSchema,
 })
+export type profileFormValues = yup.InferType<typeof profileSchema>
+
+export const defaultUserProfileValues = {
+  full_name: "",
+  phone: "",
+}
+
 
 export const profileAvatarSchema = yup.object({
   avatar: yup

@@ -1,10 +1,9 @@
 import { createSupabaseServerClient } from "./supabase.server"
 import { createSupabaseRouteClient } from "./supabase.route"
-import { encodedRedirect } from "@/shared/redirect"
 import { UserWithProfile } from "@/domain/entities/User"
 
 type UpdateProfileInput = {
-  name: string
+  full_name: string
   last_name?: string
   phone?: string
 }
@@ -24,7 +23,7 @@ export class SupabaseProfileRepository {
 
     const { data: profile, error } = await supabase
       .from("profiles")
-      .select("id, name, avatar_url, last_name, phone, role")
+      .select("id, full_name, avatar_url, role")
       .eq("id", user.id)
       .single()
 
@@ -40,9 +39,8 @@ export class SupabaseProfileRepository {
       profile: profile
         ? {
           role: profile.role,
-          name: profile.name,
-          last_name: profile.last_name,
-          phone: profile.phone,
+          full_name: profile.full_name,
+          phone: user.phone,
           avatar_url: profile.avatar_url,
         }
         : null,
@@ -64,8 +62,7 @@ export class SupabaseProfileRepository {
     const { error } = await supabase
       .from("profiles")
       .update({
-        name: data.name,
-        last_name: data.last_name,
+        full_name: data.full_name,
         phone: data.phone,
       })
       .eq("id", user.id)

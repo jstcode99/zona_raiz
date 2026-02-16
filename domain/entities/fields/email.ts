@@ -3,9 +3,6 @@ import * as yup from 'yup'
 
 export const emailSchema = yup
     .string()
-    .required(i18next.t('validations.required', {
-        attribute: 'email'
-    }))
     .email(i18next.t('validations.email', {
         attribute: 'email'
     }))
@@ -14,3 +11,6 @@ export const emailSchema = yup
             attribute: 'email'
         })
     })
+    .required(i18next.t('validations.required', {
+        attribute: 'email'
+    }))

@@ -35,17 +35,11 @@
       "title": "Regístrate gratis",
       "subtitle": "En pocos pasos podrás usar ZonRaiz",
       "fields": {
-        "name": {
-          "label": "Nombres",
+        "full_name": {
+          "label": "Nombre completo",
           "placeholder": "Joe",
-          "message": "Los nombres deben tener al menos 3 caracteres",
-          "message1": "Los nombres no pueden tener más de 80 caracteres"
-        },
-        "last_name": {
-          "label": "Apellidos",
-          "placeholder": "Doe",
-          "message": "Los apellidos deben tener al menos 3 caracteres",
-          "message1": "Los apellidos no pueden tener más de 80 caracteres"
+          "message": "El nombre completo deben tener al menos 3 caracteres",
+          "message1": "El nombre completo no pueden tener más de 25 caracteres"
         },
         "email": {
           "label": "Correo electrónico",

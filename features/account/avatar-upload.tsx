@@ -4,7 +4,7 @@ import { yupResolver } from "@hookform/resolvers/yup"
 import { useForm, Controller } from "react-hook-form"
 import { useRef, useTransition } from "react"
 import { profileAvatarSchema, AvatarFormValues } from "@/domain/entities/schemas/profile"
-import { cn, optimizeImage } from "@/lib/utils"
+import { optimizeImage } from "@/lib/utils"
 import { FieldError } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { Spinner } from "@/components/ui/spinner"
@@ -14,10 +14,10 @@ import { updateAvatarAction } from "@/application/actions/updateAvatarAction"
 
 type Props = {
   avatarUrl?: string | null
-  name?: string | null
+  full_name: string
 }
 
-export function AvatarUpload({ avatarUrl, name = '' }: Props) {
+export function AvatarUpload({ avatarUrl, full_name = '' }: Props) {
   const inputRef = useRef<HTMLInputElement>(null)
   const [isPending, startTransition] = useTransition()
 
@@ -48,13 +48,12 @@ export function AvatarUpload({ avatarUrl, name = '' }: Props) {
   return (
     <>
       <SmartAvatar
-        size="lg"
-        className="cursor-pointer"
+        className="cursor-pointer size-25"
         src={avatarUrl ?? undefined}
-        alt={name}
+        alt={full_name}
         onClick={() => inputRef.current?.click()}
         fallback={
-          mutation.isPending ? <Spinner /> : name.slice(0, 2).toUpperCase() ?? ''
+          isPending || mutation.isPending ? <Spinner /> : full_name.slice(0, 2).toUpperCase() ?? ''
         }
       />
       <Controller

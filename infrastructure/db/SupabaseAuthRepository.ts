@@ -3,6 +3,9 @@ import { AuthUser } from "@/domain/entities/AuthUser"
 import { createSupabaseServerClient } from "./supabase.server"
 import { revalidatePath } from "next/cache"
 import { createSupabaseRouteClient } from "./supabase.route"
+import { SignUpFormValues } from "@/domain/entities/schemas/signUp"
+
+
 
 export class SupabaseAuthRepository implements AuthRepository {
   async signIn(email: string, password: string): Promise<AuthUser> {
@@ -23,13 +26,20 @@ export class SupabaseAuthRepository implements AuthRepository {
     }
   }
 
-  async signUp(email: string, password: string): Promise<AuthUser> {
+  async signUp(input: SignUpFormValues): Promise<AuthUser> {
     const supabase = await createSupabaseRouteClient()
 
     const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
+      email: input.email,
+      password: input.password,
+      options: {
+        data: {
+          full_name: input.full_name,
+          phone: input.phone,
+        },
+      },
     })
+
 
     if (error || !data.user) {
       console.log(error);

@@ -1,6 +1,5 @@
 export type ProfileBasic = {
-  name: string
-  last_name?: string | null
+  full_name: string
   phone?: string | null
 }
 
