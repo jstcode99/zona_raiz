@@ -2,20 +2,24 @@ create table if not exists public.profiles (
   id uuid primary key references auth.users on delete cascade,
   full_name text,
   avatar_url text,
+  phone text,
   role text default 'client',
   created_at timestamptz default now()
 );
 
 alter table public.profiles enable row level security;
+alter table public.profiles
+add constraint profiles_phone_unique unique (phone);
 
 create or replace function public.handle_new_user()
 returns trigger as $$
 begin
-  insert into public.profiles (id, full_name, avatar_url)
+  insert into public.profiles (id, full_name, avatar_url, phone)
   values (
     new.id,
     coalesce(new.raw_user_meta_data ->> 'full_name', ''),
-    coalesce(new.raw_user_meta_data ->> 'avatar_url', '')
+    coalesce(new.raw_user_meta_data ->> 'avatar_url', ''),
+    coalesce(new.raw_user_meta_data ->> 'phone', '')
   )
   on conflict (id) do nothing;
 

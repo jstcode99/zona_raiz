@@ -45,7 +45,7 @@ export function AccountForm({
 
   useEffect(() => {
     if (defaultValues) {
-      reset(defaultUserProfileValues)
+      reset(defaultValues)
     }
   }, [defaultValues])
 

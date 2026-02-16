@@ -23,7 +23,7 @@ export class SupabaseProfileRepository {
 
     const { data: profile, error } = await supabase
       .from("profiles")
-      .select("id, full_name, avatar_url, role")
+      .select("id, full_name, phone, avatar_url, role")
       .eq("id", user.id)
       .single()
 
@@ -40,7 +40,7 @@ export class SupabaseProfileRepository {
         ? {
           role: profile.role,
           full_name: profile.full_name,
-          phone: user.phone,
+          phone: profile.phone,
           avatar_url: profile.avatar_url,
         }
         : null,

@@ -1,9 +1,12 @@
-create materialized view if not exists public.homepage_listings_cache as
+create materialized view public.homepage_listings_cache as
 select
   l.id as listing_id,
   l.title,
+  l.slug,
   l.price,
   l.currency,
+  l.meta_title,
+  l.meta_description,
   p.city,
   p.neighborhood,
   p.latitude,
@@ -24,15 +27,13 @@ where
   and p.deleted_at is null;
 
 
-create unique index if not exists idx_home_cache_listing
+create unique index idx_home_cache_listing
 on public.homepage_listings_cache(listing_id);
 
-create index if not exists idx_home_cache_rank
+create index idx_home_cache_rank
 on public.homepage_listings_cache(ad_priority desc, is_featured desc, created_at desc);
 
-create index if not exists idx_home_cache_city
-on public.homepage_listings_cache(city);
-
+grant select on public.homepage_listings_cache to anon, authenticated;
 
 create or replace function public.refresh_homepage_cache()
 returns void

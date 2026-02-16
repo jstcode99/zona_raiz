@@ -12,8 +12,9 @@ export default async function Account() {
     return encodedRedirect('error', '/dashboard/account', 'No se pudo cargar el perfil')
   }
 
+
   return (
-    <main className="min-h-screen flex-col items-center justify-center bg-muted/40 py-10 px-4">
+    <main className="min-h-screen flex-col items-center justify-center py-10 px-4">
       <div className="px-6 max-w-35 mx-auto flex items-center relative">
         <AvatarUpload
           avatarUrl={data?.profile.avatar_url || ''}

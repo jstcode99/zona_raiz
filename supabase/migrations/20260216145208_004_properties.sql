@@ -2,15 +2,6 @@ create table if not exists public.properties (
   id uuid primary key default gen_random_uuid(),
   real_estate_id uuid references public.real_estates(id),
 
-  title text,
-  slug text unique,
-  meta_title text,
-  meta_description text,
-  description text,
-
-  price numeric default 0,
-  currency text default 'USD',
-
   address text,
   neighborhood text,
   city text,
