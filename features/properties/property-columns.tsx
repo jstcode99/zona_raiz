@@ -3,7 +3,6 @@
 import { BaseRow } from "@/components/ui/data-table"
 import { Property } from "@/domain/entities/Property"
 import { type ColumnDef } from "@tanstack/react-table"
-import { Badge } from "@/components/ui/badge"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,28 +11,14 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Button } from "@/components/ui/button"
-import { IconBrandWhatsapp, IconDotsVertical, IconMapPin } from "@tabler/icons-react"
+import { IconDotsVertical, IconMapPin } from "@tabler/icons-react"
 import Link from "next/link"
 
 export type PropertyRow = BaseRow & {
   created_at: string
 } & Property
 
-
-
-const formatPrice = (price: number, currency: string) =>
-  new Intl.NumberFormat("es-AR", {
-    style: "currency",
-    currency,
-    maximumFractionDigits: 0,
-  }).format(price)
-
 export const PropertyColumns: ColumnDef<PropertyRow>[] = [
-  {
-    accessorKey: "title",
-    header: "Título",
-  },
-
   {
     id: "location",
     header: "Ubicación",
@@ -54,29 +39,6 @@ export const PropertyColumns: ColumnDef<PropertyRow>[] = [
     accessorKey: "address",
     header: "Dirección",
     cell: ({ row }) => row.original.address || "—",
-  },
-
-  {
-    accessorKey: "price",
-    header: "Precio",
-    cell: ({ row }) =>
-      formatPrice(row.original.price, row.original.currency),
-  },
-
-  {
-    accessorKey: "business_type",
-    header: "Tipo",
-    cell: ({ row }) => (
-      <Badge variant="secondary">{row.original.business_type}</Badge>
-    ),
-  },
-
-  {
-    accessorKey: "status",
-    header: "Estado",
-    cell: ({ row }) => (
-      <Badge>{row.original.status}</Badge>
-    ),
   },
 
   {
@@ -128,26 +90,6 @@ export const PropertyColumns: ColumnDef<PropertyRow>[] = [
       )
     },
   },
-
-  {
-    id: "contact",
-    header: "Contacto",
-    cell: ({ row }) => {
-      const phone = row.original.whatsapp_contact
-      return (
-        <a
-          href={`https://wa.me/${phone}`}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex items-center gap-1 text-green-600 hover:underline"
-        >
-          <IconBrandWhatsapp size={16} />
-          WhatsApp
-        </a>
-      )
-    },
-  },
-
   {
     accessorKey: "created_at",
     header: "Creado",

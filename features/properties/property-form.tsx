@@ -1,6 +1,6 @@
 "use client"
 
-import { ComponentProps, startTransition, useEffect, useRef } from "react"
+import { ComponentProps, startTransition, useEffect } from "react"
 import { useForm } from "react-hook-form"
 import { yupResolver } from "@hookform/resolvers/yup"
 import { useFormStatus } from "react-dom"
@@ -10,10 +10,7 @@ import { toast } from "sonner"
 import {
   propertySchema,
   defaultPropertyValues,
-  type PropertyFormData,
-  businessTypeOptions,
-  statusOptions,
-  currencyOptions,
+  type PropertyFormData
 } from "@/domain/entities/schemas/property"
 
 import { Form } from "@/components/ui/form"
@@ -21,7 +18,7 @@ import { Button } from "@/components/ui/button"
 import { Spinner } from "@/components/ui/spinner"
 import { useServerMutation } from "@/shared/hooks/useServerMutation"
 import { createPropertyAction } from "@/application/actions/createPropertyAction"
-import { cn, slugify } from "@/lib/utils"
+import { cn } from "@/lib/utils"
 import { updatePropertyAction } from "@/application/actions/updatePropertyAction"
 
 export function PropertyForm({
@@ -42,11 +39,9 @@ export function PropertyForm({
     shouldUnregister: false,
   })
 
-  const { watch, setError, setValue } = form
+  const { setError, setValue } = form
 
-  const slugEditedRef = useRef(false)
 
-  const title = watch("title")
 
   const create = useServerMutation({
     action: createPropertyAction,
@@ -73,19 +68,6 @@ export function PropertyForm({
       })
     }
   }, [defaultValues, setValue])
-
-  useEffect(() => {
-    if (!slugEditedRef.current && title) {
-      form.setValue("slug", slugify(title), {
-        shouldValidate: true,
-        shouldDirty: true,
-      })
-    }
-  }, [title, form])
-
-  const handleSlugFocus = () => {
-    slugEditedRef.current = true
-  }
 
 
   const onSubmit = (values: PropertyFormData) => {
@@ -121,75 +103,6 @@ export function PropertyForm({
           {t("forms.property.subtitle")}
         </p>
       </div>
-
-      {/* Información básica */}
-      <Form.Set legend="Información básica">
-        <Form.Input
-          name="title"
-          label={t("forms.property.fields.title.label")}
-          placeholder={t("forms.property.fields.title.placeholder")}
-        />
-
-        <Form.Input
-          name="slug"
-          label={t("forms.property.fields.slug.label")}
-          placeholder={t("forms.property.fields.slug.placeholder")}
-          onFocus={handleSlugFocus}
-        />
-
-        <Form.Textarea
-          name="description"
-          label={t("forms.property.fields.description.label")}
-          placeholder={t("forms.property.fields.description.placeholder")}
-        />
-
-        <Form.Select
-          name="business_type"
-          label={t("forms.property.fields.business_type.label")}
-          placeholder={t("forms.property.fields.business_type.placeholder")}
-          options={[...businessTypeOptions]}
-        />
-
-        <Form.Select
-          name="status"
-          label={t("forms.property.fields.status.label")}
-          placeholder={t("forms.property.fields.status.placeholder")}
-          options={[...statusOptions]}
-        />
-      </Form.Set>
-
-      {/* SEO */}
-      <Form.Set legend="SEO">
-        <Form.Input
-          name="meta_title"
-          label={t("forms.property.fields.meta_title.label")}
-          placeholder={t("forms.property.fields.meta_title.placeholder")}
-        />
-
-        <Form.Textarea
-          name="meta_description"
-          label={t("forms.property.fields.meta_description.label")}
-          placeholder={t("forms.property.fields.meta_description.placeholder")}
-        />
-      </Form.Set>
-
-      {/* Precio */}
-      <Form.Set legend="Precio">
-        <Form.Input
-          name="price"
-          type="number"
-          label={t("forms.property.fields.price.label")}
-          placeholder={t("forms.property.fields.price.placeholder")}
-        />
-
-        <Form.Select
-          name="currency"
-          label={t("forms.property.fields.currency.label")}
-          placeholder={t("forms.property.fields.currency.placeholder")}
-          options={[...currencyOptions]}
-        />
-      </Form.Set>
-
       {/* Ubicación */}
       <Form.Set legend="Ubicación">
         <Form.Input
@@ -264,15 +177,6 @@ export function PropertyForm({
           type="number"
           label={t("forms.property.fields.area_m2.label")}
           placeholder={t("forms.property.fields.area_m2.placeholder")}
-        />
-      </Form.Set>
-
-      {/* Contacto */}
-      <Form.Set legend="Contacto">
-        <Form.Input
-          name="whatsapp_contact"
-          label={t("forms.property.fields.whatsapp_contact.label")}
-          placeholder={t("forms.property.fields.whatsapp_contact.placeholder")}
         />
       </Form.Set>
 

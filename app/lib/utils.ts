@@ -5,6 +5,13 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
+export const formatPrice = (price: number, currency: string) =>
+  new Intl.NumberFormat("es-AR", {
+    style: "currency",
+    currency,
+    maximumFractionDigits: 0,
+  }).format(price)
+  
 export function slugify(text: string) {
   return text
     .toLowerCase()

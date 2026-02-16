@@ -52,27 +52,17 @@ export class SupabasePropertyRepository implements PropertyRepository {
     const { error } = await supabase
       .from("properties")
       .update({
-        title: data.title,
         address: data.address,
-        meta_title: data.meta_title,
-        meta_description: data.meta_description,
         neighborhood: data.neighborhood,
-        latitude: data.latitude,
+        city: data.city,
+        state: data.state,
+        country: data.country,
         longitude: data.longitude,
+        latitude: data.latitude,
         google_maps_url: data.google_maps_url,
         bedrooms: data.bedrooms,
         bathrooms: data.bathrooms,
         area_m2: data.area_m2,
-        description: data.description,
-        status: data.status,
-        country: data.country,
-        state: data.state,
-        city: data.city,
-        price: data.price,
-        currency: data.currency,
-        slug: data.slug,
-        business_type: data.business_type,
-        whatsapp_contact: data.whatsapp_contact,
       })
       .eq("id", data.id)
 
@@ -109,26 +99,15 @@ export class SupabasePropertyRepository implements PropertyRepository {
       .select(`
         id,
         address,
-        meta_title,
-        meta_description,
-        neighborhood,
         latitude,
         longitude,
         google_maps_url,
         bedrooms,
         bathrooms,
         area_m2,
-        title,
-        description,
-        status,
         country,
         state,
-        city,
-        price,
-        currency,
-        slug,
-        business_type,
-        whatsapp_contact
+        city
       `)
       .single()
 
