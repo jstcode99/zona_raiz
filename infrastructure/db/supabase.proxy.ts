@@ -1,11 +1,12 @@
+import { UserRole } from "@/domain/entities/Profile";
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
- 
+
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({
     request,
   });
- 
+
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -28,18 +29,29 @@ export async function updateSession(request: NextRequest) {
       },
     }
   );
- 
- 
+
+
   const user = await supabase.auth.getUser();
- 
+
+  const role = request.cookies.get("role")?.value;
+  
+  if (request.nextUrl.pathname.startsWith("/dashboard") && role === UserRole.Client) {
+    return NextResponse.redirect(new URL("/", request.url));
+  }
+  const hasRealEstate = request.cookies.get("real_estate_id")
+
+  if (!hasRealEstate && request.nextUrl.pathname.startsWith("/dashboard")) {
+    return NextResponse.redirect(new URL("/post-login", request.url))
+  }
+
   if (request.nextUrl.pathname.startsWith("/dashboard") && user.error) {
     return NextResponse.redirect(new URL("/auth/sign-in", request.url));
   }
- 
+
   if (request.nextUrl.pathname === "/" && !user.error) {
     return NextResponse.redirect(new URL("/dashboard", request.url));
   }
- 
+
   // IMPORTANT: You *must* return the supabaseResponse object as it is. If you're
   // creating a new response object with NextResponse.next() make sure to:
   // 1. Pass the request in it, like so:
@@ -52,6 +64,6 @@ export async function updateSession(request: NextRequest) {
   //    return myNewResponse
   // If this is not done, you may be causing the browser and server to go out
   // of sync and terminate the user's session prematurely!
- 
+
   return supabaseResponse;
 }

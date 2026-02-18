@@ -1,76 +1,91 @@
 "use client"
 
-import { ComponentProps, startTransition, useEffect } from "react"
+import { ComponentProps, startTransition, useEffect, useRef, useState } from "react"
 import { useForm } from "react-hook-form"
 import { yupResolver } from "@hookform/resolvers/yup"
-import { useFormStatus } from "react-dom"
 import i18next from "i18next"
-import { toast } from "sonner"
 
 import {
   propertySchema,
   defaultPropertyValues,
-  type PropertyFormData
+  type PropertyFormData,
+  type PropertyLocationFormData,
 } from "@/domain/entities/schemas/property"
 
 import { Form } from "@/components/ui/form"
-import { Button } from "@/components/ui/button"
-import { Spinner } from "@/components/ui/spinner"
 import { useServerMutation } from "@/shared/hooks/useServerMutation"
 import { createPropertyAction } from "@/application/actions/createPropertyAction"
-import { cn } from "@/lib/utils"
 import { updatePropertyAction } from "@/application/actions/updatePropertyAction"
+import { cn } from "@/lib/utils"
+import { Switch } from "@/components/ui/switch"
+import { Field, FieldContent, FieldLabel } from "@/components/ui/field"
+import { WizardRef, WizardTab, WizardTabs } from "@/components/ui/wizard-form"
+import { LampDesk, LocationEditIcon } from "lucide-react"
+import { Separator } from "@/components/ui/separator"
+import { PlaceSelectorGoogle } from "../places/place-selector-google"
+import { PropertyLocationForm } from "./property-location-form"
+import { PropertyDetailsForm } from "./property-detail-form"
 
 export function PropertyForm({
   className,
   defaultValues,
   id,
   ...props
-}: ComponentProps<"form"> & {
-  defaultValues?: PropertyFormData
-  id?:string
-}) {
-  const { pending } = useFormStatus()
+}: ComponentProps<"form"> & { defaultValues?: PropertyFormData; id?: string }) {
   const t = i18next.t
+
+  const [mode, setMode] = useState<"manual" | "map">("map")
+  const [detailsComplete, setDetailsComplete] = useState(false)
+  const wizardRef = useRef<WizardRef>(null)
 
   const form = useForm<PropertyFormData>({
     resolver: yupResolver(propertySchema),
     defaultValues: defaultValues ?? defaultPropertyValues,
     shouldUnregister: false,
+    mode: "onBlur",
   })
 
-  const { setError, setValue } = form
+  const { setValue, getValues } = form
 
-
+  useEffect(() => {
+    if (defaultValues) form.reset(defaultValues)
+  }, [defaultValues])
 
   const create = useServerMutation({
     action: createPropertyAction,
     initialState: { success: false },
-    setError,
     onSuccess: () => {
-      toast.success(t("forms.property.success"))
+      wizardRef.current?.complete()
+      wizardRef.current?.setBusy(false)
     },
+
+    setError: () => {
+      wizardRef.current?.setBusy(false)
+      form.setError
+    }
   })
 
   const update = useServerMutation({
     action: updatePropertyAction,
     initialState: { success: false },
-    setError,
     onSuccess: () => {
-      toast.success(t("forms.property.success"))
+      wizardRef.current?.complete()
+      wizardRef.current?.setBusy(false)
     },
+    setError: () => {
+      wizardRef.current?.setBusy(false)
+      form.setError
+    }
   })
 
-  useEffect(() => {
-    if (defaultValues) {
-      Object.entries(defaultValues).forEach(([key, value]) => {
-        setValue(key as keyof PropertyFormData, value)
-      })
-    }
-  }, [defaultValues, setValue])
-
+  const updateFormValues = (values: Partial<PropertyFormData>) => {
+    Object.entries(values).forEach(([k, v]) =>
+      setValue(k as keyof PropertyFormData, v as any, { shouldValidate: true })
+    )
+  }
 
   const onSubmit = (values: PropertyFormData) => {
+    wizardRef.current?.setBusy(true)
     const formData = new FormData()
 
     Object.entries(values).forEach(([key, value]) => {
@@ -79,13 +94,14 @@ export function PropertyForm({
 
     startTransition(() => {
       if (id?.trim()) {
-        formData.append('id', String(id ?? ""))
+        formData.append("id", id)
         update.action(formData)
-      } else { 
+      } else {
         create.action(formData)
       }
     })
   }
+
 
   return (
     <Form
@@ -93,105 +109,63 @@ export function PropertyForm({
       form={form}
       className={cn("py-6 px-6 max-w-4xl mx-auto space-y-8", className)}
       onSubmit={onSubmit}
+
     >
-      {/* Header */}
       <div className="text-center space-y-2">
-        <h1 className="text-2xl font-bold">
-          {t("forms.property.title")}
-        </h1>
-        <p className="text-muted-foreground">
-          {t("forms.property.subtitle")}
-        </p>
+        <h1 className="text-2xl font-bold">{t("forms.property.title")}</h1>
+        <p className="text-muted-foreground">{t("forms.property.subtitle")}</p>
       </div>
-      {/* Ubicación */}
-      <Form.Set legend="Ubicación">
-        <Form.Input
-          name="address"
-          label={t("forms.property.fields.address.label")}
-          placeholder={t("forms.property.fields.address.placeholder")}
-        />
 
-        <Form.Input
-          name="neighborhood"
-          label={t("forms.property.fields.neighborhood.label")}
-          placeholder={t("forms.property.fields.neighborhood.placeholder")}
-        />
-
-        <Form.Input
-          name="city"
-          label={t("forms.property.fields.city.label")}
-          placeholder={t("forms.property.fields.city.placeholder")}
-        />
-
-        <Form.Input
-          name="state"
-          label={t("forms.property.fields.state.label")}
-          placeholder={t("forms.property.fields.state.placeholder")}
-        />
-
-        <Form.Input
-          name="country"
-          label={t("forms.property.fields.country.label")}
-          placeholder={t("forms.property.fields.country.placeholder")}
-        />
-
-        <Form.Input
-          name="latitude"
-          type="number"
-          label={t("forms.property.fields.latitude.label")}
-          placeholder={t("forms.property.fields.latitude.placeholder")}
-        />
-
-        <Form.Input
-          name="longitude"
-          type="number"
-          label={t("forms.property.fields.longitude.label")}
-          placeholder={t("forms.property.fields.longitude.placeholder")}
-        />
-
-        <Form.Input
-          name="google_maps_url"
-          label={t("forms.property.fields.google_maps_url.label")}
-          placeholder={t("forms.property.fields.google_maps_url.placeholder")}
-        />
-      </Form.Set>
-
-      {/* Características */}
-      <Form.Set legend="Características">
-        <Form.Input
-          name="bedrooms"
-          type="number"
-          label={t("forms.property.fields.bedrooms.label")}
-          placeholder={t("forms.property.fields.bedrooms.placeholder")}
-        />
-
-        <Form.Input
-          name="bathrooms"
-          type="number"
-          label={t("forms.property.fields.bathrooms.label")}
-          placeholder={t("forms.property.fields.bathrooms.placeholder")}
-        />
-
-        <Form.Input
-          name="area_m2"
-          type="number"
-          label={t("forms.property.fields.area_m2.label")}
-          placeholder={t("forms.property.fields.area_m2.placeholder")}
-        />
-      </Form.Set>
-
-      {/* Submit */}
-      <div className="flex justify-end pt-4">
-        <Button
-          type="submit"
-          disabled={pending || update.isPending || create.isPending }
+      <WizardTabs
+        ref={wizardRef}
+        onSubmit={() => onSubmit(getValues())}
+      >
+        <WizardTab
+          id="characteristics"
+          icon={LampDesk}
+          title={t("forms.property.characteristics")}
+          canNext={() => detailsComplete}
         >
-          {t("forms.property.submit")}
-          {(pending || update.isPending || create.isPending) && (
-            <Spinner data-icon="inline-start" />
+          <PropertyDetailsForm
+            isChange={() => setDetailsComplete(false)}
+            onComplete={() => setDetailsComplete(true)}
+          />
+        </WizardTab>
+
+        <WizardTab
+          id="location"
+          title={t("forms.property.location")}
+          icon={LocationEditIcon}
+          nextText={t("forms.property.submit")}
+
+        >
+          {mode === "map" ? (
+            <PlaceSelectorGoogle
+              onSelect={(vals: PropertyLocationFormData) => {
+                updateFormValues(vals)
+                setLocationComplete(true)
+              }}
+            />
+          ) : (
+            <PropertyLocationForm
+              isChange={() => (false)}
+              onComplete={() => (true)}
+            />
           )}
-        </Button>
-      </div>
+          <Field>
+            <Separator />
+            <FieldLabel>{t("forms.property.manual_switch")}</FieldLabel>
+            <FieldContent>
+              <Switch
+                checked={mode === "manual"}
+                onCheckedChange={(checked) =>
+                  setMode(checked ? "manual" : "map")
+                }
+              />
+            </FieldContent>
+          </Field>
+        </WizardTab>
+      </WizardTabs>
     </Form>
   )
 }

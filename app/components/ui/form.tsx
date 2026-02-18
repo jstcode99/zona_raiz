@@ -10,6 +10,7 @@ import {
   useFieldArray,
   UseFieldArrayReturn,
 } from "react-hook-form"
+import { Select as SelectPrimitive } from "radix-ui"
 
 /* =========================
    UI IMPORTS (shadcn)
@@ -234,7 +235,7 @@ function SelectField({
           value={field.value}
           onValueChange={field.onChange}
         >
-          <SelectTrigger>
+          <SelectTrigger className="w-full">
             <SelectValue placeholder={placeholder} />
           </SelectTrigger>
 
@@ -292,12 +293,13 @@ function CheckboxField({
 function Set({
   legend,
   children,
+  ...props
 }: {
   legend?: ReactNode
   children: ReactNode
-}) {
+} & React.ComponentProps<"fieldset">) {
   return (
-    <FieldSet>
+    <FieldSet {...props}>
       {legend && <FieldLegend>{legend}</FieldLegend>}
       <FieldGroup>{children}</FieldGroup>
     </FieldSet>

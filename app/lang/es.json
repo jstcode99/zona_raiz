@@ -88,6 +88,8 @@
     "property": {
       "title": "Crear propiedad",
       "subtitle": "Completa la información para publicar la propiedad",
+      "manual_switch": "Completar la información manualmente",
+      "characteristics_legend": "Información basica el inmueble",
       "fields": {
         "title": {
           "label": "Título",
@@ -240,7 +242,7 @@
       },
       "success": "Se ha enviado el codigo de verificacion."
     },
-     "realEstate": {
+    "realEstate": {
       "title": "Inmobiliaria",
       "subtitle": "Completa la información de la inmobiliaria",
       "success": "Guardado correctamente",
@@ -261,42 +263,6 @@
         "description": {
           "label": "Descripción",
           "placeholder": "Descripción general"
-        },
-        "phone": {
-          "label": "Teléfono",
-          "placeholder": "+1 000 000 000"
-        },
-        "whatsapp": {
-          "label": "WhatsApp",
-          "placeholder": "+1 000 000 000"
-        },
-        "address": {
-          "label": "Dirección",
-          "placeholder": "Dirección completa"
-        },
-        "city": {
-          "label": "Ciudad",
-          "placeholder": "Ciudad"
-        },
-        "state": {
-          "label": "Estado / Provincia",
-          "placeholder": "Estado"
-        },
-        "country": {
-          "label": "País",
-          "placeholder": "País"
-        },
-        "latitude": {
-          "label": "Latitud",
-          "placeholder": "0.000000"
-        },
-        "longitude": {
-          "label": "Longitud",
-          "placeholder": "0.000000"
-        },
-        "google_maps_url": {
-          "label": "URL Google Maps",
-          "placeholder": "https://maps.google.com/..."
         }
       }
     },
@@ -328,6 +294,10 @@
           "label": "Inmobiliaria"
         }
       }
+    },
+    "profile": {
+      "title": "Perfil",
+      "subtitle": "Administra tus datos personales."
     }
   },
   "words": {

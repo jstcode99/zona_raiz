@@ -94,7 +94,7 @@ export class SupabasePropertyRepository implements PropertyRepository {
       .from("properties")
       .insert({
         ...data,
-        agent_id: auth.user?.id
+        real_estate_id: auth.user?.id
       })
       .select(`
         id,
@@ -112,6 +112,7 @@ export class SupabasePropertyRepository implements PropertyRepository {
       .single()
 
     if (error) {
+      console.log(error);
       throw new Error('Failed to create property')
     }
 

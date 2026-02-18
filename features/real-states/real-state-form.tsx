@@ -119,81 +119,18 @@ export function RealEstateForm({
           label={t("forms.realEstate.fields.name.label")}
           placeholder={t("forms.realEstate.fields.name.placeholder")}
         />
-
-        <Form.Input
-          name="slug"
-          label={t("forms.realEstate.fields.slug.label")}
-          placeholder={t("forms.realEstate.fields.slug.placeholder")}
-          onFocus={handleSlugFocus}
-        />
-
-        <Form.Input
-          name="logo_url"
-          label={t("forms.realEstate.fields.logo_url.label")}
-          placeholder={t("forms.realEstate.fields.logo_url.placeholder")}
-        />
-
-        <Form.Textarea
-          name="description"
-          label={t("forms.realEstate.fields.description.label")}
-          placeholder={t("forms.realEstate.fields.description.placeholder")}
-        />
       </Form.Set>
 
-      {/* Contacto */}
-      <Form.Set legend="Contacto">
-        <Form.Input
-          name="phone"
-          label={t("forms.realEstate.fields.phone.label")}
-          placeholder={t("forms.realEstate.fields.phone.placeholder")}
-        />
-
-        <Form.Input
-          name="whatsapp"
-          label={t("forms.realEstate.fields.whatsapp.label")}
-          placeholder={t("forms.realEstate.fields.whatsapp.placeholder")}
-        />
-      </Form.Set>
-
-      {/* Ubicación */}
-      <Form.Set legend="Ubicación">
-        <Form.Input
-          name="address"
-          label={t("forms.realEstate.fields.address.label")}
-          placeholder={t("forms.realEstate.fields.address.placeholder")}
-        />
-
-        <Form.Input
-          name="city"
-          label={t("forms.realEstate.fields.city.label")}
-          placeholder={t("forms.realEstate.fields.city.placeholder")}
-        />
-
-        <Form.Input
-          name="state"
-          label={t("forms.realEstate.fields.state.label")}
-          placeholder={t("forms.realEstate.fields.state.placeholder")}
-        />
-
-        <Form.Input
-          name="country"
-          label={t("forms.realEstate.fields.country.label")}
-          placeholder={t("forms.realEstate.fields.country.placeholder")}
-        />
-      </Form.Set>
-
-      {/* Submit */}
-      <div className="flex justify-end pt-4">
-        <Button
-          type="submit"
-          disabled={pending || update.isPending || create.isPending}
-        >
-          {t("forms.realEstate.submit")}
-          {(pending || update.isPending || create.isPending) && (
-            <Spinner data-icon="inline-start" />
-          )}
-        </Button>
-      </div>
+      <Button
+        type="submit"
+        className="w-full"
+        disabled={pending || update.isPending || create.isPending}
+      >
+        {t("forms.realEstate.submit")}
+        {(pending || update.isPending || create.isPending) && (
+          <Spinner data-icon="inline-start" />
+        )}
+      </Button>
     </Form>
   )
 }

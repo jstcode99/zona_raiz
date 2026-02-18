@@ -21,7 +21,7 @@ export class SupabaseProfileRepository {
       throw new Error("Invalid credentials")
     }
 
-    const { data: profile, error } = await supabase
+    const { data: profile , error } = await supabase
       .from("profiles")
       .select("id, full_name, phone, avatar_url, role")
       .eq("id", user.id)
@@ -31,10 +31,15 @@ export class SupabaseProfileRepository {
       throw new Error("Failed to retrieve profile")
     }
 
+    if (!profile) {
+      throw new Error("Failed to retrieve profile")
+    }
+
+
     return {
       user: {
         id: user.id,
-        email: user.email,
+        email: user.email as string,
       },
       profile: profile
         ? {

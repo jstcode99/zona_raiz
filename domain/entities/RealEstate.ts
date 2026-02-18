@@ -1,3 +1,5 @@
+import { UserRole } from "./Profile";
+
 export interface RealEstate {
   id: string;
   name: string;
@@ -14,3 +16,8 @@ export interface RealEstate {
 }
 
 export type RealEstateFormData = Omit<RealEstate, 'id' | 'created_at'>;
+
+export interface RealEstateWithRole {
+  real_state:RealEstate,
+  role: UserRole
+}
