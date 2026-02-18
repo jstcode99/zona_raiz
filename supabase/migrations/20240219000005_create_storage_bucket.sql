@@ -8,5 +8,3 @@ values (
   array['image/jpeg', 'image/png', 'image/webp', 'image/gif']
 )
 on conflict (id) do nothing;
-
-comment on table storage.buckets is 'Buckets de almacenamiento de archivos';
