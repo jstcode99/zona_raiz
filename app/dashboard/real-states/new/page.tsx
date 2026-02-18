@@ -1,4 +1,4 @@
-import { defaultRealEstateValues } from "@/domain/entities/schemas/realEstate";
+import { defaultRealEstateValues } from "@/domain/entities/schemas/realEstateSchema";
 import { RealEstateForm } from "@/features/real-states/real-state-form";
 
 export default function page() {

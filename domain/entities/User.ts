@@ -5,7 +5,6 @@ export type User = {
   email: string
 }
 
-
 export type UserWithProfile = {
   user: User
   profile: Profile

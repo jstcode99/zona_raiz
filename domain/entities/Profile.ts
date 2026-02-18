@@ -1,21 +1,17 @@
-export type ProfileBasic = {
-  full_name: string
-  phone?: string | null
+export type UserRole = 'admin' | 'agent' | 'client' | 'coordinator';
+
+export interface Profile {
+  id: string;
+  full_name: string | null;
+  avatar_url: string | null;
+  phone: string | null;
+  role: UserRole;
+  created_at: string;
 }
 
-export type Profile = ProfileBasic & {
-  role: UserRole
-  avatar_url?: string | null
-  real_estate_id?: string | null
-  real_estate?: {
-    id: string
-    name: string
-    slug: string
-  } | null
-}
-
-export enum UserRole {
-  Admin = "PLATFORM_ADMIN",
-  Agent = "AGENT",
-  Client = "CLIENT",
+export enum EUserRole {
+  Admin = "admin",
+  Agent = "agent",
+  Client = "client",
+  Coordinator = "coordinator",
 };

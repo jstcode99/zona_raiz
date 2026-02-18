@@ -5,10 +5,10 @@ import {
 } from "@/components/ui/sidebar"
 import { CSSProperties, ReactNode, Suspense } from "react"
 import { AppSidebar } from "@/features/navigation/app-sidebar"
-import { UserRole } from "@/domain/entities/Profile"
 import { PageLoader } from "@/features/loader/page-loader"
 import { SupabaseProfileRepository } from "@/infrastructure/db/SupabaseProfileRepository"
 import { encodedRedirect } from "@/shared/redirect"
+import { EUserRole } from "@/domain/entities/Profile"
 
 export default async function DashboardLayout({
   children,
@@ -25,7 +25,7 @@ export default async function DashboardLayout({
 
   const getMenuByRole = (role: string) => {
     switch (role) {
-      case UserRole.Admin:
+      case EUserRole.Admin:
         return [
           {
             title: "Dashboard",

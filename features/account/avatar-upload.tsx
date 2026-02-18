@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input"
 import { Spinner } from "@/components/ui/spinner"
 import { SmartAvatar } from "@/components/ui/smart-avatar"
 import { useServerMutation } from "@/shared/hooks/useServerMutation"
-import { updateAvatarAction } from "@/application/actions/updateAvatarAction"
+import { updateAvatarAction } from "@/application/actions/profileAction"
 
 type Props = {
   avatarUrl?: string | null

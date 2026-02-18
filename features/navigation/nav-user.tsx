@@ -1,10 +1,8 @@
 "use client"
 
 import {
-  IconCreditCard,
   IconDotsVertical,
   IconLogout,
-  IconNotification,
   IconUserCircle,
 } from "@tabler/icons-react"
 
@@ -32,7 +30,7 @@ import { UserWithProfile } from "@/domain/entities/User"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useTransition } from "react"
-import { signOutAction } from "@/application/actions/signOutAction"
+import { signOutAction } from "@/application/actions/authActions"
 
 export function NavUser({
   user,

@@ -1,7 +1,7 @@
 import i18next from 'i18next'
 import * as yup from 'yup'
 
-export const last_nameSchema = yup
+export const lastNameSchema = yup
     .string()
     .min(3, i18next.t('validations.min.string', {
         attribute: 'name',

@@ -1,6 +1,6 @@
 "use client"
 
-import { useActionState, useEffect, useRef, useState } from "react"
+import { useActionState, useEffect, useRef, useState, useCallback } from "react"
 import { UseFormSetError } from "react-hook-form"
 
 export type FieldError = {
@@ -9,7 +9,7 @@ export type FieldError = {
 }
 
 export type ActionResult =
-  | { success: true }
+  | { success: true; redirectUrl?: string }
   | { success: false; error?: FieldError }
 
 type Status = "idle" | "pending" | "success" | "error"
@@ -23,7 +23,9 @@ type Options<TState extends ActionResult> = {
   action: ServerAction<TState>
   initialState: TState
   setError?: UseFormSetError<any>
-  onSuccess?: () => void
+  onSuccess?: (state: TState) => void
+  onError?: (error: FieldError) => void
+  redirectOnSuccess?: string
 }
 
 export function useServerMutation<TState extends ActionResult>({
@@ -31,8 +33,10 @@ export function useServerMutation<TState extends ActionResult>({
   initialState,
   setError,
   onSuccess,
+  onError,
+  redirectOnSuccess,
 }: Options<TState>) {
-  const [state, formAction] = useActionState<TState, FormData>(
+  const [state, formAction, isPending] = useActionState<TState, FormData>(
     action,
     initialState
   )
@@ -40,17 +44,25 @@ export function useServerMutation<TState extends ActionResult>({
   const [status, setStatus] = useState<Status>("idle")
   const hasSubmitted = useRef(false)
 
+  // Reset status cuando cambia el estado (nueva acción)
+  useEffect(() => {
+    if (isPending) {
+      setStatus("pending")
+    }
+  }, [isPending])
+
   useEffect(() => {
     if (!hasSubmitted.current) return
 
     if (state.success) {
       setStatus("success")
-      onSuccess?.()
+      onSuccess?.(state)
       return
     }
 
     if (!state.success && state.error) {
       setStatus("error")
+      onError?.(state.error)
 
       if (setError) {
         const { field, message } = state.error
@@ -60,20 +72,29 @@ export function useServerMutation<TState extends ActionResult>({
         })
       }
     }
-  }, [state, setError, onSuccess])
+  }, [state, setError, onSuccess, onError])
 
-  const actionWithStatus = async (formData: FormData) => {
+  // Wrapper que maneja el estado de envío
+  const executeAction = useCallback((formData: FormData) => {
     hasSubmitted.current = true
     setStatus("pending")
     return formAction(formData)
-  }
+  }, [formAction])
+
+  // Reset manual del estado
+  const reset = useCallback(() => {
+    setStatus("idle")
+    hasSubmitted.current = false
+  }, [])
 
   return {
-    action: actionWithStatus,
+    action: executeAction,
+    state,
     status,
     isIdle: status === "idle",
-    isPending: status === "pending",
+    isPending: status === "pending" || isPending, // Combina ambos estados
     isSuccess: status === "success",
     isError: status === "error",
+    reset,
   }
 }

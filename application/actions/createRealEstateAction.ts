@@ -1,7 +1,7 @@
 "use server";
 
 import { ActionResult } from "@/shared/hooks/useServerMutation";
-import { realEstateSchema } from "@/domain/entities/schemas/realEstate";
+import { createRealEstateSchema } from "@/domain/entities/schemas/realEstateSchema";
 import { SupabaseRealEstateRepository } from "@/infrastructure/db/SupabaseRealEstateRepository";
 import { revalidatePath } from "next/cache";
 
@@ -12,7 +12,7 @@ export async function createRealEstateAction(
   try {
     const values = Object.fromEntries(formData.entries());
 
-    const data = await realEstateSchema.validate(values, {
+    const data = await createRealEstateSchema.validate(values, {
       abortEarly: false,
     });
 

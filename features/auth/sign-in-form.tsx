@@ -1,4 +1,5 @@
 "use client"
+
 import { Button } from "@/components/ui/button"
 import {
   Field,
@@ -9,25 +10,23 @@ import {
 import { Form } from "@/components/ui/form"
 import { useForm } from "react-hook-form"
 import { yupResolver } from '@hookform/resolvers/yup'
-import { ComponentProps } from "react"
-import i18next from "i18next"
+import { ComponentProps, useEffect } from "react"
+import { useTranslation } from "react-i18next"
 import GoogleAuth from "./google-auth"
 import { Spinner } from "@/components/ui/spinner"
 import { SignInFormValues, signInSchema } from "@/domain/entities/schemas/signIn"
 import { useServerMutation } from "@/shared/hooks/useServerMutation"
-import { signInAction } from "@/application/actions/signInAction"
 import { useRouter } from "next/navigation"
-import { useFormStatus } from "react-dom"
-import { startTransition } from "react"
+import Link from "next/link"
 import { cn } from "@/lib/utils"
+import { signInAction } from "@/application/actions/authActions"
 
-export function SingInForm({
+export function SignInForm({
   className,
   ...props
 }: ComponentProps<"form">) {
+  const { t } = useTranslation()
   const router = useRouter()
-
-  const { pending } = useFormStatus()
 
   const form = useForm<SignInFormValues>({
     resolver: yupResolver(signInSchema),
@@ -35,29 +34,47 @@ export function SingInForm({
       email: "",
       password: "",
     },
-    shouldUnregister: false,
+    mode: "onBlur", // Validación al perder foco
   })
 
-  const { setError } = form
+  const { setError, handleSubmit, formState: { isSubmitting } } = form
 
   const mutation = useServerMutation({
     action: signInAction,
     initialState: { success: false },
     setError,
-    onSuccess: () => router.push("/dashboard"),
+    onSuccess: () => {
+      router.push("/post-login")
+      router.refresh() // Refrescar para actualizar estado de auth
+    },
+    onError: (error) => {
+      console.error("Sign in error:", error)
+    }
   })
 
-  const onSubmit = (values: SignInFormValues) => {
+  // Resetear error cuando el usuario empieza a escribir
+  useEffect(() => {
+    const subscription = form.watch(() => {
+      if (mutation.isError) {
+        mutation.reset()
+      }
+    })
+    return () => subscription.unsubscribe()
+  }, [form, mutation])
+
+  const onSubmit = handleSubmit((values) => {
     const formData = new FormData()
-
+    
     Object.entries(values).forEach(([key, value]) => {
-      formData.append(key, String(value ?? ""))
+      if (value !== undefined && value !== null) {
+        formData.append(key, String(value))
+      }
     })
 
-    startTransition(() => {
-      mutation.action(formData)
-    })
-  }
+    mutation.action(formData)
+  })
+
+  const isLoading = isSubmitting || mutation.isPending
 
   return (
     <Form
@@ -68,34 +85,55 @@ export function SingInForm({
     >
       <FieldGroup className="gap-3">
         <div className="flex flex-col items-center gap-2 text-center">
-          <h1 className="text-2xl font-bold">{i18next.t('forms.sign-in.title')}</h1>
+          <h1 className="text-2xl font-bold">{t('forms.sign-in.title')}</h1>
           <p className="text-muted-foreground text-balance">
-            {i18next.t('forms.sign-in.subtitle')}
+            {t('forms.sign-in.subtitle')}
           </p>
         </div>
-        <Form.Input name="email" label={i18next.t('forms.sign-in.fields.email.label')} />
-        <Form.Input name="password" type="password" label={i18next.t('forms.sign-in.fields.password.label')} />
+
+        <Form.Input 
+          name="email" 
+          type="email"
+          label={t('forms.sign-in.fields.email.label')}
+          autoComplete="email"
+          disabled={isLoading}
+        />
+        
+        <Form.Input 
+          name="password" 
+          type="password" 
+          label={t('forms.sign-in.fields.password.label')}
+          autoComplete="current-password"
+          disabled={isLoading}
+        />
+
         <Field>
           <Button
-            type='submit'
-            className='w-full'
-            disabled={pending || mutation.isPending}
+            type="submit"
+            className="w-full"
+            disabled={isLoading}
           >
-            {i18next.t('forms.sign-in.submit')}
-            {pending || mutation.isPending && <Spinner data-icon="inline-start" />}
+            {isLoading && <Spinner data-icon="inline-start" className="mr-2 h-4 w-4" />}
+            {t('forms.sign-in.submit')}
           </Button>
         </Field>
+
         <FieldSeparator className="py-4">
-          {i18next.t('forms.sign-in.alternatives.title')}
+          {t('forms.sign-in.alternatives.title')}
         </FieldSeparator>
+
         <Field className="py-4">
-          <GoogleAuth />
+          <GoogleAuth disabled={isLoading} />
         </Field>
+
         <FieldDescription className="text-center">
-          <span>{i18next.t('forms.sign-in.fields.sign-up.placeholder')}</span>
-          <a href="/auth/sign-up" className='ml-1 text-sm'>
-            {i18next.t('forms.sign-in.fields.sign-up.label')}
-          </a>
+          <span>{t('forms.sign-in.fields.sign-up.placeholder')}</span>
+          <Link 
+            href="/auth/sign-up" 
+            className="ml-1 text-sm font-medium text-primary hover:underline"
+          >
+            {t('forms.sign-in.fields.sign-up.label')}
+          </Link>
         </FieldDescription>
       </FieldGroup>
     </Form>

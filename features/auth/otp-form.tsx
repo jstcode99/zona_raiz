@@ -1,3 +1,4 @@
+// components/auth/OTPForm.tsx
 "use client"
 
 import { Button } from "@/components/ui/button"
@@ -8,97 +9,109 @@ import {
   FieldLabel,
 } from "@/components/ui/field"
 import { cn } from "@/lib/utils"
-import { Controller, useForm } from "react-hook-form"
+import { useForm } from "react-hook-form"
 import { yupResolver } from '@hookform/resolvers/yup'
 import { ComponentProps, useEffect } from "react"
-import i18next from "i18next"
+import { useTranslation } from "react-i18next"
 import { Input } from "@/components/ui/input"
-import { otpSchema } from "@/domain/entities/schemas/OTP"
+import { otpSchema, OTPFormValues } from "@/domain/entities/schemas/OTP"
 import { toast } from "sonner"
 import { Spinner } from "@/components/ui/spinner"
 import Link from "next/link"
 import { useServerMutation } from "@/shared/hooks/useServerMutation"
 import { otpAction } from "@/application/actions/otpAction"
-import { useFormStatus } from "react-dom"
 
 export function OTPForm({
   className,
   ...props
 }: ComponentProps<"form">) {
-  const { pending } = useFormStatus()
+  const { t } = useTranslation()
 
   const {
-    setError,
-    control,
-    reset
-  } = useForm({
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+    reset,
+  } = useForm<OTPFormValues>({
     resolver: yupResolver(otpSchema),
-    mode: 'onBlur',
+    mode: "onBlur",
     defaultValues: {
-      email: '',
+      email: "",
     },
-    shouldUnregister: false,
   })
 
   const mutation = useServerMutation({
     action: otpAction,
     initialState: { success: false },
-    setError,
-    onSuccess: () => toast.success(i18next.t('forms.otp.success')),
+    onSuccess: () => {
+      toast.success(t('forms.otp.success'))
+      reset() 
+    },
+    onError: (error) => {
+      console.error("OTP error:", error)
+    },
   })
 
-
   useEffect(() => {
-    if (!mutation.isPending) {
+    if (mutation.isSuccess) {
       reset()
     }
-  }, [mutation.isPending])
+  }, [mutation.isSuccess, reset])
+
+  const onSubmit = handleSubmit((values) => {
+    const formData = new FormData()
+    formData.append("email", values.email)
+
+    mutation.action(formData)
+  })
+
+  const isLoading = isSubmitting || mutation.isPending
 
   return (
     <form
       className={cn("p-6 md:p-8", className)}
       {...props}
-      action={mutation.action}
+      onSubmit={onSubmit}
     >
       <FieldGroup className="gap-4">
         <div className="flex flex-col items-center gap-2 text-center">
-          <h1 className="text-2xl font-bold">{i18next.t('forms.otp.title')}</h1>
+          <h1 className="text-2xl font-bold">{t('forms.otp.title')}</h1>
+          <p className="text-muted-foreground text-sm">
+            {t('forms.otp.subtitle')}
+          </p>
         </div>
-        <Controller
-          name="email"
-          control={control}
-          render={({ field, fieldState }) => (
-            <Field data-invalid={fieldState.invalid}>
-              <FieldLabel htmlFor="form-email">
-                {i18next.t('forms.sign-in.fields.email.label')}
-              </FieldLabel>
-              <Input
-                id="form-email"
-                aria-invalid={fieldState.invalid}
-                placeholder="m@example.com"
-                autoComplete="on"
-                {...field}
-              />
-              {fieldState.invalid && (
-                <FieldError errors={[fieldState.error]} />
-              )}
-            </Field>
+
+        <Field data-invalid={!!errors.email}>
+          <FieldLabel htmlFor="form-email">
+            {t('forms.sign-in.fields.email.label')}
+          </FieldLabel>
+          <Input
+            id="form-email"
+            type="email"
+            autoComplete="email"
+            disabled={isLoading}
+            {...register("email")}
+          />
+          {errors.email && (
+            <FieldError errors={[errors.email]} />
           )}
-        />
+        </Field>
+
         <Link
-          href="sign-in"
+          href="/auth/sign-in"
           className="ml-auto text-right text-sm underline-offset-2 hover:underline"
         >
-          {i18next.t('forms.otp.alternatives.bacic')}
+          {t('forms.otp.alternatives.basic')}
         </Link>
+
         <Field>
           <Button
-            type='submit'
-            className='w-full'
-            disabled={pending || mutation.isPending}
+            type="submit"
+            className="w-full"
+            disabled={isLoading}
           >
-            {i18next.t('forms.otp.submit')}
-            {pending || mutation.isPending && <Spinner data-icon="inline-start" />}
+            {isLoading && <Spinner data-icon="inline-start" className="mr-2 h-4 w-4" />}
+            {t('forms.otp.submit')}
           </Button>
         </Field>
       </FieldGroup>

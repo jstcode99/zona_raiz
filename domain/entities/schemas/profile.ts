@@ -1,6 +1,5 @@
-import { last_nameSchema } from '@/domain/entities/fields/last_name'
-import { nameSchema } from '@/domain/entities/fields/name'
-import { phoneSchema } from '@/domain/entities/fields/phone'
+import { nameSchema } from '@/domain/entities/fields/nameSchema'
+import { phoneSchema } from '@/domain/entities/fields/phoneSchema'
 import * as yup from 'yup'
 import YupPassword from 'yup-password'
 YupPassword(yup)
@@ -17,7 +16,8 @@ export const profileSchema = yup.object({
   full_name: nameSchema,
   phone: phoneSchema,
 })
-export type profileFormValues = yup.InferType<typeof profileSchema>
+
+export type ProfileFormValues = yup.InferType<typeof profileSchema>
 
 export const defaultUserProfileValues = {
   full_name: "",

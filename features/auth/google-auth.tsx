@@ -1,36 +1,57 @@
-'use client'
+"use client"
 
-import { Icon } from '@iconify/react'
-import { useGoogleLogin } from '@react-oauth/google'
-import i18next from '@/lib/i18n'
-import { JSX } from 'react'
-import { useRouter } from 'next/navigation'
-import { Button } from '@/components/ui/button'
-import { createSupabaseBrowserClient } from '@/lib/supabase.client'
+import { Button } from "@/components/ui/button"
+import { Spinner } from "@/components/ui/spinner"
+import { createSupabaseBrowserClient } from "@/lib/supabase.client"
+import { IconBrandGoogle } from "@tabler/icons-react"
+import { useState } from "react"
+import { useTranslation } from "react-i18next"
 
-const supabase = await createSupabaseBrowserClient()
+interface GoogleAuthProps {
+  disabled?: boolean
+}
 
-export default function GoogleAuth(): JSX.Element {
-  const router = useRouter()
+export default function GoogleAuth({ disabled }: GoogleAuthProps) {
+  const { t } = useTranslation()
+  const [isLoading, setIsLoading] = useState(false)
 
-  const signInGoogle = async () => {
-    await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: {
-        redirectTo: `${location.origin}/auth/callback`,
-      },
-    })
+  const handleGoogleSignIn = async () => {
+    try {
+      setIsLoading(true)
+      const supabase = await createSupabaseBrowserClient()
+      
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: {
+          redirectTo: `${window.location.origin}/auth/callback`,
+          queryParams: {
+            access_type: "offline",
+            prompt: "consent",
+          },
+        },
+      })
+
+      if (error) throw error
+    } catch (error) {
+      console.error("Google sign in error:", error)
+      // El error se maneja via URL params en el callback
+    }
   }
 
   return (
     <Button
-      onClick={() => signInGoogle()}
+      type="button"
       variant="outline"
-      type='button'
-      className="w-full flex gap-2"
+      className="w-full"
+      onClick={handleGoogleSignIn}
+      disabled={disabled || isLoading}
     >
-      <Icon icon="flat-color-icons:google" className="text-[16px]" />
-      {i18next.t('forms.sign-in.alternatives.google')}
+      {isLoading ? (
+        <Spinner className="mr-2 h-4 w-4" />
+      ) : (
+        <IconBrandGoogle className="mr-2 h-4 w-4" />
+      )}
+      {t('forms.sign-up.google')}
     </Button>
   )
 }

@@ -1,4 +1,6 @@
+// components/account/AccountForm.tsx
 "use client"
+
 import { Button } from "@/components/ui/button"
 import {
   Field,
@@ -6,60 +8,74 @@ import {
 } from "@/components/ui/field"
 import { useForm } from "react-hook-form"
 import { yupResolver } from '@hookform/resolvers/yup'
-import { ComponentProps, startTransition, useEffect } from "react"
-import i18next from "i18next"
+import { ComponentProps, useEffect } from "react"
+import { useTranslation } from "react-i18next"
 import { Spinner } from "@/components/ui/spinner"
 import { toast } from "sonner"
-import { useFormStatus } from "react-dom"
-import { defaultUserProfileValues, profileFormValues, profileSchema,  } from "@/domain/entities/schemas/profile"
+import { profileSchema, ProfileFormValues } from "@/domain/entities/schemas/profile"
 import { useServerMutation } from "@/shared/hooks/useServerMutation"
-import { updateProfileAction } from "../../application/actions/updateProfileAction"
-import { PropertyFormData } from "@/domain/entities/schemas/property"
 import { Form } from "@/components/ui/form"
 import { cn } from "@/lib/utils"
+import { updateProfileAction } from "@/application/actions/profileAction"
+
+interface AccountFormProps extends ComponentProps<"form"> {
+  defaultValues: ProfileFormValues
+}
 
 export function AccountForm({
   className,
   defaultValues,
   ...props
-}: ComponentProps<"form"> & {
-  defaultValues: profileFormValues
-}) {
+}: AccountFormProps) {
+  const { t } = useTranslation()
 
-  const { pending } = useFormStatus()
-
-  const form = useForm({
+  const form = useForm<ProfileFormValues>({
     resolver: yupResolver(profileSchema),
-    defaultValues: defaultUserProfileValues,
-    shouldUnregister: false,
+    defaultValues: {
+      full_name: "",
+      phone: "",
+    },
+    mode: "onBlur",
   })
 
-  const { setError, reset } = form
+  const { 
+    handleSubmit, 
+    reset, 
+    formState: { isSubmitting, isDirty } 
+  } = form
 
   const mutation = useServerMutation({
     action: updateProfileAction,
     initialState: { success: false },
-    setError,
-    onSuccess: () => toast.success('Perfil actualizado correctamente'),
+    setError: form.setError,
+    onSuccess: () => {
+      toast.success(t('forms.profile.success') || 'Profile updated successfully')
+      reset(form.getValues()) // Reset dirty state
+    },
+    onError: (error) => {
+      console.error("Profile update error:", error)
+    },
   })
 
   useEffect(() => {
     if (defaultValues) {
       reset(defaultValues)
     }
-  }, [defaultValues])
+  }, [defaultValues, reset])
 
-  const onSubmit = (values: PropertyFormData) => {
+  const onSubmit = handleSubmit((values) => {
     const formData = new FormData()
-
+    
     Object.entries(values).forEach(([key, value]) => {
-      formData.append(key, String(value ?? ""))
+      if (value !== undefined && value !== null) {
+        formData.append(key, String(value))
+      }
     })
 
-    startTransition(() => {
-      mutation.action(formData)
-    })
-  }
+    mutation.action(formData)
+  })
+
+  const isLoading = isSubmitting || mutation.isPending
 
   return (
     <Form
@@ -68,18 +84,37 @@ export function AccountForm({
       className={cn("py-6 px-6 max-w-xl mx-auto space-y-8", className)}
       onSubmit={onSubmit}
     >
-      <FieldGroup>
-        <Form.Input name="full_name" label={i18next.t('forms.sign-up.fields.full_name.label')} />
-        <Form.Input name="phone" label={i18next.t('forms.sign-up.fields.phone.label')} />
-        <Field>
+      <FieldGroup className="space-y-4">
+        <Form.Input 
+          name="full_name" 
+          label={t('forms.profile.fields.full_name.label') || 'Full Name'}
+          autoComplete="name"
+          disabled={isLoading}
+        />
+        
+        <Form.Input 
+          name="phone" 
+          type="tel"
+          label={t('forms.profile.fields.phone.label') || 'Phone'}
+          autoComplete="tel"
+          disabled={isLoading}
+        />
+
+        <Field className="pt-4">
           <Button
-            type='submit'
-            className='w-full'
-            disabled={pending || mutation.isPending}
+            type="submit"
+            className="w-full"
+            disabled={isLoading || !isDirty}
           >
-            {i18next.t('words.save')}
-            {pending || mutation.isPending && <Spinner data-icon="inline-start" />}
+            {isLoading && <Spinner data-icon="inline-start" className="mr-2 h-4 w-4" />}
+            {t('words.save') || 'Save'}
           </Button>
+          
+          {!isDirty && !isLoading && (
+            <p className="text-sm text-muted-foreground text-center mt-2">
+              {t('forms.profile.noChanges') || 'No changes to save'}
+            </p>
+          )}
         </Field>
       </FieldGroup>
     </Form>

@@ -2,8 +2,20 @@ import { UserRole } from "@/domain/entities/Profile";
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
+// Rutas por rol (ejemplo)
+const PROTECTED_ROUTES: Record<UserRole, string[]> = {
+  admin: ['/admin', '/dashboard'],
+  agent: ['/agent', '/dashboard'],
+  client: ['/client', '/dashboard'],
+  coordinator: ['/coordinator', '/dashboard'],
+}
+
+const PUBLIC_ROUTES = ['/auth/sign-in', '/auth/sign-up', '/auth/opt', '/auth/callback', '/']
+
+const ROLE_COOKIE_NAME = 'user_role'
+
 export async function updateSession(request: NextRequest) {
-  let supabaseResponse = NextResponse.next({
+  let response = NextResponse.next({
     request,
   });
 
@@ -19,11 +31,11 @@ export async function updateSession(request: NextRequest) {
           cookiesToSet.forEach(({ name, value }) =>
             request.cookies.set(name, value)
           );
-          supabaseResponse = NextResponse.next({
+          response = NextResponse.next({
             request,
           });
           cookiesToSet.forEach(({ name, value, options }) =>
-            supabaseResponse.cookies.set(name, value, options)
+            response.cookies.set(name, value, options)
           );
         },
       },
@@ -31,39 +43,39 @@ export async function updateSession(request: NextRequest) {
   );
 
 
-  const user = await supabase.auth.getUser();
 
-  const role = request.cookies.get("role")?.value;
-  
-  if (request.nextUrl.pathname.startsWith("/dashboard") && role === UserRole.Client) {
-    return NextResponse.redirect(new URL("/", request.url));
-  }
-  const hasRealEstate = request.cookies.get("real_estate_id")
+  const { data: { user } } = await supabase.auth.getUser()
+  const path = request.nextUrl.pathname
 
-  if (!hasRealEstate && request.nextUrl.pathname.startsWith("/dashboard")) {
-    return NextResponse.redirect(new URL("/post-login", request.url))
+  // Permitir rutas públicas
+  if (PUBLIC_ROUTES.some(route => path.startsWith(route))) {
+    return response
   }
 
-  if (request.nextUrl.pathname.startsWith("/dashboard") && user.error) {
-    return NextResponse.redirect(new URL("/auth/sign-in", request.url));
+  // Si no hay usuario, redirigir a login
+  if (!user) {
+    return NextResponse.redirect(new URL('/auth/sign-in', request.url))
   }
 
-  if (request.nextUrl.pathname === "/" && !user.error) {
-    return NextResponse.redirect(new URL("/dashboard", request.url));
+  // Usar la cookie de rol para evitar query a la base de datos en cada request
+  const userRole = request.cookies.get(ROLE_COOKIE_NAME)?.value as UserRole
+
+  if (!userRole) {
+    // Si no hay cookie de rol, redirigir a login para refrescar
+    return NextResponse.redirect(new URL('/auth/sign-in', request.url))
   }
 
-  // IMPORTANT: You *must* return the supabaseResponse object as it is. If you're
-  // creating a new response object with NextResponse.next() make sure to:
-  // 1. Pass the request in it, like so:
-  //    const myNewResponse = NextResponse.next({ request })
-  // 2. Copy over the cookies, like so:
-  //    myNewResponse.cookies.setAll(supabaseResponse.cookies.getAll())
-  // 3. Change the myNewResponse object to fit your needs, but avoid changing
-  //    the cookies!
-  // 4. Finally:
-  //    return myNewResponse
-  // If this is not done, you may be causing the browser and server to go out
-  // of sync and terminate the user's session prematurely!
+  // Verificar acceso a ruta específica
+  const hasAccess = Object.entries(PROTECTED_ROUTES).some(([role, routes]) => {
+    // Admin tiene acceso a todo
+    if (userRole === 'admin') return true
+    if (userRole !== role) return false
+    return routes.some(route => path.startsWith(route))
+  })
 
-  return supabaseResponse;
+  if (!hasAccess) {
+    return NextResponse.redirect(new URL('/unauthorized', request.url))
+  }
+
+  return response
 }

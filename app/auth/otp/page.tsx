@@ -1,5 +1,3 @@
-'use client'
-
 import { OTPForm } from '@/features/auth/otp-form'
 
 export default function OTPPage() {
