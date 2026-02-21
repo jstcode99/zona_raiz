@@ -14,7 +14,7 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import { ComponentProps, useEffect } from "react"
 import { useTranslation } from "react-i18next"
 import { Input } from "@/components/ui/input"
-import { otpSchema, OTPFormValues } from "@/domain/entities/schemas/OTP"
+import { otpSchema, OTPFormValues } from "@/domain/entities/schemas/OTPSchema"
 import { toast } from "sonner"
 import { Spinner } from "@/components/ui/spinner"
 import Link from "next/link"

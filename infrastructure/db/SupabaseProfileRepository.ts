@@ -1,31 +1,63 @@
-// infrastructure/db/SupabaseProfileRepository.ts
 import { cookies } from "next/headers"
+import { unstable_cache, revalidateTag } from "next/cache"
 import { createSupabaseServerClient } from "./supabase.server"
 import { createSupabaseRouteClient } from "./supabase.route"
+import { ProfileRepository, UpdateProfileInput } from "@/domain/repositories/ProfileRepository"
 import { UserWithProfile } from "@/domain/entities/User"
 import { UserRole } from "@/domain/entities/Profile"
-import { ProfileRepository, UpdateProfileInput } from "@/domain/repositories/ProfileRepository"
-
-const COOKIE_OPTIONS = {
-  httpOnly: true,
-  secure: process.env.NODE_ENV === "production",
-  sameSite: "strict" as const,
-  maxAge: 60 * 60 * 24 * 7, // 7 días
-  path: "/",
-}
-
-const ROLE_COOKIE_NAME = "user_role"
+import {
+  COOKIE_OPTIONS,
+  COOKIE_NAMES,
+  CACHE_TAGS,
+  STORAGE_BUCKETS,
+} from "@/infrastructure/config/constants"
+import { profileAvatarSchema } from "@/domain/entities/schemas/profileSchema"
 
 export class SupabaseProfileRepository implements ProfileRepository {
-  
-  async getCurrentProfile(): Promise<UserWithProfile> {
+  // ==========================================
+  // HELPERS PRIVADOS
+  // ==========================================
+
+  private async ensureAuth() {
     const supabase = await createSupabaseServerClient()
+    const { data: { user }, error } = await supabase.auth.getUser()
 
-    const { data: { user }, error: authError } = await supabase.auth.getUser()
-
-    if (authError || !user) {
+    if (error || !user) {
       throw new Error("Authentication required")
     }
+
+    return { supabase, user }
+  }
+
+  private async setRoleCookie(role: UserRole): Promise<void> {
+    const cookieStore = await cookies()
+    cookieStore.set(COOKIE_NAMES.ROLE, role, COOKIE_OPTIONS)
+  }
+
+  private async getCurrentRole(): Promise<UserRole | null> {
+    const cookieStore = await cookies()
+    const role = cookieStore.get(COOKIE_NAMES.ROLE)?.value
+    if (role) return role as UserRole
+
+    try {
+      const profile = await this.getCurrentProfileFresh()
+      return profile.profile?.role || null
+    } catch {
+      return null
+    }
+  }
+
+  private invalidateProfileCache(userId: string): void {
+    revalidateTag(CACHE_TAGS.PROFILE.BASE, {})
+    revalidateTag(`${CACHE_TAGS.PROFILE.BASE}-${userId}`, {})
+  }
+
+  // ==========================================
+  // QUERIES
+  // ==========================================
+
+  async getCurrentProfileFresh(): Promise<UserWithProfile> {
+    const { supabase, user } = await this.ensureAuth()
 
     const { data: profile, error } = await supabase
       .from("profiles")
@@ -36,9 +68,6 @@ export class SupabaseProfileRepository implements ProfileRepository {
     if (error || !profile) {
       throw new Error("Profile not found")
     }
-
-    // Sincronizar cookie de rol
-    await this.setRoleCookie(profile.role as UserRole)
 
     return {
       user: {
@@ -56,14 +85,57 @@ export class SupabaseProfileRepository implements ProfileRepository {
     }
   }
 
-  async updateProfile(data: UpdateProfileInput): Promise<void> {
-    const supabase = await createSupabaseRouteClient()
+  async getCurrentProfile(): Promise<UserWithProfile> {
+    // Get auth outside cached function
+    const { supabase, user } = await this.ensureAuth()
 
-    const { data: { user }, error: authError } = await supabase.auth.getUser()
+    const fetchData = async (userId: string) => {
+      // Use passed userId instead of calling ensureAuth
+      const { data: profile, error } = await supabase
+        .from("profiles")
+        .select("id, full_name, avatar_url, phone, role, created_at")
+        .eq("id", userId)
+        .single()
 
-    if (authError || !user) {
-      throw new Error("Authentication required")
+      if (error || !profile) {
+        throw new Error("Profile not found")
+      }
+
+      return {
+        user: {
+          id: user.id,
+          email: user.email!,
+        },
+        profile: {
+          id: profile.id,
+          full_name: profile.full_name,
+          avatar_url: profile.avatar_url,
+          phone: profile.phone,
+          role: profile.role as UserRole,
+          created_at: profile.created_at,
+        },
+      }
     }
+
+    const cachedFetch = unstable_cache(
+      fetchData,
+      [`${CACHE_TAGS.PROFILE.BASE}-${user.id}`],
+      {
+        revalidate: 300,
+        tags: [CACHE_TAGS.PROFILE.BASE, `${CACHE_TAGS.PROFILE.BASE}-${user.id}`]
+      }
+    )
+
+    return cachedFetch(user.id)
+  }
+
+  // ==========================================
+  // MUTATIONS
+  // ==========================================
+
+  async updateProfile(data: UpdateProfileInput): Promise<void> {
+    const { user } = await this.ensureAuth()
+    const supabase = await createSupabaseRouteClient()
 
     const { error } = await supabase
       .from("profiles")
@@ -78,130 +150,101 @@ export class SupabaseProfileRepository implements ProfileRepository {
     if (error) {
       throw new Error(`Failed to update profile: ${error.message}`)
     }
+
+    this.invalidateProfileCache(user.id)
   }
 
   async updateAvatar(file: File): Promise<string> {
+    const { user } = await this.ensureAuth()
     const supabase = await createSupabaseRouteClient()
 
-    const { data: { user }, error: authError } = await supabase.auth.getUser()
-
-    if (authError || !user) {
-      throw new Error("Authentication required")
-    }
-
-    // Validar tipo de archivo
-    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif']
-    if (!allowedTypes.includes(file.type)) {
-      throw new Error("Invalid file type. Only JPEG, PNG, WebP and GIF are allowed")
-    }
-
-    // Validar tamaño (5MB)
-    const maxSize = 5 * 1024 * 1024
-    if (file.size > maxSize) {
-      throw new Error("File too large. Maximum size is 5MB")
-    }
+    await profileAvatarSchema.validate({ file }, { abortEarly: false })
 
     const fileExt = file.type.split('/')[1] || 'webp'
     const path = `${user.id}/avatar.${fileExt}`
 
-    // Subir archivo
-    const { error: uploadError } = await supabase.storage
-      .from("avatars")
-      .upload(path, file, {
-        upsert: true,
-        contentType: file.type,
-        cacheControl: "3600",
-      })
+    try {
+      const { error: uploadError } = await supabase.storage
+        .from(STORAGE_BUCKETS.AVATARS)
+        .upload(path, file, {
+          upsert: true,
+          contentType: file.type,
+          cacheControl: "3600",
+        })
 
-    if (uploadError) {
-      throw new Error(`Failed to upload avatar: ${uploadError.message}`)
+      if (uploadError) throw new Error(`Upload failed: ${uploadError.message}`)
+
+      const { data: { publicUrl } } = supabase.storage
+        .from(STORAGE_BUCKETS.AVATARS)
+        .getPublicUrl(path)
+
+      const avatarUrl = `${publicUrl}?t=${Date.now()}`
+
+      const { error: updateError } = await supabase
+        .from("profiles")
+        .update({
+          avatar_url: avatarUrl,
+          updated_at: new Date().toISOString(),
+        })
+        .eq("id", user.id)
+
+      if (updateError) throw new Error(`Profile update failed: ${updateError.message}`)
+
+      this.invalidateProfileCache(user.id)
+
+      return avatarUrl
+
+    } catch (error) {
+      await supabase.storage.from(STORAGE_BUCKETS.AVATARS).remove([path])
+      throw error
     }
-
-    // Obtener URL pública
-    const { data: { publicUrl } } = supabase.storage
-      .from("avatars")
-      .getPublicUrl(path)
-
-    // Añadir timestamp para evitar caché
-    const avatarUrl = `${publicUrl}?t=${Date.now()}`
-
-    // Actualizar perfil
-    const { error: updateError } = await supabase
-      .from("profiles")
-      .update({ 
-        avatar_url: avatarUrl,
-        updated_at: new Date().toISOString(),
-      })
-      .eq("id", user.id)
-
-    if (updateError) {
-      // Rollback: eliminar archivo subido
-      await supabase.storage.from("avatars").remove([path])
-      throw new Error(`Failed to update profile: ${updateError.message}`)
-    }
-
-    return avatarUrl
   }
 
   async updateRole(userId: string, role: UserRole): Promise<void> {
-    const supabase = await createSupabaseRouteClient()
-
-    // Verificar que el usuario actual sea admin
     const currentRole = await this.getCurrentRole()
+
     if (currentRole !== 'admin') {
       throw new Error("Unauthorized: Admin role required")
     }
 
+    const supabase = await createSupabaseRouteClient()
+
     const { error } = await supabase
       .from("profiles")
-      .update({ 
+      .update({
         role,
         updated_at: new Date().toISOString(),
       })
       .eq("id", userId)
 
-    if (error) {
-      throw new Error(`Failed to update role: ${error.message}`)
-    }
+    if (error) throw new Error(`Failed to update role: ${error.message}`)
 
-    // Si el usuario actualiza su propio rol, actualizar cookie
     const { data: { user } } = await supabase.auth.getUser()
     if (user?.id === userId) {
       await this.setRoleCookie(role)
     }
+
+    this.invalidateProfileCache(userId)
   }
+
+  // ==========================================
+  // COOKIE MANAGEMENT
+  // ==========================================
 
   async getRoleFromCookie(): Promise<UserRole | null> {
     const cookieStore = await cookies()
-    const role = cookieStore.get(ROLE_COOKIE_NAME)?.value
+    const role = cookieStore.get(COOKIE_NAMES.ROLE)?.value
     return role as UserRole || null
   }
 
   async refreshRoleCookie(): Promise<void> {
-    const profile = await this.getCurrentProfile()
+    const profile = await this.getCurrentProfileFresh()
     if (profile.profile?.role) {
       await this.setRoleCookie(profile.profile.role)
     }
   }
+}
 
-  // Métodos privados auxiliares
-
-  private async getCurrentRole(): Promise<UserRole | null> {
-    // Intentar obtener de cookie primero (más rápido)
-    const cookieRole = await this.getRoleFromCookie()
-    if (cookieRole) return cookieRole
-
-    // Fallback: obtener de la base de datos
-    try {
-      const profile = await this.getCurrentProfile()
-      return profile.profile?.role || null
-    } catch {
-      return null
-    }
-  }
-
-  private async setRoleCookie(role: UserRole): Promise<void> {
-    const cookieStore = await cookies()
-    cookieStore.set(ROLE_COOKIE_NAME, role, COOKIE_OPTIONS)
-  }
+export const createProfileRepository = (): ProfileRepository => {
+  return new SupabaseProfileRepository()
 }

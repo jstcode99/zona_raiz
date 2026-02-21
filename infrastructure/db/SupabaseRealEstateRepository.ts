@@ -1,144 +1,95 @@
-import { RealEstateRepository } from "@/domain/repositories/RealEstateRepository";
-import { RealEstate, RealEstateCreateFormData, RealEstateUpdateFormData } from "@/domain/entities/RealEstate";
-import { idSchema } from "@/domain/entities/fields/idSchema";
-import { createRealEstateSchema, updateRealEstateSchema } from "@/domain/entities/schemas/realEstateSchema";
-import { unstable_cache } from "next/cache";
-import { revalidateTag } from 'next/cache'
-import { createSupabaseServerClient } from "./supabase.server";
-import { createSupabaseRouteClient } from "./supabase.route";
-
-const CACHE_TAGS = {
-  REAL_ESTATES_LIST: 'real-estates-list',
-  REAL_ESTATE_DETAIL: (id: string) => `real-estate-${id}`,
-  REAL_ESTATES_ALL: 'real-estates-all'
-} as const
-
-type CacheConfig = {
-  revalidate?: number | false
-  tags?: string[]
-}
-
-const defaultCacheConfig: CacheConfig = {
-  revalidate: 3600, // 1 hora
-  tags: []
-}
-
+import { unstable_cache, revalidateTag } from "next/cache"
+import { createSupabaseServerClient } from "./supabase.server"
+import { createSupabaseRouteClient } from "./supabase.route"
+import { RealEstateRepository } from "@/domain/repositories/RealEstateRepository"
+import { RealEstate, RealEstateRole } from "@/domain/entities/RealEstate"
+import { idSchema } from "@/domain/entities/fields/idSchema"
+import {
+  createRealEstateSchema,
+  updateRealEstateSchema,
+  CreateRealEstateFormValues,
+  UpdateRealEstateFormValues
+} from "@/domain/entities/schemas/realEstateSchema"
+import {
+  CACHE_TAGS,
+  STORAGE_BUCKETS,
+  REAL_ESTATE_ROLES,
+} from "@/infrastructure/config/constants"
+import { CacheConfig } from "../config/cache"
 
 export class SupabaseRealEstateRepository implements RealEstateRepository {
-  private bucketName = 'real-estates'
   private cacheConfig: CacheConfig
 
   constructor(cacheConfig: Partial<CacheConfig> = {}) {
-    this.cacheConfig = { ...defaultCacheConfig, ...cacheConfig }
+    this.cacheConfig = {
+      revalidate: 3600,
+      tags: [],
+      ...cacheConfig
+    }
   }
 
-  private async getServerClient() {
-    return createSupabaseServerClient()
+  // ==========================================
+  // HELPERS PRIVADOS
+  // ==========================================
+
+  private async ensureAuth() {
+    const supabase = await createSupabaseServerClient()
+    const { data: { user }, error } = await supabase.auth.getUser()
+
+    if (error || !user) {
+      throw new Error("Authentication required")
+    }
+
+    return { supabase, user }
   }
 
-  private async getRouteClient() {
-    return createSupabaseRouteClient()
+  private invalidateListCache(): void {
+    revalidateTag(CACHE_TAGS.REAL_ESTATE.LIST, {})
+    revalidateTag(CACHE_TAGS.REAL_ESTATE.ALL, {})
   }
+
+  private invalidateDetailCache(id: string): void {
+    revalidateTag(CACHE_TAGS.REAL_ESTATE.DETAIL(id), {})
+  }
+
+  // ==========================================
+  // QUERIES
+  // ==========================================
 
   async findByIdFresh(id: string): Promise<RealEstate | null> {
+    const { user } = await this.ensureAuth()
     const validatedId = await idSchema.validate(id)
-    const supabase = await this.getServerClient()
 
+    const supabase = await createSupabaseServerClient()
     const { data, error } = await supabase
-      .from('real_estates')
-      .select('*')
-      .eq('id', validatedId)
+      .from("real_estates")
+      .select("*")
+      .eq("id", validatedId)
       .single()
 
     if (error) {
-      if (error.code === 'PGRST116') return null
+      if (error.code === "PGRST116") return null
       throw new Error(error.message)
     }
 
-    return data
-  }
-
-  async findAllFresh(): Promise<RealEstate[]> {
-    const supabase = await this.getServerClient()
-
-    // RLS automáticamente filtra por real_estate_agents
-    const { data, error } = await supabase
-      .from('real_estates')
-      .select(`
-          *,
-          real_estate_agents!inner(profile_id, role)
-        `)
-      .order('created_at', { ascending: false })
-
-    if (error) throw new Error(error.message)
-    return (data || []).map(({ real_estate_agents, ...rest }) => rest) as RealEstate[]
-  }
-
-  // ==========================================
-  // MÉTODOS PÚBLICOS (con filtro por usuario)
-  // ==========================================
-
-  async findAll(): Promise<RealEstate[]> {
-    const fetchData = async () => {
-      const supabase = await this.getServerClient()
-
-      // RLS automáticamente filtra por real_estate_agents
-      const { data, error } = await supabase
-        .from('real_estates')
-        .select(`
-          *,
-          real_estate_agents!inner(profile_id, role)
-        `)
-        .order('created_at', { ascending: false })
-
-      if (error) throw new Error(error.message)
-      return (data || []).map(({ real_estate_agents, ...rest }) => rest) as RealEstate[]
-    }
-
-    const cachedFetch = unstable_cache(
-      fetchData,
-      [CACHE_TAGS.REAL_ESTATES_LIST],
-      {
-        revalidate: this.cacheConfig.revalidate,
-        tags: [CACHE_TAGS.REAL_ESTATES_LIST, CACHE_TAGS.REAL_ESTATES_ALL]
-      }
-    )
-
-    return cachedFetch()
+    return data as RealEstate
   }
 
   async findById(id: string): Promise<RealEstate | null> {
     const validatedId = await idSchema.validate(id)
 
     const fetchData = async () => {
-      const supabase = await this.getServerClient()
-
-      const { data, error } = await supabase
-        .from('real_estates')
-        .select(`
-          *,
-          real_estate_agents!inner(profile_id, role)
-        `)
-        .eq('id', validatedId)
-        .single()
-
-      if (error) {
-        if (error.code === 'PGRST116') return null
-        throw new Error(error.message)
-      }
-
-      const { real_estate_agents, ...rest } = data
-      return rest as RealEstate
+      return this.findByIdFresh(validatedId)
     }
 
     const cachedFetch = unstable_cache(
       fetchData,
-      [CACHE_TAGS.REAL_ESTATE_DETAIL(validatedId)],
+      [CACHE_TAGS.REAL_ESTATE.DETAIL(validatedId)],
       {
         revalidate: this.cacheConfig.revalidate,
         tags: [
-          CACHE_TAGS.REAL_ESTATE_DETAIL(validatedId),
-          CACHE_TAGS.REAL_ESTATES_ALL
+          CACHE_TAGS.REAL_ESTATE.DETAIL(validatedId),
+          CACHE_TAGS.REAL_ESTATE.ALL
         ]
       }
     )
@@ -146,124 +97,251 @@ export class SupabaseRealEstateRepository implements RealEstateRepository {
     return cachedFetch()
   }
 
+  async findAllFresh(): Promise<RealEstate[]> {
+    await this.ensureAuth()
+
+    const supabase = await createSupabaseServerClient()
+    const { data, error } = await supabase
+      .from("real_estates")
+      .select(`
+        *,
+        real_estate_agents!inner(profile_id, role)
+      `)
+      .order("created_at", { ascending: false })
+
+    if (error) throw new Error(error.message)
+
+    return (data || []).map(({ real_estate_agents, ...rest }) => rest) as RealEstate[]
+  }
+
+  async findAll(): Promise<RealEstate[]> {
+    const fetchData = async () => {
+      return this.findAllFresh()
+    }
+
+    const cachedFetch = unstable_cache(
+      fetchData,
+      [CACHE_TAGS.REAL_ESTATE.LIST],
+      {
+        revalidate: this.cacheConfig.revalidate,
+        tags: [CACHE_TAGS.REAL_ESTATE.LIST, CACHE_TAGS.REAL_ESTATE.ALL]
+      }
+    )
+
+    return cachedFetch()
+  }
+
   // ==========================================
-  // MÉTODOS CON AUTH (usando RPC con RLS)
+  // MUTATIONS
   // ==========================================
 
-  async create(
-    data: RealEstateCreateFormData
-  ): Promise<RealEstate> {
+  async create(data: CreateRealEstateFormValues): Promise<RealEstate> {
+    const { user } = await this.ensureAuth()
+
     const validated = await createRealEstateSchema.validate(data, {
       abortEarly: false,
       stripUnknown: true
     })
 
-    const supabase = await this.getRouteClient()
-    const { name, description, whatsapp, address, logo } = validated
+    const supabase = await createSupabaseRouteClient()
 
-    let uploadedFileName: string | null = null
+    const {
+      name,
+      description,
+      whatsapp,
+      address,
+      logo
+    } = validated
+
+    const {
+      street,
+      city,
+      state,
+      postal_code,
+      country
+    } = address
+
+    let uploadedPath: string | null = null
 
     try {
-      // 1. Subir logo (RLS verifica que sea AGENT)
-      const fileExt = logo.name.split('.').pop()
-      uploadedFileName = `logos/${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExt}`
-
-      const { error: uploadError } = await supabase
-        .storage
-        .from(this.bucketName)
-        .upload(uploadedFileName, logo, { contentType: logo.type })
-
-      if (uploadError) throw new Error(uploadError.message)
-
-      // 2. Obtener URL
-      const { data: { publicUrl } } = supabase
-        .storage
-        .from(this.bucketName)
-        .getPublicUrl(uploadedFileName)
-
-      // 3. Crear via RPC (maneja auth, trigger crea agente admin)
+      // 1. Crear la inmobiliaria (el trigger auto-crea el agente coordinador)
       const { data: inserted, error: dbError } = await supabase
-        .rpc('create_real_estate', {
-          p_name: name,
-          p_description: description,
-          p_whatsapp: whatsapp,
-          p_address: address,
-          p_logo_url: publicUrl
+        .from("real_estates")
+        .insert({
+          name,
+          description,
+          whatsapp,
+          street,
+          city,
+          state,
+          postal_code,
+          country,
         })
+        .select()
+        .single()
+
+      console.log(dbError);
 
       if (dbError) throw new Error(dbError.message)
+      if (!inserted) throw new Error("Failed to create real estate")
+
+      // 2. Subir logo si existe (después de crear, para tener el ID)
+      let logoUrl: string | null = null
+
+      if (logo && logo.size > 0) {
+        const fileExt = logo.name.split(".").pop()
+        // Path: {real_estate_id}/{timestamp}.{ext} (según políticas RLS)
+        uploadedPath = `${inserted.id}/${Date.now()}.${fileExt}`
+
+        const { error: uploadError } = await supabase
+          .storage
+          .from(STORAGE_BUCKETS.REAL_ESTATE_LOGOS)
+          .upload(uploadedPath, logo, {
+            contentType: logo.type,
+            upsert: false // false porque es nuevo
+          })
+
+        if (uploadError) throw new Error(`Upload failed: ${uploadError.message}`)
+
+        const { data: { publicUrl } } = supabase
+          .storage
+          .from(STORAGE_BUCKETS.REAL_ESTATE_LOGOS)
+          .getPublicUrl(uploadedPath)
+
+        logoUrl = publicUrl
+
+        // 3. Actualizar la inmobiliaria con el logo_url
+        const { error: updateError } = await supabase
+          .from("real_estates")
+          .update({ logo_url: logoUrl })
+          .eq("id", inserted.id)
+
+        if (updateError) {
+          // Rollback: eliminar logo subido
+          await supabase.storage.from(STORAGE_BUCKETS.REAL_ESTATE_LOGOS).remove([uploadedPath])
+          throw new Error(`Failed to update logo URL: ${updateError.message}`)
+        }
+      }
 
       this.invalidateListCache()
 
-      return inserted as RealEstate
+      return { ...inserted, logo_url: logoUrl } as RealEstate
 
     } catch (error) {
-      if (uploadedFileName) {
-        await supabase.storage.from(this.bucketName).remove([uploadedFileName])
+      // Cleanup en caso de error
+      if (uploadedPath) {
+        await supabase.storage.from(STORAGE_BUCKETS.REAL_ESTATE_LOGOS).remove([uploadedPath])
       }
       throw error
     }
   }
 
-  async update(
-    id: string,
-    data: Partial<RealEstateUpdateFormData>
-  ): Promise<RealEstate> {
-    const validated = await updateRealEstateSchema.validate({ id, ...data }, {
-      abortEarly: false,
-      stripUnknown: true
-    })
+  async update(id: string, data: UpdateRealEstateFormValues): Promise<RealEstate> {
+    const { user } = await this.ensureAuth()
+    const validatedId = await idSchema.validate(id)
 
-    const supabase = await this.getRouteClient()
-    const { id: validatedId, logo } = validated
+    const validated = await updateRealEstateSchema.validate(
+      { ...data },
+      { abortEarly: false, stripUnknown: true }
+    )
 
-    let newFileName: string | null = null
-    let oldFileName: string | null = null
+    const supabase = await createSupabaseRouteClient()
+    const {
+      name,
+      description,
+      whatsapp,
+      address,
+      logo
+    } = validated
+
+    const {
+      street,
+      city,
+      state,
+      postal_code,
+      country
+    } = address
+
+
+    let newPath: string | null = null
+    let oldPath: string | null = null
 
     try {
-      // Verificar acceso (para obtener logo actual)
-      const current = await this.findByIdFresh(validatedId)
-      if (!current) throw new Error('No encontrado o sin acceso')
+      // Obtener datos actuales para verificar acceso y logo anterior
+      const current = await this.findByIdFresh(id)
+      if (!current) throw new Error("Real estate not found or no access")
 
       let logoUrl = current.logo_url
 
-      if (logo) {
-        // Subir nuevo logo
-        const fileExt = logo.name.split('.').pop()
-        newFileName = `logos/${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExt}`
+      // Procesar nuevo logo si se proporciona
+      if (logo && logo.size > 0) {
+        const fileExt = logo.name.split(".").pop()
+        // Path: {real_estate_id}/{timestamp}.{ext}
+        newPath = `${id}/${Date.now()}.${fileExt}`
 
+        // Extraer path antiguo para eliminarlo después
+        if (current.logo_url) {
+          try {
+            const url = new URL(current.logo_url)
+            const pathMatch = url.pathname.match(/real-estate-logos\/(.+)/)
+            oldPath = pathMatch ? pathMatch[1] : null
+          } catch {
+            // Si no es URL válida, intentar extraer directamente
+            const parts = current.logo_url.split('/')
+            const bucketIndex = parts.indexOf(STORAGE_BUCKETS.REAL_ESTATE_LOGOS)
+            if (bucketIndex !== -1) {
+              oldPath = parts.slice(bucketIndex + 1).join('/')
+            }
+          }
+        }
+
+        // Subir nuevo logo
         const { error: uploadError } = await supabase
           .storage
-          .from(this.bucketName)
-          .upload(newFileName, logo, { contentType: logo.type })
+          .from(STORAGE_BUCKETS.REAL_ESTATE_LOGOS)
+          .upload(newPath, logo, {
+            contentType: logo.type,
+            upsert: true // true para permitir reemplazo si existe
+          })
 
-        if (uploadError) throw new Error(uploadError.message)
+        if (uploadError) throw new Error(`Upload failed: ${uploadError.message}`)
 
         const { data: { publicUrl } } = supabase
           .storage
-          .from(this.bucketName)
-          .getPublicUrl(newFileName)
+          .from(STORAGE_BUCKETS.REAL_ESTATE_LOGOS)
+          .getPublicUrl(newPath)
 
         logoUrl = publicUrl
-        oldFileName = current.logo_url.split('/').pop() || null
       }
 
-      // Actualizar via RPC (verifica que sea admin)
+      // Actualizar la inmobiliaria
       const { data: updated, error: dbError } = await supabase
-        .rpc('update_real_estate', {
-          p_id: validatedId,
-          p_name: validated.name || null,
-          p_description: validated.description || null,
-          p_whatsapp: validated.whatsapp || null,
-          p_address: validated.address || null,
-          p_logo_url: logoUrl
+        .from("real_estates")
+        .update({
+          name,
+          description,
+          whatsapp,
+          street,
+          city,
+          state,
+          postal_code,
+          country,
+          ...(logoUrl !== current.logo_url && { logo_url: logoUrl }),
+          updated_at: new Date().toISOString()
         })
+        .eq("id", validatedId)
+        .select()
+        .single()
 
       if (dbError) throw new Error(dbError.message)
+      if (!updated) throw new Error("Failed to update real estate")
 
-      // Limpiar logo anterior
-      if (oldFileName && newFileName) {
-        await supabase.storage.from(this.bucketName).remove([`logos/${oldFileName}`])
+      // Eliminar logo antiguo solo si se subió uno nuevo exitosamente
+      if (oldPath && newPath && oldPath !== newPath) {
+        await supabase.storage
+          .from(STORAGE_BUCKETS.REAL_ESTATE_LOGOS)
+          .remove([oldPath])
+          .catch(err => console.warn("Failed to delete old logo:", err)) // No fallar si no se puede eliminar
       }
 
       this.invalidateDetailCache(validatedId)
@@ -272,105 +350,129 @@ export class SupabaseRealEstateRepository implements RealEstateRepository {
       return updated as RealEstate
 
     } catch (error) {
-      if (newFileName) {
-        await supabase.storage.from(this.bucketName).remove([newFileName])
+      // Cleanup: eliminar logo nuevo si hubo error
+      if (newPath) {
+        await supabase.storage
+          .from(STORAGE_BUCKETS.REAL_ESTATE_LOGOS)
+          .remove([newPath])
+          .catch(() => { }) // Ignorar error de cleanup
       }
       throw error
     }
   }
 
   async delete(id: string): Promise<void> {
+    const { user } = await this.ensureAuth()
     const validatedId = await idSchema.validate(id)
-    const supabase = await this.getRouteClient()
 
-    let fileNameToDelete: string | null = null
+    const supabase = await createSupabaseRouteClient()
 
-    try {
-      // Verificar acceso y obtener logo
-      const current = await this.findByIdFresh(validatedId)
-      if (!current) throw new Error('No encontrado o sin acceso')
+    const current = await this.findByIdFresh(validatedId)
+    if (!current) throw new Error("Real estate not found or no access")
 
-      if (current.logo_url) {
-        fileNameToDelete = current.logo_url.split('/').pop() || null
-      }
-
-      // Eliminar via RPC (verifica que sea admin)
-      const { error: dbError } = await supabase
-        .rpc('delete_real_estate', { p_id: validatedId })
-
-      if (dbError) throw new Error(dbError.message)
-
-      // Limpiar storage
-      if (fileNameToDelete) {
-        await supabase.storage.from(this.bucketName).remove([`logos/${fileNameToDelete}`])
-      }
-
-      this.invalidateDetailCache(validatedId)
-      this.invalidateListCache()
-
-    } catch (error) {
-      throw error
+    let logoPath: string | null = null
+    if (current.logo_url) {
+      const urlParts = current.logo_url.split("/")
+      logoPath = urlParts.slice(urlParts.indexOf(STORAGE_BUCKETS.REAL_ESTATE_LOGOS) + 1).join("/")
     }
+
+    const { error: dbError } = await supabase
+      .from("real_estates")
+      .delete()
+      .eq("id", validatedId)
+
+    if (dbError) throw new Error(dbError.message)
+
+    if (logoPath) {
+      await supabase.storage.from(STORAGE_BUCKETS.REAL_ESTATE_LOGOS).remove([logoPath])
+    }
+
+    this.invalidateDetailCache(validatedId)
+    this.invalidateListCache()
   }
 
   // ==========================================
-  // MÉTODOS ADICIONALES (gestión de agentes)
+  // AGENT MANAGEMENT
   // ==========================================
 
   async addAgent(
     realEstateId: string,
     profileId: string,
-    role: 'admin' | 'agent' = 'agent'
+    role: RealEstateRole
   ): Promise<void> {
-    const supabase = await this.getRouteClient()
+    await this.ensureAuth()
+
+    const supabase = await createSupabaseRouteClient()
+
+    if (!REAL_ESTATE_ROLES.includes(role)) {
+      throw new Error("Invalid role")
+    }
 
     const { error } = await supabase
-      .from('real_estate_agents')
+      .from("real_estate_agents")
       .insert({
         real_estate_id: realEstateId,
         profile_id: profileId,
         role
       })
 
-    if (error) throw new Error(error.message)
+    if (error) {
+      if (error.message.includes("duplicate key")) {
+        throw new Error("Agent already assigned to this real estate")
+      }
+      throw new Error(error.message)
+    }
 
     this.invalidateDetailCache(realEstateId)
   }
 
   async removeAgent(realEstateId: string, profileId: string): Promise<void> {
-    const supabase = await this.getRouteClient()
+    await this.ensureAuth()
+
+    const supabase = await createSupabaseRouteClient()
 
     const { error } = await supabase
-      .from('real_estate_agents')
+      .from("real_estate_agents")
       .delete()
-      .eq('real_estate_id', realEstateId)
-      .eq('profile_id', profileId)
+      .eq("real_estate_id", realEstateId)
+      .eq("profile_id", profileId)
 
     if (error) throw new Error(error.message)
 
     this.invalidateDetailCache(realEstateId)
   }
 
-  // ==========================================
-  // CACHE INVALIDATION
-  // ==========================================
+  async getAgents(realEstateId: string): Promise<any[]> {
+    await this.ensureAuth()
 
-  private invalidateListCache(): void {
-    revalidateTag(CACHE_TAGS.REAL_ESTATES_LIST, {})
-    revalidateTag(CACHE_TAGS.REAL_ESTATES_ALL, {})
-  }
+    const supabase = await createSupabaseServerClient()
 
-  private invalidateDetailCache(id: string): void {
-    revalidateTag(CACHE_TAGS.REAL_ESTATE_DETAIL(id), {})
+    const { data, error } = await supabase
+      .from("real_estate_agents")
+      .select(`
+        id,
+        role,
+        created_at,
+        profiles (
+          id,
+          full_name,
+          avatar_url,
+          phone
+        )
+      `)
+      .eq("real_estate_id", realEstateId)
+
+    if (error) throw new Error(error.message)
+    return data || []
   }
 
   invalidateAllCache(): void {
-    revalidateTag(CACHE_TAGS.REAL_ESTATES_ALL, {})
+    revalidateTag(CACHE_TAGS.REAL_ESTATE.ALL, {})
   }
 }
 
 export const createRealEstateRepository = (
   cacheConfig?: Partial<CacheConfig>
-): SupabaseRealEstateRepository => {
+): RealEstateRepository => {
   return new SupabaseRealEstateRepository(cacheConfig)
 }

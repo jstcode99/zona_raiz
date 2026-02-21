@@ -5,7 +5,7 @@ import { useFormContext, useWatch } from "react-hook-form"
 import i18next from "i18next"
 import departments from "@/domain/entities/json/department.json"
 
-import { isPropertyLocationComplete } from "@/domain/entities/schemas/property"
+import { isPropertyLocationComplete } from "@/domain/entities/schemas/propertySchema"
 import { Form } from "@/components/ui/form"
 
 export function PropertyLocationForm({

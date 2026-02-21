@@ -4,19 +4,19 @@ import { SupabaseAuthRepository } from "@/infrastructure/db/SupabaseAuthReposito
 import { ActionResult } from "@/shared/hooks/useServerMutation"
 import { cookies } from "next/headers"
 import { revalidatePath } from "next/cache"
-import { signUpSchema } from "@/domain/entities/schemas/signUp"
-import { signInSchema } from "@/domain/entities/schemas/signIn"
-import { otpSchema } from "@/domain/entities/schemas/OTP"
+import { signUpSchema } from "@/domain/entities/schemas/signUpSchema"
+import { signInSchema } from "@/domain/entities/schemas/signInSchema"
+import { otpSchema } from "@/domain/entities/schemas/OTPSchema"
 
 export async function signUpAction(
-  _: ActionResult,
   formData: FormData
 ): Promise<ActionResult> {
   try {
-    const rawData = Object.fromEntries(formData.entries())
+    const rawData = Object.fromEntries(formData)
+    
     const data = await signUpSchema.validate(rawData, {
       abortEarly: false,
-      stripUnknown: true, // Elimina campos no definidos en el schema
+      stripUnknown: true,
     })
 
     const repo = new SupabaseAuthRepository()
@@ -64,11 +64,10 @@ export async function signUpAction(
 }
 
 export async function signInAction(
-  _: ActionResult,
   formData: FormData
 ): Promise<ActionResult> {
   try {
-    const rawData = Object.fromEntries(formData.entries())
+    const rawData = Object.fromEntries(formData)
     const data = await signInSchema.validate(rawData, {
       abortEarly: false,
       stripUnknown: true,
@@ -132,7 +131,6 @@ export async function signInAction(
 }
 
 export async function otpAction(
-  _: ActionResult,
   formData: FormData
 ): Promise<ActionResult> {
   try {

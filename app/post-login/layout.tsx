@@ -2,6 +2,12 @@ import {  ReactNode, Suspense } from "react"
 import { PageLoader } from "@/features/loader/page-loader"
 import { SupabaseProfileRepository } from "@/infrastructure/db/SupabaseProfileRepository"
 import { encodedRedirect } from "@/shared/redirect"
+import { Metadata } from "next"
+
+export const metadata: Metadata = {
+  title: "Configuración de cuenta",
+  description: "Complete su configuración de cuenta",
+}
 
 export default async function PostLoginLayout({
   children,
@@ -18,11 +24,9 @@ export default async function PostLoginLayout({
 
   return (
     <div className='grid min-h-screen grid-cols-1 lg:grid-cols-2'>
-      <div className='flex flex-col items-center justify-center px-4 py-8 text-center'>
-        <Suspense fallback={<PageLoader />}>
+       <Suspense fallback={<PageLoader />}>
           {children}
-        </Suspense>
-      </div>
+      </Suspense>
       <div className='relative max-h-screen w-full p-2 max-lg:hidden'>
         <div className='h-full w-full rounded-2xl bg-black'></div>
         <img

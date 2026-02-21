@@ -12,8 +12,8 @@ import Link from "next/link";
 import { Suspense } from "react";
 import { Spinner } from "@/components/ui/spinner";
 import { SupabaseRealEstateRepository } from "@/infrastructure/db/SupabaseRealEstateRepository";
-import RealEstatesTable from "@/features/real-states/real-state-table";
-import { RealEstateColumns, RealEstateRow } from "@/features/real-states/real-state-columns";
+import RealEstatesTable from "@/features/real-states/real-estate-table";
+import { RealEstateColumns, RealEstateRow } from "@/features/real-states/real-estate-columns";
 import { IconPlus } from "@tabler/icons-react";
 
 

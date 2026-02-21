@@ -14,7 +14,7 @@ import { ComponentProps, useEffect } from "react"
 import { useTranslation } from "react-i18next"
 import GoogleAuth from "./google-auth"
 import { Spinner } from "@/components/ui/spinner"
-import { SignInFormValues, signInSchema } from "@/domain/entities/schemas/signIn"
+import { defaultSignInValues, SignInFormValues, signInSchema } from "@/domain/entities/schemas/signInSchema"
 import { useServerMutation } from "@/shared/hooks/useServerMutation"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
@@ -30,10 +30,7 @@ export function SignInForm({
 
   const form = useForm<SignInFormValues>({
     resolver: yupResolver(signInSchema),
-    defaultValues: {
-      email: "",
-      password: "",
-    },
+    defaultValues: defaultSignInValues,
     mode: "onBlur", // Validación al perder foco
   })
 
@@ -41,7 +38,6 @@ export function SignInForm({
 
   const mutation = useServerMutation({
     action: signInAction,
-    initialState: { success: false },
     setError,
     onSuccess: () => {
       router.push("/post-login")
@@ -95,14 +91,16 @@ export function SignInForm({
           name="email" 
           type="email"
           label={t('forms.sign-in.fields.email.label')}
+          placeholder={t('forms.sign-in.fields.email.placeholder')}
           autoComplete="email"
           disabled={isLoading}
         />
         
         <Form.Input 
           name="password" 
-          type="password" 
+          type="password"
           label={t('forms.sign-in.fields.password.label')}
+          placeholder={t('forms.sign-in.fields.password.placeholder')}
           autoComplete="current-password"
           disabled={isLoading}
         />

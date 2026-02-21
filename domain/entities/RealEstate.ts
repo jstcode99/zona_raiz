@@ -1,23 +1,23 @@
 import { UserRole } from "./Profile";
 
+export type RealEstateRole = Exclude<UserRole, "client">
+
 export interface RealEstate {
-  id: string;
-  name: string;
-  slug: string;
-  logo_url?: string | null;
-  phone?: string | null;
-  whatsapp?: string | null;
-  address?: string | null;
-  city?: string | null;
-  state?: string | null;
-  country?: string | null;
-  description?: string | null;
-  created_at?: string;
+  id: string
+  name: string
+  description: string
+  whatsapp: string
+  street: string,
+  city: string,
+  state: string,
+  postal_code: string,
+  country: string,
+  logo_url: string
+  created_at: string
+  updated_at: string
 }
 
-export type RealEstateFormData = Omit<RealEstate, 'id' | 'created_at'>;
-
 export interface RealEstateWithRole {
-  real_state:RealEstate,
-  role: UserRole
+  real_estate:RealEstate,
+  role: RealEstateRole
 }

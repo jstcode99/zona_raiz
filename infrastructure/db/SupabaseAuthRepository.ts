@@ -1,38 +1,72 @@
-// infrastructure/repositories/SupabaseAuthRepository.ts
 import { cookies } from "next/headers"
+import { unstable_cache, revalidateTag } from "next/cache"
 import { createSupabaseServerClient } from "./supabase.server"
 import { createSupabaseRouteClient } from "./supabase.route"
 import { AuthRepository } from "@/domain/repositories/AuthRepository"
 import { AuthUser, AuthUserBase } from "@/domain/entities/AuthUser"
-import { SignUpFormValues } from "@/domain/entities/schemas/signUp"
-import { UserRole } from "@/domain/entities/Profile"
-
-const COOKIE_OPTIONS = {
-  httpOnly: true,
-  secure: process.env.NODE_ENV === "production",
-  sameSite: "strict" as const,
-  maxAge: 60 * 60 * 24 * 7, // 7 días
-  path: "/",
-}
-
-const ROLE_COOKIE_NAME = "user_role"
+import { SignUpFormValues, signUpSchema } from "@/domain/entities/schemas/signUpSchema"
+import { signInSchema } from "@/domain/entities/schemas/signInSchema"
+import { EUserRole, UserRole } from "@/domain/entities/Profile"
+import { RealEstateWithRole } from "@/domain/entities/RealEstate"
+import {
+  COOKIE_OPTIONS,
+  COOKIE_NAMES,
+  CACHE_TAGS,
+} from "@/infrastructure/config/constants"
 
 export class SupabaseAuthRepository implements AuthRepository {
+  // ==========================================
+  // HELPERS PRIVADOS
+  // ==========================================
+
+  private async ensureAuth() {
+    const supabase = await createSupabaseServerClient()
+    const { data: { user }, error } = await supabase.auth.getUser()
+    
+    if (error || !user) {
+      throw new Error("Authentication required")
+    }
+    
+    return { supabase, user }
+  }
+
+  private async setRoleCookie(role: UserRole): Promise<void> {
+    const cookieStore = await cookies()
+    cookieStore.set(COOKIE_NAMES.ROLE, role, COOKIE_OPTIONS)
+  }
+
+  private async clearAuthCookies(): Promise<void> {
+    const cookieStore = await cookies()
+    cookieStore.delete(COOKIE_NAMES.ROLE)
+    cookieStore.delete(COOKIE_NAMES.REAL_ESTATE)
+  }
+
+  private invalidateAuthCache(): void {
+    revalidateTag(CACHE_TAGS.AUTH.USER, {})
+    revalidateTag(CACHE_TAGS.AUTH.SESSION, {})
+  }
+
+  // ==========================================
+  // AUTHENTICATION
+  // ==========================================
 
   async signIn(email: string, password: string): Promise<AuthUserBase> {
+    const validated = await signInSchema.validate({ email, password }, {
+      abortEarly: false,
+      stripUnknown: true,
+    })
+
     const supabase = await createSupabaseRouteClient()
-    const cookieStore = await cookies()
 
     const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
+      email: validated.email,
+      password: validated.password,
     })
 
     if (error || !data.user) {
-      throw new Error("Invalid credentials")
+      throw new Error(error?.message || "Invalid credentials")
     }
 
-    // Obtener perfil con rol
     const { data: profile, error: profileError } = await supabase
       .from("profiles")
       .select("id, role, full_name, avatar_url")
@@ -40,19 +74,11 @@ export class SupabaseAuthRepository implements AuthRepository {
       .single()
 
     if (profileError || !profile?.role) {
-      // Sign out si no hay perfil completo
       await supabase.auth.signOut()
       throw new Error("Profile not found")
     }
 
-    // Guardar rol en cookie
-    cookieStore.set(ROLE_COOKIE_NAME, profile.role, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
-      maxAge: 60 * 60 * 24 * 7,
-      path: "/",
-    })
+    await this.setRoleCookie(profile.role as UserRole)
 
     return {
       id: data.user.id,
@@ -62,35 +88,26 @@ export class SupabaseAuthRepository implements AuthRepository {
   }
 
   async signUp(input: SignUpFormValues): Promise<AuthUserBase> {
+    const validated = await signUpSchema.validate(input, {
+      abortEarly: false,
+      stripUnknown: true,
+    })
+
     const supabase = await createSupabaseRouteClient()
 
-    // Verificar si el email ya existe (para mejor mensaje de error)
-    const { data: existingUser } = await supabase
-      .from("profiles")
-      .select("id")
-      .eq("email", input.email)
-      .maybeSingle()
-
-    if (existingUser) {
-      throw new Error("User already registered")
-    }
-
     const { data, error } = await supabase.auth.signUp({
-      email: input.email,
-      password: input.password,
+      email: validated.email,
+      password: validated.password,
       options: {
         data: {
-          full_name: input.full_name,
-          phone: input.phone,
-          // El trigger handle_new_user asignará 'client' por defecto
+          full_name: validated.full_name,
+          phone: validated.phone,
         },
-        emailRedirectTo: `${process.env.NEXT_PUBLIC_BASE_URL}/auth/callback`,
       },
     })
 
     if (error) {
-      // Mapear errores de Supabase a mensajes amigables
-      if (error.message.includes("User already registered")) {
+      if (error.message.includes("user_already_exists")) {
         throw new Error("Email already registered")
       }
       throw new Error(error.message)
@@ -98,6 +115,17 @@ export class SupabaseAuthRepository implements AuthRepository {
 
     if (!data.user) {
       throw new Error("Registration failed")
+    }
+
+    if (validated.type_register) {
+      const { error: roleError } = await supabase
+        .from("profiles")
+        .update({ role: EUserRole.Coordinator })
+        .eq("id", data.user.id)
+
+      if (roleError) {
+        console.error("Role update error:", roleError)
+      }
     }
 
     return {
@@ -126,28 +154,23 @@ export class SupabaseAuthRepository implements AuthRepository {
 
   async signOut(): Promise<void> {
     const supabase = await createSupabaseRouteClient()
-    const cookieStore = await cookies()
 
     try {
       await supabase.auth.signOut()
-
-      // Limpiar cookie de rol
-      cookieStore.delete(ROLE_COOKIE_NAME)
-
+      await this.clearAuthCookies()
+      this.invalidateAuthCache()
     } catch (error) {
       console.error("Sign out error:", error)
       throw new Error("Sign out failed")
     }
   }
 
-  async getCurrentUser(): Promise<AuthUser | null> {
-    const supabase = await createSupabaseServerClient()
+  // ==========================================
+  // QUERIES
+  // ==========================================
 
-    const { data: { user }, error: authError } = await supabase.auth.getUser()
-
-    if (authError || !user) {
-      return null
-    }
+  async getCurrentUserFresh(): Promise<AuthUser | null> {
+    const { supabase, user } = await this.ensureAuth()
 
     const { data: profile, error: profileError } = await supabase
       .from("profiles")
@@ -169,23 +192,97 @@ export class SupabaseAuthRepository implements AuthRepository {
     }
   }
 
-  // Método utilitario para leer el rol desde cookie (útil en middleware)
+  async getCurrentUser(): Promise<AuthUser | null> {
+    const fetchData = async () => {
+      return this.getCurrentUserFresh()
+    }
+
+    const cachedFetch = unstable_cache(
+      fetchData,
+      [CACHE_TAGS.AUTH.USER],
+      {
+        revalidate: 300,
+        tags: [CACHE_TAGS.AUTH.USER, CACHE_TAGS.AUTH.SESSION]
+      }
+    )
+
+    return cachedFetch()
+  }
+
+  // ==========================================
+  // COOKIE MANAGEMENT
+  // ==========================================
+
   async getRoleFromCookie(): Promise<UserRole | null> {
     const cookieStore = await cookies()
-    const role = cookieStore.get(ROLE_COOKIE_NAME)?.value
+    const role = cookieStore.get(COOKIE_NAMES.ROLE)?.value
     return role as UserRole || null
   }
 
-  // Método para refrescar la cookie de rol (útil si cambia el rol)
   async refreshRoleCookie(): Promise<void> {
-    const user = await this.getCurrentUser()
+    const user = await this.getCurrentUserFresh()
+    
     if (!user) {
       const cookieStore = await cookies()
-      cookieStore.delete(ROLE_COOKIE_NAME)
+      cookieStore.delete(COOKIE_NAMES.ROLE)
       return
     }
 
-    const cookieStore = await cookies()
-    cookieStore.set(ROLE_COOKIE_NAME, user.role, COOKIE_OPTIONS)
+    await this.setRoleCookie(user.role)
   }
+
+  async setRealEstateCookie(realEstateId: string): Promise<void> {
+    const cookieStore = await cookies()
+    cookieStore.set(COOKIE_NAMES.REAL_ESTATE, realEstateId, {
+      ...COOKIE_OPTIONS,
+      maxAge: 60 * 60 * 24 * 30,
+    })
+  }
+
+  async getRealEstateFromCookie(): Promise<string | null> {
+    const cookieStore = await cookies()
+    return cookieStore.get(COOKIE_NAMES.REAL_ESTATE)?.value || null
+  }
+
+  // ==========================================
+  // REAL ESTATE (post-login)
+  // ==========================================
+
+  async getRealEstatesForUser(): Promise<RealEstateWithRole[]> {
+    const { user } = await this.ensureAuth()
+
+    const supabase = await createSupabaseServerClient()
+
+    const { data, error } = await supabase
+      .from("real_estate_agents")
+      .select(`
+        role,
+        real_estates (
+          id,
+          name,
+          description,
+          whatsapp,
+          street,
+          city,
+          state,
+          postal_code,
+          country,
+          logo_url,
+          created_at,
+          updated_at
+        )
+      `)
+      .eq("profile_id", user.id)
+
+    if (error) throw new Error(error.message)
+
+    return (data || []).map((item: any) => ({
+      real_estate: item.real_estates,
+      role: item.role as UserRole,
+    }))
+  }
+}
+
+export const createAuthRepository = (): SupabaseAuthRepository => {
+  return new SupabaseAuthRepository()
 }

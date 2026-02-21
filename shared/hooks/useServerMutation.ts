@@ -1,6 +1,6 @@
 "use client"
 
-import { useActionState, useEffect, useRef, useState, useCallback } from "react"
+import { useState, useRef, useCallback, startTransition } from "react"
 import { UseFormSetError } from "react-hook-form"
 
 export type FieldError = {
@@ -14,76 +14,72 @@ export type ActionResult =
 
 type Status = "idle" | "pending" | "success" | "error"
 
-type ServerAction<TState> = (
-  prevState: TState,
-  formData: FormData
-) => Promise<TState>
+// ✅ Server action sin prevState
+type ServerAction = (formData: FormData) => Promise<ActionResult>
 
-type Options<TState extends ActionResult> = {
-  action: ServerAction<TState>
-  initialState: TState
+type Options = {
+  action: ServerAction
   setError?: UseFormSetError<any>
-  onSuccess?: (state: TState) => void
+  onSuccess?: (state: ActionResult) => void
   onError?: (error: FieldError) => void
-  redirectOnSuccess?: string
 }
 
-export function useServerMutation<TState extends ActionResult>({
+export function useServerMutation({
   action,
-  initialState,
   setError,
   onSuccess,
   onError,
-  redirectOnSuccess,
-}: Options<TState>) {
-  const [state, formAction, isPending] = useActionState<TState, FormData>(
-    action,
-    initialState
-  )
-
+}: Options) {
+  const [state, setState] = useState<ActionResult | null>(null)
   const [status, setStatus] = useState<Status>("idle")
+  const [isPending, setIsPending] = useState(false)
   const hasSubmitted = useRef(false)
 
-  // Reset status cuando cambia el estado (nueva acción)
-  useEffect(() => {
-    if (isPending) {
-      setStatus("pending")
-    }
-  }, [isPending])
-
-  useEffect(() => {
-    if (!hasSubmitted.current) return
-
-    if (state.success) {
-      setStatus("success")
-      onSuccess?.(state)
-      return
-    }
-
-    if (!state.success && state.error) {
-      setStatus("error")
-      onError?.(state.error)
-
-      if (setError) {
-        const { field, message } = state.error
-        setError(field ?? "root", {
-          type: "server",
-          message,
-        })
-      }
-    }
-  }, [state, setError, onSuccess, onError])
-
-  // Wrapper que maneja el estado de envío
+  // ✅ Llamada directa con startTransition
   const executeAction = useCallback((formData: FormData) => {
     hasSubmitted.current = true
     setStatus("pending")
-    return formAction(formData)
-  }, [formAction])
+    setIsPending(true)
 
-  // Reset manual del estado
+    startTransition(async () => {
+      try {
+        const result = await action(formData)
+        setState(result)
+        setIsPending(false)
+
+        if (result.success) {
+          setStatus("success")
+          onSuccess?.(result)
+        } else {
+          setStatus("error")
+          if (result.error) {
+            onError?.(result.error)
+            if (setError && result.error.field) {
+              setError(result.error.field, {
+                type: "server",
+                message: result.error.message,
+              })
+            }
+          }
+        }
+      } catch (error: any) {
+        setIsPending(false)
+        setStatus("error")
+        const fieldError = { 
+          field: "root",
+          message: error.message || "Unexpected error occurred" 
+        }
+        onError?.(fieldError)
+        if (setError) {
+          setError("root", { type: "server", message: fieldError.message })
+        }
+      }
+    })
+  }, [action, setError, onSuccess, onError])
+
   const reset = useCallback(() => {
     setStatus("idle")
+    setState(null)
     hasSubmitted.current = false
   }, [])
 
@@ -92,7 +88,7 @@ export function useServerMutation<TState extends ActionResult>({
     state,
     status,
     isIdle: status === "idle",
-    isPending: status === "pending" || isPending, // Combina ambos estados
+    isPending,
     isSuccess: status === "success",
     isError: status === "error",
     reset,

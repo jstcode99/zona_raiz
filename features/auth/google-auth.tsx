@@ -51,7 +51,7 @@ export default function GoogleAuth({ disabled }: GoogleAuthProps) {
       ) : (
         <IconBrandGoogle className="mr-2 h-4 w-4" />
       )}
-      {t('forms.sign-up.google')}
+      {t('forms.sign-in.alternatives.google')}
     </Button>
   )
 }

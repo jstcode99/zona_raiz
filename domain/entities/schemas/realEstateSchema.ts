@@ -10,8 +10,8 @@ export const createRealEstateSchema = yup.object({
   name: nameSchema,
   description: descriptionSchema,
   whatsapp: whatsappSchema,
+  logo: imageFileSchema,
   address: addressSchema,
-  logo: imageFileSchema
 })
 
 export const updateRealEstateSchema = yup.object({
@@ -19,23 +19,25 @@ export const updateRealEstateSchema = yup.object({
   name: nameSchema.optional(),
   description: descriptionSchema.optional(),
   whatsapp: whatsappSchema.optional(),
-  address: addressSchema.optional(),
-  logo: imageFileSchema.optional()
+  logo: imageFileSchema.optional(),
+  address: addressSchema,
 })
 
-export const deleteRealEstateSchema = yup.object({
-  id: idSchema
-})
 
-export type CreateRealEstateInput = yup.InferType<typeof createRealEstateSchema>
-export type UpdateRealEstateInput = yup.InferType<typeof updateRealEstateSchema>
-export type DeleteRealEstateInput = yup.InferType<typeof deleteRealEstateSchema>
+export type CreateRealEstateFormValues = yup.InferType<typeof createRealEstateSchema>
+export type UpdateRealEstateFormValues = yup.InferType<typeof updateRealEstateSchema>
 
 
 export const defaultRealEstateValues = {
-  name: '',
-  description: '',
-  whatsapp: '',
-  address: '',
-  logo: null
+  name: 'Zona raiz',
+  description: 'zona raiz colombia',
+  whatsapp: '+57 3168314191',
+  logo: undefined,
+  address: {
+    street: 'Calle 40',
+    city: 'Bogota',
+    state: 'Bogota',
+    postal_code: '50000',
+    country: 'Colombia',
+  }
 }

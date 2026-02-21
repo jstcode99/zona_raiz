@@ -1,4 +1,4 @@
-import { defaultPropertyValues } from "@/domain/entities/schemas/property";
+import { defaultPropertyValues } from "@/domain/entities/schemas/propertySchema";
 import { PropertyForm } from "@/features/properties/property-form";
 
 export default function page() {

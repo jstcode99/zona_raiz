@@ -14,4 +14,3 @@ export const descriptionSchema = yup
         attribute: 'description',
         max: '100'
     }))
-    .trim()

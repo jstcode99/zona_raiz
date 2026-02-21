@@ -3,7 +3,7 @@
 import { DataTable } from "@/components/ui/data-table"
 import { ColumnDef } from "@tanstack/react-table"
 import { use } from "react"
-import { RealEstateRow } from "./real-state-columns"
+import { RealEstateRow } from "./real-estate-columns"
 
 interface Props {
   realEstates: Promise<RealEstateRow[]>

@@ -3,7 +3,7 @@
 import { yupResolver } from "@hookform/resolvers/yup"
 import { useForm, Controller } from "react-hook-form"
 import { useRef, useTransition } from "react"
-import { profileAvatarSchema, AvatarFormValues } from "@/domain/entities/schemas/profile"
+import { profileAvatarSchema, AvatarFormValues } from "@/domain/entities/schemas/profileSchema"
 import { optimizeImage } from "@/lib/utils"
 import { FieldError } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"

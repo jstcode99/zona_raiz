@@ -4,7 +4,7 @@ import { useEffect, useState } from "react"
 import { useFormContext, useWatch } from "react-hook-form"
 import i18next from "i18next"
 
-import { isPropertyDetailsComplete } from "@/domain/entities/schemas/property"
+import { isPropertyDetailsComplete } from "@/domain/entities/schemas/propertySchema"
 import { Form } from "@/components/ui/form"
 import { FieldLabel } from "@/components/ui/field"
 import { Bath, Bed, Maximize } from "lucide-react"

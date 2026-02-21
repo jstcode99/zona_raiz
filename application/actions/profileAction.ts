@@ -1,6 +1,6 @@
 "use server"
 
-import { profileSchema } from "@/domain/entities/schemas/profile"
+import { profileSchema } from "@/domain/entities/schemas/profileSchema"
 import { SupabaseProfileRepository } from "@/infrastructure/db/SupabaseProfileRepository"
 import { ActionResult } from "@/shared/hooks/useServerMutation"
 import { revalidatePath } from "next/cache"

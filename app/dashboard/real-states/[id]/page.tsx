@@ -1,5 +1,5 @@
 import { Spinner } from "@/components/ui/spinner";
-import { RealEstateForm } from "@/features/real-states/real-state-form";
+import { RealEstateForm } from "@/features/real-states/real-estate-form";
 import { SupabaseRealEstateRepository } from "@/infrastructure/db/SupabaseRealEstateRepository";
 import { encodedRedirect } from "@/shared/redirect";
 import { Suspense } from "react";

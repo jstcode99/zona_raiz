@@ -10,6 +10,7 @@ export interface UpdateProfileInput {
 export interface ProfileRepository {
   // Profile queries
   getCurrentProfile(): Promise<UserWithProfile>
+  getCurrentProfileFresh(): Promise<UserWithProfile> 
   
   // Profile mutations
   updateProfile(data: UpdateProfileInput): Promise<void>

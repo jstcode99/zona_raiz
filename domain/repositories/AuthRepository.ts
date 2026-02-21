@@ -1,7 +1,7 @@
-// domain/repositories/AuthRepository.ts
 import { AuthUser, AuthUserBase } from "../entities/AuthUser"
 import { UserRole } from "../entities/Profile"
-import { SignUpFormValues } from "../entities/schemas/signUp"
+import { RealEstateWithRole } from "../entities/RealEstate"
+import { SignUpFormValues } from "../entities/schemas/signUpSchema"
 
 export interface AuthRepository {
   signIn(email: string, password: string): Promise<AuthUserBase>
@@ -9,8 +9,12 @@ export interface AuthRepository {
   otp(email: string): Promise<{ success: boolean }>
   signOut(): Promise<void>
   getCurrentUser(): Promise<AuthUser | null>
-  
-  // Nuevos métodos para manejo de rol en cookies
+
+  // cookies management
   getRoleFromCookie(): Promise<UserRole | null>
   refreshRoleCookie(): Promise<void>
+
+  getRealEstatesForUser(): Promise<RealEstateWithRole[]>
+  setRealEstateCookie(realEstateId: string): Promise<void>
+  getRealEstateFromCookie(): Promise<string | null>
 }

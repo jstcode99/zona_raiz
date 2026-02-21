@@ -14,13 +14,14 @@ import { ComponentProps, useEffect } from "react"
 import { useTranslation } from "react-i18next"
 import GoogleAuth from "./google-auth"
 import { Spinner } from "@/components/ui/spinner"
-import { SignUpFormValues, signUpSchema } from "@/domain/entities/schemas/signUp"
+import { defaultSignUpValues, SignUpFormValues, signUpSchema } from "@/domain/entities/schemas/signUpSchema"
 import { toast } from "sonner"
 import { useServerMutation } from "@/shared/hooks/useServerMutation"
-import { signUpAction } from "@/application/actions/signUpAction"
 import { Form } from "@/components/ui/form"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
+import { signUpAction } from "@/application/actions/authActions"
+import { Building2 } from "lucide-react"
 
 export function SignUpForm({
   className,
@@ -31,13 +32,7 @@ export function SignUpForm({
 
   const form = useForm<SignUpFormValues>({
     resolver: yupResolver(signUpSchema),
-    defaultValues: {
-      full_name: "",
-      email: "",
-      phone: "",
-      password: "",
-      password_confirmation: "",
-    },
+    defaultValues: defaultSignUpValues,
     mode: "onBlur", // Validación al perder foco para mejor UX
   })
 
@@ -45,7 +40,6 @@ export function SignUpForm({
 
   const mutation = useServerMutation({
     action: signUpAction,
-    initialState: { success: false },
     setError,
     onSuccess: () => {
       toast.success(t('forms.sign-up.success'))
@@ -68,7 +62,7 @@ export function SignUpForm({
 
   const onSubmit = handleSubmit((values) => {
     const formData = new FormData()
-    
+
     Object.entries(values).forEach(([key, value]) => {
       if (value !== undefined && value !== null) {
         formData.append(key, String(value))
@@ -95,45 +89,57 @@ export function SignUpForm({
           </p>
         </div>
 
-        <Form.Input 
-          name="full_name" 
+        <Form.Input
+          name="full_name"
           label={t('forms.sign-up.fields.full_name.label')}
+          placeholder={t('forms.sign-up.fields.full_name.placeholder')}
           autoComplete="name"
           disabled={isLoading}
         />
-        
-        <Form.Input 
-          name="email" 
+
+        <Form.Input
+          name="email"
           type="email"
           label={t('forms.sign-up.fields.email.label')}
+          placeholder={t('forms.sign-up.fields.email.placeholder')}
           autoComplete="email"
           disabled={isLoading}
         />
-        
-        <Form.Input 
-          name="phone" 
-          type="tel"
+
+        <Form.Phone
+          name="phone"
           label={t('forms.sign-up.fields.phone.label')}
-          autoComplete="tel"
-          disabled={isLoading}
+          placeholder={t('forms.sign-up.fields.phone.placeholder')}
         />
-        
-        <Form.Input 
-          name="password" 
-          type="password" 
+
+        <Form.Input
+          name="password"
+          type="password"
           label={t('forms.sign-up.fields.password.label')}
-          autoComplete="new-password"
-          disabled={isLoading}
-        />
-        
-        <Form.Input 
-          name="password_confirmation" 
-          type="password" 
-          label={t('forms.sign-up.fields.password-confirmation.label')}
+          placeholder={t('forms.sign-up.fields.password.placeholder')}
           autoComplete="new-password"
           disabled={isLoading}
         />
 
+        <Form.Input
+          name="password_confirmation"
+          type="password"
+          label={t('forms.sign-up.fields.password-confirmation.label')}
+          placeholder={t('forms.sign-up.fields.password-confirmation.placeholder')}
+          autoComplete="new-password"
+          disabled={isLoading}
+        />
+        <div className="flex justify-start gap-2">
+          <Building2  size={25}/>
+          <Form.Checkbox
+            name="type_register"
+            label={
+              <span className="font-normal ">
+                {t('forms.sign-up.fields.type_register.label')}
+              </span>
+            }
+          />
+        </div>
         <Field>
           <Button
             type="submit"
@@ -151,11 +157,11 @@ export function SignUpForm({
 
         <Field className="py-4">
           <GoogleAuth disabled={isLoading} />
-          
+
           <FieldDescription className="text-center">
             <span>{t('forms.sign-up.fields.sign-in.placeholder')}</span>
-            <Link 
-              href="/auth/sign-in" 
+            <Link
+              href="/auth/sign-in"
               className="ml-1 text-sm font-medium text-primary hover:underline"
             >
               {t('forms.sign-up.fields.sign-in.label')}

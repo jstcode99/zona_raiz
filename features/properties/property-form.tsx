@@ -10,7 +10,7 @@ import {
   defaultPropertyValues,
   type PropertyFormData,
   type PropertyLocationFormData,
-} from "@/domain/entities/schemas/property"
+} from "@/domain/entities/schemas/propertySchema"
 
 import { Form } from "@/components/ui/form"
 import { useServerMutation } from "@/shared/hooks/useServerMutation"

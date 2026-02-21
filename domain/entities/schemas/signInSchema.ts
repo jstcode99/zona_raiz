@@ -10,3 +10,8 @@ export const signInSchema = yup.object({
 })
 
 export type SignInFormValues = yup.InferType<typeof signInSchema>
+
+export const defaultSignInValues: SignInFormValues = {
+  email: '',
+  password: '',
+};

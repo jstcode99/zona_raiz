@@ -1,18 +1,12 @@
-import { SupabaseAuthRepository } from "@/infrastructure/db/SupabaseAuthRepository"
-import { redirect } from "next/navigation"
+import { getPostLoginState } from "@/application/actions/postLoginActions"
+import { PostLoginContainer } from "@/features/post-login/post-login-container"
 
 export default async function PostLoginPage() {
-  const repo = new SupabaseAuthRepository()
+  const state = await getPostLoginState()
 
-  const realEstates = await repo.getRealStates()
-
-  if (!realEstates || realEstates.length === 0) {
-    redirect("post-login/real-estate-creation")
-  }
-
-  if (realEstates.length === 1) {
-    redirect(`/dashboard/${realEstates[0].id}`)
-  }
-
-  redirect("dashboard/real-estate-selection")
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-muted/50 p-4">
+      <PostLoginContainer initialState={state} />
+    </div>
+  )
 }

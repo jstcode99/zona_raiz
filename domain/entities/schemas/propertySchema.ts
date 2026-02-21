@@ -90,8 +90,8 @@ export const propertySchema = yup.object()
   .concat(propertyDetailsSchema)
   .concat(propertyLocationSchema);
 
-export type PropertyLocationFormData = yup.InferType<typeof propertyLocationSchema>;
-export type PropertyDetailFormData = yup.InferType<typeof propertyDetailsSchema>;
+export type PropertyLocationFormValue = yup.InferType<typeof propertyLocationSchema>;
+export type PropertyDetailFormValue = yup.InferType<typeof propertyDetailsSchema>;
 
 
 // Función para chequear si ya completó la parte de detalles físicos
@@ -109,9 +109,9 @@ export const propertySchemaUpdate = yup.object({
   id: yup.string().uuid().required()
 }).concat(propertySchema)
 
-export type PropertyFormData = yup.InferType<typeof propertySchema>;
+export type PropertyFormValues = yup.InferType<typeof propertySchema>;
 
-export const defaultPropertyValues: PropertyFormData = {
+export const defaultPropertyValues: PropertyFormValues = {
   address: "Cr 24",
   neighborhood: "",
   city: "",
