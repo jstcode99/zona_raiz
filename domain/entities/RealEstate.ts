@@ -1,6 +1,4 @@
-import { UserRole } from "./Profile";
-
-export type RealEstateRole = Exclude<UserRole, "client">
+import { EAgentRole } from "./RealEstateAgent";
 
 export interface RealEstate {
   id: string
@@ -19,5 +17,5 @@ export interface RealEstate {
 
 export interface RealEstateWithRole {
   real_estate:RealEstate,
-  role: RealEstateRole
+  role: EAgentRole
 }

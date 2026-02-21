@@ -9,7 +9,9 @@ import { toast } from "sonner"
 import {
   createRealEstateSchema,
   defaultRealEstateValues,
+  updateRealEstateSchema,
   type CreateRealEstateFormValues,
+  type UpdateRealEstateFormValues
 } from "@/domain/entities/schemas/realEstateSchema"
 
 import { Form } from "@/components/ui/form"
@@ -20,7 +22,7 @@ import { flatten, cn } from "@/lib/utils"
 import { createRealEstateAction, updateRealEstateAction } from "@/application/actions/realStateActions"
 
 interface RealEstateFormProps extends ComponentProps<"form"> {
-  defaultValues?: CreateRealEstateFormValues
+  defaultValues?: CreateRealEstateFormValues | UpdateRealEstateFormValues
   id?: string
 }
 
@@ -31,10 +33,11 @@ export function RealEstateForm({
   ...props
 }: RealEstateFormProps) {
   const { t } = useTranslation()
+  const isUpdateMode = Boolean(id)
 
-  const form = useForm<CreateRealEstateFormValues>({
-    resolver: yupResolver(createRealEstateSchema),
-    defaultValues: defaultRealEstateValues,
+  const form = useForm<CreateRealEstateFormValues | UpdateRealEstateFormValues>({
+    resolver: yupResolver(isUpdateMode ? updateRealEstateSchema : createRealEstateSchema),
+    defaultValues: defaultValues || defaultRealEstateValues,
     mode: "onBlur",
   })
 
@@ -44,18 +47,20 @@ export function RealEstateForm({
     formState: { isSubmitting, isDirty }
   } = form
 
+
   const mutation = useServerMutation({
-    action: id ? updateRealEstateAction : createRealEstateAction,
-    initialState: { success: false },
+    action: isUpdateMode ? updateRealEstateAction : createRealEstateAction,
     setError: form.setError,
     onSuccess: () => {
-      toast.success(t("forms.real-estate.success"))
-      if (!id) reset() // Limpiar solo en create
+      toast.success(t(`forms.real-estate.${isUpdateMode ? 'updated' : 'created'}`))
+      if (!isUpdateMode) reset()
     },
     onError: (error) => {
       console.error("Real estate error:", error)
+      toast.error(t("forms.real-estate.error"))
     },
   })
+
 
   useEffect(() => {
     if (defaultValues) {
@@ -68,7 +73,6 @@ export function RealEstateForm({
 
     const data = flatten(values, '', formData)
     if (id) data.append("id", id)
-    console.log(data);
     mutation.action(data)
   })
 
@@ -78,18 +82,9 @@ export function RealEstateForm({
     <Form
       {...props}
       form={form}
-      className={cn("py-6 px-6 max-w-3xl mx-auto space-y-8", className)}
+      className={cn("py-6 px-6 mx-auto space-y-8", className)}
       onSubmit={onSubmit}
     >
-      <div className="text-center space-y-2">
-        <h1 className="text-2xl font-bold">
-          {t("forms.real-estate.title")}
-        </h1>
-        <p className="text-muted-foreground">
-          {t("forms.real-estate.subtitle")}
-        </p>
-      </div>
-
       <Form.Set legend={t("forms.real-estate.basic-info")}>
         <Form.Input
           name="name"

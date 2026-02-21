@@ -4,10 +4,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { UserWithProfile } from '@/domain/entities/User'
 import i18next from "i18next"
 import { ComponentProps } from 'react'
-import { AvatarUpload } from "@/features/account/avatar-upload"
-import { AccountForm } from "@/features/account/account-form"
+import { AvatarUpload } from "@/features/profile/avatar-upload"
+import { ProfileForm } from "@/features/profile/profile-form"
 
-export default function AccountSectionCard({
+export default function ProfileSectionCard({
   className,
   defaultValues,
   ...props
@@ -30,7 +30,7 @@ export default function AccountSectionCard({
                         full_name={defaultValues.profile.full_name || ''}
                     />
                 </div>
-                <AccountForm defaultValues={{
+                <ProfileForm defaultValues={{
                     full_name: defaultValues.profile.full_name || '',
                     phone: defaultValues.profile.phone || '',
                 }} />

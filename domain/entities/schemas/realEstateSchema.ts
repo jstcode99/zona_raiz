@@ -3,14 +3,17 @@ import { nameSchema } from '../fields/nameSchema'
 import { descriptionSchema } from '../fields/descriptionSchema'
 import { whatsappSchema } from '../fields/whatsapp'
 import { addressSchema } from '../fields/addressSchema'
-import { imageFileSchema } from '../fields/imageSchema'
 import { idSchema } from '../fields/idSchema'
+import { avatarSchema } from '../fields/avatarSchema'
+import i18next from 'i18next'
 
 export const createRealEstateSchema = yup.object({
   name: nameSchema,
   description: descriptionSchema,
   whatsapp: whatsappSchema,
-  logo: imageFileSchema,
+  logo: avatarSchema.required(i18next.t('validations.required', {
+    attribute: 'logo'
+  })),
   address: addressSchema,
 })
 
@@ -19,7 +22,7 @@ export const updateRealEstateSchema = yup.object({
   name: nameSchema.optional(),
   description: descriptionSchema.optional(),
   whatsapp: whatsappSchema.optional(),
-  logo: imageFileSchema.optional(),
+  logo: avatarSchema,
   address: addressSchema,
 })
 
@@ -32,7 +35,7 @@ export const defaultRealEstateValues = {
   name: 'Zona raiz',
   description: 'zona raiz colombia',
   whatsapp: '+57 3168314191',
-  logo: undefined,
+  logo: undefined as unknown as File,
   address: {
     street: 'Calle 40',
     city: 'Bogota',

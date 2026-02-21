@@ -20,10 +20,33 @@ const PUBLIC_ROUTES = [
 ] as const
 
 const ROLE_ROUTES: Record<UserRole, string[]> = {
-  admin: ["/admin", "/dashboard", "/real-estates", "/agents", "/settings"],
-  coordinator: ["/dashboard", "/real-estates", "/agents", "/properties"],
-  agent: ["/dashboard", "/properties", "/clients"],
-  client: ["/dashboard", "/properties", "/favorites"],
+  admin: [
+    "/api",
+    "/admin",
+    "/dashboard",
+    "/real-estates",
+    "/agents",
+    "/settings",
+  ],
+  coordinator: [
+    "/api",
+    "/dashboard",
+    "/real-estates",
+    "/agents",
+    "/properties"
+  ],
+  agent: [
+    "/api",
+    "/dashboard",
+    "/properties",
+    "/clients"],
+
+  client: [
+    "/api",
+    "/dashboard",
+    "/properties",
+    "/favorites"],
+
 }
 
 // ==========================================
@@ -123,7 +146,7 @@ export async function updateSession(request: NextRequest) {
 
   // 9. Verificar permisos por rol
   if (!hasRoleAccess(role, pathname)) {
-    return redirectTo("/unauthorized", request)
+    return redirectTo("/auth/sign-in", request)
   }
 
   // 10. Todo OK -> continuar

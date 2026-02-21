@@ -315,7 +315,21 @@
     },
     "profile": {
       "title": "Perfil",
-      "subtitle": "Administra tus datos personales."
+      "subtitle": "Administra tus datos personales.",
+      "fields": {
+        "full_name": {
+          "label": "Nombre completo",
+          "placeholder": "Joe",
+          "message": "El nombre completo deben tener al menos 3 caracteres",
+          "message1": "El nombre completo no pueden tener más de 25 caracteres"
+        },
+        "phone": {
+          "label": "Teléfono",
+          "placeholder": "+ ## ### #### ###",
+          "message": "El número de teléfono debe tener al menos 10 caracteres",
+          "message1": "El número de teléfono no puede tener más de 16 caracteres"
+        }
+      }
     }
   },
   "words": {

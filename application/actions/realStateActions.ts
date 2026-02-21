@@ -2,7 +2,7 @@
 
 import { ActionResult } from "@/shared/hooks/useServerMutation";
 import { createRealEstateSchema, updateRealEstateSchema } from "@/domain/entities/schemas/realEstateSchema";
-import { SupabaseRealEstateRepository } from "@/infrastructure/db/SupabaseRealEstateRepository";
+import { createRealEstateRepository, SupabaseRealEstateRepository } from "@/infrastructure/db/SupabaseRealEstateRepository";
 import { revalidatePath } from "next/cache";
 
 export async function createRealEstateAction(
@@ -25,7 +25,7 @@ export async function createRealEstateAction(
       abortEarly: false
     })
 
-    const repo = new SupabaseRealEstateRepository()
+    const repo = createRealEstateRepository()
     await repo.create(validated)
 
     revalidatePath("/dashboard/real-estates")
@@ -58,21 +58,27 @@ export async function updateRealEstateAction(
   formData: FormData
 ): Promise<ActionResult> {
   try {
-    const rawData = Object.fromEntries(formData);
-
-    const validate = await updateRealEstateSchema.validate(rawData, {
-      abortEarly: false,
-    });
+    const rawData = Object.fromEntries(formData)
 
     const data = {
-      ...validate,
-      address: JSON.parse(rawData.address as string),
+      id: rawData.id,
+      name: rawData.name,
+      description: rawData.description,
+      whatsapp: rawData.whatsapp,
+      logo: rawData.logo,
+      address: typeof rawData.address === 'string'
+        ? JSON.parse(rawData.address)
+        : rawData.address,
     }
 
-    const { id } = data
+    const validated = await updateRealEstateSchema.validate(data, {
+      abortEarly: false
+    })
 
-    const repo = new SupabaseRealEstateRepository();
-    await repo.update(id, data);
+    const { id } = validated
+
+    const repo = createRealEstateRepository()
+    await repo.update(id, validated);
 
     revalidatePath("/dashboard/real-estates");
     revalidatePath(`/dashboard/real-estates/${id}`);

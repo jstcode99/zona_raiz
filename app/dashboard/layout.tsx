@@ -6,7 +6,7 @@ import {
 import { CSSProperties, ReactNode, Suspense } from "react"
 import { AppSidebar } from "@/features/navigation/app-sidebar"
 import { PageLoader } from "@/features/loader/page-loader"
-import { SupabaseProfileRepository } from "@/infrastructure/db/SupabaseProfileRepository"
+import { createProfileRepository } from "@/infrastructure/db/SupabaseProfileRepository"
 import { encodedRedirect } from "@/shared/redirect"
 import { EUserRole } from "@/domain/entities/Profile"
 
@@ -16,8 +16,8 @@ export default async function DashboardLayout({
   children: ReactNode
 }) {
 
-  const supabase = new SupabaseProfileRepository()
-  const profile = await supabase.getCurrentProfile()
+  const profileRepo = createProfileRepository()
+  const profile = await profileRepo.getCurrentProfile()
 
   if (!profile || !profile.profile) {
     return encodedRedirect('error', '/auth/sign-in', 'No se pudo cargar el perfil')

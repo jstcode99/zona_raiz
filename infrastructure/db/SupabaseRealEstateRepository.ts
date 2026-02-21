@@ -2,7 +2,7 @@ import { unstable_cache, revalidateTag } from "next/cache"
 import { createSupabaseServerClient } from "./supabase.server"
 import { createSupabaseRouteClient } from "./supabase.route"
 import { RealEstateRepository } from "@/domain/repositories/RealEstateRepository"
-import { RealEstate, RealEstateRole } from "@/domain/entities/RealEstate"
+import { RealEstate } from "@/domain/entities/RealEstate"
 import { idSchema } from "@/domain/entities/fields/idSchema"
 import {
   createRealEstateSchema,
@@ -16,6 +16,7 @@ import {
   REAL_ESTATE_ROLES,
 } from "@/infrastructure/config/constants"
 import { CacheConfig } from "../config/cache"
+import { EAgentRole, RealEstateAgent } from "@/domain/entities/RealEstateAgent"
 
 export class SupabaseRealEstateRepository implements RealEstateRepository {
   private cacheConfig: CacheConfig
@@ -26,21 +27,6 @@ export class SupabaseRealEstateRepository implements RealEstateRepository {
       tags: [],
       ...cacheConfig
     }
-  }
-
-  // ==========================================
-  // HELPERS PRIVADOS
-  // ==========================================
-
-  private async ensureAuth() {
-    const supabase = await createSupabaseServerClient()
-    const { data: { user }, error } = await supabase.auth.getUser()
-
-    if (error || !user) {
-      throw new Error("Authentication required")
-    }
-
-    return { supabase, user }
   }
 
   private invalidateListCache(): void {
@@ -57,7 +43,6 @@ export class SupabaseRealEstateRepository implements RealEstateRepository {
   // ==========================================
 
   async findByIdFresh(id: string): Promise<RealEstate | null> {
-    const { user } = await this.ensureAuth()
     const validatedId = await idSchema.validate(id)
 
     const supabase = await createSupabaseServerClient()
@@ -75,11 +60,23 @@ export class SupabaseRealEstateRepository implements RealEstateRepository {
     return data as RealEstate
   }
 
-  async findById(id: string): Promise<RealEstate | null> {
+  async findById(id: string, userId?: string): Promise<RealEstate | null> {
     const validatedId = await idSchema.validate(id)
 
     const fetchData = async () => {
-      return this.findByIdFresh(validatedId)
+      const supabase = await createSupabaseServerClient()
+      const { data, error } = await supabase
+        .from("real_estates")
+        .select("*")
+        .eq("id", validatedId)
+        .single()
+
+      if (error) {
+        if (error.code === "PGRST116") return null
+        throw new Error(error.message)
+      }
+
+      return data as RealEstate
     }
 
     const cachedFetch = unstable_cache(
@@ -98,7 +95,6 @@ export class SupabaseRealEstateRepository implements RealEstateRepository {
   }
 
   async findAllFresh(): Promise<RealEstate[]> {
-    await this.ensureAuth()
 
     const supabase = await createSupabaseServerClient()
     const { data, error } = await supabase
@@ -136,7 +132,6 @@ export class SupabaseRealEstateRepository implements RealEstateRepository {
   // ==========================================
 
   async create(data: CreateRealEstateFormValues): Promise<RealEstate> {
-    const { user } = await this.ensureAuth()
 
     const validated = await createRealEstateSchema.validate(data, {
       abortEarly: false,
@@ -237,7 +232,6 @@ export class SupabaseRealEstateRepository implements RealEstateRepository {
   }
 
   async update(id: string, data: UpdateRealEstateFormValues): Promise<RealEstate> {
-    const { user } = await this.ensureAuth()
     const validatedId = await idSchema.validate(id)
 
     const validated = await updateRealEstateSchema.validate(
@@ -362,7 +356,6 @@ export class SupabaseRealEstateRepository implements RealEstateRepository {
   }
 
   async delete(id: string): Promise<void> {
-    const { user } = await this.ensureAuth()
     const validatedId = await idSchema.validate(id)
 
     const supabase = await createSupabaseRouteClient()
@@ -398,10 +391,8 @@ export class SupabaseRealEstateRepository implements RealEstateRepository {
   async addAgent(
     realEstateId: string,
     profileId: string,
-    role: RealEstateRole
+    role: EAgentRole
   ): Promise<void> {
-    await this.ensureAuth()
-
     const supabase = await createSupabaseRouteClient()
 
     if (!REAL_ESTATE_ROLES.includes(role)) {
@@ -427,8 +418,6 @@ export class SupabaseRealEstateRepository implements RealEstateRepository {
   }
 
   async removeAgent(realEstateId: string, profileId: string): Promise<void> {
-    await this.ensureAuth()
-
     const supabase = await createSupabaseRouteClient()
 
     const { error } = await supabase
@@ -442,9 +431,7 @@ export class SupabaseRealEstateRepository implements RealEstateRepository {
     this.invalidateDetailCache(realEstateId)
   }
 
-  async getAgents(realEstateId: string): Promise<any[]> {
-    await this.ensureAuth()
-
+  async getAgents(realEstateId: string): Promise<RealEstateAgent[]> {
     const supabase = await createSupabaseServerClient()
 
     const { data, error } = await supabase
@@ -452,8 +439,10 @@ export class SupabaseRealEstateRepository implements RealEstateRepository {
       .select(`
         id,
         role,
+        real_estate_id,
+        profile_id,
         created_at,
-        profiles (
+        profile:profiles (
           id,
           full_name,
           avatar_url,
@@ -463,7 +452,7 @@ export class SupabaseRealEstateRepository implements RealEstateRepository {
       .eq("real_estate_id", realEstateId)
 
     if (error) throw new Error(error.message)
-    return data || []
+    return (data || []).map((item: any) => item as RealEstateAgent)
   }
 
   invalidateAllCache(): void {

@@ -8,17 +8,14 @@ const SUPPORTED_FORMATS = [
   "image/jpg",
 ]
 
+
 export const avatarSchema = yup
     .mixed<File>()
-    .nullable()
-    .test("required", "Debes seleccionar una imagen", (value) => {
-      return value instanceof File
+    .test("fileSize", "logo.size", (file) => {
+      if (!file || !(file instanceof File)) return true // Skip if no file
+      return file.size <= MAX_FILE_SIZE
     })
-    .test("file-size", "La imagen es demasiado grande", (value) => {
-      if (!value) return false
-      return value.size <= MAX_FILE_SIZE
-    })
-    .test("file-type", "Formato de imagen no válido", (value) => {
-      if (!value) return false
-      return SUPPORTED_FORMATS.includes(value.type)
+    .test("fileType", "logo.type", (file) => {
+      if (!file || !(file instanceof File)) return true // Skip if no file
+      return SUPPORTED_FORMATS.includes(file.type)
     })

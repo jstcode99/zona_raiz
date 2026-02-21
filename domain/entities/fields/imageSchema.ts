@@ -1,11 +1,7 @@
-import i18next from 'i18next'
 import * as yup from 'yup'
 
 export const imageFileSchema = yup
     .mixed<File>()
-    .required(i18next.t('validations.required', {
-        attribute: 'image'
-    }))
     .test('fileSize', 'El archivo debe ser menor a 5MB', (value) => {
         return value && value.size <= 5 * 1024 * 1024
     })

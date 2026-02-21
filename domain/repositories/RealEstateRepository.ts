@@ -1,5 +1,6 @@
-import { RealEstate, RealEstateRole } from "@/domain/entities/RealEstate";
+import { RealEstate } from "@/domain/entities/RealEstate";
 import { CreateRealEstateFormValues, UpdateRealEstateFormValues } from "../entities/schemas/realEstateSchema";
+import { EAgentRole, RealEstateAgent } from "../entities/RealEstateAgent";
 
 export interface RealEstateRepository {
   // Queries
@@ -14,9 +15,9 @@ export interface RealEstateRepository {
   delete(id: string): Promise<void>;
   
   // Agent management
-  addAgent(realEstateId: string, profileId: string, role: RealEstateRole): Promise<void>;
+  addAgent(realEstateId: string, profileId: string, role: EAgentRole): Promise<void>;
   removeAgent(realEstateId: string, profileId: string): Promise<void>;
-  getAgents(realEstateId: string): Promise<any[]>;
+  getAgents(realEstateId: string): Promise<RealEstateAgent[]>;
   
   // Cache
   invalidateAllCache(): void;

@@ -22,7 +22,6 @@ export async function getProfileAction(): Promise<ActionResult & { data?: any }>
 }
 
 export async function updateProfileAction(
-  _: ActionResult,
   formData: FormData
 ): Promise<ActionResult> {
   try {

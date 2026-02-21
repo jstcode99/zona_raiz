@@ -27,7 +27,6 @@ export function AvatarUpload({ avatarUrl, full_name = '' }: Props) {
 
   const mutation = useServerMutation({
     action: updateAvatarAction,
-    initialState: { success: false },
     setError: form.setError,
   })
 

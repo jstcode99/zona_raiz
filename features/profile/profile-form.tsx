@@ -18,15 +18,15 @@ import { Form } from "@/components/ui/form"
 import { cn } from "@/lib/utils"
 import { updateProfileAction } from "@/application/actions/profileAction"
 
-interface AccountFormProps extends ComponentProps<"form"> {
+interface ProfileFormProps extends ComponentProps<"form"> {
   defaultValues: ProfileFormValues
 }
 
-export function AccountForm({
+export function ProfileForm({
   className,
   defaultValues,
   ...props
-}: AccountFormProps) {
+}: ProfileFormProps) {
   const { t } = useTranslation()
 
   const form = useForm<ProfileFormValues>({
@@ -46,7 +46,6 @@ export function AccountForm({
 
   const mutation = useServerMutation({
     action: updateProfileAction,
-    initialState: { success: false },
     setError: form.setError,
     onSuccess: () => {
       toast.success(t('forms.profile.success') || 'Profile updated successfully')
@@ -92,12 +91,9 @@ export function AccountForm({
           disabled={isLoading}
         />
         
-        <Form.Input 
+        <Form.Phone 
           name="phone" 
-          type="tel"
           label={t('forms.profile.fields.phone.label') || 'Phone'}
-          autoComplete="tel"
-          disabled={isLoading}
         />
 
         <Field className="pt-4">

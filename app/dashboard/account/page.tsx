@@ -2,7 +2,7 @@
 import { encodedRedirect } from "@/shared/redirect"
 import { SupabaseProfileRepository } from "@/infrastructure/db/SupabaseProfileRepository"
 import AuthBackgroundShape from '@/assets/svg/background-shape'
-import AccountSectionCard from "@/features/account/account-section-card"
+import AccountSectionCard from "@/features/profile/profile-section-card"
 
 export default async function Account() {
   const supabase = new SupabaseProfileRepository()
