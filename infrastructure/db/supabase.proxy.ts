@@ -1,53 +1,14 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { createServerClient } from "@supabase/ssr"
-import { EUserRole, UserRole } from "@/domain/entities/Profile"
-import { COOKIE_NAMES, COOKIE_OPTIONS } from "../config/constants"
-import { createAuthRepository } from "./SupabaseAuthRepository"
+import { EUserRole } from "@/domain/entities/profile.entity"
+import {
+  COOKIE_NAMES,
+  COOKIE_OPTIONS,
+  ROUTES,
+  PUBLIC_ROUTES,
+} from "../config/constants"
+import { SupabaseSessionAdapter } from "@/domain/adapters/supabase/supabase-session.adapter"
 
-// ==========================================
-// CONFIGURACIÓN
-// ==========================================
-
-const PUBLIC_ROUTES = [
-  "/",
-  "/auth/sign-in",
-  "/auth/sign-up",
-  "/auth/otp",
-  "/auth/callback",
-  "/post-login",
-  "/post-login/register-real-estate",
-  "/unauthorized",
-] as const
-
-const ROLE_ROUTES: Record<UserRole, string[]> = {
-  admin: [
-    "/api",
-    "/admin",
-    "/dashboard",
-    "/real-estates",
-    "/agents",
-    "/settings",
-  ],
-  coordinator: [
-    "/api",
-    "/dashboard",
-    "/real-estates",
-    "/agents",
-    "/properties"
-  ],
-  agent: [
-    "/api",
-    "/dashboard",
-    "/properties",
-    "/clients"],
-
-  client: [
-    "/api",
-    "/dashboard",
-    "/properties",
-    "/favorites"],
-
-}
 
 // ==========================================
 // MIDDLEWARE
@@ -56,100 +17,72 @@ const ROLE_ROUTES: Record<UserRole, string[]> = {
 export async function updateSession(request: NextRequest) {
   const { pathname } = request.nextUrl
 
-  // 1. Rutas públicas - permitir sin auth
   if (isPublicRoute(pathname)) {
     return NextResponse.next()
   }
 
-  // 2. Crear response mutable
-  let response = NextResponse.next({
-    request: {
-      headers: request.headers,
-    },
-  })
+  const response = createMutableResponse(request)
+  const supabase = createSupabaseServerClient(request, response)
 
-  // 3. Crear cliente Supabase con proxy
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        getAll() {
-          return request.cookies.getAll()
-        },
-        setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value, options }) => {
-            request.cookies.set(name, value)
-            response.cookies.set(name, value, options)
-          })
-        },
-      },
-    }
-  )
-
-  // 4. Verificar sesión
   const {
     data: { user },
     error,
   } = await supabase.auth.getUser()
 
-  // 5. No autenticado -> login
   if (!user || error) {
-    return redirectTo("/auth/sign-in", request)
+    return redirectTo(ROUTES.SIGN_IN, request)
   }
 
-  // 6. Obtener cookies de app
-  const role = request.cookies.get(COOKIE_NAMES.ROLE)?.value as UserRole | undefined
+  const role = request.cookies.get(COOKIE_NAMES.ROLE)?.value as EUserRole | undefined
   const realEstateId = request.cookies.get(COOKIE_NAMES.REAL_ESTATE)?.value
 
-  // 7. Sin rol -> forzar re-login
   if (!role) {
-    return redirectTo("/auth/sign-in", request)
+    return redirectTo(ROUTES.SIGN_IN, request)
   }
 
-  // 8. PROXY DE REAL ESTATE para agentes, coordinadores y admins
-  if (role === EUserRole.Agent || role === EUserRole.Coordinator || role === EUserRole.Admin) {
+  // 🚫 CLIENTE no entra a dashboard
+  if (role === EUserRole.Client) {
+    return redirectTo(ROUTES.HOME, request)
+  }
 
-    // Si no hay realEstateId, verificar cuántos tiene
-    if (!realEstateId && !pathname.startsWith("/post-login")) {
 
-      const authRepo = createAuthRepository()
+  // ==========================================
+  // REAL ESTATE CONTEXT GUARD
+  // ==========================================
 
-      const realEstates = await authRepo.getRealEstatesForUser()
-      const count = realEstates.length
+  // 👇 Roles que necesitan contexto de real estate
+  if (requiresRealEstateContext(role)) {
 
-      // CASO 1: Tiene exactamente 1 → Auto-seleccionar
-      if (count === 1) {
-        const autoRealEstateId = realEstates[0].real_estate.id
+    // 🔁 Si NO tiene contexto → intentar auto-selección
+    if (!realEstateId) {
+      const sessionAdapter = new SupabaseSessionAdapter()
+      const realEstates = await sessionAdapter.getRealEstatesForUser()
 
-        // Crear redirect response con la cookie incluida
-        const redirectResponse = redirectTo("/dashboard", request)
-        redirectResponse.cookies.set(
+      // ⭐ Solo uno → guardar cookie y entrar al dashboard
+      if (realEstates.length === 1) {
+        const res = redirectTo(ROUTES.DASHBOARD, request)
+        res.cookies.set(
           COOKIE_NAMES.REAL_ESTATE,
-          autoRealEstateId,
+          realEstates[0].real_estate.id,
           COOKIE_OPTIONS
         )
-
-        return redirectResponse
+        return res
       }
 
-      // CASO 2: Tiene 0 o varios → Ir a post-login
-      // (0 = registrar nuevo, varios = seleccionar)
-      return redirectTo("/post-login", request)
+      // ❗ Ninguno o varios → onboarding
+      if (!isRoute(pathname, ROUTES.ONBOARDING)) {
+        return redirectTo(ROUTES.ONBOARDING, request)
+      }
+
+      return response
     }
 
-    // Si ya tiene realEstateId pero está en post-login → Ir a dashboard
-    if (realEstateId && pathname.startsWith("/post-login")) {
-      return redirectTo("/dashboard", request)
+    // ✅ Ya tiene contexto → no puede ir a onboarding
+    if (realEstateId && isRoute(pathname, ROUTES.ONBOARDING)) {
+      return redirectTo(ROUTES.DASHBOARD, request)
     }
   }
 
-  // 9. Verificar permisos por rol
-  if (!hasRoleAccess(role, pathname)) {
-    return redirectTo("/auth/sign-in", request)
-  }
-
-  // 10. Todo OK -> continuar
   return response
 }
 
@@ -157,19 +90,50 @@ export async function updateSession(request: NextRequest) {
 // HELPERS
 // ==========================================
 
-function isPublicRoute(pathname: string): boolean {
-  return PUBLIC_ROUTES.some(
-    (route) => pathname === route || pathname.startsWith(`${route}/`)
+function createMutableResponse(request: NextRequest) {
+  return NextResponse.next({
+    request: { headers: request.headers },
+  })
+}
+
+function createSupabaseServerClient(
+  request: NextRequest,
+  response: NextResponse
+) {
+  return createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        getAll: () => request.cookies.getAll(),
+        setAll: (cookies) => {
+          cookies.forEach(({ name, value, options }) => {
+            request.cookies.set(name, value)
+            response.cookies.set(name, value, options)
+          })
+        },
+      },
+    }
   )
 }
 
-function hasRoleAccess(role: UserRole, pathname: string): boolean {
-  if (role === "admin") return true
-  const allowedRoutes = ROLE_ROUTES[role] || []
-  return allowedRoutes.some((route) => pathname.startsWith(route))
+function isPublicRoute(pathname: string) {
+  return PUBLIC_ROUTES.some((route) => isRoute(pathname, route))
 }
 
-function redirectTo(path: string, request: NextRequest): NextResponse {
+function isRoute(pathname: string, base: string) {
+  return pathname === base || pathname.startsWith(base + "/")
+}
+
+function requiresRealEstateContext(role: EUserRole) {
+  return (
+    role === EUserRole.Admin ||
+    role === EUserRole.Agent ||
+    role === EUserRole.Coordinator
+  )
+}
+
+function redirectTo(path: string, request: NextRequest) {
   const url = request.nextUrl.clone()
   url.pathname = path
   return NextResponse.redirect(url)

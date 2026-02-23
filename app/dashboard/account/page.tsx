@@ -1,15 +1,14 @@
 
 import { encodedRedirect } from "@/shared/redirect"
-import { SupabaseProfileRepository } from "@/infrastructure/db/SupabaseProfileRepository"
 import AuthBackgroundShape from '@/assets/svg/background-shape'
 import AccountSectionCard from "@/features/profile/profile-section-card"
+import { getCurrentUserCached } from "@/services/session.service";
 
 export default async function Account() {
-  const supabase = new SupabaseProfileRepository()
-  const data = await supabase.getCurrentProfile()
+  const profile = await getCurrentUserCached();
 
-  if (!data || !data.profile) {
-    return encodedRedirect('error', '/dashboard/account', 'No se pudo cargar el perfil')
+  if (!profile) {
+    return encodedRedirect('error', '/auth/sign-in', 'No se pudo cargar el perfil')
   }
 
   return (
@@ -17,7 +16,7 @@ export default async function Account() {
       <div className='absolute'>
         <AuthBackgroundShape />
       </div>
-      <AccountSectionCard defaultValues={data} />
+      <AccountSectionCard defaultValues={profile} />
     </div>
   )
 }

@@ -10,11 +10,11 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
-import { RealEstateAgent } from '@/domain/entities/RealEstateAgent'
+import { RealEstateAgentEntity } from '@/domain/entities/real-estate-agent.entity'
 
 
 type Props = {
-    agents: RealEstateAgent[],
+    agents: RealEstateAgentEntity[],
     className?: string
 }
 
@@ -45,8 +45,8 @@ export const RealEstateAgentsCard = ({ agents, className }: Props) => {
                                 <Avatar className='size-11 rounded-sm'>
                                     <AvatarFallback className='bg-primary/10 shrink-0 rounded-sm'>
                                         <img
-                                            src={agent.profile?.avatar_url && ''}
-                                            alt={agent.profile?.full_name && ''}
+                                            src={agent.profile?.avatar_url as string && ''}
+                                            alt={agent.profile?.full_name as string && ''}
                                             className='size-6'
                                         />
                                     </AvatarFallback>

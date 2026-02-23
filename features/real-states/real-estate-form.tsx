@@ -7,22 +7,21 @@ import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
 
 import {
-  createRealEstateSchema,
   defaultRealEstateValues,
-  updateRealEstateSchema,
-  type CreateRealEstateFormValues,
-  type UpdateRealEstateFormValues
-} from "@/domain/entities/schemas/realEstateSchema"
+  realEstateSchema,
+  type RealEstateFormValues
+} from "@/domain/entities/schemas/real-estate.schema"
 
 import { Form } from "@/components/ui/form"
 import { Button } from "@/components/ui/button"
 import { Spinner } from "@/components/ui/spinner"
-import { useServerMutation } from "@/shared/hooks/useServerMutation"
+import { useServerMutation } from "@/shared/hooks/use-server-mutation.hook"
 import { flatten, cn } from "@/lib/utils"
-import { createRealEstateAction, updateRealEstateAction } from "@/application/actions/realStateActions"
+import { updateRealEstateAction } from "@/domain/adapters/http/update-real-estate.action"
+import { createRealEstateAction } from "@/domain/adapters/http/create-real-estate.action"
 
 interface RealEstateFormProps extends ComponentProps<"form"> {
-  defaultValues?: CreateRealEstateFormValues | UpdateRealEstateFormValues
+  defaultValues?: RealEstateFormValues
   id?: string
 }
 
@@ -35,8 +34,8 @@ export function RealEstateForm({
   const { t } = useTranslation()
   const isUpdateMode = Boolean(id)
 
-  const form = useForm<CreateRealEstateFormValues | UpdateRealEstateFormValues>({
-    resolver: yupResolver(isUpdateMode ? updateRealEstateSchema : createRealEstateSchema),
+  const form = useForm<RealEstateFormValues>({
+    resolver: yupResolver(realEstateSchema),
     defaultValues: defaultValues || defaultRealEstateValues,
     mode: "onBlur",
   })
@@ -106,10 +105,6 @@ export function RealEstateForm({
           label={t("forms.real-estate.fields.description.label")}
           placeholder={t("forms.real-estate.fields.description.placeholder")}
           disabled={isLoading}
-        />
-        <Form.File
-          name="logo"
-          label={t("forms.real-estate.fields.logo.label")}
         />
       </Form.Set>
 

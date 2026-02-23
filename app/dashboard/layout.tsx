@@ -6,9 +6,9 @@ import {
 import { CSSProperties, ReactNode, Suspense } from "react"
 import { AppSidebar } from "@/features/navigation/app-sidebar"
 import { PageLoader } from "@/features/loader/page-loader"
-import { createProfileRepository } from "@/infrastructure/db/SupabaseProfileRepository"
 import { encodedRedirect } from "@/shared/redirect"
-import { EUserRole } from "@/domain/entities/Profile"
+import { EUserRole } from "@/domain/entities/profile.entity"
+import { getCurrentUserCached } from "@/services/session.service"
 
 export default async function DashboardLayout({
   children,
@@ -16,10 +16,9 @@ export default async function DashboardLayout({
   children: ReactNode
 }) {
 
-  const profileRepo = createProfileRepository()
-  const profile = await profileRepo.getCurrentProfile()
+  const profile = await getCurrentUserCached();
 
-  if (!profile || !profile.profile) {
+  if (!profile) {
     return encodedRedirect('error', '/auth/sign-in', 'No se pudo cargar el perfil')
   }
 
@@ -75,14 +74,8 @@ export default async function DashboardLayout({
     >
       <AppSidebar
         variant="inset"
-        menu={getMenuByRole(profile.profile?.role || "")}
-        user={{
-          user: {
-            id: profile.user.id,
-            email: profile.user.email,
-          },
-          profile: profile.profile
-        }}
+        menu={getMenuByRole(profile?.role || "")}
+        profile={profile}
       />
       <SidebarInset>
         <SiteHeader />

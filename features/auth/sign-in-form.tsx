@@ -14,12 +14,13 @@ import { ComponentProps, useEffect } from "react"
 import { useTranslation } from "react-i18next"
 import GoogleAuth from "./google-auth"
 import { Spinner } from "@/components/ui/spinner"
-import { defaultSignInValues, SignInFormValues, signInSchema } from "@/domain/entities/schemas/signInSchema"
-import { useServerMutation } from "@/shared/hooks/useServerMutation"
+import { defaultSignInValues, SignInFormValues, signInSchema } from "@/domain/entities/schemas/sign-in-schema"
+import { useServerMutation } from "@/shared/hooks/use-server-mutation.hook"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { cn } from "@/lib/utils"
-import { signInAction } from "@/application/actions/authActions"
+import { ROUTES } from "@/infrastructure/config/constants"
+import { signInAction } from "@/domain/adapters/http/sign-in.action"
 
 export function SignInForm({
   className,
@@ -40,7 +41,7 @@ export function SignInForm({
     action: signInAction,
     setError,
     onSuccess: () => {
-      router.push("/post-login")
+      router.push(ROUTES.ONBOARDING)
       router.refresh() // Refrescar para actualizar estado de auth
     },
     onError: (error) => {

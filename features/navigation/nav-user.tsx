@@ -26,16 +26,16 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar"
-import { UserWithProfile } from "@/domain/entities/User"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useTransition } from "react"
-import { signOutAction } from "@/application/actions/authActions"
+import { signOutAction } from "@/domain/adapters/http/sign-out.action"
+import { ProfileEntity } from "@/domain/entities/profile.entity"
 
 export function NavUser({
-  user,
+  profile,
 }: {
-  user: UserWithProfile
+  profile: ProfileEntity
 }) {
   const { isMobile } = useSidebar()
 
@@ -63,14 +63,11 @@ export function NavUser({
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
             >
               <Avatar className="h-8 w-8 rounded-lg grayscale">
-                <AvatarImage src={user.profile?.avatar_url || ""} alt={user.profile?.full_name || "User"} />
-                <AvatarFallback className="rounded-lg">{user.profile?.full_name?.substring(0, 2).toUpperCase() || "CN"}</AvatarFallback>
+                <AvatarImage src={profile?.avatar_url || ""} alt={profile?.full_name || "User"} />
+                <AvatarFallback className="rounded-lg">{profile?.full_name?.substring(0, 2).toUpperCase() || "CN"}</AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-medium">{user.profile?.full_name || "User"}</span>
-                <span className="text-muted-foreground truncate text-xs">
-                  {user.user.email}
-                </span>
+                <span className="truncate font-medium">{profile?.full_name || "User"}</span>
               </div>
               <IconDotsVertical className="ml-auto size-4" />
             </SidebarMenuButton>
@@ -84,14 +81,11 @@ export function NavUser({
             <DropdownMenuLabel className="p-0 font-normal">
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                 <Avatar className="h-8 w-8 rounded-lg">
-                  <AvatarImage src={user.profile?.avatar_url || ""} alt={user.profile?.full_name || "User"} />
-                  <AvatarFallback className="rounded-lg">{user.profile?.full_name?.substring(0, 2).toUpperCase() || "CN"}</AvatarFallback>
+                  <AvatarImage src={profile?.avatar_url || ""} alt={profile?.full_name || "User"} />
+                  <AvatarFallback className="rounded-lg">{profile?.full_name?.substring(0, 2).toUpperCase() || "CN"}</AvatarFallback>
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-medium">{user.profile?.full_name || "User"}</span>
-                  <span className="text-muted-foreground truncate text-xs">
-                    {user.user.email}
-                  </span>
+                  <span className="truncate font-medium">{profile?.full_name || "User"}</span>
                 </div>
               </div>
             </DropdownMenuLabel>

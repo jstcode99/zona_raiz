@@ -1,9 +1,10 @@
 {
   "app": {
-    "name": "Zona Raiz"
+    "name": "Zona Raiz",
+    "description": "Arriendos y ventas de inmuebles"
   },
   "pages": {
-    "post-login": {
+    "onboarding": {
       "title": "No tienes inmobiliaria",
       "subtitle": "Para acceder al dashboard, necesitas estar asociado a una inmobiliaria.",
       "call-action": "Registrar mi primera inmobiliaria.",
@@ -12,7 +13,7 @@
       "skip": "Vuelve cuando quieras completar el registro de inmobiliaria",
       "loading": "estamos cargando para ti las inmobiliarias asociadas a cuenta"
     },
-    "post-login-selectiobn": {
+    "onboarding-selectiobn": {
       "title": "Inmobiliaria",
       "subtitle": "Para acceder al dashboard, necesitas selecionar una inmobiliaria."
     }
@@ -316,6 +317,7 @@
     "profile": {
       "title": "Perfil",
       "subtitle": "Administra tus datos personales.",
+      "success": "Se ha actualizado los datos del perfil",
       "fields": {
         "full_name": {
           "label": "Nombre completo",

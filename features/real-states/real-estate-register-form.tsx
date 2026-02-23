@@ -5,28 +5,32 @@ import { yupResolver } from "@hookform/resolvers/yup"
 import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
-
 import {
-  createRealEstateSchema,
-  defaultRealEstateValues,
-  type CreateRealEstateFormValues,
-} from "@/domain/entities/schemas/realEstateSchema"
-
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle
+} from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Spinner } from "@/components/ui/spinner"
 import { Form } from "@/components/ui/form"
 import { Building2 } from "lucide-react"
-import { useServerMutation } from "@/shared/hooks/useServerMutation"
-import { createRealEstateAction } from "@/application/actions/realStateActions"
+import { useServerMutation } from "@/shared/hooks/use-server-mutation.hook"
 import { flatten } from "@/lib/utils"
+import { createRealEstateAction } from "@/domain/adapters/http/create-real-estate.action"
+import {
+  defaultRealEstateValues,
+  RealEstateFormValues,
+  realEstateSchema
+} from "@/domain/entities/schemas/real-estate.schema"
 
 export function RealEstateRegistrationForm() {
   const { t } = useTranslation()
   const router = useRouter()
 
-  const form = useForm<CreateRealEstateFormValues>({
-    resolver: yupResolver(createRealEstateSchema),
+  const form = useForm<RealEstateFormValues>({
+    resolver: yupResolver(realEstateSchema),
     defaultValues: defaultRealEstateValues,
     mode: "onBlur",
   })
@@ -48,7 +52,7 @@ export function RealEstateRegistrationForm() {
 
   const isLoading = isSubmitting || mutation.isPending
 
-  const onSubmit = handleSubmit((values: CreateRealEstateFormValues) => {
+  const onSubmit = handleSubmit((values: RealEstateFormValues) => {
     const formData = new FormData()
     flatten(values, '', formData)
 
@@ -79,7 +83,6 @@ export function RealEstateRegistrationForm() {
           onSubmit={onSubmit}
           className="space-y-6"
         >
-
           <Form.Set legend={t("forms.real-estate.basic-info")}>
             <Form.Input
               name="name"
@@ -101,10 +104,6 @@ export function RealEstateRegistrationForm() {
               label={t("forms.real-estate.fields.description.label")}
               placeholder={t("forms.real-estate.fields.description.placeholder")}
               disabled={isLoading}
-            />
-            <Form.File
-              name="logo"
-              label={t("forms.real-estate.fields.logo.label")}
             />
           </Form.Set>
 

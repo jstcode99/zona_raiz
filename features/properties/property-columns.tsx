@@ -1,7 +1,7 @@
 "use client"
 
 import { BaseRow } from "@/components/ui/data-table"
-import { Property } from "@/domain/entities/Property"
+import { PropertyEntity } from "@/domain/entities/property.entity"
 import { type ColumnDef } from "@tanstack/react-table"
 import {
   DropdownMenu,
@@ -16,7 +16,7 @@ import Link from "next/link"
 
 export type PropertyRow = BaseRow & {
   created_at: string
-} & Property
+} & PropertyEntity
 
 export const PropertyColumns: ColumnDef<PropertyRow>[] = [
   {

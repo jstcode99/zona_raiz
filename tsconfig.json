@@ -1,7 +1,11 @@
 {
   "compilerOptions": {
     "target": "ES2017",
-    "lib": ["dom", "dom.iterable", "esnext"],
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
@@ -19,15 +23,33 @@
       }
     ],
     "paths": {
-      "@/*": ["./app/*"],
-      "@/modules/*": ["./modules/*"],
-      "@/assets/*": ["./assets/*"],
-      "@/lib/*": ["./app/lib/*"],
-      "@/infrastructure/*": ["./infrastructure/*"],
-      "@/domain/*": ["./domain/*"],
-      "@/features/*": ["./features/*"],
-      "@/application/*": ["./application/*"],
-      "@/shared/*": ["./shared/*"]
+      "@/*": [
+        "./app/*"
+      ],
+      "@/modules/*": [
+        "./modules/*"
+      ],
+      "@/assets/*": [
+        "./assets/*"
+      ],
+      "@/lib/*": [
+        "./app/lib/*"
+      ],
+      "@/infrastructure/*": [
+        "./infrastructure/*"
+      ],
+      "@/domain/*": [
+        "./domain/*"
+      ],
+      "@/features/*": [
+        "./features/*"
+      ],
+      "@/application/*": [
+        "./application/*"
+      ],
+      "@/shared/*": [
+        "./shared/*"
+      ]
     }
   },
   "include": [
@@ -36,7 +58,11 @@
     "**/*.tsx",
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts",
-    "**/*.mts"
-, "assets/svg/background-shape.sbvg"  ],
-  "exclude": ["node_modules"]
+    "**/*.mts",
+    "**/*.d.ts",
+    "assets/svg/background-shape.sbvg"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
 }

@@ -1,6 +1,7 @@
 import { createSupabaseRouteClient } from '@/infrastructure/db/supabase.route'
 import { type NextRequest, NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
+import { COOKIE_NAMES, COOKIE_OPTIONS, ROUTES } from '@/infrastructure/config/constants'
 
 export async function GET(request: NextRequest) {
   const { searchParams, origin } = new URL(request.url)
@@ -19,9 +20,7 @@ export async function GET(request: NextRequest) {
 
     if (error || !user) {
       console.error('OAuth callback error:', error)
-      return NextResponse.redirect(
-        `${origin}/auth/sign-in?error=oauth_error`
-      )
+      return NextResponse.redirect(`${ROUTES.SIGN_IN}?error=oauth_error`)
     }
 
     // Obtener perfil con rol y guardar en cookie
@@ -37,16 +36,10 @@ export async function GET(request: NextRequest) {
     }
 
     if (profile?.role) {
-      cookieStore.set('user_role', profile.role, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict',
-        maxAge: 60 * 60 * 24 * 7, // 7 días
-        path: '/',
-      })
+      cookieStore.set(COOKIE_NAMES.ROLE, profile.role, COOKIE_OPTIONS)
     }
 
-    return NextResponse.redirect(`${origin}/post-login`)
+    return NextResponse.redirect(`${origin}/${ROUTES.ONBOARDING}`)
   }
 
   /**
@@ -60,9 +53,7 @@ export async function GET(request: NextRequest) {
 
     if (error || !user) {
       console.error('OTP verification error:', error)
-      return NextResponse.redirect(
-        `${origin}/auth/sign-in?error=invalid_or_expired_link`
-      )
+      return NextResponse.redirect(`${ROUTES.OTP}?error=invalid_or_expired_link`)
     }
 
     // Para OTP también guardamos el rol si existe
@@ -73,19 +64,13 @@ export async function GET(request: NextRequest) {
       .single()
 
     if (profile?.role) {
-      cookieStore.set('user_role', profile.role, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict',
-        maxAge: 60 * 60 * 24 * 7,
-        path: '/',
-      })
+      cookieStore.set(COOKIE_NAMES.ROLE, profile.role, COOKIE_OPTIONS)
     }
 
     // Redirigir según el tipo de verificación
-    const redirectPath = type === 'recovery' 
-      ? '/auth/reset-password'  // Si es recuperación, ir a reset
-      : '/post-login'     // Si es login o verificación, al dashboard
+    const redirectPath = type === 'recovery'
+      ? ROUTES.OTP  // Si es recuperación, ir a reset
+      : ROUTES.ONBOARDING    // Si es login o verificación, al dashboard
 
     return NextResponse.redirect(`${origin}${redirectPath}`)
   }

@@ -14,14 +14,14 @@ import { ComponentProps, useEffect } from "react"
 import { useTranslation } from "react-i18next"
 import GoogleAuth from "./google-auth"
 import { Spinner } from "@/components/ui/spinner"
-import { defaultSignUpValues, SignUpFormValues, signUpSchema } from "@/domain/entities/schemas/signUpSchema"
+import { defaultSignUpValues, SignUpFormValues, signUpSchema } from "@/domain/entities/schemas/sign-up-schema"
 import { toast } from "sonner"
-import { useServerMutation } from "@/shared/hooks/useServerMutation"
+import { useServerMutation } from "@/shared/hooks/use-server-mutation.hook"
 import { Form } from "@/components/ui/form"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
-import { signUpAction } from "@/application/actions/authActions"
 import { Building2 } from "lucide-react"
+import { signUpAction } from "@/domain/adapters/http/sign-up.action"
 
 export function SignUpForm({
   className,

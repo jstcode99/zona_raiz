@@ -2,8 +2,7 @@
 // COOKIES
 // ==========================================
 
-import { UserRole } from "@/domain/entities/Profile"
-import { RealEstateRole } from "@/domain/entities/RealEstate"
+import { EUserRole } from "@/domain/entities/profile.entity"
 
 export const COOKIE_OPTIONS = {
   httpOnly: true,
@@ -59,28 +58,46 @@ export const FILE_LIMITS = {
   ALLOWED_IMAGE_TYPES: ['image/jpeg', 'image/png', 'image/webp', 'image/gif'] as const,
 } as const
 
+
 // ==========================================
-// ROLES & PERMISSIONS
+// ROUTES
 // ==========================================
 
-export const ROLES = {
-  ADMIN: "admin",
-  AGENT: "agent",
-  COORDINATOR: "coordinator",
-  CLIENT: "client",
+export const ROUTES = {
+  HOME: "/",
+  SIGN_IN: "/auth/sign-in",
+  SIGN_UP: "/auth/sign-up",
+  OTP: "/auth/otp",
+  CALLBACK: "/auth/callback",
+  UNAUTHORIZED: "/unauthorized",
+
+  ONBOARDING: "/onboarding",
+  REGISTER_REAL_ESTATE: "/onboarding/register-real-estate",
+
+  DASHBOARD: "/dashboard",
 } as const
 
-
-export const REAL_ESTATE_ROLES: readonly RealEstateRole[] = [
-  ROLES.ADMIN,
-  ROLES.AGENT,
-  ROLES.COORDINATOR,
+export const PUBLIC_ROUTES = [
+  ROUTES.HOME,
+  ROUTES.SIGN_IN,
+  ROUTES.SIGN_UP,
+  ROUTES.OTP,
+  ROUTES.CALLBACK,
+  ROUTES.UNAUTHORIZED,
 ]
-export const PERMISSIONS = {
-  REAL_ESTATE: {
-    CREATE: [ROLES.ADMIN, ROLES.COORDINATOR],
-    UPDATE: [ROLES.ADMIN, ROLES.COORDINATOR],
-    DELETE: [ROLES.ADMIN],
-    MANAGE_AGENTS: [ROLES.ADMIN],
-  },
-} as const
+
+export const PROTECTED_BASE_ROUTES = [
+  "/api",
+  "/admin",
+  "/dashboard",
+  "/real-estates",
+  "/agents",
+  "/settings",
+]
+
+export const ROLE_ACCESS: Record<EUserRole, string[]> = {
+  admin: PROTECTED_BASE_ROUTES,
+  coordinator: PROTECTED_BASE_ROUTES,
+  agent: PROTECTED_BASE_ROUTES,
+  client: PROTECTED_BASE_ROUTES,
+}

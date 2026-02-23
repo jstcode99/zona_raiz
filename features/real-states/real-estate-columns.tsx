@@ -1,7 +1,7 @@
 "use client"
 
 import { BaseRow } from "@/components/ui/data-table"
-import { RealEstate } from "@/domain/entities/RealEstate"
+import { RealEstateEntity } from "@/domain/entities/real-estate.entity"
 import { type ColumnDef } from "@tanstack/react-table"
 import {
   DropdownMenu,
@@ -14,15 +14,13 @@ import { Button } from "@/components/ui/button"
 import {
   IconBrandWhatsapp,
   IconDotsVertical,
-  IconMapPin,
-  IconPhone,
   IconBuilding,
 } from "@tabler/icons-react"
 import Link from "next/link"
 
 export type RealEstateRow = BaseRow & {
   created_at: string
-} & RealEstate
+} & RealEstateEntity
 
 export const RealEstateColumns: ColumnDef<RealEstateRow>[] = [
   {
@@ -55,7 +53,7 @@ export const RealEstateColumns: ColumnDef<RealEstateRow>[] = [
       <div className="flex flex-col">
         <span className="font-medium">{row.original.name}</span>
         <span className="text-xs text-muted-foreground">
-          {row.original.slug}
+          {row.original.name}
         </span>
       </div>
     ),
@@ -84,7 +82,7 @@ export const RealEstateColumns: ColumnDef<RealEstateRow>[] = [
   {
     accessorKey: "address",
     header: "Dirección",
-    cell: ({ row }) => row.original.address || "—",
+    cell: ({ row }) => row.original.city || "—",
   },
 
   {
@@ -95,15 +93,6 @@ export const RealEstateColumns: ColumnDef<RealEstateRow>[] = [
 
       return (
         <div className="flex items-center gap-3">
-          {r.phone && (
-            <a
-              href={`tel:${r.phone}`}
-              className="text-muted-foreground hover:text-foreground"
-            >
-              <IconPhone size={16} />
-            </a>
-          )}
-
           {r.whatsapp && (
             <a
               href={`https://wa.me/${r.whatsapp}`}

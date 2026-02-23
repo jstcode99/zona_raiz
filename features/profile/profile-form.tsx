@@ -1,4 +1,3 @@
-// components/account/AccountForm.tsx
 "use client"
 
 import { Button } from "@/components/ui/button"
@@ -12,11 +11,11 @@ import { ComponentProps, useEffect } from "react"
 import { useTranslation } from "react-i18next"
 import { Spinner } from "@/components/ui/spinner"
 import { toast } from "sonner"
-import { profileSchema, ProfileFormValues } from "@/domain/entities/schemas/profileSchema"
-import { useServerMutation } from "@/shared/hooks/useServerMutation"
+import { profileSchema, ProfileFormValues } from "@/domain/entities/schemas/profile.schema"
+import { useServerMutation } from "@/shared/hooks/use-server-mutation.hook"
 import { Form } from "@/components/ui/form"
 import { cn } from "@/lib/utils"
-import { updateProfileAction } from "@/application/actions/profileAction"
+import { updateProfileAction } from "@/domain/adapters/http/update-profile.action"
 
 interface ProfileFormProps extends ComponentProps<"form"> {
   defaultValues: ProfileFormValues
@@ -31,10 +30,7 @@ export function ProfileForm({
 
   const form = useForm<ProfileFormValues>({
     resolver: yupResolver(profileSchema),
-    defaultValues: {
-      full_name: "",
-      phone: "",
-    },
+    defaultValues: defaultValues,
     mode: "onBlur",
   })
 

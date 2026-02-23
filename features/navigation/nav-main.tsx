@@ -1,6 +1,6 @@
 "use client"
 
-import { IconBell, IconCirclePlusFilled, IconMail } from "@tabler/icons-react"
+import { IconBell, IconCirclePlusFilled } from "@tabler/icons-react"
 import { DynamicIcon, IconName } from 'lucide-react/dynamic';
 
 import { Button } from "@/components/ui/button"

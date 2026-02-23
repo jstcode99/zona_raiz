@@ -2,25 +2,23 @@
 
 import { useTransition } from "react"
 import { useTranslation } from "react-i18next"
-import { RealEstateWithRole } from "@/domain/entities/RealEstate"
+import { RealEstateWithRoleEntity } from "@/domain/entities/real-estate.entity"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Building2, Loader2, ArrowRight } from "lucide-react"
 
 interface Props {
-  realEstates: RealEstateWithRole[]
-  onSelect: (realEstateId: string) => void
-  isPending: boolean
+  realEstates: RealEstateWithRoleEntity[]
 }
 
-export function RealEstateSelector({ realEstates, onSelect, isPending }: Props) {
+export function RealEstateSelector({ realEstates }: Props) {
   const { t } = useTranslation()
   const [selectingId, startSelecting] = useTransition()
 
   const handleSelect = (id: string) => {
     startSelecting(() => {
-      onSelect(id)
+     
     })
   }
 
@@ -51,7 +49,7 @@ export function RealEstateSelector({ realEstates, onSelect, isPending }: Props) 
             variant="outline"
             className="w-full h-auto p-4 justify-between text-left hover:border-primary"
             onClick={() => handleSelect(real_estate.id)}
-            disabled={isPending || selectingId}
+            disabled={selectingId}
           >
             <div className="flex items-center gap-4">
               {real_estate.logo_url ? (
@@ -68,7 +66,7 @@ export function RealEstateSelector({ realEstates, onSelect, isPending }: Props) 
               <div>
                 <p className="font-semibold">{real_estate.name}</p>
                 <p className="text-sm text-muted-foreground line-clamp-1">
-                  {real_estate.address || t("words.no-address")}
+                  {real_estate.country || t("words.no-address")}
                 </p>
               </div>
             </div>

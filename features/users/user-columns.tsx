@@ -13,18 +13,17 @@ import { Button } from "@/components/ui/button"
 import {
   IconDotsVertical,
   IconUser,
-  IconBuilding,
   IconMail,
 } from "@tabler/icons-react"
 import Link from "next/link"
-import { UserWithProfile } from "@/domain/entities/User"
-import { UserRole } from "@/domain/entities/Profile"
+import { UserWithProfileEntity } from "@/domain/entities/user.entity"
+import { EUserRole } from "@/domain/entities/profile.entity"
 
-export type UserRow = BaseRow & UserWithProfile
+export type UserRow = BaseRow & UserWithProfileEntity
 
-const roleVariant = (role?: UserRole) => {
-  if (role === UserRole.Admin) return "destructive"
-  if (role === UserRole.Agent) return "secondary"
+const roleVariant = (role?: EUserRole) => {
+  if (role === EUserRole.Admin) return "destructive"
+  if (role === EUserRole.Agent) return "secondary"
   return "outline"
 }
 
@@ -62,7 +61,7 @@ export const UserColumns: ColumnDef<UserRow>[] = [
       return (
         <div className="flex flex-col">
           <span className="font-medium">
-            {p?.name} {p?.last_name ?? ""}
+            {p?.full_name ?? ""}
           </span>
 
           {row.original.user.email && (
@@ -85,23 +84,6 @@ export const UserColumns: ColumnDef<UserRow>[] = [
       </Badge>
     ),
   },
-
-  {
-    id: "realEstate",
-    header: "Inmobiliaria",
-    cell: ({ row }) => {
-      const r = row.original.profile?.real_estate
-      if (!r) return "—"
-
-      return (
-        <div className="flex items-center gap-2 text-sm">
-          <IconBuilding size={14} />
-          {r.name}
-        </div>
-      )
-    },
-  },
-
   {
     id: "actions",
     cell: ({ row }) => (

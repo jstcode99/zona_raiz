@@ -17,13 +17,13 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
-import { UserWithProfile } from "@/domain/entities/User"
 import { IconName } from "lucide-react/dynamic"
 import i18next from "i18next"
+import { ProfileEntity } from "@/domain/entities/profile.entity"
 
 
 interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
-  user: UserWithProfile
+  profile: ProfileEntity
   menu: {
     title: string
     url: string
@@ -53,7 +53,7 @@ export function AppSidebar({ ...props }: AppSidebarProps) {
         <NavMain items={props.menu} />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={props.user} />
+        <NavUser profile={props.profile} />
       </SidebarFooter>
     </Sidebar>
   )

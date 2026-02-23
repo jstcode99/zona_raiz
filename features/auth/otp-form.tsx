@@ -1,4 +1,3 @@
-// components/auth/OTPForm.tsx
 "use client"
 
 import { Button } from "@/components/ui/button"
@@ -14,12 +13,12 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import { ComponentProps, useEffect } from "react"
 import { useTranslation } from "react-i18next"
 import { Input } from "@/components/ui/input"
-import { otpSchema, OTPFormValues } from "@/domain/entities/schemas/OTPSchema"
+import { otpSchema, OTPFormValues } from "@/domain/entities/schemas/email-otp.schema"
 import { toast } from "sonner"
 import { Spinner } from "@/components/ui/spinner"
 import Link from "next/link"
-import { useServerMutation } from "@/shared/hooks/useServerMutation"
-import { otpAction } from "@/application/actions/otpAction"
+import { useServerMutation } from "@/shared/hooks/use-server-mutation.hook"
+import { otpAction } from "@/domain/adapters/http/otp.action"
 
 export function OTPForm({
   className,
@@ -42,7 +41,6 @@ export function OTPForm({
 
   const mutation = useServerMutation({
     action: otpAction,
-    initialState: { success: false },
     onSuccess: () => {
       toast.success(t('forms.otp.success'))
       reset() 

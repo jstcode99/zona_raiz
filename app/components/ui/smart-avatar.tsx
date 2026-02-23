@@ -53,7 +53,7 @@ export function SmartAvatar({
   }, [src])
 
   return (
-    
+
     <Avatar className={className} size={size}>
       {/* 🦴 Skeleton */}
       {showSkeleton && !loaded && (
@@ -63,8 +63,8 @@ export function SmartAvatar({
       {/* 🖼 Image */}
       {displayedSrc && (
         <AvatarImage
-          src={displayedSrc}
           {...imgProps}
+          src={displayedSrc}
           className={cn(
             "transition-opacity duration-200 ease-out",
             loaded ? "opacity-100" : "opacity-0"
@@ -74,6 +74,7 @@ export function SmartAvatar({
 
       {/* 🔤 Fallback */}
       <AvatarFallback
+        {...imgProps}
         className={cn(
           "transition-opacity duration-200",
           loaded ? "opacity-0" : "opacity-100"
