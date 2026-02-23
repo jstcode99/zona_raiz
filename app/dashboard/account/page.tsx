@@ -1,39 +1,22 @@
-import { AccountForm } from "@/components/account/account-form"
-import { AvatarUpload } from "@/components/account/avatar-upload"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { getAccountProfileController } from "@/modules/account/controllers/account.controller"
-import { redirect } from 'next/navigation'
+
+import { encodedRedirect } from "@/shared/redirect"
+import AuthBackgroundShape from '@/assets/svg/background-shape'
+import AccountSectionCard from "@/features/profile/profile-section-card"
+import { getCurrentUserCached } from "@/services/session.service";
 
 export default async function Account() {
-  const response = await getAccountProfileController()
+  const profile = await getCurrentUserCached();
 
-  if (!response.ok || !response.data) {
-    redirect("/dashboard")
+  if (!profile) {
+    return encodedRedirect('error', '/auth/sign-in', 'No se pudo cargar el perfil')
   }
 
-  const profile = response.data
-
   return (
-    <div className='flex items-center justify-center overflow-x-hidden px-4 py-10 sm:px-6 lg:px-8'>
-      <Card className='w-full border-none shadow-md sm:max-w-lg'>
-        <CardHeader className='gap-6 items-center px-6 pt-6 md:px-8'>
-          <AvatarUpload
-            avatarUrl={profile?.avatar_url || null}
-            name={profile?.name || ''}
-          />
-        </CardHeader>
-
-        <CardContent>
-          <div className='space-y-4'>
-            <AccountForm defaultValues={{
-              ok: true,
-              name: profile?.name || '',
-              last_name: profile?.last_name || '',
-              phone: profile?.phone || '',
-            }} />
-          </div>
-        </CardContent>
-      </Card>
+    <div className='relative flex h-auto min-h-screen items-center justify-center overflow-x-hidden px-4 py-10 sm:px-6 lg:px-8'>
+      <div className='absolute'>
+        <AuthBackgroundShape />
+      </div>
+      <AccountSectionCard defaultValues={profile} />
     </div>
   )
 }

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Confirma tu cuenta</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+</head>
+
+<body style="margin:0; padding:0; background:#0f172a; font-family:Arial, sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="padding:40px 0;">
+    <tr>
+      <td align="center">
+        <table width="420" cellpadding="0" cellspacing="0"
+          style="background:#1e293b; border-radius:12px; padding:32px; color:white;">
+
+          <tr>
+            <td align="center" style="font-size:22px; font-weight:bold; padding-bottom:16px;">
+              Bienvenido 👋
+            </td>
+          </tr>
+
+          <tr>
+            <td align="center" style="font-size:15px; color:#cbd5f5; padding-bottom:24px;">
+              Haz click para confirmar tu cuenta.
+            </td>
+          </tr>
+
+          <tr>
+            <td align="center">
+              <a
+                href="{{ .SiteURL }}/auth/callback?token_hash={{ .TokenHash }}&type=signup"
+                style="
+                  display:inline-block;
+                  padding:14px 28px;
+                  background:#22c55e;
+                  color:white;
+                  text-decoration:none;
+                  border-radius:8px;
+                  font-weight:bold;
+                ">
+                Confirmar cuenta
+              </a>
+            </td>
+          </tr>
+
+          <tr>
+            <td align="center" style="font-size:13px; color:#94a3b8; padding-top:28px;">
+              Si no creaste esta cuenta, ignora este correo.
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>

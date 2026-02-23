@@ -1,6 +1,6 @@
 
-import "./globals.css";
 import { notoSans } from './config/fonts';
+import "./globals.css";
 import type { Metadata } from "next";
 import { Providers } from "./providers";
 import { ReactNode } from 'react'

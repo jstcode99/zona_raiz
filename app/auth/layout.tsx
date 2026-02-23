@@ -1,5 +1,5 @@
 import { Card, CardContent } from "@/components/ui/card"
-import { cn } from "@/utils/utils"
+import { cn } from "@/lib/utils"
 
 export default function AuthLayout({
   children,
