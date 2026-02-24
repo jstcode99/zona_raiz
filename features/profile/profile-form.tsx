@@ -15,7 +15,7 @@ import { profileSchema, ProfileFormValues } from "@/domain/entities/schemas/prof
 import { useServerMutation } from "@/shared/hooks/use-server-mutation.hook"
 import { Form } from "@/components/ui/form"
 import { cn } from "@/lib/utils"
-import { updateProfileAction } from "@/domain/adapters/http/update-profile.action"
+import { updateProfileAction } from "@/domain/adapters/http/profile.actions"
 
 interface ProfileFormProps extends ComponentProps<"form"> {
   defaultValues: ProfileFormValues

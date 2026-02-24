@@ -1,8 +1,40 @@
+import { PropertyFilters, PropertyType } from "@/domain/entities/property.entity";
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
+}
+
+export function generateSlug(text: string): string {
+  return text
+    .toLowerCase()
+    .trim()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "") // Remove acentos
+    .replace(/[^\w\s-]/g, "") // Remove caracteres especiales
+    .replace(/\s+/g, "-") // Reemplaza espacios con guiones
+    .substring(0, 50);
+}
+
+export function parseFiltersFromParams(searchParams: URLSearchParams): PropertyFilters {
+  const getNumber = (key: string) => {
+    const val = searchParams.get(key)
+    return val ? parseInt(val, 10) : undefined
+  }
+
+  return {
+    searchQuery: searchParams.get("q") || undefined,
+    propertyType: (searchParams.get("type") as PropertyType) || undefined,
+    realEstateId: searchParams.get("real_estate") || undefined,
+    city: searchParams.get("city") || undefined,
+    state: searchParams.get("state") || undefined,
+    neighborhood: searchParams.get("neighborhood") || undefined,
+    minBedrooms: getNumber("min_bedrooms"),
+    minBathrooms: getNumber("min_bathrooms"),
+    minPrice: getNumber("min_price"),
+    maxPrice: getNumber("max_price"),
+  }
 }
 
 export const flatten = (obj: any, prefix = '', formData: FormData) => {

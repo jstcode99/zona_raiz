@@ -21,7 +21,7 @@ import { Form } from "@/components/ui/form"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { Building2 } from "lucide-react"
-import { signUpAction } from "@/domain/adapters/http/sign-up.action"
+import { signUpAction } from "@/domain/adapters/http/auth.actions"
 
 export function SignUpForm({
   className,

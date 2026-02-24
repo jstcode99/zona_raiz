@@ -1,5 +1,4 @@
 "use client"
-
 import { ComponentProps, useEffect } from "react"
 import { useForm } from "react-hook-form"
 import { yupResolver } from "@hookform/resolvers/yup"
@@ -17,8 +16,7 @@ import { Button } from "@/components/ui/button"
 import { Spinner } from "@/components/ui/spinner"
 import { useServerMutation } from "@/shared/hooks/use-server-mutation.hook"
 import { flatten, cn } from "@/lib/utils"
-import { updateRealEstateAction } from "@/domain/adapters/http/update-real-estate.action"
-import { createRealEstateAction } from "@/domain/adapters/http/create-real-estate.action"
+import { createRealEstateAction, updateRealEstateAction } from "@/domain/adapters/http/real-estate.actions"
 
 interface RealEstateFormProps extends ComponentProps<"form"> {
   defaultValues?: RealEstateFormValues

@@ -1,6 +1,5 @@
-import { AuthEmailEntity, AuthUserEntity } from "@/domain/entities/auth-user.entity";
+import { AuthEmailEntity } from "@/domain/entities/auth-user.entity";
 import { EUserRole } from "@/domain/entities/profile.entity";
-import { RealEstateEntity, RealEstateWithRoleEntity } from "@/domain/entities/real-estate.entity";
 import { SignUpFormValues } from "@/domain/entities/schemas/sign-up-schema";
 import { AuthPort } from "@/domain/ports/auth.port";
 import { createSupabaseRouteClient } from "@/infrastructure/db/supabase.route";

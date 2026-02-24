@@ -47,6 +47,19 @@ import {
   CommandGroup,
   CommandItem,
 } from "@/components/ui/command"
+
+import {
+  Combobox,
+  ComboboxInput,
+  ComboboxContent,
+  ComboboxEmpty,
+  ComboboxList,
+  ComboboxItem,
+  ComboboxChips,
+  ComboboxChip,
+  ComboboxValue,
+  ComboboxChipsInput,
+} from "@/components/ui/combobox"
 /* =========================
    ROOT
 ========================= */
@@ -697,6 +710,188 @@ function CheckboxField({
 }
 
 /* =========================
+   COMBOBOX PRO (RHF + shadcn)
+========================= */
+
+type ComboOption = {
+  label: string
+  value: string
+  disabled?: boolean
+  group?: string
+  raw?: any
+}
+
+function ComboboxField({
+  name,
+  label,
+  description,
+  orientation = "vertical",
+  options = [],
+  onSearch,
+  multiple = false,
+  disabled = false,
+  placeholder = t("words.select"),
+  searchPlaceholder = t("words.search"),
+  debounce = 300,
+  renderItem,
+}: {
+  name: string
+  label?: ReactNode
+  description?: ReactNode
+  orientation?: "vertical" | "horizontal" | "responsive"
+  options?: ComboOption[]
+  onSearch?: (query: string) => Promise<ComboOption[]>
+  multiple?: boolean
+  disabled?: boolean
+  placeholder?: string
+  searchPlaceholder?: string
+  debounce?: number
+  renderItem?: (item: ComboOption, selected: boolean) => ReactNode
+}) {
+  const { control } = useFormContext()
+  const { field, fieldState } = useController({ name, control })
+
+  const [query, setQuery] = useState("")
+  const debounced = useDebounce(query, debounce)
+
+  const [items, setItems] = useState<ComboOption[]>(options)
+  const [loading, setLoading] = useState(false)
+
+  const value = field.value ?? (multiple ? [] : "")
+
+  const selectedValues = multiple
+    ? value
+    : value
+    ? [value]
+    : []
+
+  useEffect(() => {
+    if (!onSearch) {
+      const q = debounced.toLowerCase()
+      setItems(
+        options.filter(o => o.label.toLowerCase().includes(q))
+      )
+      return
+    }
+
+    let ignore = false
+    setLoading(true)
+
+    onSearch(debounced).then(res => {
+      if (!ignore) setItems(res)
+      setLoading(false)
+    })
+
+    return () => {
+      ignore = true
+    }
+  }, [debounced])
+
+  const grouped = items.reduce<Record<string, ComboOption[]>>((acc, item) => {
+    const g = item.group || "default"
+    if (!acc[g]) acc[g] = []
+    acc[g].push(item)
+    return acc
+  }, {})
+
+  return (
+    <Field orientation={orientation} data-invalid={fieldState.invalid || undefined}>
+      {label && <FieldLabel>{label}</FieldLabel>}
+
+      <FieldContent>
+        <Combobox
+          items={items}
+          value={value}
+          multiple={multiple}
+          onValueChange={field.onChange}
+          disabled={disabled}
+          itemToStringValue={(item: ComboOption) => item.value}
+        >
+          {multiple ? (
+            <ComboboxChips>
+              <ComboboxValue placeholder={placeholder}>
+                {(selected: ComboOption[]) =>
+                  selected.map(item => (
+                    <ComboboxChip key={item.value}>
+                      {item.label}
+                    </ComboboxChip>
+                  ))
+                }
+              </ComboboxValue>
+
+              <ComboboxChipsInput
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder={searchPlaceholder}
+              />
+            </ComboboxChips>
+          ) : (
+            <ComboboxInput
+              value={query}
+              disabled={disabled}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder={placeholder}
+            />
+          )}
+
+          <ComboboxContent>
+            {loading && (
+              <div className="p-2 text-sm opacity-70">
+                {t("words.search")}...
+              </div>
+            )}
+
+            {!loading && items.length === 0 && (
+              <ComboboxEmpty>
+                {t("words.without_results")}
+              </ComboboxEmpty>
+            )}
+
+            <ComboboxList>
+              {Object.entries(grouped).map(([group, groupItems]) => (
+                <div key={group}>
+                  {group !== "default" && (
+                    <div className="px-3 py-1 text-xs opacity-60">
+                      {group}
+                    </div>
+                  )}
+
+                  {groupItems.map(item => {
+                    const selected = selectedValues.includes(item.value)
+
+                    return (
+                      <ComboboxItem
+                        key={item.value}
+                        value={item}
+                        disabled={item.disabled}
+                      >
+                        {renderItem
+                          ? renderItem(item, selected)
+                          : item.label}
+                      </ComboboxItem>
+                    )
+                  })}
+                </div>
+              ))}
+            </ComboboxList>
+          </ComboboxContent>
+        </Combobox>
+
+        {description && <FieldDescription>{description}</FieldDescription>}
+
+        <FieldError
+          errors={
+            fieldState.error
+              ? [{ message: fieldState.error.message }]
+              : undefined
+          }
+        />
+      </FieldContent>
+    </Field>
+  )
+}
+
+/* =========================
    FIELDSET
 ========================= */
 
@@ -753,6 +948,7 @@ export const Form = Object.assign(Root, {
   Address: AddressField,
   Url: UrlField,
   Autocomplete: AutocompleteField,
+  Combobox: ComboboxField,
   Set,
   Array: ArrayField,
 })

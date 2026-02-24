@@ -18,7 +18,7 @@ import { toast } from "sonner"
 import { Spinner } from "@/components/ui/spinner"
 import Link from "next/link"
 import { useServerMutation } from "@/shared/hooks/use-server-mutation.hook"
-import { otpAction } from "@/domain/adapters/http/otp.action"
+import { otpAction } from "@/domain/adapters/http/auth.actions"
 
 export function OTPForm({
   className,

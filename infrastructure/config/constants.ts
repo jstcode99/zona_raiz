@@ -70,7 +70,7 @@ export const ROUTES = {
   OTP: "/auth/otp",
   CALLBACK: "/auth/callback",
   UNAUTHORIZED: "/unauthorized",
-
+  PROPERTIES: "/properties",
   ONBOARDING: "/onboarding",
   REGISTER_REAL_ESTATE: "/onboarding/register-real-estate",
 

@@ -18,12 +18,12 @@ import { Form } from "@/components/ui/form"
 import { Building2 } from "lucide-react"
 import { useServerMutation } from "@/shared/hooks/use-server-mutation.hook"
 import { flatten } from "@/lib/utils"
-import { createRealEstateAction } from "@/domain/adapters/http/create-real-estate.action"
 import {
   defaultRealEstateValues,
   RealEstateFormValues,
   realEstateSchema
 } from "@/domain/entities/schemas/real-estate.schema"
+import { createRealEstateAction } from "@/domain/adapters/http/real-estate.actions"
 
 export function RealEstateRegistrationForm() {
   const { t } = useTranslation()

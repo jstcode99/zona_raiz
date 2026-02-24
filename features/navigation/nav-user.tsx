@@ -29,8 +29,8 @@ import {
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useTransition } from "react"
-import { signOutAction } from "@/domain/adapters/http/sign-out.action"
 import { ProfileEntity } from "@/domain/entities/profile.entity"
+import { signOutAction } from "@/domain/adapters/http/auth.actions"
 
 export function NavUser({
   profile,

@@ -7,6 +7,7 @@ import { addressSchema } from './base/address.schema'
 import { avatarSchema } from './base/avatar.schema'
 
 import i18next from 'i18next'
+import { idSchema } from './base/id.schema'
 
 export const realEstateSchema = yup.object({
   name: nameSchema,
@@ -20,6 +21,7 @@ export const logoRealEstateSchema = yup.object({
     .required(i18next.t('validations.required', {
       attribute: 'logo'
     })),
+  id:idSchema,
 })
 
 export type RealEstateFormValues = yup.InferType<typeof realEstateSchema>

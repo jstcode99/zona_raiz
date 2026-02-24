@@ -1,8 +1,11 @@
 import { Spinner } from "@/components/ui/spinner";
+import { PropertyFormValues } from "@/domain/entities/schemas/property.schema";
 import { PropertyForm } from "@/features/properties/property-form";
-import { SupabasePropertyRepository } from "@/infrastructure/db/SupabasePropertyRepository";
+import { COOKIE_NAMES } from "@/infrastructure/config/constants";
+import { getPropertyById } from "@/services/property.services";
 import { encodedRedirect } from "@/shared/redirect";
-import { Suspense } from "react";
+import { cookies } from "next/headers";
+import { Suspense, use } from "react";
 
 export default async function page({
   params,
@@ -11,17 +14,23 @@ export default async function page({
 }) {
   const { id } = await params;
 
-  const supabase = new SupabasePropertyRepository()
-  const data = await supabase.findById(id)
+  const cookieStore = await cookies()
+  const realEstateId = cookieStore.get(COOKIE_NAMES.REAL_ESTATE)?.value as string
 
-  if (!data) {
-    return encodedRedirect('error', '/dashboard/account', 'No se pudo cargar el perfil')
+  const property = use(getPropertyById(id))
+
+  if (!property) {
+    return encodedRedirect('error', '/auth/sign-in', 'No se pudo cargar la propiedad')
   }
 
   return (
     <main className="min-h-screen bg-muted/40 py-10 px-4">
       <Suspense fallback={<Spinner />}>
-        <PropertyForm id={id} defaultValues={data} />
+        <PropertyForm
+          id={id}
+          realEstateId={realEstateId}
+          defaultValues={property as PropertyFormValues}
+        />
       </Suspense>
     </main>
   );

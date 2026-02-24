@@ -8,7 +8,7 @@ import { AppSidebar } from "@/features/navigation/app-sidebar"
 import { PageLoader } from "@/features/loader/page-loader"
 import { encodedRedirect } from "@/shared/redirect"
 import { EUserRole } from "@/domain/entities/profile.entity"
-import { getCurrentUserCached } from "@/services/session.service"
+import { getCurrentUser } from "@/services/session.services"
 
 export default async function DashboardLayout({
   children,
@@ -16,7 +16,7 @@ export default async function DashboardLayout({
   children: ReactNode
 }) {
 
-  const profile = await getCurrentUserCached();
+  const profile = await getCurrentUser();
 
   if (!profile) {
     return encodedRedirect('error', '/auth/sign-in', 'No se pudo cargar el perfil')

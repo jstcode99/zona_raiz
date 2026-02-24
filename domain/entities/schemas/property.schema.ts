@@ -1,126 +1,207 @@
-import i18next from "i18next";
-import * as yup from "yup";
+import i18next from 'i18next';
+import * as yup from 'yup';
+import { addressSchema } from './base/address.schema';
+import { PropertyType } from '../property.entity';
+import { slugSchema } from './base/slug.schema';
 
-export const propertyDetailsSchema = yup.object({
-  bedrooms: yup
-    .number()
-    .typeError(i18next.t("forms.property.fields.bedrooms.message"))
-    .integer(i18next.t("forms.property.fields.bedrooms.message1"))
-    .min(0, i18next.t("forms.property.fields.bedrooms.message2"))
-    .nullable()
-    .transform((value, original) =>
-      original === "" ? null : value
-    ),
+// ============================================
+// SCHEMAS DE PROPIEDADES
+// ============================================
 
-  bathrooms: yup
-    .number()
-    .typeError(i18next.t("forms.property.fields.bathrooms.message"))
-    .integer(i18next.t("forms.property.fields.bathrooms.message1"))
-    .min(0, i18next.t("forms.property.fields.bathrooms.message2"))
-    .nullable()
-    .transform((value, original) =>
-      original === "" ? null : value
-    ),
-
-  area_m2: yup
-    .number()
-    .typeError(i18next.t("forms.property.fields.area_m2.message"))
-    .integer(i18next.t("forms.property.fields.area_m2.message1"))
-    .min(1, i18next.t("forms.property.fields.area_m2.message2"))
-    .required()
-    .transform((value, original) =>
-      original === "" ? null : value
-    ),
-});
-
-// Sub-schema de "ubicación y dirección"
-export const propertyLocationSchema = yup.object({
-  address: yup.string().nullable(),
-
-  neighborhood: yup
+export const propertySchema = yup.object({
+  title: yup
     .string()
-    .max(150, i18next.t("forms.property.fields.neighborhood.message"))
-    .nullable(),
-
-  city: yup
+    .required(i18next.t('validations.required', {
+      attribute: 'title'
+    }))
+    .min(10, i18next.t('validations.min.string', {
+      attribute: 'title',
+      min: '10'
+    }))
+    .max(200, i18next.t('validations.max.string', {
+      attribute: 'title',
+      max: '200'
+    })),
+  slug: slugSchema,
+  description: yup
     .string()
-    .required(i18next.t("forms.property.fields.city.message"))
-    .max(150, i18next.t("forms.property.fields.city.message1")),
-
-  state: yup
-    .string()
-    .required(i18next.t("forms.property.fields.state.message"))
-    .max(150, i18next.t("forms.property.fields.state.message1")),
-
-  country: yup
-    .string()
-    .required(i18next.t("forms.property.fields.country.message"))
-    .max(150, i18next.t("forms.property.fields.country.message1")),
-
+    .required(i18next.t('validations.required', {
+      attribute: 'description'
+    }))
+    .max(5000, i18next.t('validations.max.string', {
+      attribute: 'description',
+      max: '5000'
+    })),
+  property_type: yup
+    .string<string>()
+    .oneOf(['house', 'apartment', 'condo', 'townhouse', 'land', 'commercial', 'office', 'warehouse', 'other'])
+    .required(i18next.t('validations.required', {
+      attribute: 'property_type'
+    })),
   latitude: yup
     .number()
-    .typeError(i18next.t("forms.property.fields.latitude.message"))
-    .min(-90, i18next.t("forms.property.fields.latitude.message1"))
-    .max(90, i18next.t("forms.property.fields.latitude.message2"))
-    .nullable()
-    .transform((value, original) =>
-      original === "" ? null : value
-    ),
-
+    .required(i18next.t('validations.required', {
+      attribute: 'latitude'
+    }))
+    .min(-90, i18next.t('validations.min.numeric', {
+      attribute: 'latitude',
+      min: '-90'
+    }))
+    .max(90, i18next.t('validations.max.numeric', {
+      attribute: 'latitude',
+      max: '90'
+    }))
+    .nullable(),
   longitude: yup
     .number()
-    .typeError(i18next.t("forms.property.fields.longitude.message"))
-    .min(-180, i18next.t("forms.property.fields.longitude.message1"))
-    .max(180, i18next.t("forms.property.fields.longitude.message2"))
-    .nullable()
-    .transform((value, original) =>
-      original === "" ? null : value
-    ),
-
-  google_maps_url: yup
+    .required(i18next.t('validations.required', {
+      attribute: 'longitude'
+    }))
+    .min(-180, i18next.t('validations.min.numeric', {
+      attribute: 'longitude',
+      min: '-180'
+    }))
+    .max(180, i18next.t('validations.max.numeric', {
+      attribute: 'longitude',
+      max: '180'
+    })),
+  neighborhood: yup
     .string()
-    .url(i18next.t("forms.property.fields.google_maps_url.message"))
-    .nullable()
-    .transform((value, original) =>
-      original === "" ? null : value
-    ),
-});
+    .max(100, i18next.t('validations.max.numeric', {
+      attribute: 'neighborhood',
+      max: '100'
+    }))
+    .nullable(),
+  bedrooms: yup
+    .number()
+    .integer()
+    .min(0, i18next.t('validations.min.numeric', {
+      attribute: 'bedrooms',
+      min: '0'
+    }))
+    .max(50, i18next.t('validations.max.numeric', {
+      attribute: 'bedrooms',
+      max: '50'
+    }))
+    .nullable(),
+  bathrooms: yup
+    .number()
+    .integer()
+    .min(0, i18next.t('validations.min.numeric', {
+      attribute: 'bathrooms',
+      min: '0'
+    }))
+    .max(50, i18next.t('validations.max.numeric', {
+      attribute: 'bathrooms',
+      max: '50'
+    }))
+    .nullable(),
+  total_area: yup
+    .number()
+    .min(0, i18next.t('validations.min.numeric', {
+      attribute: 'total_area',
+      min: '0'
+    }))
+    .max(9999999.9, i18next.t('validations.max.numeric', {
+      attribute: 'total_area',
+      max: '9999999.9'
+    }))
+    .nullable(),
+  built_area: yup
+    .number()
+    .min(0, i18next.t('validations.min.numeric', {
+      attribute: 'built_area',
+      min: '0'
+    }))
+    .max(9999999.9, i18next.t('validations.max.numeric', {
+      attribute: 'built_area',
+      max: '9999999.9'
+    }))
+    .nullable(),
+  lot_area: yup
+    .number()
+    .min(0, i18next.t('validations.min.numeric', {
+      attribute: 'lot_area',
+      min: '0'
+    }))
+    .max(9999999.9, i18next.t('validations.max.numeric', {
+      attribute: 'lot_area',
+      max: '9999999.9'
+    }))
+    .nullable(),
+  floors: yup
+    .number()
+    .integer()
+    .min(0, i18next.t('validations.min.numeric', {
+      attribute: 'floors',
+      min: '0'
+    }))
+    .max(200, i18next.t('validations.max.numeric', {
+      attribute: 'floors',
+      max: '200'
+    }))
+    .nullable(),
+  year_built: yup
+    .number()
+    .integer()
+    .min(1800, i18next.t('validations.min.numeric', {
+      attribute: 'year_built',
+      min: '1800'
+    }))
+    .max(new Date().getFullYear() + 5)
+    .nullable(),
+  parking_spots: yup
+    .number()
+    .integer()
+    .min(0, i18next.t('validations.min.numeric', {
+      attribute: 'parking_spots',
+      min: '0'
+    }))
+    .max(100, i18next.t('validations.max.numeric', {
+      attribute: 'parking_spots',
+      max: '100'
+    }))
+    .nullable(),
+  amenities: yup.array().of(yup.string()).default([]),
+}).concat(addressSchema);
 
-export const propertySchema = yup.object()
-  .concat(propertyDetailsSchema)
-  .concat(propertyLocationSchema);
-
-export type PropertyLocationFormValue = yup.InferType<typeof propertyLocationSchema>;
-export type PropertyDetailFormValue = yup.InferType<typeof propertyDetailsSchema>;
-
-
-// Función para chequear si ya completó la parte de detalles físicos
-export const isPropertyDetailsComplete = async (data: any) => {
-  return await propertyDetailsSchema.isValid(data);
-};
-
-// Función para chequear si ya completó la parte de ubicación/dirección
-export const isPropertyLocationComplete = async (data: any) => {
-  return await propertyLocationSchema.isValid(data);
-};
-
-
-export const propertySchemaUpdate = yup.object({
-  id: yup.string().uuid().required()
-}).concat(propertySchema)
-
-export type PropertyFormValues = yup.InferType<typeof propertySchema>;
+export type PropertyFormValues = yup.InferType<typeof propertySchema>
 
 export const defaultPropertyValues: PropertyFormValues = {
-  address: "Cr 24",
-  neighborhood: "",
-  city: "",
-  state: "",
-  country: "Colombia",
-  latitude: 4.711,
-  longitude: -74.072,
-  google_maps_url: "",
+  title: '',
+  slug: '',
+  description: '',
+  property_type: PropertyType.Other,
+  street: '',
+  city: '',
+  state: '',
+  postal_code: '',
+  country: 'Argentina',
+  latitude: 0,
+  longitude: 0,
+  neighborhood: '',
   bedrooms: 0,
   bathrooms: 0,
-  area_m2: 10,
-};
+  total_area: 0,
+  built_area: 0,
+  lot_area: 0,
+  floors: 0,
+  year_built: 0,
+  parking_spots: 0,
+  amenities: [],
+}
+
+export const PropertyImageSchema = yup.object({
+  file: yup.mixed<File>()
+    .required('Archivo requerido')
+    .test('fileSize', 'Máximo 10MB', (value) => {
+      return value && value.size <= 10 * 1024 * 1024;
+    })
+    .test('fileType', 'Solo imágenes', (value) => {
+      return value && value.type.startsWith('image/');
+    }),
+  is_primary: yup.boolean().default(false),
+  alt_text: yup.string().max(200).nullable(),
+});
+
+export const PropertyImageFormValues = PropertyImageSchema.partial();

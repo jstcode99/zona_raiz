@@ -1,21 +1,22 @@
-import { encodedRedirect } from "@/shared/redirect"
-import { cookies } from "next/headers"
-import { COOKIE_NAMES } from "@/infrastructure/config/constants"
+import { Spinner } from "@/components/ui/spinner";
+import { RealEstateForm } from "@/features/real-states/real-estate-form";
+import { getRealEstateById } from "@/services/real-estate.services";
+import { encodedRedirect } from "@/shared/redirect";
+import { Suspense, use } from "react";
 import { Card, CardContent } from '@/components/ui/card'
-import { RealEstateForm } from "@/features/real-states/real-estate-form"
-import { LogoRealEstateUpload } from "@/features/real-states/logo-real-estate-upload"
-import { getRealEstateById } from "@/services/real-estate.services"
-import { Suspense } from "react"
-import { Spinner } from "@/components/ui/spinner"
+import { LogoRealEstateUpload } from "@/features/real-states/logo-real-estate-upload";
 
-export default async function MyRealEstatePage() {
-  const cookieStore = await cookies()
-  const id = cookieStore.get(COOKIE_NAMES.REAL_ESTATE)?.value as string
+export default async function page({
+  params,
+}: {
+  params: Promise<{ id: string }>
+}) {
+  const { id } = await params;
 
-  const realEstate = await getRealEstateById(id)
+  const realEstate = use(getRealEstateById(id))
 
   if (!realEstate) {
-    return encodedRedirect('error', '/auth/sign-in', 'No se pudo cargar la inmobiliaria')
+    return encodedRedirect('error', '/dashboard/admin/real-states', 'No se pudo cargar el la inmobiliaria')
   }
 
   return (
@@ -64,5 +65,5 @@ export default async function MyRealEstatePage() {
         </Card>
       </div>
     </div>
-  )
+  );
 }

@@ -2,7 +2,7 @@
 
 import { yupResolver } from "@hookform/resolvers/yup"
 import { useForm, Controller } from "react-hook-form"
-import { useRef, useTransition } from "react"
+import { useEffect, useRef, useTransition } from "react"
 import { optimizeImage } from "@/lib/utils"
 import { FieldError } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
@@ -10,20 +10,34 @@ import { Spinner } from "@/components/ui/spinner"
 import { SmartAvatar } from "@/components/ui/smart-avatar"
 import { useServerMutation } from "@/shared/hooks/use-server-mutation.hook"
 import { LogoFormValues, logoRealEstateSchema } from "@/domain/entities/schemas/real-estate.schema"
-import { updateLogoRealEstateAction } from "@/domain/adapters/http/update-logo-real-estate.action"
+import { updateLogoRealEstateAction } from "@/domain/adapters/http/real-estate.actions"
 
 type Props = {
   logoUrl?: string | null
-  name: string
+  name: string,
+  idRealEstate: string
 }
 
-export function LogoRealEstateUpload({ logoUrl, name = '' }: Props) {
+export function LogoRealEstateUpload({ logoUrl, name = '', idRealEstate = '' }: Props) {
   const inputRef = useRef<HTMLInputElement>(null)
   const [isPending, startTransition] = useTransition()
 
   const form = useForm({
     resolver: yupResolver(logoRealEstateSchema),
+    defaultValues: {
+      id: idRealEstate
+    }
   })
+  
+  const {
+    reset,
+  } = form
+
+  useEffect(() => {
+    if (idRealEstate) {
+      reset({ id: idRealEstate })
+    }
+  }, [idRealEstate, reset])
 
   const mutation = useServerMutation({
     action: updateLogoRealEstateAction,
@@ -38,7 +52,7 @@ export function LogoRealEstateUpload({ logoUrl, name = '' }: Props) {
 
       const formData = new FormData()
       formData.append("logo", optimized)
-
+      formData.append("id", data.id)
       mutation.action(formData)
       form.reset()
     })

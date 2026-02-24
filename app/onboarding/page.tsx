@@ -1,9 +1,9 @@
 import { OnboardingWrapper } from "@/features/onboarding/onboarding-wrapper"
-import { getOnboardingState } from "@/services/onboarding.service"
-import { getCurrentUserCached } from "@/services/session.service"
+import { getOnboardingState } from "@/services/onboarding.services"
+import { getCurrentUser } from "@/services/session.services"
 
 export default async function OnboardingPage() {
-  const user = await getCurrentUserCached();
+  const user = await getCurrentUser();
   const state = await getOnboardingState(user?.id ?? '')
 
   return (

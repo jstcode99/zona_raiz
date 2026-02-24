@@ -1,5 +1,5 @@
-
-import { RealEstateEntity } from "@/domain/entities/real-estate.entity";
+// path = domain/adapters/supabase/supabase-real-state.adapter.ts
+import { RealEstateEntity, RealEstateFilters } from "@/domain/entities/real-estate.entity";
 import { RealEstateFormValues } from "@/domain/entities/schemas/real-estate.schema";
 import { RealEstatePort } from "@/domain/ports/real-estate.port";
 import { STORAGE_BUCKETS } from "@/infrastructure/config/constants";
@@ -24,13 +24,37 @@ export class SupabaseRealEstateAdapter implements RealEstatePort {
     return data as RealEstateEntity
   }
 
-  async all(): Promise<RealEstateEntity[]> {
+  async all(filters?: RealEstateFilters): Promise<RealEstateEntity[]> {
 
     const supabase = await createSupabaseServerClient()
-    const { data, error } = await supabase
+    let query = supabase
       .from("real_estates")
       .select("*")
       .order("created_at", { ascending: false })
+
+    if (filters?.id?.trim()) {
+      query = query.eq("id", filters.id)
+    }
+    if (filters?.whatsapp?.trim()) {
+      query = query.eq("whatsapp", filters.whatsapp)
+    }
+    if (filters?.street) {
+      query = query.ilike("street", `%${filters.street}%`)
+    }
+    if (filters?.city) {
+      query = query.ilike("city", `%${filters.city}%`)
+    }
+    if (filters?.state) {
+      query = query.eq("state", filters.state)
+    }
+    if (filters?.postal_code?.trim()) {
+      query = query.eq("postal_code", filters.postal_code)
+    }
+    if (filters?.country) {
+      query = query.ilike("country", `%${filters.country}%`)
+    }
+
+    const { data, error } = await query
 
     if (error) throw new Error(error.message)
 

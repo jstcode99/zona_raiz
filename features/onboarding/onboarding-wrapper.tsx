@@ -1,19 +1,17 @@
 "use client"
 
-import { useTransition } from "react"
-import { redirect } from "next/navigation"
 import { Loader2 } from "lucide-react"
 import { RealEstateSelector } from "../real-states/real-estate-selector"
 import i18next from "i18next"
 import { RealEstateRegisterPrompt } from "@/features/real-states/real-estate-register-prompt"
-import { OnboardingState } from "@/domain/use-cases/get-state-onboarding.case"
+import { OnboardingState } from "@/domain/use-cases/onboarding.cases"
+import { redirect } from "next/navigation"
 
 interface Props {
   initialState: OnboardingState
 }
 
 export function OnboardingWrapper({ initialState }: Props) {
-
 
   // Estado inicial determina qué mostrar
   if (initialState.step === "loading") {
@@ -27,7 +25,7 @@ export function OnboardingWrapper({ initialState }: Props) {
 
   if (initialState.step === "select-real-estate") {
     return (
-      <RealEstateSelector 
+      <RealEstateSelector
         realEstates={initialState.realEstates}
       />
     )
@@ -35,9 +33,7 @@ export function OnboardingWrapper({ initialState }: Props) {
 
   if (initialState.step === "register-real-estate") {
     return (
-      <RealEstateRegisterPrompt
-        onSkip={handleSkipRegistration}
-      />
+      <RealEstateRegisterPrompt onSkip={() => redirect('/')}/>
     )
   }
 

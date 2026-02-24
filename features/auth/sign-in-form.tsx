@@ -20,7 +20,7 @@ import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { cn } from "@/lib/utils"
 import { ROUTES } from "@/infrastructure/config/constants"
-import { signInAction } from "@/domain/adapters/http/sign-in.action"
+import { signInAction } from "@/domain/adapters/http/auth.actions"
 
 export function SignInForm({
   className,
