@@ -27,18 +27,9 @@ export default async function page({
   }
 
   return (
-    <div className='relative flex h-auto items-center justify-center overflow-x-hidden px-4 py-10 sm:px-6 lg:px-8'>
-      <div className='absolute'>
-        <AuthBackgroundShape width='1500' height='900'/>
-      </div>
+    <div className='flex items-center justify-center px-4 py-10 sm:px-6 lg:px-8'>
       <Suspense fallback={<Spinner />}>
-        <Card className='z-1 w-full border-none sm:max-w-2xl'>
-          <CardHeader className='gap-2'>
-            <CardTitle className='text-xl'>{i18next.t('forms.property.title')}</CardTitle>
-            <CardDescription className='text-base'>
-              {i18next.t('forms.property.subtitle')}
-            </CardDescription>
-          </CardHeader>
+        <Card className='w-full border-none sm:max-w-3xl'>
           <CardContent>
             <PropertyForm
               id={id}
@@ -47,7 +38,6 @@ export default async function page({
             />
           </CardContent>
         </Card>
-
       </Suspense>
     </div>
   );

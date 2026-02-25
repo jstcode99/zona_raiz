@@ -102,7 +102,6 @@
     "property": {
       "title": "Crear propiedad",
       "subtitle": "Completa la información para publicar la propiedad",
-      "manual_switch": "Completar la información manualmente",
       "basic-info": "Información basica el inmueble",
       "location": "Información de ubicacion",
       "features": "Datos del inmueble",
