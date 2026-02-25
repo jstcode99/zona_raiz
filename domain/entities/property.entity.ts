@@ -16,6 +16,11 @@ export enum PropertyType {
     Other = 'other',
 }
 
+type AmenitiesType = {
+  label: string,
+  value: string
+}
+
 export interface PropertyEntity {
   id: string;
   real_estate_id: string;
@@ -40,7 +45,7 @@ export interface PropertyEntity {
   floors: number | null;
   year_built: number | null;
   parking_spots: number | null;
-  amenities: string[];
+  amenities: AmenitiesType[];
   created_by: string | null;
   created_at: string;
   updated_at: string;
@@ -64,7 +69,7 @@ export const propertyTypeOptions = [
   { label: "Casa", value: PropertyType.House },
   { label: "Apartamento", value: PropertyType.Apartment },
   { label: "Condominio", value: PropertyType.Condo },
-  { label: "Townhouse", value: PropertyType.TownHouse },
+  { label: "Casa adosada", value: PropertyType.TownHouse },
   { label: "Terreno", value: PropertyType.Land },
   { label: "Comercial", value: PropertyType.Commercial },
   { label: "Oficina", value: PropertyType.Office },

@@ -194,8 +194,8 @@ export const PropertyColumns: ColumnDef<PropertyRow>[] = [
       return (
         <div className="flex flex-wrap gap-1 max-w-[150px]">
           {display.map((amenity) => (
-            <Badge key={amenity} variant="secondary" className="text-xs font-normal">
-              {amenity}
+            <Badge key={amenity.value} variant="secondary" className="text-xs font-normal">
+              {amenity.label}
             </Badge>
           ))}
           {remaining > 0 && (

@@ -15,6 +15,7 @@ import { Check, ChevronLeft, ChevronRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import i18next from "i18next"
+import { boolean } from "yup"
 
 export interface WizardRef {
   complete: () => void
@@ -25,14 +26,16 @@ export interface WizardRef {
   setBusy: (value: boolean) => void
 }
 
+async () => boolean
+
 interface WizardTabProps {
   id: string
   title: string
   icon?: React.ElementType
   nextText?: string
-  canNext?: () => boolean
-  canBack?: () => boolean
-  canSubmit?: () => boolean
+  canNext?: () => boolean | Promise<boolean>
+  canBack?: () => boolean | Promise<boolean>
+  canSubmit?: () => boolean | Promise<boolean>
   children: ReactNode
 }
 
@@ -60,7 +63,6 @@ export const WizardTabs = forwardRef<WizardRef, WizardTabsProps>(
 
     const complete = () => {
       setSubmitted(true)
-      onSubmit?.()
     }
 
     const reset = () => {
@@ -81,9 +83,27 @@ export const WizardTabs = forwardRef<WizardRef, WizardTabsProps>(
       setBusy
     }))
 
-    const canNext = currentTab.props.canNext?.() ?? true
     const canBack = currentTab.props.canBack?.() ?? true
-    const canSubmit = currentTab.props.canSubmit?.() ?? true
+
+    const handleNext = async () => {
+      if (busy) return
+
+      if (currentTab.props.canNext) {
+        const ok = await currentTab.props.canNext()
+        if (!ok) return
+      }
+      next()
+    }
+
+    const handleSubmitClick = async () => {
+      if (busy) return
+
+      if (currentTab.props.canSubmit) {
+        const ok = await currentTab.props.canSubmit()
+        if (!ok) return
+      }
+      await onSubmit?.()
+    }
 
     if (submitted) {
       return (
@@ -92,7 +112,12 @@ export const WizardTabs = forwardRef<WizardRef, WizardTabsProps>(
             <Check className="h-6 w-6" />
           </div>
           <h2 className="text-xl font-semibold text-foreground">Submitted!</h2>
-          <Button variant="outline" className="mt-2" onClick={reset}>
+          <Button
+            variant="outline"
+            className="mt-2"
+            onClick={reset}
+            type="button"
+          >
             Start Over
           </Button>
         </div>
@@ -165,6 +190,7 @@ export const WizardTabs = forwardRef<WizardRef, WizardTabsProps>(
             onClick={back}
             disabled={busy || !canBack || currentIndex === 0}
             className="gap-1.5"
+            type="button"
           >
             <ChevronLeft className="h-4 w-4" />
             {i18next.t("words.previous")}
@@ -172,17 +198,19 @@ export const WizardTabs = forwardRef<WizardRef, WizardTabsProps>(
 
           {!isLast ? (
             <Button
-              onClick={next}
-              disabled={busy || !canNext}
+              onClick={handleNext}
+              disabled={busy}
               className="gap-1.5"
+              type="button"
             >
               {currentTab.props.nextText ?? i18next.t("words.next")}
               <ChevronRight className="h-4 w-4" />
             </Button>
           ) : (
             <Button
-              onClick={() => onSubmit?.()}
-              disabled={busy || !canSubmit}
+              type="button"
+              onClick={handleSubmitClick}
+              disabled={busy}
               className="gap-1.5"
             >
               {busy ? "Guardando..." : submitText}

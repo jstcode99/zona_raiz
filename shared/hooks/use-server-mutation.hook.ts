@@ -10,11 +10,10 @@ export type FieldError = {
 
 export type ActionResult =
   | { success: true }
-  | { success: false; error?: FieldError }
+  | { success: false; error?: FieldError; errors?: FieldError[] }
 
 type Status = "idle" | "pending" | "success" | "error"
 
-// ✅ Server action sin prevState
 type ServerAction = (formData: FormData) => Promise<ActionResult>
 
 type Options = {
@@ -35,45 +34,58 @@ export function useServerMutation({
   const [isPending, setIsPending] = useState(false)
   const hasSubmitted = useRef(false)
 
-  // ✅ Llamada directa con startTransition
   const executeAction = useCallback((formData: FormData) => {
     hasSubmitted.current = true
     setStatus("pending")
     setIsPending(true)
 
-    startTransition(async () => {
-      try {
-        const result = await action(formData)
-        setState(result)
-        setIsPending(false)
+    startTransition(() => {
+      action(formData)
+        .then(result => {
+          setState(result)
+          setIsPending(false)
 
-        if (result.success) {
-          setStatus("success")
-          onSuccess?.(result)
-        } else {
+          if (result.success) {
+            setStatus("success")
+            onSuccess?.(result)
+            return
+          }
+
           setStatus("error")
-          if (result.error) {
-            onError?.(result.error)
-            if (setError && result.error.field) {
-              setError(result.error.field, {
+
+          const errors =
+            result.errors ??
+            (result.error ? [result.error] : [])
+
+          errors.forEach(err => {
+            onError?.(err)
+
+            if (setError && err.field) {
+              setError(err.field, {
                 type: "server",
-                message: result.error.message,
+                message: err.message,
               })
             }
+          })
+        })
+        .catch((error: any) => {
+          setIsPending(false)
+          setStatus("error")
+
+          const fieldError: FieldError = {
+            field: "root",
+            message: error?.message || "Unexpected error occurred",
           }
-        }
-      } catch (error: any) {
-        setIsPending(false)
-        setStatus("error")
-        const fieldError = { 
-          field: "root",
-          message: error.message || "Unexpected error occurred" 
-        }
-        onError?.(fieldError)
-        if (setError) {
-          setError("root", { type: "server", message: fieldError.message })
-        }
-      }
+
+          onError?.(fieldError)
+
+          if (setError) {
+            setError("root", {
+              type: "server",
+              message: fieldError.message,
+            })
+          }
+        })
     })
   }, [action, setError, onSuccess, onError])
 

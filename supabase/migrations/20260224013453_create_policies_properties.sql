@@ -147,3 +147,15 @@ create policy "Views: readable by agents"
       and a.profile_id = auth.uid()
     )
   );
+
+-- allow reading
+grant select on public.properties to authenticated;
+
+-- allow inserting
+grant insert on public.properties to authenticated;
+
+-- allow updating
+grant update on public.properties to authenticated;
+
+-- allow deleting
+grant delete on public.properties to authenticated;

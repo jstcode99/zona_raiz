@@ -162,7 +162,39 @@ export const propertySchema = yup.object({
       max: '100'
     }))
     .nullable(),
-  amenities: yup.array().of(yup.string()).default([]),
+  amenities: yup
+    .array()
+    .of(
+      yup.object({
+        label: yup.string().required(),
+        value: yup.string().required(),
+      })
+    )
+    .transform((value, originalValue) => {
+      if (typeof originalValue === "string") {
+        try {
+          return JSON.parse(originalValue);
+        } catch {
+          return [];
+        }
+      }
+      return value;
+    })
+    .default([])
+    .default([]),
+  address: yup
+    .string()
+    .required(i18next.t('validations.required', {
+      attribute: 'address'
+    }))
+    .min(5, i18next.t('validations.min.string', {
+      attribute: 'address',
+      min: '5'
+    }))
+    .max(100, i18next.t('validations.max.string', {
+      attribute: 'address',
+      max: '100'
+    })),
 }).concat(addressSchema);
 
 export type PropertyFormValues = yup.InferType<typeof propertySchema>
@@ -173,10 +205,11 @@ export const defaultPropertyValues: PropertyFormValues = {
   description: '',
   property_type: PropertyType.Other,
   street: '',
+  address: '',
   city: '',
   state: '',
   postal_code: '',
-  country: 'Argentina',
+  country: '',
   latitude: 0,
   longitude: 0,
   neighborhood: '',
@@ -186,7 +219,7 @@ export const defaultPropertyValues: PropertyFormValues = {
   built_area: 0,
   lot_area: 0,
   floors: 0,
-  year_built: 0,
+  year_built: 2000,
   parking_spots: 0,
   amenities: [],
 }

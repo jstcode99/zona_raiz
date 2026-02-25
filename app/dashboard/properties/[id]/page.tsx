@@ -5,7 +5,10 @@ import { COOKIE_NAMES } from "@/infrastructure/config/constants";
 import { getPropertyById } from "@/services/property.services";
 import { encodedRedirect } from "@/shared/redirect";
 import { cookies } from "next/headers";
-import { Suspense, use } from "react";
+import { Suspense } from "react";
+import AuthBackgroundShape from '@/assets/svg/background-shape'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import i18next from "i18next";
 
 export default async function page({
   params,
@@ -17,21 +20,35 @@ export default async function page({
   const cookieStore = await cookies()
   const realEstateId = cookieStore.get(COOKIE_NAMES.REAL_ESTATE)?.value as string
 
-  const property = use(getPropertyById(id))
+  const property = await getPropertyById(id)
 
   if (!property) {
     return encodedRedirect('error', '/auth/sign-in', 'No se pudo cargar la propiedad')
   }
 
   return (
-    <main className="min-h-screen bg-muted/40 py-10 px-4">
+    <div className='relative flex h-auto items-center justify-center overflow-x-hidden px-4 py-10 sm:px-6 lg:px-8'>
+      <div className='absolute'>
+        <AuthBackgroundShape width='1500' height='900'/>
+      </div>
       <Suspense fallback={<Spinner />}>
-        <PropertyForm
-          id={id}
-          realEstateId={realEstateId}
-          defaultValues={property as PropertyFormValues}
-        />
+        <Card className='z-1 w-full border-none sm:max-w-2xl'>
+          <CardHeader className='gap-2'>
+            <CardTitle className='text-xl'>{i18next.t('forms.property.title')}</CardTitle>
+            <CardDescription className='text-base'>
+              {i18next.t('forms.property.subtitle')}
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <PropertyForm
+              id={id}
+              realEstateId={realEstateId}
+              defaultValues={property as PropertyFormValues}
+            />
+          </CardContent>
+        </Card>
+
       </Suspense>
-    </main>
+    </div>
   );
 }

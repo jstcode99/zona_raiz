@@ -4,23 +4,11 @@ import { useEffect, useMemo, useState } from "react"
 import { useForm, useWatch } from "react-hook-form"
 import { Form } from "@/components/ui/form"
 import { Button } from "@/components/ui/button"
-import { PropertyType, propertyTypeOptions } from "@/domain/entities/property.entity"
+import { PropertyFilters, PropertyType, propertyTypeOptions } from "@/domain/entities/property.entity"
 import { IconX, IconMapPin, IconHome, IconMoneybag } from "@tabler/icons-react"
 import { useRouter, usePathname, useSearchParams } from "next/navigation"
 import departments from '@/lib/departments.json';
 
-export interface PropertyFilters {
-  realEstateId?: string
-  propertyType?: PropertyType
-  city?: string
-  state?: string
-  neighborhood?: string
-  minBedrooms?: number
-  minBathrooms?: number
-  minPrice?: number
-  maxPrice?: number
-  searchQuery?: string
-}
 
 interface LocationData {
   value: string
@@ -35,8 +23,6 @@ interface PropertyFiltersFormProps {
   neighborhoodOptions?: { label: string; value: string }[]
   debounceMs?: number
 }
-
-
 
 const defaultLocations: LocationData[] = departments
 

@@ -53,7 +53,7 @@ export class SupabasePropertyAdapter implements PropertyPort {
 
     async all(filters?: PropertyFilters): Promise<PropertyEntity[]> {
         const supabase = await createSupabaseServerClient()
-        
+
         let query = supabase
             .from("properties")
             .select("*, real_estate:real_estates(*)")
@@ -102,6 +102,8 @@ export class SupabasePropertyAdapter implements PropertyPort {
             })
             .select()
             .single()
+
+        console.log(dbError);
 
         if (dbError) throw new Error(dbError.message)
         if (!inserted) throw new Error("Failed to create property")

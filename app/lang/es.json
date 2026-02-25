@@ -103,7 +103,10 @@
       "title": "Crear propiedad",
       "subtitle": "Completa la información para publicar la propiedad",
       "manual_switch": "Completar la información manualmente",
-      "characteristics_legend": "Información basica el inmueble",
+      "basic-info": "Información basica el inmueble",
+      "location": "Información de ubicacion",
+      "features": "Datos del inmueble",
+      "amenities": "Adicionales del inmueble",
       "fields": {
         "title": {
           "label": "Título",
@@ -183,6 +186,19 @@
           "message": "El país es obligatorio",
           "message1": "No puede tener más de 150 caracteres"
         },
+        "postal_code": {
+          "label": "Codio postal",
+          "placeholder": "Codio postal",
+          "message": "El Codio postal es obligatorio"
+        },
+        "floors": {
+          "label": "Plantas",
+          "placeholder": "Plantas"
+        },
+        "year_built": {
+          "label": "Ano de construccion",
+          "placeholder": "Ano de construccion"
+        },
         "latitude": {
           "label": "Latitud",
           "placeholder": "4.7110",
@@ -216,12 +232,34 @@
           "message1": "Debe ser un número entero",
           "message2": "No puede ser negativo"
         },
-        "area_m2": {
+        "total_area": {
           "label": "Área (m²)",
           "placeholder": "120",
           "message": "Debe ser un número válido",
           "message1": "Debe ser un número entero",
           "message2": "El área debe ser al menos 1 m²"
+        },
+        "built_area": {
+          "label": "Área construida (m²)",
+          "placeholder": "120",
+          "message": "Debe ser un número válido",
+          "message1": "Debe ser un número entero",
+          "message2": "El área debe ser al menos 1 m²"
+        },
+        "lot_area": {
+          "label": "Área del lote (m²)",
+          "placeholder": "120",
+          "message": "Debe ser un número válido",
+          "message1": "Debe ser un número entero",
+          "message2": "El área debe ser al menos 1 m²"
+        },
+        "parking_spots": {
+          "label": "Zonas de parqueo",
+          "placeholder": "0"
+        },
+        "amenities": {
+          "label": "Adicionales",
+          "placeholder": "Adicionales"
         },
         "whatsapp_contact": {
           "label": "Contacto de WhatsApp",
@@ -231,7 +269,8 @@
           "message2": "Formato de teléfono no válido"
         }
       },
-      "submit": "Guardar propiedad",
+      "create": "Guardar propiedad",
+      "update": "Actualizar propiedad",
       "success": "La propiedad ha sido guardada correctamente."
     },
     "errors": {

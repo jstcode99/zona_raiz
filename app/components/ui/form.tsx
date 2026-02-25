@@ -479,7 +479,7 @@ function AutocompleteField({
 
               {!loading && items.length === 0 && (
                 <CommandEmpty>
-                 {t('words.without_results')}...
+                  {t('words.without_results')}...
                 </CommandEmpty>
               )}
 
@@ -757,13 +757,19 @@ function ComboboxField({
   const [items, setItems] = useState<ComboOption[]>(options)
   const [loading, setLoading] = useState(false)
 
-  const value = field.value ?? (multiple ? [] : "")
+  const value = multiple
+    ? (field.value ?? []).map((v: any) =>
+      options.find(o => o.value === v.value)
+    ).filter(Boolean)
+    : field.value
+      ? options.find(o => o.value === field.value.value) ?? null
+      : null
 
   const selectedValues = multiple
     ? value
     : value
-    ? [value]
-    : []
+      ? [value]
+      : []
 
   useEffect(() => {
     if (!onSearch) {
@@ -803,7 +809,18 @@ function ComboboxField({
           items={items}
           value={value}
           multiple={multiple}
-          onValueChange={field.onChange}
+          onValueChange={(val) => {
+            if (multiple) {
+              const mapped = (val as ComboOption[]).map(v => ({
+                label: v.label,
+                value: v.value,
+              }))
+              field.onChange(mapped)
+            } else {
+              const v = val as ComboOption | null
+              field.onChange(v ? { label: v.label, value: v.value } : null)
+            }
+          }}
           disabled={disabled}
           itemToStringValue={(item: ComboOption) => item.value}
         >
