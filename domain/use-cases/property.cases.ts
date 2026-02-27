@@ -1,87 +1,60 @@
-import { PropertyFilters } from "../entities/property.entity";
-import { PropertyFormValues } from "../entities/schemas/property.schema";
 import { PropertyPort } from "../ports/property.port";
+import { PropertyEntity, PropertyFilters } from "../entities/property.entity"
 
-export class ListProperties {
-  constructor(
-    private property: PropertyPort,
-  ) {}
+export class PropertyUseCases {
+  constructor(private repository: PropertyPort) { }
 
-  async execute(filters?: PropertyFilters) {
-    return await this.property.all(filters);
+  all(filters?: PropertyFilters) {
+    return this.repository.all(filters)
   }
-}
 
-export class GetPropertyById {
-  constructor(
-    private property: PropertyPort,
-  ) {}
-
-  async execute(id: string) {
-    if (!id) {
-      throw new Error("ID requerido");
-    }
-    return await this.property.getById(id);
+  getById(id: string) {
+    return this.repository.getById(id)
   }
-}
 
-export class CreateProperty {
-  constructor(
-    private property: PropertyPort,
-  ) {}
+  getBySlug(slug: string) {
+    return this.repository.getBySlug(slug)
+  }
 
-  async execute(realEstateId: string, input: PropertyFormValues) {
-    if (!input || !realEstateId) {
-      throw new Error("Datos inválidos");
-    }
+  getByRealEstate(realEstateId: string) {
+    return this.repository.getByRealEstate(realEstateId)
+  }
 
+  async create(realEstateId: string, input: Partial<PropertyEntity>) {
     // Generar slug si no existe
+    let slug = input?.title as string
+
     if (!input.slug) {
-      input.slug = await this.property.generateSlug(input.title);
+      slug = await this.repository.generateSlug(input.title!)
     }
 
     // Verificar disponibilidad del slug
-    const isAvailable = await this.property.isSlugAvailable(input.slug);
+    const isAvailable = await this.repository.isSlugAvailable(slug);
+
     if (!isAvailable) {
-      input.slug = await this.property.generateSlug(input.title);
+      slug = await this.repository.generateSlug(input.title!);
     }
 
-    return await this.property.create(realEstateId, input);
+    return this.repository.create(realEstateId, {
+      ...input,
+      slug,
+    })
   }
-}
 
-export class UpdateProperty {
-  constructor(
-    private property: PropertyPort,
-  ) {}
-
-  async execute(id: string, input: PropertyFormValues) {
-    if (!id || !input) {
-      throw new Error("Datos inválidos");
-    }
-
-    // Verificar disponibilidad del slug si cambió
-    const existing = await this.property.getById(id);
+  async update(id: string, input: Partial<PropertyEntity>) {
+    const existing = await this.repository.getById(id);
+    
     if (existing && existing.slug !== input.slug) {
-      const isAvailable = await this.property.isSlugAvailable(input.slug, id);
+      const isAvailable = await this.repository.isSlugAvailable(input.slug!, id);
       if (!isAvailable) {
         throw new Error("El slug ya está en uso");
       }
     }
 
-    return await this.property.update(id, input);
+    return this.repository.update(id, input)
   }
-}
 
-export class DeleteProperty {
-  constructor(
-    private property: PropertyPort,
-  ) {}
-
-  async execute(id: string) {
-    if (!id) {
-      throw new Error("ID requerido");
-    }
-    await this.property.delete(id);
+  delete(id: string) {
+    return this.repository.delete(id)
   }
 }

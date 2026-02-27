@@ -11,14 +11,14 @@ import { ComponentProps, useEffect } from "react"
 import { useTranslation } from "react-i18next"
 import { Spinner } from "@/components/ui/spinner"
 import { toast } from "sonner"
-import { profileSchema, ProfileFormValues } from "@/domain/entities/schemas/profile.schema"
 import { useServerMutation } from "@/shared/hooks/use-server-mutation.hook"
 import { Form } from "@/components/ui/form"
 import { cn } from "@/lib/utils"
-import { updateProfileAction } from "@/domain/adapters/http/profile.actions"
+import { ProfileInput, profileSchema } from "@/application/validation/profile.validation"
+import { updateProfileAction } from "@/application/actions/profile.actions"
 
 interface ProfileFormProps extends ComponentProps<"form"> {
-  defaultValues: ProfileFormValues
+  defaultValues: ProfileInput
 }
 
 export function ProfileForm({
@@ -28,7 +28,7 @@ export function ProfileForm({
 }: ProfileFormProps) {
   const { t } = useTranslation()
 
-  const form = useForm<ProfileFormValues>({
+  const form = useForm<ProfileInput>({
     resolver: yupResolver(profileSchema),
     defaultValues: defaultValues,
     mode: "onBlur",

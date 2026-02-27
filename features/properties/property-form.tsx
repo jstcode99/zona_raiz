@@ -6,24 +6,19 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
-import {
-  defaultPropertyValues,
-  propertySchema,
-  type PropertyFormValues,
-} from "@/domain/entities/schemas/property.schema";
-
 import { Form } from "@/components/ui/form";
 import { useServerMutation } from "@/shared/hooks/use-server-mutation.hook";
 import { flatten, cn, generateSlug } from "@/lib/utils";
-import { createPropertyAction, updatePropertyAction } from "@/domain/adapters/http/property.action";
 import { WizardRef, WizardTab, WizardTabs } from "@/components/ui/wizard-form";
 import { PropertyCeoForm } from "./property-ceo-form";
 import { PropertyLocationForm } from "./property-location-form";
 import { PropertyFeaturesForm } from "./property-features-form";
+import { defaultPropertyValues, PropertyInput, propertySchema } from "@/application/validation/property.schema";
+import { createPropertyAction, updatePropertyAction } from "@/application/actions/property.action";
 
 interface PropertyFormProps extends ComponentProps<"form"> {
   realEstateId: string;
-  defaultValues?: PropertyFormValues;
+  defaultValues?: PropertyInput;
   id?: string;
 }
 
@@ -53,7 +48,7 @@ export function PropertyForm({
     ],
   } as const
 
-  const form = useForm<PropertyFormValues>({
+  const form = useForm<PropertyInput>({
     resolver: yupResolver(propertySchema),
     defaultValues: defaultValues || defaultPropertyValues,
     mode: "onTouched",
@@ -75,7 +70,7 @@ export function PropertyForm({
   const currentSlug = useWatch({ control, name: "slug" });
 
   useEffect(() => {
-    if (!isUpdateMode && title && !currentSlug) {
+    if (title) {
       const slug = generateSlug(title);
       setValue("slug", slug, { shouldValidate: true });
     }
@@ -106,7 +101,7 @@ export function PropertyForm({
     }
   }, [defaultValues, reset]);
 
-  async function handleValidSubmit(values: PropertyFormValues) {
+  async function handleValidSubmit(values: PropertyInput) {
     wizardRef.current?.setBusy(true)
     try {
 

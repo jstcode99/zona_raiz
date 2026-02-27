@@ -14,13 +14,13 @@ import { ComponentProps, useEffect } from "react"
 import { useTranslation } from "react-i18next"
 import GoogleAuth from "./google-auth"
 import { Spinner } from "@/components/ui/spinner"
-import { defaultSignInValues, SignInFormValues, signInSchema } from "@/domain/entities/schemas/sign-in-schema"
 import { useServerMutation } from "@/shared/hooks/use-server-mutation.hook"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { cn } from "@/lib/utils"
 import { ROUTES } from "@/infrastructure/config/constants"
-import { signInAction } from "@/domain/adapters/http/auth.actions"
+import { defaultSignInValues, SignInFormInput, signInSchema } from "@/application/validation/auth.validation"
+import { signInAction } from "@/application/actions/auth.actions"
 
 export function SignInForm({
   className,
@@ -29,7 +29,7 @@ export function SignInForm({
   const { t } = useTranslation()
   const router = useRouter()
 
-  const form = useForm<SignInFormValues>({
+  const form = useForm<SignInFormInput>({
     resolver: yupResolver(signInSchema),
     defaultValues: defaultSignInValues,
     mode: "onBlur", // Validación al perder foco
@@ -61,7 +61,7 @@ export function SignInForm({
 
   const onSubmit = handleSubmit((values) => {
     const formData = new FormData()
-    
+
     Object.entries(values).forEach(([key, value]) => {
       if (value !== undefined && value !== null) {
         formData.append(key, String(value))
@@ -77,7 +77,7 @@ export function SignInForm({
     <Form
       {...props}
       form={form}
-      className={cn("py-4 px-6", className)}
+      className={cn("py-16 px-6", className)}
       onSubmit={onSubmit}
     >
       <FieldGroup className="gap-3">
@@ -88,24 +88,29 @@ export function SignInForm({
           </p>
         </div>
 
-        <Form.Input 
-          name="email" 
+        <Form.Input
+          name="email"
           type="email"
           label={t('forms.sign-in.fields.email.label')}
           placeholder={t('forms.sign-in.fields.email.placeholder')}
           autoComplete="email"
           disabled={isLoading}
         />
-        
-        <Form.Input 
-          name="password" 
+
+        <Form.Input
+          name="password"
           type="password"
           label={t('forms.sign-in.fields.password.label')}
           placeholder={t('forms.sign-in.fields.password.placeholder')}
           autoComplete="current-password"
           disabled={isLoading}
         />
-
+        <Link
+          href="/auth/otp"
+          className="ml-auto text-right text-sm underline-offset-2 hover:underline"
+        >
+          {t('forms.sign-in.alternatives.otp')}
+        </Link>
         <Field>
           <Button
             type="submit"
@@ -127,8 +132,8 @@ export function SignInForm({
 
         <FieldDescription className="text-center">
           <span>{t('forms.sign-in.fields.sign-up.placeholder')}</span>
-          <Link 
-            href="/auth/sign-up" 
+          <Link
+            href="/auth/sign-up"
             className="ml-1 text-sm font-medium text-primary hover:underline"
           >
             {t('forms.sign-in.fields.sign-up.label')}

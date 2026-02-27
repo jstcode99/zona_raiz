@@ -18,18 +18,15 @@ import { Form } from "@/components/ui/form"
 import { Building2 } from "lucide-react"
 import { useServerMutation } from "@/shared/hooks/use-server-mutation.hook"
 import { flatten } from "@/lib/utils"
-import {
-  defaultRealEstateValues,
-  RealEstateFormValues,
-  realEstateSchema
-} from "@/domain/entities/schemas/real-estate.schema"
-import { createRealEstateAction } from "@/domain/adapters/http/real-estate.actions"
+import { defaultRealEstateValues, RealEstateInput, realEstateSchema } from "@/application/validation/real-estate.validation"
+import { createRealEstateAction } from "@/application/actions/real-estate.actions"
+
 
 export function RealEstateRegistrationForm() {
   const { t } = useTranslation()
   const router = useRouter()
 
-  const form = useForm<RealEstateFormValues>({
+  const form = useForm<RealEstateInput>({
     resolver: yupResolver(realEstateSchema),
     defaultValues: defaultRealEstateValues,
     mode: "onBlur",
@@ -52,14 +49,9 @@ export function RealEstateRegistrationForm() {
 
   const isLoading = isSubmitting || mutation.isPending
 
-  const onSubmit = handleSubmit((values: RealEstateFormValues) => {
+  const onSubmit = handleSubmit((values: RealEstateInput) => {
     const formData = new FormData()
     flatten(values, '', formData)
-
-    for (const [k, v] of formData.entries()) {
-      console.log(`${k}:`, v)
-    }
-
     mutation.action(formData)
   })
 

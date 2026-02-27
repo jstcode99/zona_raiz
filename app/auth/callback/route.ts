@@ -1,38 +1,30 @@
-import { createSupabaseRouteClient } from '@/infrastructure/db/supabase.route'
-import { type NextRequest, NextResponse } from 'next/server'
-import { cookies } from 'next/headers'
-import { COOKIE_NAMES, COOKIE_OPTIONS, ROUTES } from '@/infrastructure/config/constants'
+import { type NextRequest, NextResponse } from "next/server"
+import { cookies } from "next/headers"
+import { COOKIE_NAMES, COOKIE_OPTIONS, ROUTES } from "@/infrastructure/config/constants"
+import { createAuthModule } from "@/application/containers/auth.container"
+import { ProfileEntity } from "@/domain/entities/profile.entity"
 
 export async function GET(request: NextRequest) {
   const { searchParams, origin } = new URL(request.url)
-  const supabase = await createSupabaseRouteClient()
+
   const cookieStore = await cookies()
+  // wiring manual por request
+  const authModule = await createAuthModule()
 
-  const code = searchParams.get('code')
-  const token_hash = searchParams.get('token_hash')
-  const type = searchParams.get('type')
+  const code = searchParams.get("code")
+  const token_hash = searchParams.get("token_hash")
+  const type = searchParams.get("type")
 
+  let profile: ProfileEntity | null = null 
   /**
-   * Google / OAuth login
+   * OAuth login
    */
   if (code) {
-    const { data: { user }, error } = await supabase.auth.exchangeCodeForSession(code)
+    profile = await authModule.useCases.exchangeCodeForSession(code)
 
-    if (error || !user) {
-      console.error('OAuth callback error:', error)
+    if (!profile) {
+      console.error("OAuth callback error")
       return NextResponse.redirect(`${ROUTES.SIGN_IN}?error=oauth_error`)
-    }
-
-    // Obtener perfil con rol y guardar en cookie
-    const { data: profile, error: profileError } = await supabase
-      .from('profiles')
-      .select('role')
-      .eq('id', user.id)
-      .single()
-
-    if (profileError) {
-      console.error('Profile fetch error:', profileError)
-      // No bloqueamos el login si falla el perfil, pero loggeamos
     }
 
     if (profile?.role) {
@@ -43,42 +35,27 @@ export async function GET(request: NextRequest) {
   }
 
   /**
-   * OTP login (magic link) o verificación de email
+   * OTP login o email verification
    */
   if (token_hash && type) {
-    const { data: { user }, error } = await supabase.auth.verifyOtp({
-      type: type as 'signup' | 'recovery' | 'email_change' | 'email',
-      token_hash,
-    })
+    profile = await authModule.useCases.verifyOtp(token_hash, type)
 
-    if (error || !user) {
-      console.error('OTP verification error:', error)
+    if (!profile) {
+      console.error("OTP verification error:")
       return NextResponse.redirect(`${ROUTES.OTP}?error=invalid_or_expired_link`)
     }
-
-    // Para OTP también guardamos el rol si existe
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('role')
-      .eq('id', user.id)
-      .single()
 
     if (profile?.role) {
       cookieStore.set(COOKIE_NAMES.ROLE, profile.role, COOKIE_OPTIONS)
     }
 
-    // Redirigir según el tipo de verificación
-    const redirectPath = type === 'recovery'
-      ? ROUTES.OTP  // Si es recuperación, ir a reset
-      : ROUTES.ONBOARDING    // Si es login o verificación, al dashboard
+    const redirectPath =
+      type === "recovery"
+        ? ROUTES.OTP
+        : ROUTES.ONBOARDING
 
     return NextResponse.redirect(`${origin}${redirectPath}`)
   }
 
-  /**
-   * Invalid request, missing required parameters
-   */
-  return NextResponse.redirect(
-    `${origin}/auth/sign-in?error=missing_token`
-  )
+  return NextResponse.redirect(`${origin}/auth/sign-in?error=missing_token`)
 }

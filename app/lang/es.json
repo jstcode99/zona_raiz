@@ -44,7 +44,8 @@
       "submit": "Iniciar sesión",
       "alternatives": {
         "title": "O continúa con",
-        "google": "Ingresar con Google"
+        "google": "Ingresar con Google",
+        "otp": "Ingresar con codigo via email"
       }
     },
     "sign-up": {
@@ -288,9 +289,9 @@
           "message": "Este campo debe ser un código válido"
         }
       },
-      "submit": "Enviar código",
+      "submit": "Solicitar código",
       "alternatives": {
-        "bacic": "Iniciar sesión con contraseña"
+        "basic": "Iniciar sesión con contraseña"
       },
       "success": "Se ha enviado el codigo de verificacion."
     },

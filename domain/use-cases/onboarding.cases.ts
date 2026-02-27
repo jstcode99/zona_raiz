@@ -1,47 +1,62 @@
-import { ROUTES } from "@/infrastructure/config/constants";
-import { ProfilePort } from "../ports/profile.port";
-import { EUserRole } from "../entities/profile.entity";
-import { SessionPort } from "../ports/sesion.port";
+import { ROUTES } from "@/infrastructure/config/constants"
+import { ProfilePort } from "@/domain/ports/profile.port"
+import { EUserRole } from "@/domain/entities/profile.entity"
+import { RealEstateEntity } from "@/domain/entities/real-estate.entity"
+import { SessionPort } from "../ports/sesion.port"
 
 export type OnboardingState =
   | { step: "loading" }
-  | { step: "select-real-estate"; realEstates: any[] }
+  | { step: "select-real-estate"; realEstates: RealEstateEntity[] }
   | { step: "register-real-estate" }
-  | { step: "redirect", path: string }
+  | { step: "redirect"; path: string }
 
-export class GetStateOnboarding {
+export class OnboardingUseCase {
   constructor(
+    private session: SessionPort,
     private profiles: ProfilePort,
-    private session: SessionPort
-  ) { }
+  ) {}
 
-  async execute(userId: string): Promise<OnboardingState> {
+  async getOnboardingState(): Promise<OnboardingState> {
+    const userId = await this.session.getCurrentUserId()
 
-    const profile = await this.profiles.getProfileByUserId(userId);
-    const role = profile?.role
+    if (!userId) {
+      return { step: "redirect", path: ROUTES.SIGN_IN }
+    }
 
-    // Clientes no necesitan real estate
+    const profile = await this.profiles.getProfileByUserId(userId)
+    const role = profile.role
+
+    /**
+     * Clientes no necesitan inmobiliaria
+     */
     if (role === EUserRole.Client) {
       return { step: "redirect", path: ROUTES.DASHBOARD }
     }
 
-    // Para agentes, coordinadores y admins
-    if (role === "agent" || role === "coordinator" || role === "admin") {
-      const realEstates = await this.session.getRealEstatesForUser();
+    /**
+     * Roles que operan con inmobiliarias
+     */
+    if (
+      role === EUserRole.Agent ||
+      role === EUserRole.Coordinator ||
+      role === EUserRole.Admin
+    ) {
+      const realEstates = await this.session.getRealEstatesForUser()
+
       const count = realEstates.length
 
-      // 0 real estates → Registrar
       if (count === 0) {
         return { step: "register-real-estate" }
       }
 
-      // 1 real estate → No debería llegar aquí (middleware lo maneja), pero por si acaso
       if (count === 1) {
         return { step: "redirect", path: ROUTES.DASHBOARD }
       }
 
-      // Varios real estates → Seleccionar
-      return { step: "select-real-estate", realEstates }
+      return {
+        step: "select-real-estate",
+        realEstates: realEstates.map(r => r.real_estate),
+      }
     }
 
     return { step: "redirect", path: ROUTES.HOME }

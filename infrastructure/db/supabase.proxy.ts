@@ -7,8 +7,8 @@ import {
   ROUTES,
   PUBLIC_ROUTES,
 } from "../config/constants"
-import { SupabaseSessionAdapter } from "@/domain/adapters/supabase/supabase-session.adapter"
-
+import { SupabaseSessionAdapter } from "@/infrastructure/adapters/supabase/supabase-session.adapter"
+import { createSessionModule } from "@/application/containers/session.container"
 
 // ==========================================
 // MIDDLEWARE
@@ -55,8 +55,8 @@ export async function updateSession(request: NextRequest) {
 
     // 🔁 Si NO tiene contexto → intentar auto-selección
     if (!realEstateId) {
-      const sessionAdapter = new SupabaseSessionAdapter()
-      const realEstates = await sessionAdapter.getRealEstatesForUser()
+      const { useCases } = await createSessionModule()
+      const realEstates = await useCases.getRealEstatesForUser()
 
       // ⭐ Solo uno → guardar cookie y entrar al dashboard
       if (realEstates.length === 1) {

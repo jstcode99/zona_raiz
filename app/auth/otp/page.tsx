@@ -1,6 +1,6 @@
 import { OTPForm } from '@/features/auth/otp-form'
 
-export default function OTPPage() {
+export default function page() {
 
   return (
     <OTPForm

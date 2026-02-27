@@ -1,6 +1,4 @@
 import { PropertyEntity, PropertyFilters } from "../entities/property.entity";
-import { PropertyFormValues } from "../entities/schemas/property.schema";
-
 
 export interface PropertyPort {
   // Queries
@@ -10,8 +8,8 @@ export interface PropertyPort {
   getByRealEstate(realEstateId: string): Promise<PropertyEntity[]>;
 
   // Mutations
-  create(realEstateId: string, data: PropertyFormValues): Promise<PropertyEntity>;
-  update(id: string, data: PropertyFormValues): Promise<PropertyEntity>;
+  create(realEstateId: string, data: Partial<PropertyEntity>): Promise<PropertyEntity>;
+  update(id: string, data: Partial<PropertyEntity>): Promise<PropertyEntity>;
   delete(id: string): Promise<void>;
   
   // Slug utilities

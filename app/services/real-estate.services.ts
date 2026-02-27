@@ -1,21 +1,21 @@
-import { SupabaseRealEstateAdapter } from "@/domain/adapters/supabase/supabase-real-state.adapter";
-import { GetRealEstateById, ListRealEstates } from "@/domain/use-cases/real-estate.cases";
 import { cached } from "@/infrastructure/cache/cache";
 import { unstable_cache } from "next/cache";
+import { createRealEstateModule } from "@/application/containers/real-estate.container";
+import { RealEstateFilters } from "@/domain/entities/real-estate.entity";
+
 
 export const getRealEstateById = cached(
-    async function (realEstateId: string) {
-        const useCase = new GetRealEstateById(
-            new SupabaseRealEstateAdapter()
-        );
-        return useCase.execute(realEstateId);
-    }
+  async function (realEstateId: string) {
+    const { useCases } = await createRealEstateModule()
+
+    return useCases.getById(realEstateId);
+  }
 );
 
 export const listRealEstates = unstable_cache(
-  async (filters?: Parameters<ListRealEstates['execute']>[0]) => {
-    const useCase = new ListRealEstates(new SupabaseRealEstateAdapter());
-    return useCase.execute(filters);
+  async (filters?: RealEstateFilters) => {
+    const { useCases } = await createRealEstateModule()
+    return useCases.all(filters);
   },
   ["real-estates-list"],
   { tags: ["real-estates"] }

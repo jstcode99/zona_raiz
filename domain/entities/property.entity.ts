@@ -1,20 +1,4 @@
-// path = domain/entities/property.entity.ts
-export enum BusinessType {
-  Sale = "sale",
-  Rent = "rent",
-}
-
-export enum PropertyType {
-    House = 'house',
-    Apartment = 'apartment',
-    Condo = 'condo',
-    TownHouse = 'townhouse',
-    Land = 'land',
-    Commercial = 'commercial',
-    Office = 'office',
-    Warehouse = 'warehouse',
-    Other = 'other',
-}
+import { PropertyType } from "./property.enums";
 
 type AmenitiesType = {
   label: string,
@@ -53,16 +37,14 @@ export interface PropertyEntity {
 
 
 export interface PropertyFilters {
-  realEstateId?: string;
-  propertyType?: string;
+  real_estate_id?: string;
+  property_type?: string;
   city?: string;
   state?: string;
   neighborhood?: string;
-  minBedrooms?: number;
-  minBathrooms?: number;
-  minPrice?: number;
-  maxPrice?: number;
-  searchQuery?: string;
+  min_bedrooms?: number;
+  min_bathrooms?: number;
+  search_query?: string;
 }
 
 export const propertyTypeOptions = [
@@ -76,3 +58,15 @@ export const propertyTypeOptions = [
   { label: "Bodega", value: PropertyType.Warehouse },
   { label: "Otro", value: PropertyType.Other },
 ]
+
+export const propertyTypeLabels: Record<PropertyType, string> = {
+  [PropertyType.House]: "Casa",
+  [PropertyType.Apartment]: "Apartamento",
+  [PropertyType.Condo]: "Condominio",
+  [PropertyType.TownHouse]: "Townhouse",
+  [PropertyType.Land]: "Terreno",
+  [PropertyType.Commercial]: "Comercial",
+  [PropertyType.Office]: "Oficina",
+  [PropertyType.Warehouse]: "Bodega",
+  [PropertyType.Other]: "Otro",
+}

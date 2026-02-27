@@ -16,11 +16,6 @@ export interface RealEstateEntity {
   updated_at: string
 }
 
-export interface RealEstateWithRoleEntity {
-  real_estate: RealEstateEntity,
-  role: EAgentRole
-}
-
 export interface RealEstateFilters {
   id?: string
   whatsapp?: string
@@ -30,4 +25,9 @@ export interface RealEstateFilters {
   postal_code?: string,
   country?: string,
   searchQuery?: string;
+}
+
+export interface RealEstateWithRoleEntity {
+  real_estate: RealEstateEntity,
+  role: EAgentRole
 }

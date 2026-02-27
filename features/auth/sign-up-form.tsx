@@ -14,14 +14,14 @@ import { ComponentProps, useEffect } from "react"
 import { useTranslation } from "react-i18next"
 import GoogleAuth from "./google-auth"
 import { Spinner } from "@/components/ui/spinner"
-import { defaultSignUpValues, SignUpFormValues, signUpSchema } from "@/domain/entities/schemas/sign-up-schema"
 import { toast } from "sonner"
 import { useServerMutation } from "@/shared/hooks/use-server-mutation.hook"
 import { Form } from "@/components/ui/form"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { Building2 } from "lucide-react"
-import { signUpAction } from "@/domain/adapters/http/auth.actions"
+import { defaultSignUpValues, SignUpFormInput, signUpSchema } from "@/application/validation/auth.validation"
+import { signUpAction } from "@/application/actions/auth.actions"
 
 export function SignUpForm({
   className,
@@ -30,7 +30,7 @@ export function SignUpForm({
   const { t } = useTranslation()
   const router = useRouter()
 
-  const form = useForm<SignUpFormValues>({
+  const form = useForm<SignUpFormInput>({
     resolver: yupResolver(signUpSchema),
     defaultValues: defaultSignUpValues,
     mode: "onBlur", // Validación al perder foco para mejor UX
@@ -78,7 +78,7 @@ export function SignUpForm({
     <Form
       {...props}
       form={form}
-      className={cn("py-4 px-6", className)}
+      className={cn("py-16 px-6", className)}
       onSubmit={onSubmit}
     >
       <FieldGroup className="gap-2">

@@ -1,4 +1,4 @@
-import { PropertyColumns, PropertyRow } from "@/features/properties/property-columns";
+import { PropertyColumns } from "@/features/properties/property-columns";
 import PropertiesTable from "@/features/properties/property-table";
 import { Suspense } from "react";
 import { Spinner } from "@/components/ui/spinner";

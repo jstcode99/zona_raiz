@@ -1,37 +1,30 @@
-import { ProfilePort } from "../ports/profile.port";
-import { ProfileFormValues } from "../entities/schemas/profile.schema";
+import { ProfilePort } from "../ports/profile.port"
+import { ProfileEntity, EUserRole } from "../entities/profile.entity"
 
-export class UpdateProfile {
-  constructor(
-    private profile: ProfilePort,
-  ) {}
+export class ProfileUseCases {
+  constructor(private readonly profiles: ProfilePort) {}
 
-  async execute(userId:string, input: ProfileFormValues) {
-    if (!input || !userId) {
-      throw new Error("Datos inválidas");
-    }
-    await this.profile.updateProfile(userId, input);
+  getRoleByUserId(userId: string) {
+    return this.profiles.getRoleByUserId(userId)
   }
-}
-export class updateAvatarProfile {
-  constructor(
-    private profile: ProfilePort,
-    
-  ) {}
 
-  async execute(userId:string, file: File) {
-    if (!file || !userId) {
-      throw new Error("Datos inválidas");
-    }
-    const avatarUrl = await this.profile.uploadAvatar(userId, file);
-    await this.profile.updatePathAvatarProfile(userId, avatarUrl);
+  getProfileByUserId(userId: string): Promise<ProfileEntity> {
+    return this.profiles.getProfileByUserId(userId)
   }
-}
 
-export class GetProfileById {
-  constructor(private profile: ProfilePort) {}
-  async execute(userId: string) {
-    if (!userId) throw new Error("UserId requerido");
-    return this.profile.getProfileByUserId(userId);
+  updateProfile(userId: string, data: Partial<ProfileEntity>) {
+    return this.profiles.updateProfile(userId, data)
+  }
+
+  updatePathAvatarProfile(userId: string, avatarUrl: string) {
+    return this.profiles.updatePathAvatarProfile(userId, avatarUrl)
+  }
+
+  uploadAvatar(userId: string, file: File) {
+    return this.profiles.uploadAvatar(userId, file)
+  }
+
+  updateRole(userId: string, role: EUserRole) {
+    return this.profiles.updateRole(userId, role)
   }
 }

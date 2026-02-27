@@ -1,0 +1,76 @@
+import { EUserRole, ProfileEntity } from "@/domain/entities/profile.entity"
+import { RealEstateEntity, RealEstateWithRoleEntity } from "@/domain/entities/real-estate.entity"
+import { ProfilePort } from "@/domain/ports/profile.port"
+import { SessionPort } from "@/domain/ports/sesion.port"
+import { SupabaseClient } from "@supabase/supabase-js"
+
+export class SupabaseSessionAdapter implements SessionPort {
+  constructor(
+    private supabase: SupabaseClient,
+    private profileRepository: ProfilePort
+  ) { }
+
+  private cachedUserId?: string | null
+  private cachedProfile?: ProfileEntity | null
+
+  async getCurrentUserId(): Promise<string | null> {
+    if (this.cachedUserId !== undefined) {
+      return this.cachedUserId
+    }
+
+    const {
+      data: { user },
+      error,
+    } = await this.supabase.auth.getUser()
+
+    this.cachedUserId = error || !user ? null : user.id
+    return this.cachedUserId
+  }
+
+  async getCurrentUser(): Promise<ProfileEntity | null> {
+    if (this.cachedProfile !== undefined) {
+      return this.cachedProfile
+    }
+
+    const userId = await this.getCurrentUserId()
+
+    if (!userId) {
+      this.cachedProfile = null
+      return null
+    }
+
+    this.cachedProfile = await this.profileRepository.getProfileByUserId(userId)
+    return this.cachedProfile
+  }
+
+  async getRealEstatesForUser(): Promise<RealEstateWithRoleEntity[]> {
+    const userId = await this.getCurrentUserId()
+
+    const { data, error } = await this.supabase
+      .from("real_estate_agents")
+      .select(`
+          role,
+          real_estates (
+            id,
+            name,
+            description,
+            whatsapp,
+            street,
+            city,
+            state,
+            postal_code,
+            country,
+            logo_url,
+            created_at,
+            updated_at
+          )
+      `)
+      .eq("profile_id", userId)
+    if (error) throw new Error(error.message)
+
+    return data.map((item: any) => ({
+      real_estate: item.real_estates as RealEstateEntity,
+      role: item.role as EUserRole,
+    }))
+  }
+}

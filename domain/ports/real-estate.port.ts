@@ -1,16 +1,16 @@
-// path = domain/ports/real-estate.port.ts
-import { RealEstateEntity, RealEstateFilters } from "../entities/real-estate.entity";
-import { RealEstateFormValues } from "../entities/schemas/real-estate.schema";
+import {
+  RealEstateEntity,
+  RealEstateFilters,
+} from "@/domain/entities/real-estate.entity"
 
 export interface RealEstatePort {
-  // Queries
-  all(filters?: RealEstateFilters): Promise<RealEstateEntity[]>;
-  getById(id: string): Promise<RealEstateEntity | null>;
+  all(filters?: RealEstateFilters): Promise<RealEstateEntity[]>
+  getById(id: string): Promise<RealEstateEntity>
+  
+  create(data: Partial<RealEstateEntity>): Promise<string>
+  update(id: string, data: Partial<RealEstateEntity>): Promise<void>
+  delete(id: string): Promise<void>
 
-  // Mutations
-  create(data: RealEstateFormValues): Promise<RealEstateEntity>;
-  uploadLogo(realEstateId: string, file: File): Promise<string | null>
-  updatePathLogo(realEstateId: string, logoUrl: string): Promise<void>
-  update(id: string, data: RealEstateFormValues): Promise<RealEstateEntity>;
-  delete(id: string): Promise<void>;
+  uploadLogo(id: string, file: File): Promise<string>
+  updatePathLogo(id: string, logoUrl: string): Promise<void>
 }

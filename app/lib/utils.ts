@@ -1,4 +1,3 @@
-import { PropertyFilters, PropertyType } from "@/domain/entities/property.entity";
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
 
@@ -17,25 +16,27 @@ export function generateSlug(text: string): string {
     .substring(0, 50);
 }
 
-export function parseFiltersFromParams(searchParams: URLSearchParams): PropertyFilters {
-  const getNumber = (key: string) => {
-    const val = searchParams.get(key)
-    return val ? parseInt(val, 10) : undefined
-  }
+export const isEmpty = (v: unknown) =>
+  !v || v === undefined || v === null || v === "" || Number.isNaN(v)
 
-  return {
-    searchQuery: searchParams.get("q") || undefined,
-    propertyType: (searchParams.get("type") as PropertyType) || undefined,
-    realEstateId: searchParams.get("real_estate") || undefined,
-    city: searchParams.get("city") || undefined,
-    state: searchParams.get("state") || undefined,
-    neighborhood: searchParams.get("neighborhood") || undefined,
-    minBedrooms: getNumber("min_bedrooms"),
-    minBathrooms: getNumber("min_bathrooms"),
-    minPrice: getNumber("min_price"),
-    maxPrice: getNumber("max_price"),
-  }
+export const toNumber = (v: string | null) => {
+  if (!v) return undefined
+  const n = Number(v)
+  return Number.isFinite(n) ? n : undefined
 }
+
+export const objectToSearchParams = (obj: Record<string, unknown>) => {
+  const params = new URLSearchParams()
+
+  Object.entries(obj)
+    .filter(([, v]) => !isEmpty(v))
+    .forEach(([k, v]) => params.set(k, String(v)))
+  console.log(params, 'params....', obj);
+  
+
+  return params
+}
+
 
 export const flatten = (obj: any, prefix = '', formData: FormData) => {
   Object.entries(obj).forEach(([key, value]) => {

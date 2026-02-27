@@ -1,56 +1,46 @@
-import { AuthPort } from "../ports/auth.port";
-import { ProfilePort } from "../ports/profile.port";
-import { SignUpFormValues } from "../entities/schemas/sign-up-schema";
+import { ProfileEntity } from "../entities/profile.entity"
+import { AuthPort, SignUpData } from "../ports/auth.port"
 
-export class OTP {
-  constructor(
-    private auth: AuthPort,
-  ) {}
-
-  async execute(email: string) {
-    if (!email) {
-      throw new Error("No se proprociono un email");
-    }
-    await this.auth.otp(email);
-  }
-}
-export class SignUp {
-  constructor(
-    private auth: AuthPort,
-  ) {}
-
-  async execute(input: SignUpFormValues) {
-    if (!input) {
-      throw new Error("Datos inválidas");
-    }
-    await this.auth.signUp(input);
-  }
+export interface ProfileGateway {
+  getRoleByUserId(userId: string): Promise<string>
+  getProfileByUserId(userId: string): Promise<ProfileEntity>
 }
 
-export class SignOut {
+export class AuthUseCases {
   constructor(
-    private auth: AuthPort,
-  ) {}
+    private readonly auth: AuthPort,
+    private readonly profiles: ProfileGateway
+  ) { }
 
-  async execute() {
-    await this.auth.signOut();
+  async signUp(data: SignUpData) {
+    return this.auth.signUp(data)
   }
-}
 
-export class SignIn {
-  constructor(
-    private auth: AuthPort,
-    private profiles: ProfilePort
-  ) {}
+  async signIn(email: string, password: string): Promise<string> {
+    const { userId } = await this.auth.signIn(email, password)
 
-  async execute(input: { email: string; password: string }) {
-    if (!input.email || !input.password) {
-      throw new Error("Credenciales inválidas");
-    }
+    const role = await this.profiles.getRoleByUserId(userId)
+    return role
+  }
 
-    const { id, email } = await this.auth.signIn(input.email, input.password);
-    const role = await this.profiles.getRoleByUserId(id);
+  async sendOtp(email: string) {
+    return this.auth.sendOtp(email)
+  }
 
-    return { id, role };
+  async signOut() {
+    return this.auth.signOut()
+  }
+
+  async exchangeCodeForSession(token: string): Promise<ProfileEntity> {
+    const { userId } = await this.auth.exchangeCodeForSession(token)
+    const profile = await this.profiles.getProfileByUserId(userId)
+    return profile
+  }
+
+
+  async verifyOtp(token: string, type: string): Promise<ProfileEntity> {
+    const { userId } = await this.auth.verifyOtp(token, type)
+    const profile = await this.profiles.getProfileByUserId(userId)
+    return profile
   }
 }

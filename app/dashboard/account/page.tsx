@@ -4,7 +4,7 @@ import AuthBackgroundShape from '@/assets/svg/background-shape'
 import AccountSectionCard from "@/features/profile/profile-section-card"
 import { getCurrentUser } from "@/services/session.services";
 
-export default async function Account() {
+export default async function page() {
   const profile = await getCurrentUser();
 
   if (!profile) {

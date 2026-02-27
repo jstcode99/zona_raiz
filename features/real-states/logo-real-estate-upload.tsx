@@ -9,8 +9,8 @@ import { Input } from "@/components/ui/input"
 import { Spinner } from "@/components/ui/spinner"
 import { SmartAvatar } from "@/components/ui/smart-avatar"
 import { useServerMutation } from "@/shared/hooks/use-server-mutation.hook"
-import { LogoFormValues, logoRealEstateSchema } from "@/domain/entities/schemas/real-estate.schema"
-import { updateLogoRealEstateAction } from "@/domain/adapters/http/real-estate.actions"
+import { LogoInput, logoRealEstateSchema } from "@/application/validation/real-estate.validation"
+import { uploadRealEstateLogoAction } from "@/application/actions/real-estate.actions"
 
 type Props = {
   logoUrl?: string | null
@@ -28,7 +28,7 @@ export function LogoRealEstateUpload({ logoUrl, name = '', idRealEstate = '' }: 
       id: idRealEstate
     }
   })
-  
+
   const {
     reset,
   } = form
@@ -40,11 +40,11 @@ export function LogoRealEstateUpload({ logoUrl, name = '', idRealEstate = '' }: 
   }, [idRealEstate, reset])
 
   const mutation = useServerMutation({
-    action: updateLogoRealEstateAction,
+    action: uploadRealEstateLogoAction,
     setError: form.setError,
   })
 
-  async function onSubmit(data: LogoFormValues) {
+  async function onSubmit(data: LogoInput) {
     if (!data.logo) return
 
     startTransition(async () => {

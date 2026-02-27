@@ -5,21 +5,18 @@ import { yupResolver } from "@hookform/resolvers/yup"
 import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
 
-import {
-  defaultRealEstateValues,
-  realEstateSchema,
-  type RealEstateFormValues
-} from "@/domain/entities/schemas/real-estate.schema"
+
 
 import { Form } from "@/components/ui/form"
 import { Button } from "@/components/ui/button"
 import { Spinner } from "@/components/ui/spinner"
 import { useServerMutation } from "@/shared/hooks/use-server-mutation.hook"
 import { flatten, cn } from "@/lib/utils"
-import { createRealEstateAction, updateRealEstateAction } from "@/domain/adapters/http/real-estate.actions"
+import { defaultRealEstateValues, RealEstateInput, realEstateSchema } from "@/application/validation/real-estate.validation"
+import { createRealEstateAction, updateRealEstateAction } from "@/application/actions/real-estate.actions"
 
 interface RealEstateFormProps extends ComponentProps<"form"> {
-  defaultValues?: RealEstateFormValues
+  defaultValues?: RealEstateInput
   id?: string
 }
 
@@ -32,7 +29,7 @@ export function RealEstateForm({
   const { t } = useTranslation()
   const isUpdateMode = Boolean(id)
 
-  const form = useForm<RealEstateFormValues>({
+  const form = useForm<RealEstateInput>({
     resolver: yupResolver(realEstateSchema),
     defaultValues: defaultValues || defaultRealEstateValues,
     mode: "onBlur",

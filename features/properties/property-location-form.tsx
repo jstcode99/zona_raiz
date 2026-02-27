@@ -2,6 +2,7 @@
 
 import { useTranslation } from "react-i18next";
 import { Form } from "@/components/ui/form";
+import { PlaceSelectorGoogle } from "../places/place-selector-google";
 
 export function PropertyLocationForm() {
   const { t } = useTranslation();
@@ -71,6 +72,7 @@ export function PropertyLocationForm() {
             label={t("forms.property.fields.longitude.label")}
             placeholder={t("forms.property.fields.longitude.placeholder")}
           />
+          {/* <PlaceSelectorGoogle onSelect={(v) => console.log(v)} /> */}
         </div>
       </Form.Set>
   );

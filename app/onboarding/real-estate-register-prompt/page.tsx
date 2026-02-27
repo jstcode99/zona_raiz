@@ -11,7 +11,7 @@ interface Props {
   onSkip: () => Promise<void>
 }
 
-export function RealEstateRegisterPrompt({ onSkip }: Props) {
+export function page({ onSkip }: Props) {
   const [isPending, startTransition] = useTransition()
 
   const handleSkip = () => {

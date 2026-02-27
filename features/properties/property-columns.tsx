@@ -1,7 +1,7 @@
 "use client"
 
 import { BaseRow } from "@/components/ui/data-table"
-import { PropertyEntity, PropertyType } from "@/domain/entities/property.entity"
+import { PropertyEntity, propertyTypeLabels } from "@/domain/entities/property.entity"
 import { type ColumnDef } from "@tanstack/react-table"
 import {
   DropdownMenu,
@@ -28,24 +28,14 @@ import {
 } from "@tabler/icons-react"
 import Link from "next/link"
 import { Badge } from "@/components/ui/badge"
+import { PropertyType } from "@/domain/entities/property.enums"
 
 export type PropertyRow = BaseRow & {
   created_at: string
 } & PropertyEntity
 
-const propertyTypeLabels: Record<PropertyType, string> = {
-  [PropertyType.House]: "Casa",
-  [PropertyType.Apartment]: "Apartamento",
-  [PropertyType.Condo]: "Condominio",
-  [PropertyType.TownHouse]: "Townhouse",
-  [PropertyType.Land]: "Terreno",
-  [PropertyType.Commercial]: "Comercial",
-  [PropertyType.Office]: "Oficina",
-  [PropertyType.Warehouse]: "Bodega",
-  [PropertyType.Other]: "Otro",
-}
 
-const propertyTypeIcons: Record<PropertyType, React.ReactNode> = {
+export const propertyTypeIcons: Record<PropertyType, React.ReactNode> = {
   [PropertyType.House]: <IconHome className="size-4" />,
   [PropertyType.Apartment]: <IconBuilding className="size-4" />,
   [PropertyType.Condo]: <IconBuildingEstate className="size-4" />,
@@ -248,11 +238,11 @@ export const PropertyColumns: ColumnDef<PropertyRow>[] = [
           </DropdownMenuTrigger>
 
           <DropdownMenuContent align="end" className="w-40">
-            <Link href={`/dashboard/properties/${id}`}>
+            <Link href={`/dashboard/properties/${id}`} passHref>
               <DropdownMenuItem>Editar propiedad</DropdownMenuItem>
             </Link>
             
-            {hasCoords && (
+            {hasCoords ? (
               <DropdownMenuItem asChild>
                 <a 
                   href={`https://www.google.com/maps?q=${latitude},${longitude}`}
@@ -262,8 +252,7 @@ export const PropertyColumns: ColumnDef<PropertyRow>[] = [
                   Ver en mapa
                 </a>
               </DropdownMenuItem>
-            )}
-            
+            ) : null}
             <DropdownMenuSeparator />
             
             <DropdownMenuItem variant="destructive">

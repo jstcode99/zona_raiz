@@ -13,12 +13,12 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import { ComponentProps, useEffect } from "react"
 import { useTranslation } from "react-i18next"
 import { Input } from "@/components/ui/input"
-import { otpSchema, OTPFormValues } from "@/domain/entities/schemas/email-otp.schema"
 import { toast } from "sonner"
 import { Spinner } from "@/components/ui/spinner"
 import Link from "next/link"
 import { useServerMutation } from "@/shared/hooks/use-server-mutation.hook"
-import { otpAction } from "@/domain/adapters/http/auth.actions"
+import { OTPFormInput, otpSchema } from "@/application/validation/auth.validation"
+import { sentOtpAction } from "@/application/actions/auth.actions"
 
 export function OTPForm({
   className,
@@ -31,7 +31,7 @@ export function OTPForm({
     handleSubmit,
     formState: { errors, isSubmitting },
     reset,
-  } = useForm<OTPFormValues>({
+  } = useForm<OTPFormInput>({
     resolver: yupResolver(otpSchema),
     mode: "onBlur",
     defaultValues: {
@@ -40,10 +40,10 @@ export function OTPForm({
   })
 
   const mutation = useServerMutation({
-    action: otpAction,
+    action: sentOtpAction,
     onSuccess: () => {
       toast.success(t('forms.otp.success'))
-      reset() 
+      reset()
     },
     onError: (error) => {
       console.error("OTP error:", error)
@@ -67,8 +67,8 @@ export function OTPForm({
 
   return (
     <form
-      className={cn("p-6 md:p-8", className)}
       {...props}
+      className={cn("py-14 px-6", className)}
       onSubmit={onSubmit}
     >
       <FieldGroup className="gap-4">

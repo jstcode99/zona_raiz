@@ -3,14 +3,14 @@
 import { yupResolver } from "@hookform/resolvers/yup"
 import { useForm, Controller } from "react-hook-form"
 import { useRef, useTransition } from "react"
-import { profileAvatarSchema, AvatarFormValues } from "@/domain/entities/schemas/profile.schema"
 import { optimizeImage } from "@/lib/utils"
 import { FieldError } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { Spinner } from "@/components/ui/spinner"
 import { SmartAvatar } from "@/components/ui/smart-avatar"
 import { useServerMutation } from "@/shared/hooks/use-server-mutation.hook"
-import { updateAvatarProfileAction } from "@/domain/adapters/http/profile.actions"
+import { AvatarInput, profileAvatarSchema } from "@/application/validation/profile.validation"
+import { uploadAvatarAction } from "@/application/actions/profile.actions"
 
 type Props = {
   avatarUrl?: string | null
@@ -26,11 +26,11 @@ export function AvatarUpload({ avatarUrl, full_name = '' }: Props) {
   })
 
   const mutation = useServerMutation({
-    action: updateAvatarProfileAction,
+    action: uploadAvatarAction,
     setError: form.setError,
   })
 
-  async function onSubmit(data: AvatarFormValues) {
+  async function onSubmit(data: AvatarInput) {
     if (!data.avatar) return
 
     startTransition(async () => {

@@ -4,11 +4,9 @@ import { Button } from "@/components/ui/button"
 import { ArrowLeft } from "lucide-react"
 import { RealEstateRegistrationForm } from "@/features/real-states/real-estate-register-form"
 import { getOnboardingState } from "@/services/onboarding.services"
-import { getCurrentUser } from "@/services/session.services"
 
-export default async function RegisterRealEstatePage() {
-  const user = await getCurrentUser();
-  const state = await getOnboardingState(user?.id ?? '')
+export default async function page() {
+  const state = await getOnboardingState()
 
   if (state.step === "redirect") {
     redirect(state.path)
