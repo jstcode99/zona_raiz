@@ -1,4 +1,3 @@
--- Tabla de publicaciones (listings)
 create table if not exists public.listings (
   id uuid primary key default gen_random_uuid(),
   property_id uuid not null references public.properties on delete cascade,
@@ -45,7 +44,6 @@ create table if not exists public.listings (
   unique(property_id, listing_type)
 );
 
--- Índices de listings
 create index idx_listings_property on public.listings(property_id);
 create index idx_listings_agent on public.listings(agent_id);
 create index idx_listings_type_status on public.listings(listing_type, status);

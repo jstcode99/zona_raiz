@@ -21,6 +21,7 @@ end;
 $$ language plpgsql security definer;
 
 drop trigger if exists on_real_estate_created on public.real_estates;
+
 create trigger on_real_estate_created
   after insert on public.real_estates
   for each row execute procedure public.handle_new_real_estate();

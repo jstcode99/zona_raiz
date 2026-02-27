@@ -2,7 +2,6 @@
 -- FUNCIONES DE PERMISOS (reutilizables)
 -- ============================================
 
-
 -- Verificar si es coordinador de una inmobiliaria específica
 create or replace function public.is_coordinator_of(
   p_real_estate_id uuid,
@@ -84,6 +83,33 @@ end;
 $$ language plpgsql security definer;
 
 drop trigger if exists ensure_single_coordinator on public.real_estate_agents;
+
 create trigger ensure_single_coordinator
   before insert or update on public.real_estate_agents
   for each row execute procedure public.check_single_coordinator();
+
+create or replace function public.can_manage_property(
+  p_property_id uuid,
+  p_user_id uuid default auth.uid()
+)
+returns boolean
+as $$
+declare
+  v_real_estate_id uuid;
+begin
+  select real_estate_id
+  into v_real_estate_id
+  from public.properties
+  where id = p_property_id;
+
+  if v_real_estate_id is null then
+    return false;
+  end if;
+
+  return
+    public.is_admin(p_user_id)
+    or public.is_coordinator_of(v_real_estate_id, p_user_id)
+    or public.is_agent_of(v_real_estate_id, p_user_id);
+
+end;
+$$ language plpgsql security definer;

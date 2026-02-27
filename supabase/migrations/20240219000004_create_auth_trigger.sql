@@ -49,9 +49,6 @@ exception when others then
 end;
 $$ language plpgsql;
 
--- Eliminar trigger existente si existe
-drop trigger if exists on_auth_user_created on auth.users;
-
 -- Crear trigger
 create trigger on_auth_user_created
   after insert on auth.users

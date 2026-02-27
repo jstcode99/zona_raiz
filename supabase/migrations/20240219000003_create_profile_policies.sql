@@ -1,56 +1,37 @@
--- Políticas RLS robustas para perfiles
+alter table public.profiles enable row level security;
 
--- 1. SELECT: Usuarios ven su propio perfil, admins ven todos
-create policy "Users read own profile"
-  on public.profiles 
-  for select 
-  to authenticated
-  using (
-    auth.uid() = id 
-    or exists (
-      select 1 from public.profiles 
-      where id = auth.uid() and role = 'admin'
-    )
-  );
+create or replace function public.get_user_role()
+returns text
+language sql
+stable
+as $$
+  select auth.jwt() ->> 'role';
+$$;
 
--- 2. INSERT: Solo el sistema puede crear perfiles (via trigger)
-create policy "System can create profiles"
-  on public.profiles 
-  for insert 
-  to authenticated
-  with check (auth.uid() = id);
+create policy "Profile: Users read own profile" on public.profiles for
+select to authenticated using (
+        auth.uid () = id
+        or public.get_user_role () = 'admin'
+    );
 
--- 3. UPDATE: Usuarios actualizan su propio perfil (excepto rol), admins pueden todo
-create policy "Users update own profile"
-  on public.profiles 
-  for update 
-  to authenticated
-  using (auth.uid() = id)
-  with check (
-    auth.uid() = id 
-    and role = (select role from public.profiles where id = auth.uid())
-  );
+create policy "Profile: System can create profiles" on public.profiles for
+insert
+    to authenticated
+with
+    check (auth.uid () = id);
 
--- 4. UPDATE: Admins pueden cambiar cualquier perfil incluyendo roles
-create policy "Admins can update any profile"
-  on public.profiles 
-  for update 
-  to authenticated
-  using (
-    exists (
-      select 1 from public.profiles 
-      where id = auth.uid() and role = 'admin'
-    )
-  );
+create policy "Profile: Users update own profile" on public.profiles for
+update to authenticated using (auth.uid () = id)
+with
+    check (auth.uid () = id);
 
--- 5. DELETE: Solo admins pueden eliminar perfiles
-create policy "Admins can delete profiles"
-  on public.profiles 
-  for delete 
-  to authenticated
-  using (
-    exists (
-      select 1 from public.profiles 
-      where id = auth.uid() and role = 'admin'
-    )
-  );
+create policy "Profile: Admins can update any profile" on public.profiles for
+update to authenticated using (
+    public.get_user_role () = 'admin'
+);
+
+create policy "Profile: Admins can delete profiles" on public.profiles for delete to authenticated using (
+    public.get_user_role () = 'admin'
+);
+
+grant all on public.profiles to authenticated;

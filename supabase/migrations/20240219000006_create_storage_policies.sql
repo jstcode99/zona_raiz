@@ -1,15 +1,9 @@
--- Políticas RLS robustas para storage de avatares
-
--- 1. SELECT: Cualquiera puede ver avatares (público)
-create policy "Avatar public read access"
-  on storage.objects 
-  for select 
-  to anon, authenticated
-  using (bucket_id = 'avatars');
+create policy "Avatar: Avatar public read access" on storage.objects for
+select to anon, authenticated using (bucket_id = 'avatars');
 
 -- 2. INSERT: Usuarios autenticados solo pueden subir a su propia carpeta
 -- Estructura: avatars/{user_id}/filename.ext
-create policy "Users upload own avatar"
+create policy "Avatar: Users upload own avatar"
   on storage.objects 
   for insert 
   to authenticated
@@ -20,7 +14,7 @@ create policy "Users upload own avatar"
   );
 
 -- 3. UPDATE: Usuarios solo pueden actualizar sus propios archivos
-create policy "Users update own avatar"
+create policy "Avatar: Users update own avatar"
   on storage.objects 
   for update 
   to authenticated
@@ -34,7 +28,7 @@ create policy "Users update own avatar"
   );
 
 -- 4. DELETE: Usuarios solo pueden eliminar sus propios archivos, admins cualquiera
-create policy "Users delete own avatar"
+create policy "Avatar: Users delete own avatar"
   on storage.objects 
   for delete 
   to authenticated

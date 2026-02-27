@@ -1,4 +1,3 @@
--- Tabla de propiedades (inmuebles físicos)
 create table if not exists public.properties (
   id uuid primary key default gen_random_uuid(),
   real_estate_id uuid not null references public.real_estates on delete cascade,

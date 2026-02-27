@@ -1,4 +1,3 @@
--- Tabla de favoritos (usuarios logueados)
 create table if not exists public.favorites (
   id uuid primary key default gen_random_uuid(),
   profile_id uuid not null references public.profiles on delete cascade,

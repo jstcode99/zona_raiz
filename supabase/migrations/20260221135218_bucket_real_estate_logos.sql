@@ -1,8 +1,3 @@
--- ============================================
--- BUCKET Y CONFIGURACIÓN DE STORAGE
--- ============================================
-
--- Crear bucket
 insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
 values (
   'real-estate-logos',

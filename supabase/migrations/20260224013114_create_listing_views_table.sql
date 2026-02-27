@@ -1,4 +1,3 @@
--- Tabla de analytics (vistas)
 create table if not exists public.listing_views (
   id uuid primary key default gen_random_uuid(),
   listing_id uuid not null references public.listings on delete cascade,
