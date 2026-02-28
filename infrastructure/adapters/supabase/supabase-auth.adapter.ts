@@ -13,6 +13,7 @@ export class SupabaseAuthAdapter implements AuthPort {
         data: {
           full_name: input.full_name,
           phone: input.phone,
+          role: input.type_register ? EUserRole.Coordinator : EUserRole.Client
         },
       },
     })

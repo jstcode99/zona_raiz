@@ -269,8 +269,8 @@
           "message2": "Formato de teléfono no válido"
         }
       },
-      "create": "Guardar propiedad",
-      "update": "Actualizar propiedad",
+      "created": "Guardar propiedad",
+      "updated": "Actualizar propiedad",
       "success": "La propiedad ha sido guardada correctamente."
     },
     "errors": {
@@ -581,6 +581,15 @@
     },
     "attributes": {
       "emission_factor_id": "El factor emision {{attribute}} no encontrado"
+    }
+  },
+  "components": {
+    "property-images": {
+      "drag-drop": "Arrastra una imagen aquí",
+      "drop-here": "Suelta la imagen aquí",
+      "delete-warning": "¿Eliminar esta imagen?",
+      "alt": "Texto alternativo",
+      "caption": "Descripción"
     }
   }
 }

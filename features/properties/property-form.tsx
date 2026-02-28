@@ -15,6 +15,9 @@ import { PropertyLocationForm } from "./property-location-form";
 import { PropertyFeaturesForm } from "./property-features-form";
 import { defaultPropertyValues, PropertyInput, propertySchema } from "@/application/validation/property.schema";
 import { createPropertyAction, updatePropertyAction } from "@/application/actions/property.action";
+import { PropertyEntity } from "@/domain/entities/property.entity";
+import { useRouter } from "next/navigation";
+import { ROUTES } from "@/infrastructure/config/constants";
 
 interface PropertyFormProps extends ComponentProps<"form"> {
   realEstateId: string;
@@ -29,6 +32,8 @@ export function PropertyForm({
   id,
   ...props
 }: PropertyFormProps) {
+    const router = useRouter()
+
   const { t } = useTranslation();
   const isUpdateMode = Boolean(id);
 
@@ -76,24 +81,28 @@ export function PropertyForm({
     }
   }, [title, currentSlug, isUpdateMode, setValue]);
 
-  const mutation = useServerMutation({
-    action: (formData: FormData) => {
-      if (isUpdateMode && id) {
-        return updatePropertyAction(id, formData);
-      }
-      return createPropertyAction(realEstateId, formData);
-    },
-    setError,
-    onSuccess: () => {
-      toast.success(t(`forms.property.${isUpdateMode ? 'updated' : 'created'}`));
-      if (!isUpdateMode) reset();
+const mutation = useServerMutation<PropertyEntity>({
+  action: (formData: FormData) => {
+    if (isUpdateMode && id) {
+      return updatePropertyAction(id, formData);
+    }
+    return createPropertyAction(realEstateId, formData);
+  },
+  setError,
+  onSuccess: (result) => {
+    if (result.success) {
+      const property = result.data
+      toast.success(t(`forms.property.${isUpdateMode ? "updated" : "created"}`))
+      if (!isUpdateMode) reset()
       wizardRef.current?.complete()
-    },
-    onError: (error) => {
-      console.error("Property error:", error);
-      toast.error(t("forms.property.error"));
-    },
-  });
+      router.push(`${ROUTES.DASHBOARD}/${ROUTES.PROPERTIES}/${property.id}/images`)
+    }
+  },
+  onError: (error) => {
+    console.error("Property error:", error)
+    toast.error(t("forms.property.error"))
+  },
+})
 
   useEffect(() => {
     if (defaultValues) {

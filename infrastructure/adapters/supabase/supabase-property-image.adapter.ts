@@ -1,0 +1,129 @@
+import { mapPropertyImageRowToEntity } from "@/application/mappers/property-image.mapper";
+import { PropertyImageEntity } from "@/domain/entities/property-image.entity";
+import { PropertyImagePort } from "@/domain/ports/property-image.port";
+import { STORAGE_BUCKETS } from "@/infrastructure/config/constants";
+import { SupabaseClient } from "@supabase/supabase-js";
+
+export class SupabasePropertyImageAdapter implements PropertyImagePort {
+    constructor(private supabase: SupabaseClient) { }
+
+
+    async getById(id: string): Promise<PropertyImageEntity> {
+        const { data, error } = await this.supabase
+            .from("property_images")
+            .select("*")
+            .eq("id", id)
+            .single()
+
+        if (error) {
+            throw new Error(error.message)
+        }
+
+        return mapPropertyImageRowToEntity(data)
+    }
+
+    async getByPropertyId(propertyId: string): Promise<PropertyImageEntity[]> {
+        const { data, error } = await this.supabase
+            .from("property_images")
+            .select("*")
+            .eq("property_id", propertyId)
+            .order("display_order")
+
+        if (error) {
+            throw new Error(error.message)
+        }
+
+        return data.map(mapPropertyImageRowToEntity)
+    }
+
+    async create(propertyId: string, data: Partial<PropertyImageEntity>): Promise<PropertyImageEntity> {
+        const { data: inserted, error: dbError } = await this.supabase
+            .from("property_images")
+            .insert({
+                property_id: propertyId,
+                filename: data.filename,
+                file_size: data.file_size,
+                mime_type: data.mime_type,
+                width: data.width,
+                height: data.height,
+                display_order: data.display_order ?? 0,
+                is_primary: data.is_primary ?? false,
+                alt_text: data.alt_text,
+                caption: data.caption,
+                created_at: new Date().toISOString()
+            })
+            .select()
+            .single()
+
+        if (dbError) {
+            throw new Error(dbError.message)
+        }
+
+        return mapPropertyImageRowToEntity(inserted)
+    }
+
+    async update(id: string, data: Partial<PropertyImageEntity>) {
+
+        const { error: dbError } = await this.supabase
+            .from("property_images")
+            .update({
+                ...data,
+                updated_at: new Date().toISOString(),
+            })
+            .eq("id", id)
+
+        if (dbError) {
+            throw new Error(dbError.message)
+        }
+        const updated = await this.getById(id)
+
+        return mapPropertyImageRowToEntity(updated) as PropertyImageEntity
+    }
+
+    async uploadFile(propertyId: string, name: string, image: File): Promise<string> {
+        const ext = image.type.split("/")[1] || "webp"
+        const path = `${propertyId}/${name}.${ext}`
+
+        const { error } = await this.supabase.storage
+            .from(STORAGE_BUCKETS.PROPERTIES)
+            .upload(path, image, {
+                upsert: true,
+                contentType: image.type,
+            })
+
+        if (error) throw new Error(error.message)
+
+        const { data } = this.supabase.storage
+            .from(STORAGE_BUCKETS.PROPERTIES)
+            .getPublicUrl(path)
+
+        return `${data.publicUrl}?t=${Date.now()}`
+    }
+
+    async updatePath(propertyImageId: string, path: string): Promise<PropertyImageEntity> {
+
+        const { data: updated, error: dbError } = await this.supabase
+            .from("property_images")
+            .update({
+                public_url: path,
+                updated_at: new Date().toISOString(),
+            })
+            .eq("id", propertyImageId)
+            .select()
+            .single()
+
+        if (dbError) throw new Error(dbError.message)
+        if (!updated) throw new Error("Failed to update property")
+
+        return mapPropertyImageRowToEntity(updated) as PropertyImageEntity
+    }
+
+    async delete(id: string): Promise<void> {
+        const { error: dbError } = await this.supabase
+            .from("properties")
+            .delete()
+            .eq("id", id)
+
+        if (dbError) throw new Error(dbError.message)
+    }
+}

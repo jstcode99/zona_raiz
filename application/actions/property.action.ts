@@ -67,7 +67,10 @@ export async function createPropertyAction(
 
     revalidatePath(ROUTES.DASHBOARD)
 
-    return property
+    return {
+      success: true,
+      data: property
+    }
   } catch (error) {
     console.error("createPropertyAction", error)
     throw new Error("No se pudo crear la propiedad")
@@ -100,7 +103,10 @@ export async function updatePropertyAction(
     revalidatePath(`${ROUTES.PROPERTIES}/${id}`)
     revalidatePath(`${ROUTES.PROPERTIES}/${input.slug}`)
 
-    return property
+    return {
+      success: true,
+      data: property
+    }
   } catch (error) {
     console.error("updatePropertyAction", error)
     throw new Error("No se pudo actualizar la propiedad")

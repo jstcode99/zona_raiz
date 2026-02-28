@@ -11,7 +11,8 @@ create table if not exists public.property_images (
     is_primary boolean default false,
     alt_text text,
     caption text,
-    created_at timestamptz default now() not null
+    created_at timestamptz default now() not null,
+    updated_at timestamptz default now() not null
 );
 
 -- Índices de property_images

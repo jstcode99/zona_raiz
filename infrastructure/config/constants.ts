@@ -45,7 +45,7 @@ export const CACHE_TAGS = {
 export const STORAGE_BUCKETS = {
   AVATARS: "avatars",
   REAL_ESTATE_LOGOS: "real-estate-logos",
-  PROPERTIES: "properties",
+  PROPERTIES: "property-images",
 } as const
 
 // ==========================================

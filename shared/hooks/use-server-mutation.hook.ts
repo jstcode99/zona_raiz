@@ -8,28 +8,28 @@ export type FieldError = {
   message: string
 }
 
-export type ActionResult =
-  | { success: true }
+export type ActionResult<T = void> =
+  | (T extends void ? { success: true } : { success: true; data: T })
   | { success: false; error?: FieldError; errors?: FieldError[] }
 
 type Status = "idle" | "pending" | "success" | "error"
 
-type ServerAction = (formData: FormData) => Promise<ActionResult>
+type ServerAction<T> = (formData: FormData) => Promise<ActionResult<T>>
 
-type Options = {
-  action: ServerAction
+type Options<T> = {
+  action: ServerAction<T>
   setError?: UseFormSetError<any>
-  onSuccess?: (state: ActionResult) => void
+  onSuccess?: (state: ActionResult<T>) => void
   onError?: (error: FieldError) => void
 }
 
-export function useServerMutation({
+export function useServerMutation<T>({
   action,
   setError,
   onSuccess,
   onError,
-}: Options) {
-  const [state, setState] = useState<ActionResult | null>(null)
+}: Options<T>) {
+  const [state, setState] = useState<ActionResult<T> | null>(null)
   const [status, setStatus] = useState<Status>("idle")
   const [isPending, setIsPending] = useState(false)
   const hasSubmitted = useRef(false)

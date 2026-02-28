@@ -1,14 +1,12 @@
 import { Spinner } from "@/components/ui/spinner";
-import { PropertyFormValues } from "@/domain/entities/schemas/property.schema";
 import { PropertyForm } from "@/features/properties/property-form";
 import { COOKIE_NAMES } from "@/infrastructure/config/constants";
 import { getPropertyById } from "@/services/property.services";
 import { encodedRedirect } from "@/shared/redirect";
 import { cookies } from "next/headers";
 import { Suspense } from "react";
-import AuthBackgroundShape from '@/assets/svg/background-shape'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import i18next from "i18next";
+import { Card, CardContent, } from '@/components/ui/card'
+import { PropertyInput } from "@/application/validation/property.schema";
 
 export default async function page({
   params,
@@ -34,7 +32,7 @@ export default async function page({
             <PropertyForm
               id={id}
               realEstateId={realEstateId}
-              defaultValues={property as PropertyFormValues}
+              defaultValues={property as PropertyInput}
             />
           </CardContent>
         </Card>

@@ -2,7 +2,7 @@
 
 import { DataTable } from "@/components/ui/data-table"
 import { ColumnDef } from "@tanstack/react-table"
-import { PropertyRow } from "./property-columns"
+import { PropertyRow } from "./listing-columns"
 import { use } from "react"
 
 interface Props {
