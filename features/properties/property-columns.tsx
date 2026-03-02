@@ -11,11 +11,11 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Button } from "@/components/ui/button"
-import { 
-  IconDotsVertical, 
-  IconMapPin, 
-  IconBed, 
-  IconBath, 
+import {
+  IconDotsVertical,
+  IconMapPin,
+  IconBed,
+  IconBath,
   IconRuler,
   IconCar,
   IconHome,
@@ -54,19 +54,21 @@ export const PropertyColumns: ColumnDef<PropertyRow>[] = [
     cell: ({ row }) => {
       const type = row.original.property_type
       return (
-        <div className="flex items-start gap-3">
-          <div className="flex size-10 items-center justify-center rounded-lg bg-muted">
-            {propertyTypeIcons[type]}
+        <Link href={`/dashboard/properties/${row.original.id}`} passHref>
+          <div className="flex items-start gap-3">
+            <div className="flex size-10 items-center justify-center rounded-lg bg-muted">
+              {propertyTypeIcons[type]}
+            </div>
+            <div className="flex flex-col min-w-0">
+              <span className="font-medium truncate max-w-50">
+                {row.original.title}
+              </span>
+              <span className="text-xs text-muted-foreground">
+                {propertyTypeLabels[type]}
+              </span>
+            </div>
           </div>
-          <div className="flex flex-col min-w-0">
-            <span className="font-medium truncate max-w-[200px]">
-              {row.original.title}
-            </span>
-            <span className="text-xs text-muted-foreground">
-              {propertyTypeLabels[type]}
-            </span>
-          </div>
-        </div>
+        </Link>
       )
     },
   },
@@ -88,7 +90,7 @@ export const PropertyColumns: ColumnDef<PropertyRow>[] = [
             {state} {postal_code && `(${postal_code})`}
           </span>
           {address && (
-            <span 
+            <span
               className="text-xs text-muted-foreground/70 pl-5 truncate max-w-[180px]"
               title={address}
             >
@@ -120,21 +122,21 @@ export const PropertyColumns: ColumnDef<PropertyRow>[] = [
     header: "Características",
     cell: ({ row }) => {
       const { bedrooms, bathrooms, built_area, total_area, floors, parking_spots } = row.original
-      
+
       const features = []
       if (bedrooms !== null) features.push({ icon: IconBed, value: `${bedrooms} hab.` })
       if (bathrooms !== null) features.push({ icon: IconBath, value: `${bathrooms} baños` })
       if (built_area !== null) features.push({ icon: IconRuler, value: `${built_area}m²` })
       else if (total_area !== null) features.push({ icon: IconRuler, value: `${total_area}m² tot.` })
       if (parking_spots !== null) features.push({ icon: IconCar, value: `${parking_spots} est.` })
-      
+
       if (features.length === 0) return <span className="text-xs text-muted-foreground">—</span>
-      
+
       return (
         <div className="flex flex-wrap gap-2">
           {features.map((feature, idx) => (
-            <div 
-              key={idx} 
+            <div
+              key={idx}
               className="flex items-center gap-1 text-xs text-muted-foreground bg-muted px-2 py-1 rounded"
             >
               <feature.icon className="size-3.5" />
@@ -154,7 +156,7 @@ export const PropertyColumns: ColumnDef<PropertyRow>[] = [
     cell: ({ row }) => {
       const { lot_area, year_built } = row.original
       if (!lot_area && !year_built) return <span className="text-xs text-muted-foreground">—</span>
-      
+
       return (
         <div className="flex flex-col text-xs">
           {lot_area !== null && (
@@ -177,10 +179,10 @@ export const PropertyColumns: ColumnDef<PropertyRow>[] = [
     cell: ({ row }) => {
       const amenities = row.original.amenities || []
       if (amenities.length === 0) return <span className="text-xs text-muted-foreground">—</span>
-      
+
       const display = amenities.slice(0, 2)
       const remaining = amenities.length - 2
-      
+
       return (
         <div className="flex flex-wrap gap-1 max-w-[150px]">
           {display.map((amenity) => (
@@ -204,7 +206,7 @@ export const PropertyColumns: ColumnDef<PropertyRow>[] = [
       const date = new Date(row.original.created_at)
       const updated = new Date(row.original.updated_at)
       const isUpdated = updated.getTime() !== date.getTime()
-      
+
       return (
         <div className="flex flex-col text-xs">
           <span>{date.toLocaleDateString("es-ES")}</span>
@@ -223,7 +225,7 @@ export const PropertyColumns: ColumnDef<PropertyRow>[] = [
     cell: ({ row }) => {
       const { latitude, longitude, id } = row.original
       const hasCoords = latitude && longitude
-      
+
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -241,10 +243,12 @@ export const PropertyColumns: ColumnDef<PropertyRow>[] = [
             <Link href={`/dashboard/properties/${id}`} passHref>
               <DropdownMenuItem>Editar propiedad</DropdownMenuItem>
             </Link>
-            
+            <Link href={`/dashboard/properties/${id}/images`} passHref>
+              <DropdownMenuItem>Editar imagenes</DropdownMenuItem>
+            </Link>
             {hasCoords ? (
               <DropdownMenuItem asChild>
-                <a 
+                <a
                   href={`https://www.google.com/maps?q=${latitude},${longitude}`}
                   target="_blank"
                   rel="noopener noreferrer"
@@ -254,7 +258,7 @@ export const PropertyColumns: ColumnDef<PropertyRow>[] = [
               </DropdownMenuItem>
             ) : null}
             <DropdownMenuSeparator />
-            
+
             <DropdownMenuItem variant="destructive">
               Eliminar
             </DropdownMenuItem>

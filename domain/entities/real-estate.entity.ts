@@ -19,11 +19,6 @@ export interface RealEstateEntity {
 export interface RealEstateFilters {
   id?: string
   whatsapp?: string
-  street?: string,
-  city?: string,
-  state?: string,
-  postal_code?: string,
-  country?: string,
   searchQuery?: string;
 }
 

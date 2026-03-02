@@ -17,6 +17,7 @@ import {
   IconBuilding,
 } from "@tabler/icons-react"
 import Link from "next/link"
+import { ROUTES } from "@/infrastructure/config/constants"
 
 export type RealEstateRow = BaseRow & {
   created_at: string
@@ -131,15 +132,9 @@ export const RealEstateColumns: ColumnDef<RealEstateRow>[] = [
           </DropdownMenuTrigger>
 
           <DropdownMenuContent align="end" className="w-36">
-            <Link href={`/dashboard/real-states/${row.original.id}`}>
+            <Link href={`${ROUTES.DASHBOARD}/${ROUTES.REAL_ESTATES}/${row.original.id}`}>
               <DropdownMenuItem>Editar</DropdownMenuItem>
             </Link>
-
-            <DropdownMenuSeparator />
-
-            <DropdownMenuItem variant="destructive">
-              Eliminar
-            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       )

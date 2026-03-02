@@ -12,11 +12,9 @@ export const getRealEstateById = cached(
   }
 );
 
-export const listRealEstates = unstable_cache(
+export const listRealEstates = cached(
   async (filters?: RealEstateFilters) => {
     const { useCases } = await createRealEstateModule()
     return useCases.all(filters);
-  },
-  ["real-estates-list"],
-  { tags: ["real-estates"] }
+  }
 );

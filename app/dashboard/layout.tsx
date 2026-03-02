@@ -9,6 +9,7 @@ import { PageLoader } from "@/features/loader/page-loader"
 import { encodedRedirect } from "@/shared/redirect"
 import { EUserRole } from "@/domain/entities/profile.entity"
 import { getCurrentUser } from "@/services/session.services"
+import { ROUTES } from "@/infrastructure/config/constants"
 
 export default async function DashboardLayout({
   children,
@@ -28,35 +29,30 @@ export default async function DashboardLayout({
         return [
           {
             title: "Dashboard",
-            url: "/dashboard",
+            url: `${ROUTES.DASHBOARD}`,
             icon: 'layout-dashboard',
           },
           {
             title: "Inmobiliarias",
-            url: "/dashboard/real-states",
+            url: `${ROUTES.DASHBOARD}/${ROUTES.REAL_ESTATES}`,
             icon: 'map-pin-house',
           },
           {
             title: "Propiedades",
-            url: "/dashboard/properties",
+            url: `${ROUTES.DASHBOARD}/${ROUTES.PROPERTIES}`,
             icon: 'building-2',
-          },
-          {
-            title: "Usuarios",
-            url: "/dashboard/users",
-            icon: 'users-round',
-          },
+          }
         ]
       default:
         return [
           {
             title: "Dashboard",
-            url: "/dashboard",
+            url: `${ROUTES.DASHBOARD}`,
             icon: 'layout-dashboard',
           },
           {
             title: "Propiedades",
-            url: "/dashboard/properties",
+            url: `${ROUTES.DASHBOARD}/${ROUTES.PROPERTIES}`,
             icon: 'building-2',
           },
         ]
