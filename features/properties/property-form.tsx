@@ -32,7 +32,7 @@ export function PropertyForm({
   id,
   ...props
 }: PropertyFormProps) {
-    const router = useRouter()
+  const router = useRouter()
 
   const { t } = useTranslation();
   const isUpdateMode = Boolean(id);
@@ -81,28 +81,28 @@ export function PropertyForm({
     }
   }, [title, currentSlug, isUpdateMode, setValue]);
 
-const mutation = useServerMutation<PropertyEntity>({
-  action: (formData: FormData) => {
-    if (isUpdateMode && id) {
-      return updatePropertyAction(id, formData);
-    }
-    return createPropertyAction(realEstateId, formData);
-  },
-  setError,
-  onSuccess: (result) => {
-    if (result.success) {
-      const property = result.data
-      toast.success(t(`forms.property.${isUpdateMode ? "updated" : "created"}`))
-      if (!isUpdateMode) reset()
-      wizardRef.current?.complete()
-      router.push(`${ROUTES.DASHBOARD}/${ROUTES.PROPERTIES}/${property.id}/images`)
-    }
-  },
-  onError: (error) => {
-    console.error("Property error:", error)
-    toast.error(t("forms.property.error"))
-  },
-})
+  const mutation = useServerMutation<PropertyEntity>({
+    action: (formData: FormData) => {
+      if (isUpdateMode && id) {
+        return updatePropertyAction(id, formData);
+      }
+      return createPropertyAction(realEstateId, formData);
+    },
+    setError,
+    onSuccess: (result) => {
+      if (result.success) {
+        const property = result.data
+        toast.success(t(`forms.property.${isUpdateMode ? "updated" : "created"}`))
+        if (!isUpdateMode) reset()
+        wizardRef.current?.complete()
+        router.push(`${ROUTES.DASHBOARD}/${ROUTES.PROPERTIES}/${property.id}/images`)
+      }
+    },
+    onError: (error) => {
+      console.error("Property error:", error)
+      toast.error(t("forms.property.error"))
+    },
+  })
 
   useEffect(() => {
     if (defaultValues) {

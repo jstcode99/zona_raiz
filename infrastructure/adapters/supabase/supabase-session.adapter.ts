@@ -23,7 +23,11 @@ export class SupabaseSessionAdapter implements SessionPort {
       error,
     } = await this.supabase.auth.getUser()
 
-    this.cachedUserId = error || !user ? null : user.id
+    if (error) {
+      throw new Error(error.message)
+    }
+
+    this.cachedUserId = !user ? null : user.id
     return this.cachedUserId
   }
 

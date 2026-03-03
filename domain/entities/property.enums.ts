@@ -10,3 +10,18 @@ export enum PropertyType {
     Other = 'other',
 }
 export const propertyTypeValues: string[] = Object.values(PropertyType);
+
+export enum AmenitiesType {
+    Pool = 'pool',
+    Gym = 'gym',
+    Parking = 'parking',
+    Elevator = 'elevator',
+    Security = 'security',
+    Garden = 'garden',
+    Balcony = 'balcony',
+    AirConditioning = 'air_conditioning',
+    Heating = 'heating',
+}
+
+export const amenitiesTypeValues: string[] = Object.values(AmenitiesType);
+

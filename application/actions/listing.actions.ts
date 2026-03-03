@@ -4,19 +4,27 @@ import { withServerAction } from "@/shared/hooks/with-server-action";
 import { createListingModule } from "../containers/listing.container";
 import { createListingSchema } from "../validation/listing.validation";
 import { handleError } from "../errors/handle-error";
+import { revalidatePath } from "next/cache";
+import { ROUTES } from "@/infrastructure/config/constants";
 
 export const createListingAction = withServerAction(
   async (formData: FormData) => {
     try {
       const raw = Object.fromEntries(formData)
 
-      const input = await createListingSchema.validate(raw, {
+      const validated = await createListingSchema.validate(raw, {
         abortEarly: false,
         stripUnknown: true,
       })
 
       const { useCases } = await createListingModule()
-      await useCases.create(input)
+
+      const listing = await useCases.create(validated)
+
+      revalidatePath(ROUTES.DASHBOARD)
+      revalidatePath(`${ROUTES.DASHBOARD}/${ROUTES.LISTING}/${listing.id}`)
+      revalidatePath(`${ROUTES.LISTING}/${listing.id}`)
+      revalidatePath(`${ROUTES.LISTING}/${listing.property.slug}`)
 
     } catch (error) {
       handleError(error)
@@ -24,22 +32,35 @@ export const createListingAction = withServerAction(
   }
 )
 
-export async function updateListing(id: string, input: any) {
-  const { useCases } = await createListingModule();
-  return useCases.update(id, input);
-}
+export const updateListingAction = withServerAction(
+  async (
+    id: string,
+    formData: FormData
+  ) => {
+    try {
+      const raw = Object.fromEntries(formData)
 
-export async function getListing(id: string) {
-  const { useCases } = await createListingModule();
-  return useCases.findById(id);
-}
+      const validated = await createListingSchema.validate(raw, {
+        abortEarly: false,
+        stripUnknown: true,
+      })
 
-export async function getActiveListings() {
-  const { useCases } = await createListingModule();
-  return useCases.findActive();
-}
+      const { useCases } = await createListingModule()
 
-export async function deleteListing(id: string) {
+      const listing = await useCases.update(id, validated)
+
+      revalidatePath(ROUTES.DASHBOARD)
+      revalidatePath(`${ROUTES.DASHBOARD}/${ROUTES.LISTING}/${id}`)
+      revalidatePath(`${ROUTES.LISTING}/${id}`)
+      revalidatePath(`${ROUTES.LISTING}/${listing.property.slug}`)
+
+    } catch (error) {
+      handleError(error)
+    }
+  }
+)
+
+export async function deleteListingAction(id: string) {
   const { useCases } = await createListingModule();
   return useCases.delete(id);
 }

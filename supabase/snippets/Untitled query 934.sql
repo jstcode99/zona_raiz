@@ -1,1 +1,3 @@
-select public.can_manage_property('5ec739bd-40f2-4fd7-a7ad-7f7c6bd65b0d', '3ca69c1b-037f-4ee1-beef-55083c49185d');
+grant select, insert, update, delete
+on public.listings
+to authenticated;

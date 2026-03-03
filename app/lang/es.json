@@ -339,7 +339,7 @@
         }
       }
     },
-    "userAdmin": {
+    "user": {
       "title": "Usuario",
       "subtitle": "Administrar perfil y permisos",
       "success": "Usuario actualizado",
@@ -384,6 +384,85 @@
           "placeholder": "+ ## ### #### ###",
           "message": "El número de teléfono debe tener al menos 10 caracteres",
           "message1": "El número de teléfono no puede tener más de 16 caracteres"
+        }
+      }
+    },
+    "listing": {
+      "title": "Publicar propiedad",
+      "subtitle": "Administra las propiedades de tu inmobiliaria",
+      "create": "Crear nueva publicación",
+      "update": "Actualizar publicación",
+      "created": "Guardar publicación",
+      "updated": "Actualizar publicación",
+      "fields": {
+        "property_id": {
+          "label": "ID de la propiedad",
+          "placeholder": "ID de la propiedad"
+        },
+        "agent_id": {
+          "label": "ID del agente",
+          "placeholder": "ID del agente"
+        },
+        "listing_type": {
+          "label": "Tipo de listado",
+          "placeholder": "Selecciona el tipo de listado"
+        },
+        "price": {
+          "label": "Precio",
+          "placeholder": "100000"
+        },
+        "currency": {
+          "label": "Moneda",
+          "placeholder": "Selecciona moneda"
+        },
+        "price_negotiable": {
+          "label": "Precio negociable"
+        },
+        "status": {
+          "label": "Estado",
+          "placeholder": "Selecciona estado"
+        },
+        "expenses_amount": {
+          "label": "Valor de administración",
+          "placeholder": "Valor de administración"
+        },
+        "expenses_included": {
+          "label": "Gastos incluidos"
+        },
+        "featured": {
+          "label": "Destacar propiedad"
+        },
+        "meta_title": {
+          "label": "Meta título",
+          "placeholder": "Compra apartamento moderno en el centro"
+        },
+        "meta_description": {
+          "label": "Meta descripción",
+          "placeholder": "Descubre este increíble apartamento..."
+        },
+        "keywords": {
+          "label": "Palabras clave",
+          "placeholder": "Palabras clave"
+        },
+        "virtual_tour_url": {
+          "label": "URL de tour virtual",
+          "placeholder": "https://tours.virtuales.com/..."
+        },
+        "video_url": {
+          "label": "URL de video",
+          "placeholder": "https://videos.com/..."
+        },
+        "available_from": {
+          "label": "Disponible desde",
+          "placeholder": "Selecciona fecha"
+        },
+        "minimum_contract_duration": {
+          "label": "Duración mínima del contrato (meses)",
+          "placeholder": "12"
+        },
+        "whatsapp_contact": {
+          "label": "Contacto de WhatsApp",
+          "placeholder": "+57 300 123 4567"
         }
       }
     }

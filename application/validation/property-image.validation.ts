@@ -7,10 +7,13 @@ const SUPPORTED_TYPES = [
   "image/jpg"
 ]
 
+const MAX_SIZE = 10 * 1024 * 1024 // 5MB0
+
+
 function validateFile(file?: File) {
   if (!file) return true
   if (!SUPPORTED_TYPES.includes(file.type)) return false
-  if (file.size > 5 * 1024 * 1024) return false
+  if (file.size >MAX_SIZE) return false
   return true
 }
 

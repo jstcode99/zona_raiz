@@ -6,7 +6,7 @@ import { createPropertyImageModule } from "../containers/property-image.containe
 import { propertyImageSchema, propertyImageUpdateSchema } from "../validation/property-image.validation"
 import { createPropertyModule } from "../containers/property.container"
 import sizeOf from "image-size"
-import { pickDefined, removeNullish } from "@/lib/utils"
+import { pickDefined } from "@/lib/utils"
 
 export async function createPropertyImageAction(
   propertyId: string,
@@ -58,6 +58,9 @@ export async function createPropertyImageAction(
     await useCases.updatePath(propertyImage.id ?? "", url)
 
     revalidatePath(ROUTES.DASHBOARD)
+    revalidatePath(`${ROUTES.DASHBOARD}/${ROUTES.PROPERTIES}/${propertyId}`)
+    revalidatePath(`${ROUTES.DASHBOARD}/${ROUTES.PROPERTIES}/${propertyId}/images`)
+    revalidatePath(`${ROUTES.DASHBOARD}/${ROUTES.PROPERTIES}/${propertyId}/listing`)
 
     return {
       success: true,

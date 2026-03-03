@@ -39,11 +39,6 @@ export default async function page({
                 <IconFilter />
               </Button>
             </CollapsibleTrigger>
-            <Button asChild>
-              <Link href={`${ROUTES.DASHBOARD}/${ROUTES.LISTING}/new`}>
-                <IconPlus />
-              </Link>
-            </Button>
             <CollapsibleContent className="flex flex-col gap-2 mb-3">
               <ListingFiltersForm
                 debounceMs={400}

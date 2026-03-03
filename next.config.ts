@@ -11,6 +11,11 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  experimental: {
+    serverActions: {
+      bodySizeLimit: '10mb', // puedes poner 5mb, 10mb, etc.
+    },
+  },
   logging: {
     fetches: {
       fullUrl: true,

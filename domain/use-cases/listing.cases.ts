@@ -1,17 +1,20 @@
 import { ListingPort } from "../ports/listing.port";
 import { ListingEntity } from "../entities/listing.entity";
 
+
+export type CreateListingInput = Omit<ListingEntity, "id" | "property_id" | "views_count" | "inquiries_count" | "whatsapp_clicks" | "published_at" | "property">
+
 export class ListingUseCases {
   constructor(private readonly listing: ListingPort) { }
   all(filter?: any) {
     return this.listing.all(filter);
   }
 
-  create(data: Partial<ListingEntity>) {
+  create(data: CreateListingInput) {
     return this.listing.create(data);
   }
 
-  update(id: string, data: Partial<ListingEntity>) {
+  update(id: string, data: CreateListingInput) {
     return this.listing.update(id, data);
   }
 

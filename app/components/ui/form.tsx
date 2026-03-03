@@ -60,6 +60,18 @@ import {
   ComboboxValue,
   ComboboxChipsInput,
 } from "@/components/ui/combobox"
+
+import { format } from "date-fns"
+import { Calendar as CalendarIcon } from "lucide-react"
+import { cn } from "@/lib/utils"
+
+import { Button } from "@/components/ui/button"
+import { Calendar } from "@/components/ui/calendar"
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
 /* =========================
    ROOT
 ========================= */
@@ -1008,7 +1020,79 @@ function ArrayField({
 
   return <>{children(fieldArray)}</>
 }
+/* =========================
+   DATE PICKER
+========================= */
 
+function DatePickerField({
+  name,
+  label,
+  description,
+  orientation = "vertical",
+  placeholder = "Seleccionar fecha",
+  disabled = false,
+  fromYear,
+  toYear,
+}: {
+  name: string
+  label?: ReactNode
+  description?: ReactNode
+  orientation?: "vertical" | "horizontal" | "responsive"
+  placeholder?: string
+  disabled?: boolean
+  fromYear?: number
+  toYear?: number
+}) {
+  return (
+    <BaseField
+      name={name}
+      label={label}
+      description={description}
+      orientation={orientation}
+      render={(field) => {
+        const value: Date | undefined =
+          field.value ? new Date(field.value) : undefined
+
+        return (
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                type="button"
+                variant="outline"
+                disabled={disabled}
+                className={cn(
+                  "w-full justify-start text-left font-normal",
+                  !value && "text-muted-foreground"
+                )}
+              >
+                <CalendarIcon className="mr-2 h-4 w-4" />
+
+                {value
+                  ? format(value, "PPP")
+                  : placeholder}
+              </Button>
+            </PopoverTrigger>
+
+            <PopoverContent
+              className="w-auto p-0"
+              align="start"
+            >
+              <Calendar
+                mode="single"
+                selected={value}
+                onSelect={(date) => {
+                  field.onChange(date ?? null)
+                }}
+                startMonth={fromYear ? new Date(fromYear, 0) : undefined}
+                endMonth={toYear ? new Date(toYear, 11) : undefined}
+              />
+            </PopoverContent>
+          </Popover>
+        )
+      }}
+    />
+  )
+}
 /* =========================
    EXPORT API
 ========================= */
@@ -1024,6 +1108,7 @@ export const Form = Object.assign(Root, {
   Url: UrlField,
   Autocomplete: AutocompleteField,
   Combobox: ComboboxField,
+  Date: DatePickerField,
   Set,
   Array: ArrayField,
 })

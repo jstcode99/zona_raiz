@@ -2,7 +2,7 @@
 
 import { useTranslation } from "react-i18next";
 import { Form } from "@/components/ui/form";
-import { propertyTypeOptions } from "@/domain/entities/property.entity";
+import { amenitiesOptions, propertyTypeOptions } from "@/domain/entities/property.entity";
 
 export function PropertyFeaturesForm() {
     const { t } = useTranslation();
@@ -74,7 +74,7 @@ export function PropertyFeaturesForm() {
                     label={t("forms.property.fields.amenities.label")}
                     placeholder={t("forms.property.fields.amenities.placeholder")}
                     multiple={true}
-                    options={propertyTypeOptions}
+                    options={amenitiesOptions}
                 />
             </Form.Set>
         </>

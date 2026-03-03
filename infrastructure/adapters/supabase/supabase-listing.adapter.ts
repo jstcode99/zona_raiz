@@ -75,8 +75,8 @@ export class SupabaseListingAdapter implements ListingPort {
       .select()
       .single();
 
-    if (error) throw error;
-    return row.map(mapListingRowToEntity)
+    if (error) throw new Error(error.message)
+    return mapListingRowToEntity(row)
   }
 
   async update(id: string, data: Partial<ListingEntity>): Promise<ListingEntity> {
@@ -87,8 +87,8 @@ export class SupabaseListingAdapter implements ListingPort {
       .eq("id", id)
       .select()
       .single();
-
-    if (error) throw error;
+      
+    if (error) throw new Error(error.message)
     return mapListingRowToEntity(row)
   }
 

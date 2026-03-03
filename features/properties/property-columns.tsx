@@ -176,7 +176,7 @@ export const PropertyColumns: ColumnDef<PropertyRow>[] = [
       const remaining = amenities.length - 2
 
       return (
-        <div className="flex flex-wrap gap-1 max-w-[150px]">
+        <div className="flex flex-wrap gap-1 max-w-37.5">
           {display.map((amenity) => (
             <Badge key={amenity.value} variant="secondary" className="text-xs font-normal">
               {amenity.label}
@@ -237,6 +237,9 @@ export const PropertyColumns: ColumnDef<PropertyRow>[] = [
             </Link>
             <Link href={`/dashboard/properties/${id}/images`} passHref>
               <DropdownMenuItem>Editar imagenes</DropdownMenuItem>
+            </Link>
+            <Link href={`/dashboard/properties/${id}/listing`} passHref>
+              <DropdownMenuItem>Publicar propiedad</DropdownMenuItem>
             </Link>
             {hasCoords ? (
               <DropdownMenuItem asChild>

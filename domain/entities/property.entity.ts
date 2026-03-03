@@ -1,4 +1,4 @@
-import { PropertyType } from "./property.enums";
+import { AmenitiesType, PropertyType } from "./property.enums";
 
 type AmenitiesType = {
   label: string,
@@ -59,3 +59,15 @@ export const propertyTypeLabels: Record<PropertyType, string> = {
   [PropertyType.Warehouse]: "Bodega",
   [PropertyType.Other]: "Otro",
 }
+
+export const amenitiesOptions = [
+  { label: "Piscina", value: AmenitiesType.Pool },
+  { label: "Gimnasio", value: AmenitiesType.Gym },
+  { label: "Estacionamiento", value: AmenitiesType.Parking },
+  { label: "Ascensor", value: AmenitiesType.Elevator },
+  { label: "Seguridad", value: AmenitiesType.Security },
+  { label: "Jardín", value: AmenitiesType.Garden },
+  { label: "Balcón", value: AmenitiesType.Balcony },
+  { label: "Aire acondicionado", value: AmenitiesType.AirConditioning },
+  { label: "Calefacción", value: AmenitiesType.Heating },
+]

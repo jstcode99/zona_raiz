@@ -8,6 +8,7 @@ create table if not exists public.listings (
   price decimal(15, 2) not null,
   currency text default 'ARS',
   price_negotiable boolean default false,
+  whatsapp_contact text not null,
   
   -- Expensas (para alquileres)
   expenses_amount decimal(12, 2),

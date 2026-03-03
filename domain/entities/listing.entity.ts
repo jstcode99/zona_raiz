@@ -1,5 +1,10 @@
-import { ListingStatus, ListingType } from "./listing.enums";
+import { Keywords, ListingStatus, ListingType } from "./listing.enums";
 import { PropertyEntity } from "./property.entity";
+
+type KeywordsType = {
+  label: string,
+  value: string
+}
 
 export interface ListingEntity {
   id: string;
@@ -20,7 +25,7 @@ export interface ListingEntity {
 
   meta_title?: string | null;
   meta_description?: string | null;
-  keywords?: string[] | null;
+  keywords?: KeywordsType[] | null;
   virtual_tourUrl?: string | null;
   video_url?: string | null;
 
@@ -30,11 +35,7 @@ export interface ListingEntity {
   views_count: number;
   inquiries_count: number;
   whatsapp_clicks: number;
-
-  created_at: string;
-  updated_at: string;
   published_at?: string | null;
-
   property: PropertyEntity
 }
 
@@ -54,7 +55,6 @@ export const listingStatusOptions = [
   { label: "Borrador", value: ListingStatus.DRAFT },
   { label: "Pausada", value: ListingStatus.PAUSED },
   { label: "Archivada", value: ListingStatus.ARCHIVED },
-
 ]
 
 export const listingStatusLabels: Record<ListingStatus, string> = {
@@ -63,3 +63,24 @@ export const listingStatusLabels: Record<ListingStatus, string> = {
   [ListingStatus.PAUSED]: "Pausada",
   [ListingStatus.ARCHIVED]: "Archivada",
 }
+
+export const keywordsOptions = [
+  { label: "Piscina", value: Keywords.POOL },
+  { label: "Gimnasio", value: Keywords.GYM },
+  { label: "Estacionamiento", value: Keywords.PARKING },
+  { label: "Ascensor", value: Keywords.ELEVATOR },
+  { label: "Seguridad", value: Keywords.SECURITY },
+  { label: "Jardín", value: Keywords.GARDEN },
+  { label: "Balcón", value: Keywords.BALCONY },
+  { label: "Aire acondicionado", value: Keywords.AIR_CONDITIONING },
+  { label: "Calefacción", value: Keywords.HEATING },
+  { label: "Apartamento", value: Keywords.APARTAMENT },
+  { label: "Casa", value: Keywords.HOUSE },
+  { label: "Condominio", value: Keywords.CONDO },
+  { label: "Townhouse", value: Keywords.TOWNHOUSE },
+  { label: "Terreno", value: Keywords.LAND },
+  { label: "Comercial", value: Keywords.COMMERCIAL },
+  { label: "Oficina", value: Keywords.OFFICE },
+  { label: "Bodega", value: Keywords.WAREHOUSE },
+  { label: "Otro", value: Keywords.OTHER },
+]

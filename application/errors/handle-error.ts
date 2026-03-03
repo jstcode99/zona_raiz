@@ -1,7 +1,8 @@
 import { AppError } from "./app.error"
 
 export function handleError(error: any): never {
-  // Yup
+  console.log(error);
+  
   if (error?.name === "ValidationError") {
     if (error.inner?.length) {
       throw new AppError(
