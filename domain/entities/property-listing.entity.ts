@@ -30,3 +30,4 @@ export interface PropertyListingEntity {
     business_type: BusinessType;
     whatsapp_contact: string;
 }
+

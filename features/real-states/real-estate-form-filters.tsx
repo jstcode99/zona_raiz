@@ -96,7 +96,7 @@ export function RealEstateFiltersForm({
   }
 
   return (
-    <Form form={form} className="space-y-3">
+    <Form form={form} className="space-y-3 bg-gray-500/10 p-4 rounded-md">
       <div className="flex gap-2 items-center">
         <Form.Input
           name="searchQuery"

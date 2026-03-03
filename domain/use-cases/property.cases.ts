@@ -1,10 +1,10 @@
 import { PropertyPort } from "../ports/property.port";
-import { PropertyEntity, PropertyFilters } from "../entities/property.entity"
+import { PropertyEntity } from "../entities/property.entity"
 
 export class PropertyUseCases {
   constructor(private repository: PropertyPort) { }
 
-  all(filters?: PropertyFilters) {
+  all(filters?: any) {
     return this.repository.all(filters)
   }
 

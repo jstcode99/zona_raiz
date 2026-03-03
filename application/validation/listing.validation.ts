@@ -21,3 +21,5 @@ export const createListingSchema = yup.object({
 });
 
 export type CreateListingInput = yup.InferType<typeof createListingSchema>;
+
+

@@ -20,7 +20,7 @@ import { useServerMutation } from "@/shared/hooks/use-server-mutation.hook"
 import { flatten } from "@/lib/utils"
 import { defaultRealEstateValues, RealEstateInput, realEstateSchema } from "@/application/validation/real-estate.validation"
 import { createRealEstateAction } from "@/application/actions/real-estate.actions"
-
+import countries from '@/lib/countries.json'
 
 export function RealEstateRegistrationForm() {
   const { t } = useTranslation()
@@ -32,7 +32,7 @@ export function RealEstateRegistrationForm() {
     mode: "onBlur",
   })
 
-  const { setError, handleSubmit, reset, formState: { isSubmitting } } = form
+  const { control, setError, handleSubmit, reset, formState: { isSubmitting } } = form
 
   const mutation = useServerMutation({
     action: createRealEstateAction,
@@ -82,19 +82,35 @@ export function RealEstateRegistrationForm() {
               placeholder={t("forms.real-estate.fields.name.placeholder")}
               disabled={isLoading}
             />
+            <Form.Textarea
+              name="description"
+              label={t("forms.real-estate.fields.description.label")}
+              placeholder={t("forms.real-estate.fields.description.placeholder")}
+              disabled={isLoading}
+            />
             <Form.Phone
               name="whatsapp"
               label={t("forms.real-estate.fields.whatsapp.label")}
               placeholder={t("forms.real-estate.fields.whatsapp.placeholder")}
             />
-            <Form.Address
-              name="address"
+            <Form.CountryStateCity
+              countryName="country"
+              stateName="state"
+              cityName="city"
+              countries={countries}
+              control={control}
               label={t("forms.real-estate.fields.address.label")}
             />
-            <Form.Textarea
-              name="description"
-              label={t("forms.real-estate.fields.description.label")}
-              placeholder={t("forms.real-estate.fields.description.placeholder")}
+            <Form.Input
+              name="postal_code"
+              label={t("forms.real-estate.fields.postal_code.label")}
+              placeholder={t("forms.real-estate.fields.postal_code.placeholder")}
+              disabled={isLoading}
+            />
+            <Form.Input
+              name="street"
+              label={t("forms.real-estate.fields.street.label")}
+              placeholder={t("forms.real-estate.fields.street.placeholder")}
               disabled={isLoading}
             />
           </Form.Set>

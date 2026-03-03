@@ -74,6 +74,7 @@ export const ROUTES = {
   ONBOARDING: "/onboarding",
   REGISTER_REAL_ESTATE: "/onboarding/register-real-estate",
   REAL_ESTATES: "/real-estates",
+  LISTING: "/listing",
   USERS: "/users",
   DASHBOARD: "/dashboard",
 } as const

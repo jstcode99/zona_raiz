@@ -41,6 +41,11 @@ export default async function DashboardLayout({
             title: "Propiedades",
             url: `${ROUTES.DASHBOARD}/${ROUTES.PROPERTIES}`,
             icon: 'building-2',
+          },
+          {
+            title: "Listados",
+            url: `${ROUTES.DASHBOARD}/${ROUTES.LISTING}`,
+            icon: 'list-check',
           }
         ]
       default:

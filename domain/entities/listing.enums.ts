@@ -1,3 +1,5 @@
+import { PropertyType } from "./property.enums";
+
 export enum ListingType {
   SALE = "sale",
   RENT = "rent",
@@ -9,3 +11,6 @@ export enum ListingStatus {
   PAUSED = "paused",
   ARCHIVED = "archived",
 }
+
+export const listingTypeValues: string[] = Object.values(ListingType);
+export const listingStatusValues: string[] = Object.values(ListingStatus);

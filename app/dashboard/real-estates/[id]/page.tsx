@@ -29,13 +29,11 @@ export default async function page({
                 name: realEstate.name,
                 description: realEstate.description,
                 whatsapp: realEstate.whatsapp,
-                address: {
-                  street: realEstate.street,
-                  city: realEstate.city,
-                  state: realEstate.state,
-                  postal_code: realEstate.postal_code,
-                  country: realEstate.country,
-                }
+                street: realEstate.street,
+                city: realEstate.city,
+                state: realEstate.state,
+                postal_code: realEstate.postal_code,
+                country: realEstate.country,
               }}
             />
           </CardContent>

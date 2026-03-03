@@ -1,64 +1,71 @@
 "use client"
 
-import { useEffect, useMemo, useRef } from "react"
+import { useEffect, useRef } from "react"
 import { useForm, useWatch } from "react-hook-form"
 import { Form } from "@/components/ui/form"
-import { PropertyFilters, propertyTypeOptions } from "@/domain/entities/property.entity"
-import { IconMapPin, IconHome, IconX, IconClearAll } from "@tabler/icons-react"
+import { propertyTypeOptions } from "@/domain/entities/property.entity"
+import { IconMapPin, IconHome, IconClearAll } from "@tabler/icons-react"
 import { useRouter, usePathname, useSearchParams } from "next/navigation"
-import departments from '@/lib/departments.json'
+import countries from '@/lib/countries.json'
 import { PropertyType } from "@/domain/entities/property.enums"
 import { objectToSearchParams, toNumber } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
+import { PropertySearchFormInput } from "@/application/validation/property-search.schema"
+import { defaultListingValues, ListingSearchFormInput } from "@/application/validation/listing-search.schema"
+import { listingStatusOptions, listingTypeOptions } from "@/domain/entities/listing.entity"
 
-interface LocationData {
-  value: string
-  label: string
-  cities: { value: string; label: string }[]
-}
-
-interface PropertyFiltersFormProps {
-  onFiltersChange?: (filters: PropertyFilters) => void
-  locations?: LocationData[]
+interface ListingFiltersFormProps {
+  onFiltersChange?: (filters: ListingSearchFormInput) => void
   debounceMs?: number
 }
 
-const defaultLocations: LocationData[] = departments
-
-function parseSearchParams(sp: URLSearchParams | null): PropertyFilters {
-  if (!sp) return {}
+function parseSearchParams(sp: URLSearchParams | null): ListingSearchFormInput {
+  if (!sp) return defaultListingValues
   return {
-    searchQuery: sp.get("q") ?? undefined,
-    propertyType: sp.get("type") as PropertyType ?? undefined,
-    realEstateId: sp.get("real_estate") ?? undefined,
-    city: sp.get("city") ?? undefined,
+    search: sp.get("q") ?? undefined,
+    type: sp.get("type") as PropertyType ?? undefined,
+    country: sp.get("country") ?? undefined,
     state: sp.get("state") ?? undefined,
     neighborhood: sp.get("neighborhood") ?? undefined,
-    minBedrooms: toNumber(sp.get("min_bedrooms")),
-    minBathrooms: toNumber(sp.get("min_bathrooms")),
+    street: sp.get("street") ?? undefined,
+    city: sp.get("city") ?? undefined,
+    bathrooms: toNumber(sp.get("bathrooms")),
+    bedrooms: toNumber(sp.get("bedrooms")),
+
+    real_estate_id: sp.get("real_estate_id") ?? null,
+    property_id: sp.get("property_id") ?? null,
+    listing_type: sp.get("listing_type") ?? undefined,
+    status: sp.get("status") ?? undefined,
+    price: toNumber(sp.get("price")),
   }
 }
 
-function filtersToSearchParams(filters: PropertyFilters) {
+function filtersToSearchParams(filters: ListingSearchFormInput) {
   return objectToSearchParams({
-    q: filters.searchQuery,
-    type: filters.propertyType,
-    real_estate: filters.realEstateId,
-    city: filters.city,
+    q: filters.search,
+    type: filters.type,
+    country: filters.country,
     state: filters.state,
+    city: filters.city,
     neighborhood: filters.neighborhood,
-    min_bedrooms: filters.minBedrooms,
-    min_bathrooms: filters.minBathrooms,
+    street: filters.street,
+    bedrooms: filters.bathrooms,
+    bathrooms: filters.bedrooms,
+
+    real_estate_id: filters.real_estate_id,
+    property_id: filters.property_id,
+    listing_type: filters.listing_type,
+    status: filters.status,
+    price: filters.price,
   })
 }
 
 // ---------- component ----------
 
-export function PropertyFiltersForm({
+export function ListingFiltersForm({
   onFiltersChange,
-  locations = defaultLocations,
   debounceMs = 300,
-}: PropertyFiltersFormProps) {
+}: ListingFiltersFormProps) {
 
   const router = useRouter()
   const pathname = usePathname()
@@ -67,25 +74,12 @@ export function PropertyFiltersForm({
   const lastQueryRef = useRef("")
   const isSyncingFromUrl = useRef(false)
 
-  const form = useForm<PropertyFilters>({
+  const form = useForm<PropertySearchFormInput>({
     defaultValues: parseSearchParams(searchParams),
   })
 
+  const { control } = form
   const values = useWatch({ control: form.control })
-  const selectedState = values?.state
-
-  const availableCities = useMemo(() => {
-    if (!selectedState) return []
-    const stateData = locations.find(l => l.value === selectedState)
-    return stateData?.cities || []
-  }, [selectedState, locations])
-
-  // ciudad inválida → limpiar
-  useEffect(() => {
-    if (!selectedState) return
-    const exists = availableCities.some(c => c.value === values.city)
-    if (!exists) form.setValue("city", "")
-  }, [selectedState, availableCities, values.city, form])
 
   // ---------- URL → FORM ----------
   useEffect(() => {
@@ -128,24 +122,19 @@ export function PropertyFiltersForm({
     return () => clearTimeout(timeout)
   }, [values, pathname, router, debounceMs, onFiltersChange])
 
-  const stateOptions = useMemo(() =>
-    locations.map(l => ({ label: l.label, value: l.value })),
-    [locations]
-  )
-
   const handleReset = () => {
     lastQueryRef.current = ""
-    form.reset({})
+    form.reset(defaultListingValues)
     router.replace(pathname, { scroll: false })
-    onFiltersChange?.({})
+    onFiltersChange?.(defaultListingValues)
   }
 
   return (
-    <Form form={form} className="space-y-3">
+    <Form form={form} className="space-y-3 bg-gray-500/10 p-4 rounded-md">
       {/* Búsqueda rápida */}
       <div className="flex gap-2 items-center">
         <Form.Input
-          name="searchQuery"
+          name="search_query"
           label="Buscar propiedades"
           placeholder="Buscar propiedades..."
         />
@@ -162,18 +151,21 @@ export function PropertyFiltersForm({
           </span>
         }
       >
-        <div className="grid grid-cols-3 gap-2">
-          <Form.Select
-            name="state"
-            label="Departamento"
-            placeholder="Departamento"
-            options={stateOptions}
-          />
-          <Form.Select
-            name="city"
-            label="Ciudad"
-            placeholder="Ciudad"
-            options={availableCities}
+        <div className="grid grid-cols-2 gap-2">
+          <div className="col-span-2">
+            <Form.CountryStateCity
+              countryName="country"
+              stateName="state"
+              cityName="city"
+              countries={countries}
+              control={control}
+              label={"Ubicación Pais/ Estado / Ciudad"}
+            />
+          </div>
+          <Form.Input
+            name="street"
+            label="Calle"
+            placeholder="Calle"
           />
           <Form.Input
             name="neighborhood"
@@ -192,7 +184,7 @@ export function PropertyFiltersForm({
       >
         <div className="grid grid-cols-3 gap-2">
           <Form.Select
-            name="propertyType"
+            name="type"
             label="Tipo"
             placeholder="Tipo"
             options={propertyTypeOptions}
@@ -204,10 +196,38 @@ export function PropertyFiltersForm({
             placeholder="Hab. mín."
           />
           <Form.Input
-            name="minBathrooms"
+            name="min_bathrooms"
             type="number"
             label="Baños mín."
             placeholder="Baños mín."
+          />
+        </div>
+      </Form.Set>
+
+      <Form.Set
+        legend={
+          <span className="flex items-center gap-1 text-xs font-medium text-muted-foreground">
+            <IconMapPin className="size-3" /> Datos de publicación
+          </span>
+        }
+      >
+        <div className="grid grid-cols-2 gap-2">
+          <Form.Input
+            name="price"
+            label="Precio"
+            placeholder="Precio"
+          />
+          <Form.Select
+            name="listing_type"
+            label="Tipo de publicación"
+            placeholder="Tipo de publicación"
+            options={listingTypeOptions}
+          />
+          <Form.Select
+            name="status"
+            label="Estado de publicación"
+            placeholder="Estado de publicación"
+            options={listingStatusOptions}
           />
         </div>
       </Form.Set>

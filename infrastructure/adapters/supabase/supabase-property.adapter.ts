@@ -1,5 +1,5 @@
 import { mapPropertyRowToEntity } from "@/application/mappers/property.mapper";
-import { PropertyEntity, PropertyFilters } from "@/domain/entities/property.entity";
+import { PropertyEntity } from "@/domain/entities/property.entity";
 import { RealEstateEntity } from "@/domain/entities/real-estate.entity";
 import { PropertyPort } from "@/domain/ports/property.port";
 import { SupabaseClient } from "@supabase/supabase-js";
@@ -49,7 +49,7 @@ export class SupabasePropertyAdapter implements PropertyPort {
         return (data || []).map(item => mapPropertyRowToEntity(item)!) as PropertyEntity[]
     }
 
-    async all(filters?: PropertyFilters): Promise<PropertyEntity[]> {
+    async all(filters?: any): Promise<PropertyEntity[]> {
 
         let query = this.supabase
             .from("properties")
@@ -59,26 +59,29 @@ export class SupabasePropertyAdapter implements PropertyPort {
         if (filters?.real_estate_id) {
             query = query.eq("real_estate_id", filters.real_estate_id)
         }
-        if (filters?.property_type) {
-            query = query.eq("property_type", filters.property_type)
-        }
-        if (filters?.city) {
-            query = query.eq("city", filters.city)
+        if (filters?.country) {
+            query = query.eq("country", filters.country)
         }
         if (filters?.state) {
             query = query.eq("state", filters.state)
         }
+        if (filters?.city) {
+            query = query.eq("city", filters.city)
+        }
+        if (filters?.street) {
+            query = query.ilike("street", `%${filters.street}%`)
+        }
         if (filters?.neighborhood) {
-            query = query.eq("neighborhood", filters.neighborhood)
+            query = query.ilike("neighborhood", `%${filters.neighborhood}%`)
         }
-        if (filters?.min_bedrooms) {
-            query = query.gte("bedrooms", filters.min_bedrooms)
+        if (filters?.bedrooms) {
+            query = query.gte("bedrooms", filters.bedrooms)
         }
-        if (filters?.min_bathrooms) {
-            query = query.gte("bathrooms", filters.min_bathrooms)
+        if (filters?.bathrooms) {
+            query = query.gte("bathrooms", filters.bathrooms)
         }
-        if (filters?.search_query) {
-            query = query.textSearch("search_vector", filters.search_query)
+        if (filters?.search) {
+            query = query.textSearch("search_vector", filters.search)
         }
 
         const { data, error } = await query

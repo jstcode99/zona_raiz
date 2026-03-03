@@ -136,10 +136,10 @@
           "placeholder": "Describe las características principales de la propiedad",
           "message": "La descripción es obligatoria"
         },
-        "business_type": {
-          "label": "Tipo de negocio",
-          "placeholder": "Selecciona tipo de negocio",
-          "message": "Debes seleccionar un tipo de negocio válido"
+        "property_type": {
+          "label": "Tipo de propiedad",
+          "placeholder": "Selecciona tipo de propiedad",
+          "message": "Debes seleccionar un tipo de propiedad válido"
         },
         "status": {
           "label": "Estado",
@@ -185,6 +185,11 @@
           "placeholder": "Colombia",
           "message": "El país es obligatorio",
           "message1": "No puede tener más de 150 caracteres"
+        },
+        "street": {
+          "label": "Calle | Dirección",
+          "placeholder": "Calle ",
+          "message": "La calle es obligatoria"
         },
         "postal_code": {
           "label": "Codio postal",
@@ -321,6 +326,16 @@
         "description": {
           "label": "Descripción",
           "placeholder": "Descripción general"
+        },
+        "postal_code": {
+          "label": "Codio postal",
+          "placeholder": "Codio postal",
+          "message": "El Codio postal es obligatorio"
+        },
+        "street": {
+          "label": "Calle | Dirección",
+          "placeholder": "Calle ",
+          "message": "La calle es obligatoria"
         }
       }
     },

@@ -9,15 +9,14 @@ create table if not exists public.properties (
   property_type property_type not null default 'other',
   
   -- Ubicación
-  address text not null,
   street text,
   city text not null,
   state text not null,
   postal_code text,
   country text default 'Argentina',
+  neighborhood text,
   latitude decimal(10, 8),
   longitude decimal(11, 8),
-  neighborhood text,
   
   -- Características físicas
   bedrooms integer,
@@ -42,8 +41,7 @@ create table if not exists public.properties (
     setweight(to_tsvector('spanish', coalesce(title, '')), 'A') ||
     setweight(to_tsvector('spanish', coalesce(description, '')), 'B') ||
     setweight(to_tsvector('spanish', coalesce(city, '')), 'C') ||
-    setweight(to_tsvector('spanish', coalesce(neighborhood, '')), 'C') ||
-    setweight(to_tsvector('spanish', coalesce(address, '')), 'D')
+    setweight(to_tsvector('spanish', coalesce(neighborhood, '')), 'C')
   ) stored
 );
 

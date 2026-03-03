@@ -1,7 +1,7 @@
 "use client"
 
 import { BaseRow } from "@/components/ui/data-table"
-import { PropertyEntity, propertyTypeLabels } from "@/domain/entities/property.entity"
+import { PropertyEntity } from "@/domain/entities/property.entity"
 import { type ColumnDef } from "@tanstack/react-table"
 import {
   DropdownMenu,
@@ -13,17 +13,16 @@ import {
 import { Button } from "@/components/ui/button"
 import { 
   IconDotsVertical, 
-  IconMapPin, 
-  IconBed, 
-  IconBath, 
-  IconRuler,
-  IconCar,
+  IconHome,
+  IconCurrencyDollar,
+  IconStar,
+  IconEye,
+  IconMessage,
+  IconBrandWhatsapp,
 } from "@tabler/icons-react"
 import Link from "next/link"
 import { Badge } from "@/components/ui/badge"
-import { ListingEntity } from "@/domain/entities/listing.entity"
-import { ListingType } from "@/domain/entities/listing.enums"
-import { propertyTypeIcons } from "../properties/property-columns"
+import { ListingEntity, listingStatusLabels, listingTypeLabels } from "@/domain/entities/listing.entity"
 
 export type ListingRow = BaseRow & {
   created_at: string
@@ -31,188 +30,191 @@ export type ListingRow = BaseRow & {
   property: PropertyEntity
 }
 
-const ListingTypeLabels: Record<ListingType, string> = {
-  [ListingType.SALE]: "En venta",
-  [ListingType.RENT]: "En Renta",
-}
 
-export const PropertyColumns: ColumnDef<ListingRow>[] = [
+export const ListingColumns: ColumnDef<ListingRow>[] = [
+  // =========================
+  // PROPIEDAD
+  // =========================
   {
-    accessorKey: "title",
+    id: "property",
     header: "Propiedad",
     cell: ({ row }) => {
-      const type = row.original.property.property_type
+      const property = row.original.property
+
       return (
-        <div className="flex items-start gap-3">
-          <div className="flex size-10 items-center justify-center rounded-lg bg-muted">
-            {propertyTypeIcons[type]}
-          </div>
-          <div className="flex flex-col min-w-0">
-            <span className="font-medium truncate max-w-[200px]">
-              {row.original.property.title}
-            </span>
-            <span className="text-xs text-muted-foreground">
-              {propertyTypeLabels[type]}
-            </span>
-          </div>
-        </div>
-      )
-    },
-  },
-  {
-    id: "location",
-    header: "Ubicación",
-    cell: ({ row }) => {
-      const { city, state, neighborhood, postal_code, address } = row.original.property
-      return (
-        <div className="flex flex-col gap-0.5 min-w-0">
-          <div className="flex items-center gap-1.5 text-sm">
-            <IconMapPin className="size-3.5 text-muted-foreground shrink-0" />
-            <span className="truncate">
-              {neighborhood ? `${neighborhood}, ` : ""}
-              {city}
-            </span>
-          </div>
-          <span className="text-xs text-muted-foreground pl-5 truncate max-w-[180px]">
-            {state} {postal_code && `(${postal_code})`}
-          </span>
-          {address && (
-            <span 
-              className="text-xs text-muted-foreground/70 pl-5 truncate max-w-[180px]"
-              title={address}
-            >
-              {address}
-            </span>
-          )}
-        </div>
-      )
-    },
-  },
-  {
-    id: "coords",
-    header: "Coordenadas",
-    cell: ({ row }) => {
-      const { latitude, longitude } = row.original.property
-      if (!latitude || !longitude) return (
-        <span className="text-xs text-muted-foreground italic">Sin ubicación</span>
-      )
-      return (
-        <div className="flex flex-col text-xs text-muted-foreground font-mono">
-          <span>Lat: {latitude.toFixed(6)}</span>
-          <span>Lng: {longitude.toFixed(6)}</span>
-        </div>
-      )
-    },
-  },
-  {
-    id: "features",
-    header: "Características",
-    cell: ({ row }) => {
-      const { bedrooms, bathrooms, built_area, total_area, floors, parking_spots } = row.original.property
-      
-      const features = []
-      if (bedrooms !== null) features.push({ icon: IconBed, value: `${bedrooms} hab.` })
-      if (bathrooms !== null) features.push({ icon: IconBath, value: `${bathrooms} baños` })
-      if (built_area !== null) features.push({ icon: IconRuler, value: `${built_area}m²` })
-      else if (total_area !== null) features.push({ icon: IconRuler, value: `${total_area}m² tot.` })
-      if (parking_spots !== null) features.push({ icon: IconCar, value: `${parking_spots} est.` })
-      
-      if (features.length === 0) return <span className="text-xs text-muted-foreground">—</span>
-      
-      return (
-        <div className="flex flex-wrap gap-2">
-          {features.map((feature, idx) => (
-            <div 
-              key={idx} 
-              className="flex items-center gap-1 text-xs text-muted-foreground bg-muted px-2 py-1 rounded"
-            >
-              <feature.icon className="size-3.5" />
-              <span>{feature.value}</span>
+        <Link href={`/dashboard/properties/${property.id}`}>
+          <div className="flex items-start gap-3">
+            <div className="flex size-10 items-center justify-center rounded-lg bg-muted">
+              <IconHome className="size-4" />
             </div>
-          ))}
-          {floors !== null && floors > 1 && (
-            <span className="text-xs text-muted-foreground">• {floors} pisos</span>
+            <div className="flex flex-col min-w-0">
+              <span className="font-medium truncate max-w-50">
+                {property.title}
+              </span>
+              <span className="text-xs text-muted-foreground truncate">
+                {property.city}, {property.state}
+              </span>
+            </div>
+          </div>
+        </Link>
+      )
+    },
+  },
+
+  // =========================
+  // TIPO + PRECIO
+  // =========================
+  {
+    id: "pricing",
+    header: "Publicación",
+    cell: ({ row }) => {
+      const {
+        listing_type,
+        price,
+        currency,
+        price_negotiable,
+        expenses_amount,
+        expenses_included,
+      } = row.original
+
+      return (
+        <div className="flex flex-col gap-1 text-xs">
+          <div className="flex items-center gap-2">
+            <Badge variant="secondary">
+              {listingTypeLabels[listing_type]}
+            </Badge>
+
+            {price_negotiable && (
+              <Badge variant="outline">Negociable</Badge>
+            )}
+          </div>
+
+          <div className="flex items-center gap-1 font-medium text-sm">
+            <IconCurrencyDollar className="size-3.5" />
+            {currency} {price.toLocaleString()}
+          </div>
+
+          {expenses_amount && (
+            <span className="text-muted-foreground">
+              Expensas: {currency} {expenses_amount.toLocaleString()}{" "}
+              {expenses_included ? "(incluidas)" : ""}
+            </span>
           )}
         </div>
       )
     },
   },
+
+  // =========================
+  // ESTADO
+  // =========================
   {
-    id: "lot_info",
-    header: "Terreno",
+    accessorKey: "status",
+    header: "Estado",
     cell: ({ row }) => {
-      const { lot_area, year_built } = row.original.property
-      if (!lot_area && !year_built) return <span className="text-xs text-muted-foreground">—</span>
-      
+      const { status, featured, featured_until } = row.original
+
+      return (
+        <div className="flex flex-col gap-1">
+          <Badge>
+            {listingStatusLabels[status]}
+          </Badge>
+
+          {featured && (
+            <Badge variant="outline" className="flex items-center gap-1 text-xs">
+              <IconStar className="size-3" />
+              Destacada
+            </Badge>
+          )}
+
+          {featured && featured_until && (
+            <span className="text-[11px] text-muted-foreground">
+              Hasta {new Date(featured_until).toLocaleDateString("es-ES")}
+            </span>
+          )}
+        </div>
+      )
+    },
+  },
+
+  // =========================
+  // MÉTRICAS
+  // =========================
+  {
+    id: "metrics",
+    header: "Métricas",
+    cell: ({ row }) => {
+      const {
+        views_count,
+        inquiries_count,
+        whatsapp_clicks,
+      } = row.original
+
+      return (
+        <div className="flex flex-wrap gap-2 text-xs">
+          <div className="flex items-center gap-1 text-muted-foreground bg-muted px-2 py-1 rounded">
+            <IconEye className="size-3.5" />
+            {views_count}
+          </div>
+
+          <div className="flex items-center gap-1 text-muted-foreground bg-muted px-2 py-1 rounded">
+            <IconMessage className="size-3.5" />
+            {inquiries_count}
+          </div>
+
+          <div className="flex items-center gap-1 text-muted-foreground bg-muted px-2 py-1 rounded">
+            <IconBrandWhatsapp className="size-3.5" />
+            {whatsapp_clicks}
+          </div>
+        </div>
+      )
+    },
+  },
+
+  // =========================
+  // FECHAS
+  // =========================
+  {
+    id: "dates",
+    header: "Fechas",
+    cell: ({ row }) => {
+      const {
+        created_at,
+        published_at,
+        available_from,
+      } = row.original
+
       return (
         <div className="flex flex-col text-xs">
-          {lot_area !== null && (
+          <span>
+            Creado: {new Date(created_at).toLocaleDateString("es-ES")}
+          </span>
+
+          {published_at && (
             <span className="text-muted-foreground">
-              {lot_area}m² terreno
+              Pub: {new Date(published_at).toLocaleDateString("es-ES")}
             </span>
           )}
-          {year_built !== null && (
+
+          {available_from && (
             <span className="text-muted-foreground">
-              Año {year_built}
-            </span>
-          )}
-        </div>
-      )
-    },
-  },
-  {
-    id: "amenities",
-    header: "Amenidades",
-    cell: ({ row }) => {
-      const amenities = row.original.property.amenities || []
-      if (amenities.length === 0) return <span className="text-xs text-muted-foreground">—</span>
-      
-      const display = amenities.slice(0, 2)
-      const remaining = amenities.length - 2
-      
-      return (
-        <div className="flex flex-wrap gap-1 max-w-[150px]">
-          {display.map((amenity) => (
-            <Badge key={amenity.value} variant="secondary" className="text-xs font-normal">
-              {amenity.label}
-            </Badge>
-          ))}
-          {remaining > 0 && (
-            <Badge variant="outline" className="text-xs font-normal">
-              +{remaining}
-            </Badge>
-          )}
-        </div>
-      )
-    },
-  },
-  {
-    accessorKey: "created_at",
-    header: "Registro",
-    cell: ({ row }) => {
-      const date = new Date(row.original.created_at)
-      const updated = new Date(row.original.updated_at)
-      const isUpdated = updated.getTime() !== date.getTime()
-      
-      return (
-        <div className="flex flex-col text-xs">
-          <span>{date.toLocaleDateString("es-ES")}</span>
-          {isUpdated && (
-            <span className="text-muted-foreground">
-              Edit: {updated.toLocaleDateString("es-ES")}
+              Disponible: {new Date(available_from).toLocaleDateString("es-ES")}
             </span>
           )}
         </div>
       )
     },
   },
+
+  // =========================
+  // ACCIONES
+  // =========================
   {
     id: "actions",
     header: "",
     cell: ({ row }) => {
-      const { latitude, longitude, id } = row.original.property
-      const hasCoords = latitude && longitude
-      
+      const { id } = row.original
+
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -226,24 +228,17 @@ export const PropertyColumns: ColumnDef<ListingRow>[] = [
             </Button>
           </DropdownMenuTrigger>
 
-          <DropdownMenuContent align="end" className="w-40">
-            <Link href={`/dashboard/properties/${id}`} passHref>
-              <DropdownMenuItem>Editar propiedad</DropdownMenuItem>
+          <DropdownMenuContent align="end" className="w-44">
+            <Link href={`/dashboard/listings/${id}`}>
+              <DropdownMenuItem>Editar listing</DropdownMenuItem>
             </Link>
-            
-            {hasCoords ? (
-              <DropdownMenuItem asChild>
-                <a 
-                  href={`https://www.google.com/maps?q=${latitude},${longitude}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  Ver en mapa
-                </a>
-              </DropdownMenuItem>
-            ) : null}
+
+            <DropdownMenuItem>
+              Ver público
+            </DropdownMenuItem>
+
             <DropdownMenuSeparator />
-            
+
             <DropdownMenuItem variant="destructive">
               Eliminar
             </DropdownMenuItem>

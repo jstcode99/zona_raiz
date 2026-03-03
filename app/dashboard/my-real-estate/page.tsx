@@ -18,6 +18,9 @@ export default async function MyRealEstatePage() {
     return encodedRedirect('error', '/auth/sign-in', 'No se pudo cargar la inmobiliaria')
   }
 
+  console.log(realEstate);
+  
+
   return (
     <div className='mx-auto px-4 sm:px-6 lg:px-2 '>
       <div className='flex justify-center'>
@@ -43,18 +46,7 @@ export default async function MyRealEstatePage() {
                   <RealEstateForm
                     className="w-full px-0"
                     id={id}
-                    defaultValues={{
-                      name: realEstate.name,
-                      description: realEstate.description,
-                      whatsapp: realEstate.whatsapp,
-                      address: {
-                        street: realEstate.street,
-                        city: realEstate.city,
-                        state: realEstate.state,
-                        postal_code: realEstate.postal_code,
-                        country: realEstate.country,
-                      }
-                    }}
+                    defaultValues={realEstate}
                   />
                 </Suspense>
               </div>

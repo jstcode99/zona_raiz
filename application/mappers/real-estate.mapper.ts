@@ -23,11 +23,11 @@ export function mapRealEstateRowToDomain(row: RealEstateInput): Partial<RealEsta
     name: row.name,
     description: row.description,
     whatsapp: row.whatsapp,
-    street: row.address.street,
-    city: row.address.city,
-    state: row.address.state,
-    postal_code: row.address.postal_code,
-    country: row.address.country,
+    street: row.street,
+    city: row.city,
+    state: row.state,
+    postal_code: row.postal_code,
+    country: row.country,
   }
 }
 

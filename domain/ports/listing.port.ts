@@ -1,7 +1,7 @@
-import { ListingEntity, ListingFilters } from "../entities/listing.entity";
+import { ListingEntity } from "../entities/listing.entity";
 
 export interface ListingPort {
-    all(filter?: ListingFilters): Promise<ListingEntity[]>;
+    all(filter?: any): Promise<ListingEntity[]>;
     create(data: Partial<ListingEntity>): Promise<ListingEntity>;
     update(id: string, data: Partial<ListingEntity>): Promise<ListingEntity>;
     findById(id: string): Promise<ListingEntity | null>;

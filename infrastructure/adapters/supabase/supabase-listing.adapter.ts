@@ -1,12 +1,12 @@
 import { mapListingRowToEntity } from "@/application/mappers/listing.mapper";
-import { ListingEntity, ListingFilters } from "@/domain/entities/listing.entity";
+import { ListingEntity } from "@/domain/entities/listing.entity";
 import { ListingPort } from "@/domain/ports/listing.port";
 import { SupabaseClient } from "@supabase/supabase-js";
 
 export class SupabaseListingAdapter implements ListingPort {
   constructor(private readonly supabase: SupabaseClient) { }
 
-  async all(filters?: ListingFilters): Promise<ListingEntity[]> {
+  async all(filters?: any): Promise<ListingEntity[]> {
 
     let query = this.supabase
       .from("listings")
@@ -17,28 +17,47 @@ export class SupabaseListingAdapter implements ListingPort {
       query = query.eq("real_estate_id", filters?.real_estate_id)
     }
     if (filters?.property_id) {
-      query = query.eq("real_estate_id", filters.property_id)
+      query = query.eq("property_id", filters.property_id)
     }
-    if (filters?.property_type) {
-      query = query.eq("property_type", filters.property_type)
+    if (filters?.type) {
+      query = query.eq("property_type", filters.type)
+    }
+    if (filters?.listing_type) {
+      query = query.eq("listing_type", filters.listing_type)
+    }
+    if (filters?.price) {
+      query = query.eq("price", filters.price)
+    }
+    if (filters?.status) {
+      query = query.eq("status", filters.status)
+    }
+
+    if (filters?.street) {
+      query = query.eq("property.street", filters.street)
     }
     if (filters?.city) {
-      query = query.eq("city", filters.city)
+      query = query.eq("property.city", filters.city)
     }
     if (filters?.state) {
-      query = query.eq("state", filters.state)
+      query = query.eq("property.state", filters.state)
+    }
+    if (filters?.postal_code) {
+      query = query.eq("property.postal_code", filters.postal_code)
+    }
+    if (filters?.country) {
+      query = query.eq("property.country", filters.country)
     }
     if (filters?.neighborhood) {
-      query = query.eq("neighborhood", filters.neighborhood)
+      query = query.eq("property.neighborhood", filters.neighborhood)
     }
     if (filters?.min_bedrooms) {
-      query = query.gte("bedrooms", filters.min_bedrooms)
+      query = query.gte("property.bedrooms", filters.min_bedrooms)
     }
     if (filters?.min_bathrooms) {
-      query = query.gte("bathrooms", filters.min_bathrooms)
+      query = query.gte("property.bathrooms", filters.min_bathrooms)
     }
     if (filters?.search_query) {
-      query = query.textSearch("search_vector", filters.search_query)
+      query = query.textSearch("property.search_vector", filters.search_query)
     }
 
     const { data, error } = await query

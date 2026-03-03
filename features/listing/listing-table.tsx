@@ -2,12 +2,12 @@
 
 import { DataTable } from "@/components/ui/data-table"
 import { ColumnDef } from "@tanstack/react-table"
-import { PropertyRow } from "./listing-columns"
 import { use } from "react"
+import { ListingRow } from "./listing-columns"
 
 interface Props {
-    listing: Promise<PropertyRow[]>
-    columns: ColumnDef<PropertyRow>[]
+    listing: Promise<ListingRow[]>
+    columns: ColumnDef<ListingRow>[]
 }
 
 export default function ListingTable({
@@ -17,7 +17,7 @@ export default function ListingTable({
     const allListing = use(listing)
 
     return (
-        <DataTable<PropertyRow>
+        <DataTable<ListingRow>
             data={allListing}
             columns={columns}
             enableRowSelection={true}

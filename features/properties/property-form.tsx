@@ -39,7 +39,7 @@ export function PropertyForm({
 
   const stepFields = {
     ceo: ["title", "slug", "description", "property_type"],
-    location: ["address", "city", "state", "postal_code", "country", "latitude", "longitude"],
+    location: ["street", "city", "state", "postal_code", "country", "latitude", "longitude"],
     features: [
       "bedrooms",
       "bathrooms",

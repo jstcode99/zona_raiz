@@ -1,5 +1,5 @@
 import { ListingStatus, ListingType } from "./listing.enums";
-import { PropertyFilters } from "./property.entity";
+import { PropertyEntity } from "./property.entity";
 
 export interface ListingEntity {
   id: string;
@@ -34,21 +34,32 @@ export interface ListingEntity {
   created_at: string;
   updated_at: string;
   published_at?: string | null;
+
+  property: PropertyEntity
 }
 
-export interface ListingFilters extends PropertyFilters {
-  real_estate_id?: string;
-  city?: string;
-  state?: string;
-  neighborhood?: string;
-  min_bed_rooms?: number;
-  min_bath_rooms?: number;
-  search_query?: string;
 
-  property_id?: string;
-  property_type?: string;
-  listing_type: ListingType;
-  status: ListingStatus;
-  price: number;
-  currency: string;
+export const listingTypeOptions = [
+  { label: "Renta", value: ListingType.RENT },
+  { label: "Venta", value: ListingType.SALE },
+]
+
+export const listingTypeLabels: Record<ListingType, string> = {
+  [ListingType.RENT]: "Renta",
+  [ListingType.SALE]: "Venta",
+}
+
+export const listingStatusOptions = [
+  { label: "Activa", value: ListingStatus.ACTIVE },
+  { label: "Borrador", value: ListingStatus.DRAFT },
+  { label: "Pausada", value: ListingStatus.PAUSED },
+  { label: "Archivada", value: ListingStatus.ARCHIVED },
+
+]
+
+export const listingStatusLabels: Record<ListingStatus, string> = {
+  [ListingStatus.ACTIVE]: "Activa",
+  [ListingStatus.DRAFT]: "Borrador",
+  [ListingStatus.PAUSED]: "Pausada",
+  [ListingStatus.ARCHIVED]: "Archivada",
 }

@@ -76,7 +76,7 @@ export const PropertyColumns: ColumnDef<PropertyRow>[] = [
     id: "location",
     header: "Ubicación",
     cell: ({ row }) => {
-      const { city, state, neighborhood, postal_code, address } = row.original
+      const { city, state, neighborhood, postal_code } = row.original
       return (
         <div className="flex flex-col gap-0.5 min-w-0">
           <div className="flex items-center gap-1.5 text-sm">
@@ -89,14 +89,6 @@ export const PropertyColumns: ColumnDef<PropertyRow>[] = [
           <span className="text-xs text-muted-foreground pl-5 truncate max-w-[180px]">
             {state} {postal_code && `(${postal_code})`}
           </span>
-          {address && (
-            <span
-              className="text-xs text-muted-foreground/70 pl-5 truncate max-w-[180px]"
-              title={address}
-            >
-              {address}
-            </span>
-          )}
         </div>
       )
     },

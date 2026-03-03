@@ -5,16 +5,22 @@ import { Spinner } from "@/components/ui/spinner";
 import { Card, CardContent } from '@/components/ui/card'
 import { listProperties } from "@/services/property.services";
 import { PropertyFiltersForm } from "@/features/properties/property-form-filters";
-import { PropertyFilters } from "@/domain/entities/property.entity";
 import { Button } from "@/components/ui/button";
-import { IconPlus } from "@tabler/icons-react";
+import { IconFilter, IconPlus } from "@tabler/icons-react";
 import Link from "next/link";
 import { ROUTES } from "@/infrastructure/config/constants";
+import { PropertySearchFormInput } from "@/application/validation/property-search.schema";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible"
+import { Separator } from "@/components/ui/separator";
 
 export default async function page({
   searchParams,
 }: {
-  searchParams: Promise<PropertyFilters>
+  searchParams: Promise<PropertySearchFormInput>
 }) {
   const filters = await searchParams;
 
@@ -23,19 +29,27 @@ export default async function page({
   return (
     <main className="flex-col items-center justify-center space-y-4 px-4 lg:px-6">
       <Card>
-        <CardContent className='space-y-4'>
-          <PropertyFiltersForm
-            debounceMs={400}
-          />
-        </CardContent>
-      </Card>
-      <Card>
-        <CardContent className='flex-col space-y-4 justify-end'>
-          <Button asChild>
-            <Link href={`${ROUTES.DASHBOARD}/${ROUTES.PROPERTIES}/new`}>
-              <IconPlus />
-            </Link>
-          </Button>
+        <CardContent className="space-y-4">
+          <Collapsible
+            className='flex-col space-y-4 space-x-1 justify-end'
+          >
+            <CollapsibleTrigger asChild>
+              <Button>
+                <IconFilter />
+              </Button>
+            </CollapsibleTrigger>
+            <Button asChild>
+              <Link href={`${ROUTES.DASHBOARD}/${ROUTES.PROPERTIES}/new`}>
+                <IconPlus />
+              </Link>
+            </Button>
+            <CollapsibleContent className="flex flex-col gap-2">
+              <PropertyFiltersForm
+                debounceMs={400}
+              />
+              <Separator />
+            </CollapsibleContent>
+          </Collapsible>
           <Suspense fallback={<Spinner />}>
             <PropertiesTable properties={properties} columns={PropertyColumns} />
           </Suspense>

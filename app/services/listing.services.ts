@@ -1,6 +1,6 @@
 import { cached } from "@/infrastructure/cache/cache";
 import { createListingModule } from "@/application/containers/listing.container";
-import { ListingFilters } from "@/domain/entities/listing.entity";
+import { ListingSearchFormInput } from "@/application/validation/listing-search.schema";
 
 export const getListingById = cached(
   async function (id: string) {
@@ -17,7 +17,7 @@ export const getActive = cached(
 );
 
 export const listListing = cached(
-  async function (filters?: ListingFilters) {
+  async function (filters?: ListingSearchFormInput) {
     const { useCases } = await createListingModule()
     return useCases.all(filters);
   }

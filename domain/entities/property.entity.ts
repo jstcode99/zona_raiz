@@ -12,15 +12,16 @@ export interface PropertyEntity {
   slug: string;
   description: string | null;
   property_type: PropertyType;
-  address: string;
+
   street: string,
   city: string,
   state: string,
-  postal_code: string,
   country: string,
+  postal_code: string,
   latitude: number | null;
   longitude: number | null;
   neighborhood: string | null;
+
   bedrooms: number | null;
   bathrooms: number | null;
   total_area: number | null;
@@ -33,18 +34,6 @@ export interface PropertyEntity {
   created_by: string | null;
   created_at: string;
   updated_at: string;
-}
-
-
-export interface PropertyFilters {
-  real_estate_id?: string;
-  property_type?: string;
-  city?: string;
-  state?: string;
-  neighborhood?: string;
-  min_bedrooms?: number;
-  min_bathrooms?: number;
-  search_query?: string;
 }
 
 export const propertyTypeOptions = [

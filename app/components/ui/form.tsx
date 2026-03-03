@@ -66,6 +66,10 @@ import {
 
 const { t } = i18next
 
+type City = { value: string; label: string }
+type State = { value: string; label: string; cities: City[] }
+type Country = { value: string; label: string; states: State[] }
+
 type RootProps<T extends FieldValues> = {
   form: UseFormReturn<T>
   onSubmit: (values: T) => void | Promise<void>
@@ -116,28 +120,30 @@ function BaseField({
   })
 
   return (
-    <Field
-      orientation={orientation}
-      data-invalid={fieldState.invalid || undefined}
-    >
-      {label && <FieldLabel htmlFor={name}>{label}</FieldLabel>}
+    <FieldGroup>
+      <Field
+        orientation={orientation}
+        data-invalid={fieldState.invalid || undefined}
+      >
+        {label && <FieldLabel htmlFor={name}>{label}</FieldLabel>}
 
-      <FieldContent>
-        {render(field)}
+        <FieldContent>
+          {render(field)}
 
-        {description && (
-          <FieldDescription>{description}</FieldDescription>
-        )}
+          {description && (
+            <FieldDescription>{description}</FieldDescription>
+          )}
 
-        <FieldError
-          errors={
-            fieldState.error
-              ? [{ message: fieldState.error.message }]
-              : undefined
-          }
-        />
-      </FieldContent>
-    </Field>
+          <FieldError
+            errors={
+              fieldState.error
+                ? [{ message: fieldState.error.message }]
+                : undefined
+            }
+          />
+        </FieldContent>
+      </Field>
+    </FieldGroup>
   )
 }
 
@@ -242,64 +248,116 @@ function UrlField({
    ADDRESS
 ========================= */
 
-function AddressField({
-  name,
-  ...props
+function CountryStateCityField({
+  control,
+  countryName,
+  stateName,
+  cityName,
+  countries,
+  label,
+  description,
+  orientation = "vertical",
 }: {
-  name: string
+  control: any
+  countryName: string
+  stateName: string
+  cityName: string
+  countries: Country[]
   label?: ReactNode
   description?: ReactNode
   orientation?: "vertical" | "horizontal" | "responsive"
 }) {
+  const { field: countryField } = useController({
+    name: countryName,
+    control,
+  })
+
+  const { field: stateField } = useController({
+    name: stateName,
+    control,
+  })
+
+  const { field: cityField } = useController({
+    name: cityName,
+    control,
+  })
+
+  const countryObj = countries.find(c => c.value === countryField.value)
+  const stateObj = countryObj?.states.find(s => s.value === stateField.value)
+
   return (
     <BaseField
-      name={name}
-      {...props}
-      render={(field) => {
-        const value = field.value || {}
-        const set = (k: string, v: string) =>
-          field.onChange({ ...value, [k]: v })
+      name={countryName}
+      label={label}
+      description={description}
+      orientation={orientation}
+      render={() => (
+        <div className="w-full grid lg:grid-cols-3 gap-2">
+          {/* COUNTRY */}
+          <Select
+            value={countryField.value || ""}
+            onValueChange={(val) => {
+              countryField.onChange(val)
+              stateField.onChange("")
+              cityField.onChange("")
+            }}
+          >
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="País" />
+            </SelectTrigger>
 
-        return (
-          <div className="grid gap-3">
-            <Input
-              placeholder={t("words.street")}
-              value={value.street || ""}
-              onChange={(e) => set("street", e.target.value)}
-            />
+            <SelectContent>
+              {countries.map(c => (
+                <SelectItem key={c.value} value={c.value}>
+                  {c.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          {/* STATE */}
+          <Select
+            value={stateField.value || ""}
+            disabled={!countryObj}
+            onValueChange={(val) => {
+              stateField.onChange(val)
+              cityField.onChange("")
+            }}
+          >
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="Departamento" />
+            </SelectTrigger>
 
-            <div className="grid grid-cols-2 gap-3">
-              <Input
-                placeholder={t("words.city")}
-                value={value.city || ""}
-                onChange={(e) => set("city", e.target.value)}
-              />
-              <Input
-                placeholder={t("words.state")}
-                value={value.state || ""}
-                onChange={(e) => set("state", e.target.value)}
-              />
-            </div>
+            <SelectContent>
+              {countryObj?.states.map(s => (
+                <SelectItem key={s.value} value={s.value}>
+                  {s.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          {/* CITY */}
+          <Select
+            value={cityField.value || ""}
+            disabled={!stateObj}
+            onValueChange={cityField.onChange}
+          >
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="Ciudad" />
+            </SelectTrigger>
 
-            <div className="grid grid-cols-2 gap-3">
-              <Input
-                placeholder={t("words.postal_code")}
-                value={value.postal_code || ""}
-                onChange={(e) => set("postal_code", e.target.value)}
-              />
-              <Input
-                placeholder={t("words.country")}
-                value={value.country || ""}
-                onChange={(e) => set("country", e.target.value)}
-              />
-            </div>
-          </div>
-        )
-      }}
+            <SelectContent>
+              {stateObj?.cities.map(c => (
+                <SelectItem key={c.value} value={c.value}>
+                  {c.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      )}
     />
   )
 }
-
 /* =========================
    FILE DROP
 ========================= */
@@ -962,7 +1020,7 @@ export const Form = Object.assign(Root, {
   Checkbox: CheckboxField,
   Phone: PhoneField,
   File: FileDropField,
-  Address: AddressField,
+  CountryStateCity: CountryStateCityField,
   Url: UrlField,
   Autocomplete: AutocompleteField,
   Combobox: ComboboxField,

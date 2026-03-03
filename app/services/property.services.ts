@@ -1,6 +1,6 @@
 import { cached } from "@/infrastructure/cache/cache";
 import { createPropertyModule } from "@/application/containers/property.container";
-import { PropertyFilters } from "@/domain/entities/property.entity";
+import { PropertySearchFormInput } from "@/application/validation/property-search.schema";
 
 export const getPropertyById = cached(
   async function (id: string) {
@@ -17,7 +17,7 @@ export const getPropertyBySlug = cached(
 );
 
 export const listProperties = cached(
-  async function (filters?: PropertyFilters) {
+  async function (filters?: PropertySearchFormInput) {
     
     const { useCases } = await createPropertyModule()
     return useCases.all(filters);

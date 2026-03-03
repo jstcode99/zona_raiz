@@ -1,9 +1,9 @@
 import { ListingPort } from "../ports/listing.port";
-import { ListingEntity, ListingFilters } from "../entities/listing.entity";
+import { ListingEntity } from "../entities/listing.entity";
 
 export class ListingUseCases {
   constructor(private readonly listing: ListingPort) { }
-  all(filter?: ListingFilters) {
+  all(filter?: any) {
     return this.listing.all(filter);
   }
 
