@@ -7,14 +7,17 @@ export class SupabaseProfileAdapter implements ProfilePort {
   constructor(private readonly supabase: SupabaseClient) { }
 
   async searchProfilesByEmail(email: string): Promise<ProfileEntity[]> {
+    
     if (!email || email.length < 2) return []
 
     const { data, error } = await this.supabase
       .from("profiles")
-      .select("*")
+      .select("id, email, full_name, avatar_url, phone, role, created_at")
       .ilike("email", `%${email}%`)
       .limit(10)
+      
     if (error) throw error
+
     return data
   }
 

@@ -66,10 +66,7 @@ export const AddAgentForm = ({
   const searchUsersByEmail = async (email: string) => {
     if (!email || email.length < 2) return []
     const res = await fetch(`/api/search-users?email=${encodeURIComponent(email)}`)
-    const data = await res.json()
-    console.log(data);
-    
-    return data
+    return await res.json()
   } 
 
   const isLoading = isSubmitting || mutation.isPending
@@ -102,7 +99,7 @@ export const AddAgentForm = ({
             disabled={isLoading}
           >
             {isLoading && <Spinner data-icon="inline-start" className="mr-2 h-4 w-4" />}
-            {t('forms.dd-agent.add')}
+            {t('forms.add-agent.add')}
           </Button>
         </Field>
 

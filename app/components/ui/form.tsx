@@ -504,9 +504,6 @@ function AutocompleteField({
     }
   }, [debouncedQuery, open, onSearch])
 
-  console.log(items);
-  
-
   return (
     <div data-invalid={fieldState.invalid || undefined}>
       {label && <label className="text-sm font-medium">{label}</label>}
