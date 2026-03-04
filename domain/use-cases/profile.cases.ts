@@ -4,6 +4,10 @@ import { ProfileEntity, EUserRole } from "../entities/profile.entity"
 export class ProfileUseCases {
   constructor(private readonly profiles: ProfilePort) {}
 
+  searchByEmail(email: string) {
+    return this.profiles.searchProfilesByEmail(email)
+  }
+
   getRoleByUserId(userId: string) {
     return this.profiles.getRoleByUserId(userId)
   }

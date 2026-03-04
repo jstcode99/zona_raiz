@@ -1,9 +1,12 @@
 import { ProfileEntity, EUserRole } from "../entities/profile.entity"
 
 export interface ProfilePort {
+  searchProfilesByEmail(email: string): Promise<ProfileEntity[]>
+
   getRoleByUserId(userId: string): Promise<string>
 
   getProfileByUserId(userId: string): Promise<ProfileEntity>
+
 
   updateProfile(userId: string, data: Partial<ProfileEntity>): Promise<void>
 

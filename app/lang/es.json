@@ -278,12 +278,6 @@
       "updated": "Actualizar propiedad",
       "success": "La propiedad ha sido guardada correctamente."
     },
-    "errors": {
-      "password_chart": "La contraseña debe tener al menos 8 caracteres, incluyendo una letra minúscula y una mayúscula.",
-      "confirm_password": "La confirmación de la contraseña debe coincidir con la contraseña.",
-      "check_fields": "Revisa los campos"
-    },
-    "not_found": "Formulario no encontrado para esta categoría.",
     "otp": {
       "title": "Solicitud de codigo OTP",
       "subtitle": "Ingresa a tu correo y copia el código de verificación",
@@ -463,6 +457,17 @@
         "whatsapp_contact": {
           "label": "Contacto de WhatsApp",
           "placeholder": "+57 300 123 4567"
+        }
+      }
+    },
+    "add-agent": {
+      "title": "Agrega tus agentes",
+      "subtitle": "Invita agentes registrados en la plataforma",
+      "add": "Agregar agente",
+      "fields": {
+        "profile_id":{
+          "label" : "Correo del agente",
+          "placeholder" : "agente@email.com"
         }
       }
     }

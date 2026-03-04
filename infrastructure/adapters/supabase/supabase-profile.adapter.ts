@@ -6,6 +6,18 @@ import { STORAGE_BUCKETS } from "@/infrastructure/config/constants"
 export class SupabaseProfileAdapter implements ProfilePort {
   constructor(private readonly supabase: SupabaseClient) { }
 
+  async searchProfilesByEmail(email: string): Promise<ProfileEntity[]> {
+    if (!email || email.length < 2) return []
+
+    const { data, error } = await this.supabase
+      .from("profiles")
+      .select("*")
+      .ilike("email", `%${email}%`)
+      .limit(10)
+    if (error) throw error
+    return data
+  }
+
   async getRoleByUserId(userId: string): Promise<string> {
     const { data, error } = await this.supabase
       .from("profiles")

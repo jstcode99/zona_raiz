@@ -1,6 +1,6 @@
 "use client"
 
-import { ReactNode, useEffect, useState } from "react"
+import { ReactNode, useEffect, useState, useTransition } from "react"
 import {
   FieldValues,
   FormProvider,
@@ -455,7 +455,6 @@ function AutocompleteField({
   name,
   label,
   description,
-  orientation = "vertical",
   options,
   onSearch,
   placeholder = "Buscar...",
@@ -464,7 +463,6 @@ function AutocompleteField({
   name: string
   label?: ReactNode
   description?: ReactNode
-  orientation?: "vertical" | "horizontal" | "responsive"
   options?: { label: string; value: string }[]
   onSearch?: (q: string) => Promise<{ label: string; value: string }[]>
   placeholder?: string
@@ -474,55 +472,49 @@ function AutocompleteField({
   const { field, fieldState } = useController({ name, control })
 
   const [open, setOpen] = useState(false)
-  const [query, setQuery] = useState(field.value || "")
+  const [query, setQuery] = useState("")
   const debouncedQuery = useDebounce(query, debounce)
 
   const [items, setItems] = useState(options || [])
-  const [loading, setLoading] = useState(false)
-
-  const isAsync = !!onSearch
+  const [isPending, startTransition] = useTransition()
 
   useEffect(() => {
-    let ignore = false
+    if (!open || !onSearch) return
+    if (!debouncedQuery || debouncedQuery.length < 2) {
+      setItems([])
+      return
+    }
+
+    let active = true
 
     const run = async () => {
-      if (!open) return
+      const result = await onSearch(debouncedQuery)
 
-      if (isAsync && onSearch) {
-        setLoading(true)
-        const result = await onSearch(debouncedQuery)
-        if (!ignore) setItems(result)
-        setLoading(false)
-        return
-      }
+      if (!active) return
 
-      if (options) {
-        setItems(
-          options.filter(o =>
-            o.label.toLowerCase().includes(debouncedQuery.toLowerCase())
-          )
-        )
-      }
+      startTransition(() => {
+        setItems(result)
+      })
     }
 
     run()
+
     return () => {
-      ignore = true
+      active = false
     }
-  }, [debouncedQuery, open])
+  }, [debouncedQuery, open, onSearch])
+
+  console.log(items);
+  
 
   return (
     <div data-invalid={fieldState.invalid || undefined}>
-      {label && (
-        <label className="text-sm font-medium">
-          {label}
-        </label>
-      )}
+      {label && <label className="text-sm font-medium">{label}</label>}
 
       <div className="relative">
         <Command
           className="border rounded-lg"
-          shouldFilter={false} // filtramos nosotros
+          shouldFilter={false}
           onFocus={() => setOpen(true)}
         >
           <CommandInput
@@ -530,53 +522,51 @@ function AutocompleteField({
             placeholder={placeholder}
             onValueChange={(value) => {
               setQuery(value)
-              field.onChange(value)
               setOpen(true)
             }}
             onBlur={() => {
-              // pequeño delay para permitir click en item
               setTimeout(() => setOpen(false), 120)
             }}
           />
 
           {open && (
             <CommandList>
-              {loading && (
+
+              {isPending && (
                 <div className="px-3 py-2 text-sm opacity-60">
-                  {t('words.search')}...
+                  Buscando...
                 </div>
               )}
 
-              {!loading && items.length === 0 && (
+              {!isPending && items.length === 0 && debouncedQuery.length >= 2 && (
                 <CommandEmpty>
-                  {t('words.without_results')}...
+                  Sin resultados
                 </CommandEmpty>
               )}
 
               <CommandGroup>
-                {items.map(item => (
+                {!isPending && items.length ? items.map(item => (
                   <CommandItem
                     key={item.value}
                     value={item.label}
                     onSelect={() => {
-                      field.onChange(item.value)
+                      field.onChange(item.value) // ✅ SOLO AQUÍ
                       setQuery(item.label)
                       setOpen(false)
                     }}
                   >
                     {item.label}
                   </CommandItem>
-                ))}
+                )): null}
               </CommandGroup>
+
             </CommandList>
           )}
         </Command>
       </div>
 
       {description && (
-        <p className="text-xs opacity-70 mt-1">
-          {description}
-        </p>
+        <p className="text-xs opacity-70 mt-1">{description}</p>
       )}
 
       {fieldState.error && (

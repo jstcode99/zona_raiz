@@ -11,7 +11,7 @@ export class SupabaseRealEstateAdapter implements RealEstatePort {
     let query = this.supabase.from("real_estates").select("*")
 
     if (filters?.id) query = query.eq("id", filters.id)
-    if (filters?.city) query = query.eq("city", filters.city)
+    if (filters?.whatsapp) query = query.ilike("whatsapp", `%${filters.whatsapp}%`)
 
     if (filters?.searchQuery) {
       query = query.ilike("name", `%${filters.searchQuery}%`)

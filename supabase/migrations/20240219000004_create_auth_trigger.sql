@@ -7,12 +7,14 @@ as $$
 declare
   default_role public.user_role;
   user_full_name text;
+  user_email text;
   user_phone text;
   user_avatar text;
 begin
   -- Extraer metadata con valores por defecto seguros
   user_full_name := coalesce(new.raw_user_meta_data ->> 'full_name', '');
   user_phone := nullif(trim(new.raw_user_meta_data ->> 'phone'), '');
+  user_email := nullif(trim(new.email), '');
   user_avatar := nullif(trim(new.raw_user_meta_data ->> 'avatar_url'), '');
   
   -- Determinar rol (default 'client' para seguridad)
@@ -30,12 +32,14 @@ begin
     id, 
     full_name, 
     avatar_url, 
-    phone, 
+    email,
+    phone,
     role
   ) values (
     new.id,
     user_full_name,
     user_avatar,
+    user_email,
     user_phone,
     default_role
   )
@@ -54,4 +58,4 @@ create trigger on_auth_user_created
   after insert on auth.users
   for each row execute procedure public.handle_new_user();
 
-comment on function public.handle_new_user() is 'Crea perfil automáticamente cuando se registra un usuario';
+comment on function public.handle_new_user () is 'Crea perfil automáticamente cuando se registra un usuario';

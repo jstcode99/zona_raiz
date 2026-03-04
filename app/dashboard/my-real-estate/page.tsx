@@ -7,19 +7,23 @@ import { LogoRealEstateUpload } from "@/features/real-states/logo-real-estate-up
 import { getRealEstateById } from "@/services/real-estate.services"
 import { Suspense } from "react"
 import { Spinner } from "@/components/ui/spinner"
+import { getListAgentByRealEstateId } from "@/services/agent.services"
+import { SkeletonAgentList } from "@/features/agents/skeleton-agent-list"
+import { AgentList } from "@/features/agents/agent-list"
+import { Separator } from "@/components/ui/separator"
+import { AddAgentForm } from "@/features/agents/add-agent-form"
 
 export default async function MyRealEstatePage() {
   const cookieStore = await cookies()
-  const id = cookieStore.get(COOKIE_NAMES.REAL_ESTATE)?.value as string
+  const real_estate_id = cookieStore.get(COOKIE_NAMES.REAL_ESTATE)?.value as string
 
-  const realEstate = await getRealEstateById(id)
+  const realEstate = await getRealEstateById(real_estate_id)
+  const agents = await getListAgentByRealEstateId(real_estate_id)
 
   if (!realEstate) {
     return encodedRedirect('error', '/auth/sign-in', 'No se pudo cargar la inmobiliaria')
   }
 
-  console.log(realEstate);
-  
 
   return (
     <div className='mx-auto px-4 sm:px-6 lg:px-2 '>
@@ -32,7 +36,7 @@ export default async function MyRealEstatePage() {
                 <div className='flex items-center gap-3'>
                   <Suspense fallback={<Spinner />}>
                     <LogoRealEstateUpload
-                      idRealEstate={id}
+                      idRealEstate={real_estate_id}
                       logoUrl={realEstate.logo_url || ''}
                       name={realEstate.name || ''}
                     />
@@ -45,12 +49,24 @@ export default async function MyRealEstatePage() {
                 <Suspense fallback={<Spinner />}>
                   <RealEstateForm
                     className="w-full px-0"
-                    id={id}
+                    id={real_estate_id}
                     defaultValues={realEstate}
                   />
                 </Suspense>
               </div>
-              {/* <RealEstateAgentsCard agents={agents} className="shadow-none lg:col-span-2" /> */}
+              <Suspense fallback={<SkeletonAgentList />}>
+                <div className="w-full overflow-auto max-h-screen lg:col-span-2 flex items-start gap-3">
+                  <Separator orientation="vertical" />
+                  <div className="flex-col space-x-3 w-full">
+                    <AddAgentForm real_estate_id={real_estate_id} />
+                    <Separator/>
+                    <AgentList
+                      real_estate_id={real_estate_id}
+                      agents={agents}
+                    />
+                  </div>
+                </div>
+              </Suspense>
             </div>
           </CardContent>
         </Card>

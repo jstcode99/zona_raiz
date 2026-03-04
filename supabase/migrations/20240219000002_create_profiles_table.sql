@@ -2,6 +2,7 @@ create table if not exists public.profiles (
   id uuid primary key references auth.users on delete cascade,
   full_name text,
   avatar_url text,
+  email text unique,
   phone text unique,
   role public.user_role default 'client'::public.user_role not null,
   created_at timestamptz default now() not null,
