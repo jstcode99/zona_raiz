@@ -1,4 +1,3 @@
-
 import { encodedRedirect } from "@/shared/redirect"
 import AuthBackgroundShape from '@/assets/svg/background-shape'
 import AccountSectionCard from "@/features/profile/profile-section-card"
