@@ -74,7 +74,7 @@ export function RealEstateForm({
     <Form
       {...props}
       form={form}
-      className={cn("py-6 px-6 mx-auto space-y-8", className)}
+      className={cn("p-4 mx-auto space-y-4", className)}
       onSubmit={onSubmit}
     >
       <Form.Set legend={t("forms.real-estate.basic-info")}>

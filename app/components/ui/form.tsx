@@ -63,7 +63,7 @@ import {
 
 import { format } from "date-fns"
 import { Calendar as CalendarIcon } from "lucide-react"
-import { cn } from "@/lib/utils"
+import { cn, formatCurrency, parseCurrency } from "@/lib/utils"
 
 import { Button } from "@/components/ui/button"
 import { Calendar } from "@/components/ui/calendar"
@@ -72,6 +72,8 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
+import { es } from "react-day-picker/locale/es"
+
 /* =========================
    ROOT
 ========================= */
@@ -169,7 +171,7 @@ function InputField({
   ...props
 }: {
   name: string
-  type?: React.HTMLInputTypeAttribute
+  type?: React.HTMLInputTypeAttribute | "currency"
   label?: ReactNode
   description?: ReactNode
   orientation?: "vertical" | "horizontal" | "responsive"
@@ -177,6 +179,7 @@ function InputField({
   const [showPassword, setShowPassword] = useState(false)
 
   const isPassword = type === "password"
+  const isCurrency = type === "currency"
 
   return (
     <BaseField
@@ -195,9 +198,7 @@ function InputField({
               <InputGroupAddon
                 align="inline-end"
                 className="cursor-pointer"
-                onClick={() =>
-                  setShowPassword((prev) => !prev)
-                }
+                onClick={() => setShowPassword((prev) => !prev)}
               >
                 {showPassword ? (
                   <Eye className="h-4 w-4" />
@@ -209,18 +210,25 @@ function InputField({
           )
         }
 
-        return (
-          <Input
-            {...field}
-            {...props}
-            type={type}
-          />
-        )
+        if (isCurrency) {
+          return (
+            <Input
+              {...props}
+              value={formatCurrency(field.value)}
+              onChange={(e) => {
+                const raw = parseCurrency(e.target.value)
+                field.onChange(raw)
+              }}
+              inputMode="numeric"
+            />
+          )
+        }
+
+        return <Input {...field} {...props} type={type} />
       }}
     />
   )
 }
-
 /* =========================
    URL
 ========================= */
@@ -506,7 +514,7 @@ function AutocompleteField({
 
   return (
     <div data-invalid={fieldState.invalid || undefined}>
-      {label && <label className="text-sm font-medium">{label}</label>}
+      {label && <FieldLabel htmlFor={name}>{label}</FieldLabel>}
 
       <div className="relative">
         <Command
@@ -554,7 +562,7 @@ function AutocompleteField({
                   >
                     {item.label}
                   </CommandItem>
-                )): null}
+                )) : null}
               </CommandGroup>
 
             </CommandList>
@@ -1055,7 +1063,7 @@ function DatePickerField({
                 <CalendarIcon className="mr-2 h-4 w-4" />
 
                 {value
-                  ? format(value, "PPP")
+                  ? format(value, "PPP", { locale: es })
                   : placeholder}
               </Button>
             </PopoverTrigger>

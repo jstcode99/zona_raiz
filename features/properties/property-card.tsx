@@ -17,10 +17,10 @@ interface PropertyCardProps {
 export const PropertyCard = ({ property, images = [] }: PropertyCardProps) => {
     return (
         <Card
-            className="overflow-hidden cursor-pointer card-hover active:scale-[0.99] transition-all"
+            className="overflow-hidden cursor-pointer pt-0 card-hover active:scale-[0.99] transition-all"
         >
             {/* Image */}
-            <div className="relative h-48 overflow-hidden">
+            <div className="relative h-50 overflow-hidden">
                 <img
                     src={images[0]}
                     alt={property.title}

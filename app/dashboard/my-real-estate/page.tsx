@@ -26,51 +26,42 @@ export default async function MyRealEstatePage() {
 
 
   return (
-    <div className='mx-auto px-4 sm:px-6 lg:px-2 '>
-      <div className='flex justify-center'>
-        <Card>
-          <CardContent className='space-y-4'>
-            <div className='grid lg:grid-cols-5 lg:min-w-6xl gap-6'>
-              <div className='flex flex-col gap-7 lg:col-span-3'>
-                <span className='text-lg font-semibold'>Inmobiliaria</span>
-                <div className='flex items-center gap-3'>
-                  <Suspense fallback={<Spinner />}>
-                    <LogoRealEstateUpload
-                      idRealEstate={real_estate_id}
-                      logoUrl={realEstate.logo_url || ''}
-                      name={realEstate.name || ''}
-                    />
-                  </Suspense>
-                  <div className='flex flex-col gap-0.5'>
-                    <span className='text-xl font-medium'>{realEstate.name}</span>
-                    <span className='text-muted-foreground text-sm'>{realEstate.whatsapp}</span>
-                  </div>
-                </div>
-                <Suspense fallback={<Spinner />}>
-                  <RealEstateForm
-                    className="w-full px-0"
-                    id={real_estate_id}
-                    defaultValues={realEstate}
-                  />
-                </Suspense>
-              </div>
-              <Suspense fallback={<SkeletonAgentList />}>
-                <div className="w-full overflow-auto max-h-screen lg:col-span-2 flex items-start gap-3">
-                  <Separator orientation="vertical" />
-                  <div className="flex-col space-x-3 w-full">
-                    <AddAgentForm real_estate_id={real_estate_id} />
-                    <Separator/>
-                    <AgentList
-                      real_estate_id={real_estate_id}
-                      agents={agents}
-                    />
-                  </div>
-                </div>
-              </Suspense>
+    <Card className="mx-auto px-4 sm:px-6 lg:px-2">
+      <CardContent className='grid lg:grid-cols-5 grid-cols-1 gap-2 lg:min-w-5xl w-full'>
+        <div className='flex flex-col gap-2 lg:col-span-3'>
+          <span className='text-lg font-semibold'>Inmobiliaria</span>
+          <div className='flex items-center gap-3'>
+            <Suspense fallback={<Spinner />}>
+              <LogoRealEstateUpload
+                idRealEstate={real_estate_id}
+                logoUrl={realEstate.logo_url || ''}
+                name={realEstate.name || ''}
+              />
+            </Suspense>
+            <div className='flex flex-col gap-0.5'>
+              <span className='text-xl font-medium'>{realEstate.name}</span>
+              <span className='text-muted-foreground text-sm'>{realEstate.whatsapp}</span>
             </div>
-          </CardContent>
-        </Card>
-      </div>
-    </div>
+          </div>
+          <Suspense fallback={<Spinner />}>
+            <RealEstateForm
+              className="w-full px-0"
+              id={real_estate_id}
+              defaultValues={realEstate}
+            />
+          </Suspense>
+        </div>
+        <Suspense fallback={<SkeletonAgentList />}>
+          <div className="lg:col-span-2 lg:border-l lg:pl-6">
+            <AddAgentForm real_estate_id={real_estate_id} />
+            <Separator />
+            <AgentList
+              real_estate_id={real_estate_id}
+              agents={agents}
+            />
+          </div>
+        </Suspense>
+      </CardContent>
+    </Card>
   )
 }

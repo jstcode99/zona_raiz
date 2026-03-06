@@ -15,6 +15,19 @@ export function generateSlug(text: string): string {
     .replace(/\s+/g, "-") // Reemplaza espacios con guiones
     .substring(0, 50);
 }
+export const formatCurrency = (value?: number | string) => {
+  if (value === undefined || value === null || value === "") return ""
+
+  const number = typeof value === "string" ? Number(value) : value
+
+  return new Intl.NumberFormat("es-CO", {
+    minimumFractionDigits: 0,
+  }).format(number)
+}
+
+export const parseCurrency = (value: string) => {
+  return value.replace(/[^\d]/g, "")
+}
 
 export const isEmpty = (v: unknown) =>
   !v || v === undefined || v === null || v === "" || Number.isNaN(v)

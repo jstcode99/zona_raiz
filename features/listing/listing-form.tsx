@@ -90,43 +90,9 @@ export function ListingForm({
     <Form
       form={form}
       onSubmit={handleSubmit}
-      className="space-y-2 max-w-5xl mx-auto"
+      className="space-y-3 max-w-5xl mx-auto"
     >
-      {/* HEADER */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-          <h2 className="text-xl sm:text-2xl font-semibold flex items-center gap-2">
-            <FileText className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
-            {isUpdateMode
-              ? t("forms.listing.update")
-              : t("forms.listing.create")}
-          </h2>
-
-          <p className="text-xs sm:text-sm text-muted-foreground mt-1">
-            {isUpdateMode
-              ? "Modifica la información de la publicación"
-              : "Completa los datos para crear una nueva publicación"}
-          </p>
-        </div>
-      </div>
-
-      {/* ============================= */}
-      {/* INFORMACIÓN GENERAL */}
-      {/* ============================= */}
-
-      <section className="p-4 sm:p-6 lg:p-8 space-y-6">
-        <div className="flex items-center gap-3">
-          <DollarSign className="w-5 h-5 text-primary" />
-          <div>
-            <h3 className="font-semibold text-lg">
-              Información General
-            </h3>
-            <p className="text-sm text-muted-foreground">
-              Datos principales de la publicación
-            </p>
-          </div>
-        </div>
-
+      <Form.Set legend={t("forms.real-estate.basic-info")} className="my-3">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
           <Form.Select
             name="listing_type"
@@ -140,12 +106,11 @@ export function ListingForm({
             options={listingStatusOptions}
           />
         </div>
-
         <div className="grid md:grid-cols-3 gap-6">
           <Form.Input
             name="price"
             label={t("forms.listing.fields.price.label")}
-            type="number"
+            type="currency"
           />
 
           <Form.Select
@@ -157,11 +122,12 @@ export function ListingForm({
           <Form.Input
             name="expenses_amount"
             label={t("forms.listing.fields.expenses_amount.label")}
-            type="number"
+            type="currency"
           />
         </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:flex lg:flex-wrap gap-4 pt-2">
+      </Form.Set>
+      <Form.Set legend={t("forms.real-estate.basic-info")} className="my-3">
+        <div className="flex flex-col sm:flex-row gap-4 sm:gap-6">
           <Form.Checkbox
             name="price_negotiable"
             label={t("forms.listing.fields.price_negotiable.label")}
@@ -180,23 +146,8 @@ export function ListingForm({
             }
           />
         </div>
-      </section>
-
-      {/* ============================= */}
-      {/* SEO */}
-      {/* ============================= */}
-
-      <section className="p-4 sm:p-6 lg:p-8 space-y-6">
-        <div className="flex items-center gap-3">
-          <Tag className="w-5 h-5 text-primary" />
-          <div>
-            <h3 className="font-semibold text-lg">SEO</h3>
-            <p className="text-sm text-muted-foreground">
-              Optimización para buscadores
-            </p>
-          </div>
-        </div>
-
+      </Form.Set>
+      <Form.Set legend={t("forms.real-estate.basic-info")} className="my-3">
         <Form.Input
           name="meta_title"
           label={t("forms.listing.fields.meta_title.label")}
@@ -215,23 +166,8 @@ export function ListingForm({
           options={keywordsOptions}
           placeholder="Agregar keyword"
         />
-      </section>
-
-      {/* ============================= */}
-      {/* MEDIA */}
-      {/* ============================= */}
-
-      <section className="p-4 sm:p-6 lg:p-8 space-y-6">
-        <div className="flex items-center gap-3">
-          <Image className="w-5 h-5 text-primary" />
-          <div>
-            <h3 className="font-semibold text-lg">Media</h3>
-            <p className="text-sm text-muted-foreground">
-              Enlaces multimedia opcionales
-            </p>
-          </div>
-        </div>
-
+      </Form.Set>
+      <Form.Set legend={t("forms.real-estate.basic-info")} className="my-3">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
           <Form.Url
             name="virtual_tour_url"
@@ -243,25 +179,8 @@ export function ListingForm({
             label={t("forms.listing.fields.video_url.label")}
           />
         </div>
-      </section>
-
-      {/* ============================= */}
-      {/* CONDICIONES DE ARRIENDO */}
-      {/* ============================= */}
-
-      <section className="p-4 sm:p-6 lg:p-8 space-y-6">
-        <div className="flex items-center gap-3">
-          <CalendarDays className="w-5 h-5 text-primary" />
-          <div>
-            <h3 className="font-semibold text-lg">
-              Condiciones de arriendo
-            </h3>
-            <p className="text-sm text-muted-foreground">
-              Solo aplica para propiedades en renta
-            </p>
-          </div>
-        </div>
-
+      </Form.Set>
+      <Form.Set legend={t("forms.real-estate.basic-info")} className="my-3">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
           <Form.Date
             name="available_from"
@@ -287,25 +206,18 @@ export function ListingForm({
             }
           />
         </div>
-      </section>
-
-      {/* ============================= */}
-      {/* ACTIONS */}
-      {/* ============================= */}
-
-      <div className="flex flex-col sm:flex-row sm:justify-end pt-6 border-t">
-        <Button
-          type="submit"
-          className="w-full"
-          disabled={mutation.isPending}
-        >
-          {mutation.isPending
-            ? t("words.saving")
-            : isUpdateMode
-              ? t("forms.listing.update")
-              : t("forms.listing.create")}
-        </Button>
-      </div>
+      </Form.Set>
+      <Button
+        type="submit"
+        className="w-full"
+        disabled={mutation.isPending}
+      >
+        {mutation.isPending
+          ? t("words.saving")
+          : isUpdateMode
+            ? t("forms.listing.update")
+            : t("forms.listing.create")}
+      </Button>
     </Form>
   )
 }
