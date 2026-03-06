@@ -47,6 +47,8 @@ export function UploadMultipleInput({ propertyId }: { propertyId: string }) {
     })
   }
 
+
+
   function setPrimary(id: string) {
     setFiles(prev =>
       prev.map(file => ({

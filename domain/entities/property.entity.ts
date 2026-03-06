@@ -1,9 +1,5 @@
+import { OptionType } from "./option.entity";
 import { AmenitiesType, PropertyType } from "./property.enums";
-
-type AmenitiesType = {
-  label: string,
-  value: string
-}
 
 export interface PropertyEntity {
   id: string;
@@ -30,7 +26,7 @@ export interface PropertyEntity {
   floors: number | null;
   year_built: number | null;
   parking_spots: number | null;
-  amenities: AmenitiesType[];
+  amenities: OptionType[];
   created_by: string | null;
   created_at: string;
   updated_at: string;

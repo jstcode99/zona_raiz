@@ -31,6 +31,12 @@ export function removeNullish<T extends Record<string, any>>(obj: T) {
   ) as Partial<T>
 }
 
+export const clearPathFiles = (url: string) => {
+  let clearUrl = url.split("?")[0]
+  clearUrl = clearUrl.split("/").slice(-2).join("/")
+  return clearUrl
+}
+
 export function pickDefined<T extends object>(obj: T): {
   [K in keyof T as T[K] extends null | undefined ? never : K]: Exclude<T[K], null | undefined>
 } {

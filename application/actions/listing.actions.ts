@@ -6,6 +6,7 @@ import { createListingSchema } from "../validation/listing.validation";
 import { handleError } from "../errors/handle-error";
 import { revalidatePath } from "next/cache";
 import { ROUTES } from "@/infrastructure/config/constants";
+import { createPropertyModule } from "../containers/property.container";
 
 export const createListingAction = withServerAction(
   async (formData: FormData) => {
@@ -17,14 +18,21 @@ export const createListingAction = withServerAction(
         stripUnknown: true,
       })
 
-      const { useCases } = await createListingModule()
+      const listingModule = await createListingModule()
+      const propertyModule = await createPropertyModule()
 
-      const listing = await useCases.create(validated)
+      const property = await propertyModule.useCases.getById(validated.property_id)
+      if (!property) throw new Error("Property not found")
+
+      const listing = await listingModule.useCases.create(validated)
+      
+      if (!listing) throw new Error("Listing not created")
+
 
       revalidatePath(ROUTES.DASHBOARD)
       revalidatePath(`${ROUTES.DASHBOARD}/${ROUTES.LISTING}/${listing.id}`)
       revalidatePath(`${ROUTES.LISTING}/${listing.id}`)
-      revalidatePath(`${ROUTES.LISTING}/${listing.property.slug}`)
+      revalidatePath(`${ROUTES.LISTING}/${property.slug}`)
 
     } catch (error) {
       handleError(error)

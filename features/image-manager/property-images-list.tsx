@@ -13,8 +13,6 @@ interface Props {
 export function PropertyImageList({
   initialImages
 }: Props) {
-  console.log(initialImages);
-
   const [images, setImages] = useState(initialImages)
   const [deleteId, setDeleteId] = useState<string | null>(null)
   const [pending, startTransition] = useTransition()

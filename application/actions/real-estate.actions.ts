@@ -5,7 +5,7 @@ import { createRealEstateModule } from "../containers/real-estate.container"
 import { logoRealEstateSchema, realEstateSchema } from "../validation/real-estate.validation"
 import { idSchema } from "../validation/base/id.schema"
 import { cookies } from "next/headers"
-import { COOKIE_NAMES, COOKIE_OPTIONS } from "@/infrastructure/config/constants"
+import { COOKIE_NAMES, COOKIE_OPTIONS, ROUTES } from "@/infrastructure/config/constants"
 import { mapRealEstateRowToDomain } from "../mappers/real-estate.mapper"
 import { revalidatePath } from "next/cache"
 
@@ -35,8 +35,8 @@ export const updateRealEstateAction = withServerAction(
 
         await useCases.update(id, mapRealEstateRowToDomain(input))
 
-        revalidatePath("/dashboard/real-estates");
-        revalidatePath(`/dashboard/real-estates/${id}`);
+        revalidatePath(`${ROUTES.DASHBOARD}/${ROUTES.REAL_ESTATES}`)
+        revalidatePath(`${ROUTES.DASHBOARD}/${ROUTES.REAL_ESTATES}/${id}`)
     }
 )
 
@@ -48,8 +48,9 @@ export const deleteRealEstateAction = withServerAction(
             { abortEarly: false }
         )
         await useCases.delete(id)
-        revalidatePath("/dashboard/real-estates");
-        revalidatePath(`/dashboard/real-estates/${id}`);
+
+        revalidatePath(`${ROUTES.DASHBOARD}/${ROUTES.REAL_ESTATES}`)
+        revalidatePath(`${ROUTES.DASHBOARD}/${ROUTES.REAL_ESTATES}/${id}`)
     }
 )
 
@@ -64,8 +65,8 @@ export const uploadRealEstateLogoAction = withServerAction(
 
         await useCases.uploadLogo(id, logo)
 
-        revalidatePath("/dashboard/real-estates");
-        revalidatePath(`/dashboard/real-estates/${id}`);
+        revalidatePath(`${ROUTES.DASHBOARD}/${ROUTES.REAL_ESTATES}`)
+        revalidatePath(`${ROUTES.DASHBOARD}/${ROUTES.REAL_ESTATES}/${id}`)
     }
 )
 

@@ -7,43 +7,15 @@ import { propertySchema } from "../validation/property.schema"
 import { PropertyType } from "@/domain/entities/property.enums"
 import { createSessionModule } from "../containers/session.container"
 import { AppError } from "../errors/app.error"
+import { withServerAction } from "@/shared/hooks/with-server-action"
 
-export async function getPropertiesAction(filters?: any) {
-  try {
-    const { useCases } = await createPropertyModule()
-    return await useCases.all(filters)
-  } catch (error) {
-    console.error("getPropertiesAction", error)
-    throw new Error("No se pudieron obtener las propiedades")
-  }
-}
-
-export async function getPropertyByIdAction(id: string) {
-  try {
-    const { useCases } = await createPropertyModule()
-    return await useCases.getById(id)
-  } catch (error) {
-    console.error("getPropertyByIdAction", error)
-    throw new Error("No se pudo obtener la propiedad")
-  }
-}
-
-export async function getPropertyBySlugAction(slug: string) {
-  try {
-    const { useCases } = await createPropertyModule()
-    return await useCases.getBySlug(slug)
-  } catch (error) {
-    console.error("getPropertyBySlugAction", error)
-    throw new Error("No se pudo obtener la propiedad")
-  }
-}
-
-export async function createPropertyAction(
-  realEstateId: string,
-  formData: FormData
-) {
-  try {
-    const { useCases } = await createPropertyModule()
+export const createPropertyAction = withServerAction(
+  async (
+    realEstateId: string,
+    formData: FormData
+  ) => {
+    try {
+      const { useCases } = await createPropertyModule()
     const sessionModule = await createSessionModule()
 
     const raw = Object.fromEntries(formData)
@@ -59,31 +31,26 @@ export async function createPropertyAction(
       throw new AppError("No autorizado", "RLS", 403)
     }
 
-    const property = await useCases.create(realEstateId, {
+    await useCases.create(realEstateId, {
       ...input,
       property_type: input.property_type as PropertyType,
       created_by: id
     })
 
     revalidatePath(ROUTES.DASHBOARD)
-
-    return {
-      success: true,
-      data: property
-    }
   } catch (error) {
-    console.error("createPropertyAction", error)
     throw new Error("No se pudo crear la propiedad")
   }
-}
+})
 
 /**
  * UPDATE
  */
-export async function updatePropertyAction(
-  id: string,
-  formData: FormData
-) {
+export const updatePropertyAction = withServerAction(
+  async (
+    id: string,
+    formData: FormData
+  ) => {
   try {
     const { useCases } = await createPropertyModule()
     const raw = Object.fromEntries(formData)
@@ -93,7 +60,7 @@ export async function updatePropertyAction(
       stripUnknown: true,
     })
 
-    const property = await useCases.update(id, {
+    await useCases.update(id, {
       ...input,
       property_type: input.property_type as PropertyType
     })
@@ -102,16 +69,11 @@ export async function updatePropertyAction(
     revalidatePath(`${ROUTES.DASHBOARD}/${ROUTES.PROPERTIES}/${id}`)
     revalidatePath(`${ROUTES.PROPERTIES}/${id}`)
     revalidatePath(`${ROUTES.PROPERTIES}/${input.slug}`)
-
-    return {
-      success: true,
-      data: property
-    }
   } catch (error) {
     console.error("updatePropertyAction", error)
     throw new Error("No se pudo actualizar la propiedad")
   }
-}
+})
 
 /**
  * DELETE

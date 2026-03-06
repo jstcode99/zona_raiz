@@ -7,11 +7,14 @@ import { propertyImageSchema, propertyImageUpdateSchema } from "../validation/pr
 import { createPropertyModule } from "../containers/property.container"
 import sizeOf from "image-size"
 import { pickDefined } from "@/lib/utils"
+import { withServerAction } from "@/shared/hooks/with-server-action"
+import { console } from "inspector"
 
-export async function createPropertyImageAction(
-  propertyId: string,
-  formData: FormData
-) {
+export const createPropertyImageAction = withServerAction(
+  async (
+    propertyId: string,
+    formData: FormData
+  ) => {
   try {
     const { useCases } = await createPropertyImageModule()
 
@@ -28,7 +31,6 @@ export async function createPropertyImageAction(
 
     const width = dimensions.width ?? 0
     const height = dimensions.height ?? 0
-
 
     if (width < 400 || height < 300) {
       throw new Error("La imagen debe tener mínimo 400x300 píxeles")
@@ -58,28 +60,23 @@ export async function createPropertyImageAction(
     await useCases.updatePath(propertyImage.id ?? "", url)
 
     revalidatePath(ROUTES.DASHBOARD)
-    revalidatePath(`${ROUTES.DASHBOARD}/${ROUTES.PROPERTIES}/${propertyId}`)
-    revalidatePath(`${ROUTES.DASHBOARD}/${ROUTES.PROPERTIES}/${propertyId}/images`)
-    revalidatePath(`${ROUTES.DASHBOARD}/${ROUTES.PROPERTIES}/${propertyId}/listing`)
-
-    return {
-      success: true,
-      data: propertyImage,
-    }
+    revalidatePath(`/${ROUTES.DASHBOARD}/${ROUTES.PROPERTIES}/${propertyId}`)
+    revalidatePath(`/${ROUTES.DASHBOARD}/${ROUTES.PROPERTIES}/${propertyId}/images`)
+    revalidatePath(`/${ROUTES.DASHBOARD}/${ROUTES.PROPERTIES}/${propertyId}/listing`)
 
   } catch (error) {
-    console.log(error);
     throw new Error("No se pudo crear recurso de la propiedad")
   }
-}
+})
 
 /**
  * UPDATE
  */
-export async function updatePropertyImageAction(
-  id: string,
-  formData: FormData
-) {
+export const updatePropertyImageAction = withServerAction(
+  async (
+    id: string,
+    formData: FormData
+  ) => {
   try {
     const { useCases } = await createPropertyImageModule()
     const raw = Object.fromEntries(formData)
@@ -98,19 +95,13 @@ export async function updatePropertyImageAction(
     const property = await propertyModule.useCases.getById(propertyImage.property_id)
 
     revalidatePath(ROUTES.DASHBOARD)
-    revalidatePath(`${ROUTES.DASHBOARD}/${ROUTES.PROPERTIES}/${id}`)
-    revalidatePath(`${ROUTES.PROPERTIES}/${id}`)
-    revalidatePath(`${ROUTES.PROPERTIES}/${property?.slug}`)
-
-    return {
-      success: true,
-      data: propertyImage,
-    }
+    revalidatePath(`/${ROUTES.DASHBOARD}/${ROUTES.PROPERTIES}/${id}`)
+    revalidatePath(`/${ROUTES.PROPERTIES}/${id}`)
+    revalidatePath(`/${ROUTES.PROPERTIES}/${property?.slug}`)
   } catch (error) {
-    console.log(error);
     throw new Error("No se pudo actualizar el recurso de la propiedad")
   }
-}
+})
 
 /**
  * DELETE

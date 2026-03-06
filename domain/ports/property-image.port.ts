@@ -4,6 +4,7 @@ export interface PropertyImagePort {
   // Queries
   getById(id: string): Promise<PropertyImageEntity>;
   getByPropertyId(propertyId: string): Promise<PropertyImageEntity[]>;
+  existPath(path: string): Promise<boolean>;
 
   // Mutations
   create(propertyId: string, data: Partial<PropertyImageEntity>): Promise<PropertyImageEntity>;
@@ -13,5 +14,7 @@ export interface PropertyImagePort {
   updatePath(propertyImageId: string, path: string): Promise<PropertyImageEntity>;
 
   update(id: string, data: Partial<PropertyImageEntity>): Promise<PropertyImageEntity>;
+  deleteFile(public_url: string): Promise<void>;
+
   delete(id: string): Promise<void>;
 }

@@ -7,7 +7,6 @@ import { SupabaseClient } from "@supabase/supabase-js";
 export class SupabasePropertyImageAdapter implements PropertyImagePort {
     constructor(private supabase: SupabaseClient) { }
 
-
     async getById(id: string): Promise<PropertyImageEntity> {
         const { data, error } = await this.supabase
             .from("property_images")
@@ -118,9 +117,35 @@ export class SupabasePropertyImageAdapter implements PropertyImagePort {
         return mapPropertyImageRowToEntity(updated) as PropertyImageEntity
     }
 
+
+    async deleteFile(path: string): Promise<void> {
+        const { error } = await this.supabase.storage
+            .from(STORAGE_BUCKETS.PROPERTIES)
+            .remove([path])
+
+        if (error) throw new Error(error.message)
+    }
+
+    async existPath(public_url: string): Promise<boolean> {
+        const {
+            data: listData,
+            error: listError
+        } = await this.supabase.storage.from(STORAGE_BUCKETS.PROPERTIES)
+            .list("", {
+                search: public_url,
+                limit: 1,
+            })
+
+        if (listError) {
+            throw new Error(listError?.message || "Failed to check if path exists")
+        }
+
+        return !!listData && listData.length > 0
+    }
+
     async delete(id: string): Promise<void> {
         const { error: dbError } = await this.supabase
-            .from("properties")
+            .from("property_images")
             .delete()
             .eq("id", id)
 
