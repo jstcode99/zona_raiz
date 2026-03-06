@@ -8,7 +8,7 @@ export class SupabaseUserAdapter implements UserPort {
 
   async getUserById(userId: string): Promise<UserEntity | null> {
     const { data, error } = await this.supabase
-      .from("users")
+      .from("profiles")
       .select("*")
       .eq("id", userId)
       .single()
@@ -26,7 +26,7 @@ export class SupabaseUserAdapter implements UserPort {
 
   async getUserByEmail(email: string): Promise<UserEntity | null> {
     const { data, error } = await this.supabase
-      .from("users")
+      .from("profiles")
       .select("*")
       .eq("email", email)
       .single()
@@ -44,7 +44,7 @@ export class SupabaseUserAdapter implements UserPort {
 
   async listUsers(filters?: Parameters<UserPort["listUsers"]>[0]): Promise<UserEntity[]> {
     const query = this.supabase
-      .from("users")
+      .from("profiles")
       .select("id, email, full_name, role, created_at, updated_at")
       .order("created_at", { ascending: false })
 
@@ -69,65 +69,118 @@ export class SupabaseUserAdapter implements UserPort {
   async createUser(
     data: Omit<UserEntity, "id" | "created_at" | "updated_at">
   ): Promise<UserEntity> {
-    const now = new Date().toISOString()
-
-    const { data: created, error } = await this.supabase
-      .from("users")
-      .insert({
-        ...data,
-        created_at: now,
-        updated_at: now,
+    const { data: invited, error: inviteError } =
+      await this.supabase.auth.admin.inviteUserByEmail(data.email, {
+        data: {
+          full_name: data.full_name ?? "",
+          role: data.role,
+        },
       })
-      .select("*")
-      .single()
 
-    if (error) {
-      throw error
+    if (inviteError) {
+      throw inviteError
     }
 
-    return created as UserEntity
+    const userId = invited?.user?.id
+    if (!userId) {
+      throw new Error("Supabase invite did not return a user id")
+    }
+
+    const created = await this.getProfileWithRetry(userId)
+    if (!created) {
+      throw new Error(`Profile not created for user ${userId}`)
+    }
+
+    return created
   }
 
   async updateUser(
     userId: string,
     data: Partial<Omit<UserEntity, "id">>
   ): Promise<void> {
-    const { error } = await this.supabase
-      .from("users")
-      .update({
-        ...data,
-        updated_at: new Date().toISOString(),
-      })
+    const { email, full_name, role, created_at, updated_at, ...rest } = data
+
+    if (email || full_name !== undefined || role) {
+      const { error: authError } = await this.supabase.auth.admin.updateUserById(
+        userId,
+        {
+          ...(email ? { email } : {}),
+          ...(full_name !== undefined || role
+            ? {
+                user_metadata: {
+                  ...(full_name !== undefined ? { full_name } : {}),
+                  ...(role ? { role } : {}),
+                },
+              }
+            : {}),
+        }
+      )
+
+      if (authError) {
+        throw authError
+      }
+    }
+
+    const profileUpdate = {
+      ...(email ? { email } : {}),
+      ...(full_name !== undefined ? { full_name } : {}),
+      ...(role ? { role } : {}),
+      ...rest,
+    }
+
+    if (Object.keys(profileUpdate).length === 0) {
+      return
+    }
+
+    const { error: profileError } = await this.supabase
+      .from("profiles")
+      .update(profileUpdate)
       .eq("id", userId)
 
-    if (error) {
-      throw error
+    if (profileError) {
+      throw profileError
     }
   }
 
   async updateUserRole(userId: string, role: EUserRole): Promise<void> {
-    const { error } = await this.supabase
-      .from("users")
-      .update({
-        role,
-        updated_at: new Date().toISOString(),
-      })
+    const { error: authError } = await this.supabase.auth.admin.updateUserById(
+      userId,
+      {
+        user_metadata: { role },
+      }
+    )
+
+    if (authError) {
+      throw authError
+    }
+
+    const { error: profileError } = await this.supabase
+      .from("profiles")
+      .update({ role })
       .eq("id", userId)
 
+    if (profileError) {
+      throw profileError
+    }
+  }
+
+  async deleteUser(userId: string): Promise<void> {
+    const { error } = await this.supabase.auth.admin.deleteUser(userId)
     if (error) {
       throw error
     }
   }
 
-  async deleteUser(userId: string): Promise<void> {
-    const { error } = await this.supabase
-      .from("users")
-      .delete()
-      .eq("id", userId)
+  private async getProfileWithRetry(userId: string): Promise<UserEntity | null> {
+    const attempts = 5
+    for (let i = 0; i < attempts; i++) {
+      const profile = await this.getUserById(userId)
+      if (profile) return profile
 
-    if (error) {
-      throw error
+      await new Promise((resolve) => setTimeout(resolve, 75))
     }
+
+    return null
   }
 }
 
