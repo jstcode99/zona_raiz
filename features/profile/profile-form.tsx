@@ -34,10 +34,10 @@ export function ProfileForm({
     mode: "onBlur",
   })
 
-  const { 
-    handleSubmit, 
-    reset, 
-    formState: { isSubmitting, isDirty } 
+  const {
+    handleSubmit,
+    reset,
+    formState: { isSubmitting, isDirty }
   } = form
 
   const mutation = useServerMutation({
@@ -60,7 +60,7 @@ export function ProfileForm({
 
   const onSubmit = handleSubmit((values) => {
     const formData = new FormData()
-    
+
     Object.entries(values).forEach(([key, value]) => {
       if (value !== undefined && value !== null) {
         formData.append(key, String(value))
@@ -79,16 +79,16 @@ export function ProfileForm({
       className={cn("py-6 px-6 max-w-xl mx-auto space-y-8", className)}
       onSubmit={onSubmit}
     >
-      <FieldGroup className="space-y-4">
-        <Form.Input 
-          name="full_name" 
+      <Form.Set className="space-y-4">
+        <Form.Input
+          name="full_name"
           label={t('forms.profile.fields.full_name.label') || 'Full Name'}
           autoComplete="name"
           disabled={isLoading}
         />
-        
-        <Form.Phone 
-          name="phone" 
+
+        <Form.Phone
+          name="phone"
           label={t('forms.profile.fields.phone.label') || 'Phone'}
         />
 
@@ -101,14 +101,8 @@ export function ProfileForm({
             {isLoading && <Spinner data-icon="inline-start" className="mr-2 h-4 w-4" />}
             {t('words.save') || 'Save'}
           </Button>
-          
-          {!isDirty && !isLoading && (
-            <p className="text-sm text-muted-foreground text-center mt-2">
-              {t('forms.profile.noChanges') || 'No changes to save'}
-            </p>
-          )}
         </Field>
-      </FieldGroup>
+      </Form.Set>
     </Form>
   )
 }

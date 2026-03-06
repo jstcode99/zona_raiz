@@ -12,7 +12,7 @@ export default async function page() {
   }
 
   return (
-    <div className='relative flex h-auto items-center justify-center overflow-x-hidden px-4 py-10 sm:px-6 lg:px-8'>
+    <div className='relative flex items-center justify-center px-4 py-10 sm:px-6 lg:px-8'>
       <div className='absolute'>
         <AuthBackgroundShape />
       </div>
