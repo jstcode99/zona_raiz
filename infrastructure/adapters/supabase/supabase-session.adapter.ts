@@ -1,4 +1,4 @@
-import { EUserRole, ProfileEntity } from "@/domain/entities/profile.entity"
+import { ProfileEntity } from "@/domain/entities/profile.entity"
 import { RealEstateEntity, RealEstateWithRoleEntity } from "@/domain/entities/real-estate.entity"
 import { ProfilePort } from "@/domain/ports/profile.port"
 import { SessionPort } from "@/domain/ports/sesion.port"
@@ -74,7 +74,7 @@ export class SupabaseSessionAdapter implements SessionPort {
 
     return data.map((item: any) => ({
       real_estate: item.real_estates as RealEstateEntity,
-      role: item.role as EUserRole,
+      role: item.role,
     }))
   }
 }

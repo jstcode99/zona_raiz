@@ -10,6 +10,7 @@ import { encodedRedirect } from "@/shared/redirect"
 import { EUserRole } from "@/domain/entities/profile.entity"
 import { getCurrentUser } from "@/services/session.services"
 import { ROUTES } from "@/infrastructure/config/constants"
+import { DashboardBottomNav } from "@/features/navigation/dashboard-bottom-nav"
 
 export default async function DashboardLayout({
   children,
@@ -23,47 +24,36 @@ export default async function DashboardLayout({
     return encodedRedirect('error', '/auth/sign-in', 'No se pudo cargar el perfil')
   }
 
-  const getMenuByRole = (role: string) => {
-    switch (role) {
-      case EUserRole.Admin:
-        return [
-          {
-            title: "Dashboard",
-            url: `${ROUTES.DASHBOARD}`,
-            icon: 'layout-dashboard',
-          },
-          {
-            title: "Inmobiliarias",
-            url: `${ROUTES.DASHBOARD}/${ROUTES.REAL_ESTATES}`,
-            icon: 'map-pin-house',
-          },
-          {
-            title: "Propiedades",
-            url: `${ROUTES.DASHBOARD}/${ROUTES.PROPERTIES}`,
-            icon: 'building-2',
-          },
-          {
-            title: "Listados",
-            url: `${ROUTES.DASHBOARD}/${ROUTES.LISTING}`,
-            icon: 'list-check',
-          }
-        ]
-      default:
-        return [
-          {
-            title: "Dashboard",
-            url: `${ROUTES.DASHBOARD}`,
-            icon: 'layout-dashboard',
-          },
-          {
-            title: "Propiedades",
-            url: `${ROUTES.DASHBOARD}/${ROUTES.PROPERTIES}`,
-            icon: 'building-2',
-          },
-        ]
-    }
+  if (profile.role == EUserRole.Admin) {
+    return encodedRedirect(
+      "error",
+      ROUTES.DASHBOARD,
+      "Solo los administradores pueden acceder al dashboard"
+    )
   }
 
+  const menu = [
+    {
+      title: "Dashboard",
+      url: `${ROUTES.DASHBOARD}`,
+      icon: 'layout-dashboard',
+    },
+    {
+      title: "Inmobiliarias",
+      url: `${ROUTES.DASHBOARD}${ROUTES.REAL_ESTATES}`,
+      icon: 'map-pin-house',
+    },
+    {
+      title: "Propiedades",
+      url: `${ROUTES.DASHBOARD}${ROUTES.PROPERTIES}`,
+      icon: 'building-2',
+    },
+    {
+      title: "Listados",
+      url: `${ROUTES.DASHBOARD}${ROUTES.LISTING}`,
+      icon: 'list-check',
+    }
+  ]
   return (
     <SidebarProvider
       style={
@@ -73,22 +63,17 @@ export default async function DashboardLayout({
         } as CSSProperties
       }
     >
-      <AppSidebar
-        variant="inset"
-        menu={getMenuByRole(profile?.role || "")}
-        profile={profile}
-      />
+      <AppSidebar variant="inset" menu={menu} profile={profile} />
       <SidebarInset>
         <SiteHeader />
         <div className="flex flex-1 flex-col">
           <div className="@container/main flex flex-1 flex-col gap-2">
             <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
-              <Suspense fallback={<PageLoader />}>
-                {children}
-              </Suspense>
+              <Suspense fallback={<PageLoader />}>{children}</Suspense>
             </div>
           </div>
         </div>
+        <DashboardBottomNav items={menu} />
       </SidebarInset>
     </SidebarProvider>
   )

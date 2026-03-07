@@ -24,7 +24,7 @@ export default function RootLayout({
         className={`${notoSans.variable} antialiased`}
       >
         <Providers>
-          <main className="mx-auto">
+          <main className="min-h-screen bg-background mx-auto">
             {children}
           </main>
         </Providers>

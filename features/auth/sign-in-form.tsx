@@ -41,7 +41,7 @@ export function SignInForm({
     action: signInAction,
     setError,
     onSuccess: () => {
-      router.push(ROUTES.ONBOARDING)
+      router.push(ROUTES.DASHBOARD)
       router.refresh() // Refrescar para actualizar estado de auth
     },
     onError: (error) => {
@@ -59,7 +59,7 @@ export function SignInForm({
     return () => subscription.unsubscribe()
   }, [form, mutation])
 
-  const onSubmit = handleSubmit((values) => {
+  const onSubmit = (values: SignInFormInput) => {
     const formData = new FormData()
 
     Object.entries(values).forEach(([key, value]) => {
@@ -69,7 +69,7 @@ export function SignInForm({
     })
 
     mutation.action(formData)
-  })
+  }
 
   const isLoading = isSubmitting || mutation.isPending
 

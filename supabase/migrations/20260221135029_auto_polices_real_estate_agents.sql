@@ -45,3 +45,15 @@ create policy "Agents: User admin or coordinator can delete agents" on public.re
         and profile_id != auth.uid ()
     )
 );
+
+create policy "Profiles: searchable by agents"
+on public.profiles
+for select
+to authenticated
+using (
+  exists (
+    select 1
+    from real_estate_agents
+    where profile_id = auth.uid()
+  )
+);

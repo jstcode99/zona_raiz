@@ -34,16 +34,5 @@ create policy "Profile: Admins can delete profiles" on public.profiles for delet
     public.get_user_role () = 'admin'
 );
 
-create policy "Profiles: searchable by agents"
-on public.profiles
-for select
-to authenticated
-using (
-  exists (
-    select 1
-    from real_estate_agents
-    where profile_id = auth.uid()
-  )
-);
 
 grant all on public.profiles to authenticated;

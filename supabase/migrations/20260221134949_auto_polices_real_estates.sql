@@ -3,7 +3,7 @@ alter table public.real_estates enable row level security;
 create policy "Real estate: All can read real estates" on public.real_estates for
 select using (true);
 
-create policy "Real estate: User admin or coordinator can create real estates" on public.real_estates for
+create policy "Real estate: User admin or real-estate can create real estates" on public.real_estates for
 insert
 with
     check (
@@ -12,11 +12,11 @@ with
             from public.profiles
             where
                 id = auth.uid ()
-                and role in ('coordinator', 'admin')
+                and role in ('real-estate', 'admin')
         )
     );
 
-create policy "Real estate: User admin or coordinator can update real estates" on public.real_estates for
+create policy "Real estate: User admin or real-estate can update real estates" on public.real_estates for
 update using (
     public.can_manage_real_estate (id, auth.uid ())
 )

@@ -10,7 +10,6 @@ export interface RealEstateAgentEntity {
 }
 
 export enum EAgentRole {
-  Admin = "admin",
   Agent = "agent",
   Coordinator = "coordinator",
 };

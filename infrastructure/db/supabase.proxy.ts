@@ -7,7 +7,6 @@ import {
   ROUTES,
   PUBLIC_ROUTES,
 } from "../config/constants"
-import { SupabaseSessionAdapter } from "@/infrastructure/adapters/supabase/supabase-session.adapter"
 import { createSessionModule } from "@/application/containers/session.container"
 
 // ==========================================
@@ -33,6 +32,8 @@ export async function updateSession(request: NextRequest) {
     return redirectTo(ROUTES.SIGN_IN, request)
   }
 
+  const isRealEstateRoute = isRoute(pathname, ROUTES.DASHBOARD)
+
   const role = request.cookies.get(COOKIE_NAMES.ROLE)?.value as EUserRole | undefined
   const realEstateId = request.cookies.get(COOKIE_NAMES.REAL_ESTATE)?.value
 
@@ -40,47 +41,74 @@ export async function updateSession(request: NextRequest) {
     return redirectTo(ROUTES.SIGN_IN, request)
   }
 
-  // 🚫 CLIENTE no entra a dashboard
+  // 🚫 CLIENTE no entra en rutas protegidas (/dashboard, /real-estate, etc.)
   if (role === EUserRole.Client) {
+    const res = redirectTo(ROUTES.HOME, request)
+    res.cookies.set(COOKIE_NAMES.REAL_ESTATE_ROLE, "client", COOKIE_OPTIONS)
+    return res
+  }
+
+  // 👮‍♂️ Admin solo puede ver /dashboard (y rutas públicas)
+  if (role === EUserRole.Admin) {
+    if (isRealEstateRoute) {
+      const res = redirectTo(ROUTES.DASHBOARD, request)
+      res.cookies.set(COOKIE_NAMES.REAL_ESTATE_ROLE, "admin", COOKIE_OPTIONS)
+      return res
+    }
+
+    // En rutas válidas protegidas, marcamos su rol en cookie y seguimos
+    response.cookies.set(COOKIE_NAMES.REAL_ESTATE_ROLE, "admin", COOKIE_OPTIONS)
+    return response
+  }
+console.log(role, 'role..........');
+
+  // A partir de aquí solo queda EUserRole.RealEstate en rutas protegidas
+  if (role !== EUserRole.RealEstate) {
     return redirectTo(ROUTES.HOME, request)
   }
 
 
   // ==========================================
-  // REAL ESTATE CONTEXT GUARD
+  // ==========================================
+  // REAL ESTATE CONTEXT GUARD (para rol RealEstate)
   // ==========================================
 
-  // 👇 Roles que necesitan contexto de real estate
-  if (requiresRealEstateContext(role)) {
+  // 🔁 Si NO tiene contexto → intentar auto-selección
+  if (!realEstateId) {
+    const { useCases } = await createSessionModule()
+    const realEstates = await useCases.getRealEstatesForUser()
 
-    // 🔁 Si NO tiene contexto → intentar auto-selección
-    if (!realEstateId) {
-      const { useCases } = await createSessionModule()
-      const realEstates = await useCases.getRealEstatesForUser()
-
-      // ⭐ Solo uno → guardar cookie y entrar al dashboard
-      if (realEstates.length === 1) {
-        const res = redirectTo(ROUTES.DASHBOARD, request)
-        res.cookies.set(
-          COOKIE_NAMES.REAL_ESTATE,
-          realEstates[0].real_estate.id,
-          COOKIE_OPTIONS
-        )
-        return res
-      }
-
-      // ❗ Ninguno o varios → onboarding
-      if (!isRoute(pathname, ROUTES.ONBOARDING)) {
-        return redirectTo(ROUTES.ONBOARDING, request)
-      }
-
-      return response
+    // ⭐ Solo uno → guardar cookie de inmobiliaria + rol (agent/coordinator) y entrar a /real-estate
+    if (realEstates.length === 1) {
+      const current = realEstates[0]
+      const res = redirectTo(ROUTES.DASHBOARD, request)
+      res.cookies.set(COOKIE_NAMES.REAL_ESTATE, current.real_estate.id, COOKIE_OPTIONS)
+      res.cookies.set(COOKIE_NAMES.REAL_ESTATE_ROLE, current.role, COOKIE_OPTIONS)
+      return res
     }
 
-    // ✅ Ya tiene contexto → no puede ir a onboarding
-    if (realEstateId && isRoute(pathname, ROUTES.ONBOARDING)) {
-      return redirectTo(ROUTES.DASHBOARD, request)
+    // ❗ Ninguno o varios → onboarding
+    if (!isRoute(pathname, ROUTES.ONBOARDING)) {
+      return redirectTo(ROUTES.ONBOARDING, request)
     }
+
+    return response
+  }
+
+  // ✅ Ya tiene contexto → actualizar cookie de rol en la inmobiliaria activa
+  const { useCases } = await createSessionModule()
+  const realEstates = await useCases.getRealEstatesForUser()
+  const current = realEstates.find(
+    (item) => item.real_estate.id === realEstateId
+  )
+
+  if (current) {
+    response.cookies.set(COOKIE_NAMES.REAL_ESTATE_ROLE, current.role, COOKIE_OPTIONS)
+  }
+
+  // No puede ir a onboarding si ya tiene contexto
+  if (realEstateId && isRoute(pathname, ROUTES.ONBOARDING)) {
+    return redirectTo(ROUTES.DASHBOARD, request)
   }
 
   return response
@@ -126,11 +154,7 @@ function isRoute(pathname: string, base: string) {
 }
 
 function requiresRealEstateContext(role: EUserRole) {
-  return (
-    role === EUserRole.Admin ||
-    role === EUserRole.Agent ||
-    role === EUserRole.Coordinator
-  )
+  return role === EUserRole.RealEstate
 }
 
 function redirectTo(path: string, request: NextRequest) {

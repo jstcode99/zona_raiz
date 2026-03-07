@@ -105,7 +105,7 @@ export function UserForm({
           placeholder={t("words.select") || "Select"}
           options={[
             { label: "admin", value: EUserRole.Admin },
-            { label: "agent", value: EUserRole.Agent },
+            { label: "real-estate", value: EUserRole.RealEstate },
             { label: "client", value: EUserRole.Client },
           ]}
         />

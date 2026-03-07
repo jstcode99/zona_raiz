@@ -13,7 +13,7 @@ export class SupabaseAuthAdapter implements AuthPort {
         data: {
           full_name: input.full_name,
           phone: input.phone,
-          role: input.type_register ? EUserRole.Coordinator : EUserRole.Client
+          role: input.type_register ? EUserRole.RealEstate : EUserRole.Client
         },
       },
     })
@@ -32,7 +32,7 @@ export class SupabaseAuthAdapter implements AuthPort {
     if (input.type_register) {
       const { error: roleError } = await this.supabase
         .from("profiles")
-        .update({ role: EUserRole.Coordinator })
+        .update({ role: EUserRole.RealEstate })
         .eq("id", data.user.id)
 
       if (roleError) {
@@ -46,8 +46,6 @@ export class SupabaseAuthAdapter implements AuthPort {
       email,
       password,
     })
-
-    console.log(error);
     
     if (error) throw error
     if (!data.user) throw new Error("User not found")

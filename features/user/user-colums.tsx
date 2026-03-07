@@ -23,7 +23,7 @@ export interface UserRow extends UserEntity {}
 
 function roleVariant(role: EUserRole) {
   if (role === EUserRole.Admin) return "destructive"
-  if (role === EUserRole.Agent) return "secondary"
+  if (role === EUserRole.RealEstate) return "secondary"
   return "outline"
 }
 

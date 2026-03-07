@@ -10,7 +10,6 @@ export interface ProfileEntity {
 
 export enum EUserRole {
   Admin = "admin",
-  Agent = "agent",
   Client = "client",
-  Coordinator = "coordinator",
+  RealEstate = "real-estate",
 };

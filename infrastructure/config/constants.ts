@@ -15,6 +15,7 @@ export const COOKIE_OPTIONS = {
 export const COOKIE_NAMES = {
   ROLE: "user_role",
   REAL_ESTATE: "real_estate_id",
+  REAL_ESTATE_ROLE: "real_estate_role",
   SESSION: "supabase_session",
 } as const
 
@@ -92,6 +93,7 @@ export const PROTECTED_BASE_ROUTES = [
   "/api",
   "/admin",
   "/dashboard",
+  "/real-estate",
   "/real-estates",
   "/agents",
   "/settings",
@@ -99,7 +101,6 @@ export const PROTECTED_BASE_ROUTES = [
 
 export const ROLE_ACCESS: Record<EUserRole, string[]> = {
   admin: PROTECTED_BASE_ROUTES,
-  coordinator: PROTECTED_BASE_ROUTES,
-  agent: PROTECTED_BASE_ROUTES,
+  "real-estate": PROTECTED_BASE_ROUTES,
   client: PROTECTED_BASE_ROUTES,
 }

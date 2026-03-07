@@ -27,20 +27,23 @@ export class OnboardingUseCase {
     const role = profile.role
 
     /**
-     * Clientes no necesitan inmobiliaria
+     * Clientes no necesitan inmobiliaria ni contexto de real estate
      */
     if (role === EUserRole.Client) {
+      return { step: "redirect", path: ROUTES.HOME }
+    }
+
+    /**
+     * Admin va directo al dashboard, sin onboarding de inmobiliarias
+     */
+    if (role === EUserRole.Admin) {
       return { step: "redirect", path: ROUTES.DASHBOARD }
     }
 
     /**
-     * Roles que operan con inmobiliarias
+     * Rol de real estate necesita contexto de inmobiliaria
      */
-    if (
-      role === EUserRole.Agent ||
-      role === EUserRole.Coordinator ||
-      role === EUserRole.Admin
-    ) {
+    if (role === EUserRole.RealEstate) {
       const realEstates = await this.session.getRealEstatesForUser()
 
       const count = realEstates.length

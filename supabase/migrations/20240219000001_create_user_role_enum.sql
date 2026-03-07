@@ -1,1 +1,1 @@
-create type public.user_role as enum ('admin', 'agent', 'client', 'coordinator');
+create type public.user_role as enum ('admin', 'client', 'real-estate');

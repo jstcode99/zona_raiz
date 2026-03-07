@@ -60,6 +60,7 @@ export const signOutAction = withServerAction(
 
       cookieStore.delete(COOKIE_NAMES.ROLE)
       cookieStore.delete(COOKIE_NAMES.REAL_ESTATE)
+      cookieStore.delete(COOKIE_NAMES.REAL_ESTATE_ROLE)
       
       revalidateTag(CACHE_TAGS.AUTH.USER, {})
       revalidateTag(CACHE_TAGS.AUTH.SESSION, {})
