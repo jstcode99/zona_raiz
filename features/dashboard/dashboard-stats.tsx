@@ -10,25 +10,21 @@ import {
 } from '@/components/ui/card';
 import { CardFooter } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { IconTrendingDown, IconTrendingDown2, IconTrendingUp } from '@tabler/icons-react';
+import { IconTrendingUp } from '@tabler/icons-react';
 import { formatCurrency } from '@/lib/utils';
 import { Skeleton } from '@/components/ui/skeleton';
 
-export type DashboardStatType = 'revenue' | 'customers' | 'properties' | 'visits' | 'listings';
+export type DashboardStatType = 'properties' | 'visits' | 'listings' | 'newUsers';
 
 export type DashboardStatsProps = {
-    totalRevenue?: number;
-    totalRevenueChange?: number;
-    newCustomers?: number;
-    newCustomersChange?: number;
     activeProperties?: number;
     activePropertiesChange?: number;
     visits?: number;
     visitsChange?: number;
-    decrease?: number;
-    decreaseChange?: number;
     totalListings?: number;
     totalListingsChange?: number;
+    newUsers?: number;
+    newUsersChange?: number;
     pending?: boolean;
     visibleCards?: DashboardStatType[];
 };
@@ -43,25 +39,6 @@ const STAT_CONFIG: Record<DashboardStatType, {
     Icon: React.ComponentType<{ className?: string }>;
     isCurrency?: boolean;
 }> = {
-    revenue: {
-        key: 'revenue',
-        titleKey: 'dashboard.total-revenue',
-        valueKey: 'totalRevenue',
-        changeKey: 'totalRevenueChange',
-        footerTextKey: 'dashboard.trending-up-this-month',
-        footerSubtextKey: 'dashboard.visits-last-six-months',
-        Icon: IconTrendingUp,
-        isCurrency: true,
-    },
-    customers: {
-        key: 'customers',
-        titleKey: 'dashboard.new-customers',
-        valueKey: 'newCustomers',
-        changeKey: 'newCustomersChange',
-        footerTextKey: 'dashboard.down-percent-this-period',
-        footerSubtextKey: 'dashboard.acquisition-needs-attention',
-        Icon: IconTrendingDown2,
-    },
     properties: {
         key: 'properties',
         titleKey: 'dashboard.active-properties',
@@ -89,6 +66,15 @@ const STAT_CONFIG: Record<DashboardStatType, {
         footerSubtextKey: 'dashboard.listings-over-last-month',
         Icon: IconTrendingUp,
     },
+    newUsers: {
+        key: 'newUsers',
+        titleKey: 'dashboard.new-users',
+        valueKey: 'newUsers',
+        changeKey: 'newUsersChange',
+        footerTextKey: 'dashboard.new-users-trending-up',
+        footerSubtextKey: 'dashboard.new-users-over-last-month',
+        Icon: IconTrendingUp,
+    },
 };
 
 const CardSkeleton = () => (
@@ -112,37 +98,29 @@ const CardSkeleton = () => (
 );
 
 export const DashboardStats = ({
-    totalRevenue = 0,
-    totalRevenueChange = 0,
-    newCustomers = 0,
-    newCustomersChange = 0,
     activeProperties = 0,
     activePropertiesChange = 0,
     visits = 0,
     visitsChange = 0,
-    decrease = 0,
-    decreaseChange = 0,
     totalListings = 0,
     totalListingsChange = 0,
+    newUsers = 0,
+    newUsersChange = 0,
     pending = false,
-    visibleCards = ['revenue', 'customers', 'properties', 'visits'],
+    visibleCards = ['properties', 'visits', 'listings', 'newUsers'],
 }: DashboardStatsProps) => {
     const { t } = useTranslation();
 
     const getValue = (key: string): number => {
         const values: Record<string, number> = {
-            totalRevenue,
-            totalRevenueChange,
-            newCustomers,
-            newCustomersChange,
             activeProperties,
             activePropertiesChange,
             visits,
             visitsChange,
-            decrease,
-            decreaseChange,
             totalListings,
             totalListingsChange,
+            newUsers,
+            newUsersChange,
         };
         return values[key] ?? 0;
     };
@@ -192,54 +170,6 @@ export const DashboardStats = ({
 
     return (
         <div className="grid grid-cols-1 gap-4 px-4 *:data-[slot=card]:bg-linear-to-t *:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card *:data-[slot=card]:shadow-xs lg:px-6 @xl/main:grid-cols-2 @5xl/main:grid-cols-4 dark:*:data-[slot=card]:bg-card">
-            {visibleCards.includes('revenue') && (
-                <Card className="@container/card">
-                    <CardHeader>
-                        <CardDescription>{t('dashboard.total-revenue')}</CardDescription>
-                        <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-                            ${formatCurrency(totalRevenue)}
-                        </CardTitle>
-                        <CardAction>
-                            <Badge variant="outline">
-                                <IconTrendingUp />
-                                {totalRevenueChange}%
-                            </Badge>
-                        </CardAction>
-                    </CardHeader>
-                    <CardFooter className="flex-col items-start gap-1.5 text-sm">
-                        <div className="line-clamp-1 flex gap-2 font-medium">
-                            {t('dashboard.trending-up-this-month')} <IconTrendingUp className="size-4" />
-                        </div>
-                        <div className="text-muted-foreground">
-                            {t('dashboard.visits-last-six-months')}
-                        </div>
-                    </CardFooter>
-                </Card>
-            )}
-            {visibleCards.includes('customers') && (
-                <Card className="@container/card">
-                    <CardHeader>
-                        <CardDescription>{t('dashboard.new-customers')}</CardDescription>
-                        <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-                            {newCustomers}
-                        </CardTitle>
-                        <CardAction>
-                            <Badge variant="outline">
-                                <IconTrendingDown2 className="size-4" />
-                                {newCustomersChange}%
-                            </Badge>
-                        </CardAction>
-                    </CardHeader>
-                    <CardFooter className="flex-col items-start gap-1.5 text-sm">
-                        <div className="line-clamp-1 flex gap-2 font-medium">
-                            {t('dashboard.down-percent-this-period')} <IconTrendingDown className="size-4" />
-                        </div>
-                        <div className="text-muted-foreground">
-                            {t('dashboard.acquisition-needs-attention')}
-                        </div>
-                    </CardFooter>
-                </Card>
-            )}
             {visibleCards.includes('properties') && (
                 <Card className="@container/card">
                     <CardHeader>
@@ -308,6 +238,30 @@ export const DashboardStats = ({
                         </div>
                         <div className="text-muted-foreground">
                             {t('dashboard.listings-over-last-month')}
+                        </div>
+                    </CardFooter>
+                </Card>
+            )}
+            {visibleCards.includes('newUsers') && (
+                <Card className="@container/card">
+                    <CardHeader>
+                        <CardDescription>{t('dashboard.new-users')}</CardDescription>
+                        <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
+                            {newUsers}
+                        </CardTitle>
+                        <CardAction>
+                            <Badge variant="outline">
+                                <IconTrendingUp />
+                                {newUsersChange}%
+                            </Badge>
+                        </CardAction>
+                    </CardHeader>
+                    <CardFooter className="flex-col items-start gap-1.5 text-sm">
+                        <div className="line-clamp-1 flex gap-2 font-medium">
+                            {t('dashboard.new-users-trending-up')} <IconTrendingUp className="size-4" />
+                        </div>
+                        <div className="text-muted-foreground">
+                            {t('dashboard.new-users-over-last-month')}
                         </div>
                     </CardFooter>
                 </Card>

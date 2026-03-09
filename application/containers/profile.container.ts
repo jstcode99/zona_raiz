@@ -5,8 +5,11 @@ import { ProfileUseCases } from "@/domain/use-cases/profile.cases"
 export async function createProfileModule() {
   const supabase = await createSupabaseServerClient()
 
-  const adapter = new SupabaseProfileAdapter(supabase)
-  const useCases = new ProfileUseCases(adapter)
+  const repository = new SupabaseProfileAdapter(supabase)
+  const useCases = new ProfileUseCases(repository)
 
-  return { useCases }
+  return {
+    repository,
+    useCases,
+  }
 }

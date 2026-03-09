@@ -533,6 +533,7 @@
     "active-properties": "Propiedades activas",
     "visits": "Visitas",
     "total-listings": "Publicaciones totales",
+    "new-users": "Nuevos usuarios",
     "trending-up-this-month": "Tendiendo al alza este mes",
     "visits-last-six-months": "Visitas en los últimos seis meses",
     "down-percent-this-period": "Bajó este período",
@@ -542,7 +543,9 @@
     "visits-trending-up": "Visitas en tendencia",
     "visits-exceeds-targets": "Las visitas superan los objetivos",
     "listings-trending-up": "Publicaciones en tendencia",
-    "listings-over-last-month": "Publicaciones del último mes"
+    "listings-over-last-month": "Publicaciones del último mes",
+    "new-users-trending-up": "Usuarios en tendencia",
+    "new-users-over-last-month": "Usuarios del último mes"
   },
   "validations": {
     "accepted": "El campo {{attribute}} debe ser aceptado.",

@@ -4,8 +4,10 @@ import { COOKIE_NAMES } from "@/infrastructure/config/constants";
 import { PropertyCountService } from "@/domain/services/property-count.service";
 import { ListingCountService } from "@/domain/services/listing-count.service";
 import { ListingViewsCountService } from "@/domain/services/listing-views-count.service";
+import { ProfileCountService } from "@/domain/services/profile-count.service";
 import { createPropertyModule } from "@/application/containers/property.container";
 import { createListingModule } from "@/application/containers/listing.container";
+import { createProfileModule } from "@/application/containers/profile.container";
 
 function getMonthDateRange(date: Date): { start_date: string; end_date: string } {
   const year = date.getFullYear();
@@ -35,6 +37,9 @@ export default async function DashboardPage() {
   const { repository: listingRepository } = await createListingModule()
   const listingCountService = new ListingCountService(listingRepository)
   const listingViewsCountService = new ListingViewsCountService(listingRepository)
+
+  const { repository: profileRepository } = await createProfileModule()
+  const profileCountService = new ProfileCountService(profileRepository)
 
   const now = new Date()
   const currentMonthRange = getMonthDateRange(now)
@@ -74,6 +79,12 @@ export default async function DashboardPage() {
   const visits = currentMonthVisits
   const visitsChange = calculatePercentageChange(currentMonthVisits, previousMonthVisits)
 
+  const currentMonthNewUsers = await profileCountService.getCachedCountWithDateRange(currentMonthRange.start_date, currentMonthRange.end_date)
+  const previousMonthNewUsers = await profileCountService.getCachedCountWithDateRange(previousMonthRange.start_date, previousMonthRange.end_date)
+
+  const newUsers = currentMonthNewUsers
+  const newUsersChange = calculatePercentageChange(currentMonthNewUsers, previousMonthNewUsers)
+
   return (
     <div className="flex flex-1 flex-col">
       <div className="@container/main flex flex-1 flex-col gap-2">
@@ -85,7 +96,9 @@ export default async function DashboardPage() {
             visitsChange={visitsChange}
             totalListings={totalListings}
             totalListingsChange={totalListingsChange}
-            visibleCards={['properties', 'visits', 'listings']}
+            newUsers={newUsers}
+            newUsersChange={newUsersChange}
+            visibleCards={['properties', 'visits', 'listings', 'newUsers']}
           />
         </div>
       </div>

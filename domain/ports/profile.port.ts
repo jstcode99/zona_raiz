@@ -7,7 +7,6 @@ export interface ProfilePort {
 
   getProfileByUserId(userId: string): Promise<ProfileEntity>
 
-
   updateProfile(userId: string, data: Partial<ProfileEntity>): Promise<void>
 
   updatePathAvatarProfile(userId: string, avatarUrl: string): Promise<void>
@@ -15,4 +14,6 @@ export interface ProfilePort {
   uploadAvatar(userId: string, file: File): Promise<string>
 
   updateRole(userId: string, role: EUserRole): Promise<void>
+
+  count(filters?: { start_date?: string; end_date?: string; real_estate_id?: string }): Promise<number>
 }
