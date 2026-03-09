@@ -60,7 +60,6 @@ export async function updateSession(request: NextRequest) {
     response.cookies.set(COOKIE_NAMES.REAL_ESTATE_ROLE, "admin", COOKIE_OPTIONS)
     return response
   }
-console.log(role, 'role..........');
 
   // A partir de aquí solo queda EUserRole.RealEstate en rutas protegidas
   if (role !== EUserRole.RealEstate) {

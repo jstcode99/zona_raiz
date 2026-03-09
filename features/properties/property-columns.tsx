@@ -29,6 +29,7 @@ import {
 import Link from "next/link"
 import { Badge } from "@/components/ui/badge"
 import { PropertyType } from "@/domain/entities/property.enums"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 
 export type PropertyRow = BaseRow & {
   created_at: string
@@ -52,13 +53,22 @@ export const PropertyColumns: ColumnDef<PropertyRow>[] = [
     accessorKey: "title",
     header: "Propiedad",
     cell: ({ row }) => {
+      
       const type = row.original.property_type
+      const thumbnail = row.original.property_images && row.original.property_images[0]?.public_url
       return (
         <Link href={`/dashboard/properties/${row.original.id}`} passHref>
           <div className="flex items-start gap-3">
-            <div className="flex size-10 items-center justify-center rounded-lg bg-muted">
-              {propertyTypeIcons[type]}
-            </div>
+            <Avatar className="size-12">
+              <AvatarImage
+                src={
+                  thumbnail ||
+                  "/placeholder.png"
+                }
+                alt={row.original.title}
+              />
+              <AvatarFallback className="uppercase">{row.original.title.charAt(0)}</AvatarFallback>
+            </Avatar>
             <div className="flex flex-col min-w-0">
               <span className="font-medium truncate max-w-50">
                 {row.original.title}

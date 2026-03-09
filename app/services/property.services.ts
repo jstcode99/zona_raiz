@@ -30,3 +30,10 @@ export const getPropertiesByRealEstate = cached(
     return useCases.getByRealEstate(realEstateId);
   }
 );
+
+export const getPropertyCount = cached(
+  async function (filters?: { real_estate_id?: string }) {
+    const { useCases } = await createPropertyModule()
+    return useCases.count(filters);
+  }
+);

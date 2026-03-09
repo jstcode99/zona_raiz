@@ -7,4 +7,6 @@ export interface ListingPort {
     findById(id: string): Promise<ListingEntity | null>;
     findActive(): Promise<ListingEntity[]>;
     delete(id: string): Promise<void>;
+    count(filters?: any): Promise<number>;
+    countWithViews(filters?: any): Promise<number>;
 }

@@ -37,6 +37,8 @@ export interface ListingEntity {
   whatsapp_clicks: number;
   published_at?: string | null;
   property: PropertyEntity
+  created_at: string;
+  updated_at: string;
 }
 
 

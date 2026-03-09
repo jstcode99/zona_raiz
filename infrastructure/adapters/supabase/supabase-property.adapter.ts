@@ -53,7 +53,10 @@ export class SupabasePropertyAdapter implements PropertyPort {
 
         let query = this.supabase
             .from("properties")
-            .select("*, real_estate:real_estates(*)")
+            .select(`
+                *, 
+                real_estate:real_estates(*),
+                property_images:property_images(*)`)
             .order("created_at", { ascending: false })
 
         if (filters?.real_estate_id) {
@@ -174,5 +177,40 @@ export class SupabasePropertyAdapter implements PropertyPort {
         if (error) throw new Error(error.message)
 
         return data === null
+    }
+
+    async count(filters?: any): Promise<number> {
+        let query = this.supabase
+            .from("properties")
+            .select("*", { count: "exact", head: true })
+
+        if (filters?.real_estate_id) {
+            query = query.eq("real_estate_id", filters.real_estate_id)
+        }
+        if (filters?.country) {
+            query = query.eq("country", filters.country)
+        }
+        if (filters?.state) {
+            query = query.eq("state", filters.state)
+        }
+        if (filters?.city) {
+            query = query.eq("city", filters.city)
+        }
+        if (filters?.property_type) {
+            query = query.eq("property_type", filters.property_type)
+        }
+
+        if (filters?.start_date) {
+            query = query.gte("created_at", filters.start_date)
+        }
+        if (filters?.end_date) {
+            query = query.lte("created_at", filters.end_date)
+        }
+
+        const { count, error } = await query
+
+        if (error) throw new Error(error.message)
+
+        return count || 0
     }
 }

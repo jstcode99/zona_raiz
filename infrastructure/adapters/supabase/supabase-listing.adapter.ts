@@ -10,11 +10,14 @@ export class SupabaseListingAdapter implements ListingPort {
 
     let query = this.supabase
       .from("listings")
-      .select("*, property:properties(*)")
+      .select(`
+      *,
+      property:properties!inner(*)
+    `)
       .order("created_at", { ascending: false })
 
     if (filters?.real_estate_id) {
-      query = query.eq("real_estate_id", filters?.real_estate_id)
+      query = query.eq("properties.real_estate_id", filters.real_estate_id)
     }
     if (filters?.property_id) {
       query = query.eq("property_id", filters.property_id)
@@ -87,7 +90,7 @@ export class SupabaseListingAdapter implements ListingPort {
       .eq("id", id)
       .select()
       .single();
-      
+
     if (error) throw new Error(error.message)
     return mapListingRowToEntity(row)
   }
@@ -120,5 +123,76 @@ export class SupabaseListingAdapter implements ListingPort {
       .eq("id", id);
 
     if (error) throw error;
+  }
+
+  async count(filters?: any): Promise<number> {
+    let query = this.supabase
+      .from("listings")
+      .select(`
+      *,
+      property:properties!inner(*)
+    `, { count: "exact", head: true })
+
+    if (filters?.real_estate_id) {
+      query = query.eq("properties.real_estate_id", filters.real_estate_id)
+    }
+    if (filters?.property_id) {
+      query = query.eq("property_id", filters.property_id)
+    }
+    if (filters?.listing_type) {
+      query = query.eq("listing_type", filters.listing_type)
+    }
+    if (filters?.status) {
+      query = query.eq("status", filters.status)
+    }
+
+    if (filters?.start_date) {
+      query = query.gte("created_at", filters.start_date)
+    }
+    if (filters?.end_date) {
+      query = query.lte("created_at", filters.end_date)
+    }
+
+    const { count, error } = await query
+
+    if (error) throw new Error(error.message)
+
+    return count || 0
+  }
+
+  async countWithViews(filters?: any): Promise<number> {
+    let query = this.supabase
+      .from("listings")
+      .select(`
+      *,
+      property:properties!inner(*)
+    `, { count: "exact", head: true })
+      .gt("views_count", 0)
+
+    if (filters?.real_estate_id) {
+      query = query.eq("properties.real_estate_id", filters.real_estate_id)
+    }
+    if (filters?.property_id) {
+      query = query.eq("property_id", filters.property_id)
+    }
+    if (filters?.listing_type) {
+      query = query.eq("listing_type", filters.listing_type)
+    }
+    if (filters?.status) {
+      query = query.eq("status", filters.status)
+    }
+
+    if (filters?.start_date) {
+      query = query.gte("created_at", filters.start_date)
+    }
+    if (filters?.end_date) {
+      query = query.lte("created_at", filters.end_date)
+    }
+
+    const { count, error } = await query
+
+    if (error) throw new Error(error.message)
+
+    return count || 0
   }
 }

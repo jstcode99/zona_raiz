@@ -8,7 +8,7 @@ import { PropertyFiltersForm } from "@/features/properties/property-form-filters
 import { Button } from "@/components/ui/button";
 import { IconFilter, IconPlus } from "@tabler/icons-react";
 import Link from "next/link";
-import { ROUTES } from "@/infrastructure/config/constants";
+import { COOKIE_NAMES, ROUTES } from "@/infrastructure/config/constants";
 import { PropertySearchFormInput } from "@/application/validation/property-search.schema";
 import {
   Collapsible,
@@ -16,6 +16,7 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible"
 import { Separator } from "@/components/ui/separator";
+import { cookies } from "next/headers";
 
 export default async function page({
   searchParams,
@@ -23,8 +24,12 @@ export default async function page({
   searchParams: Promise<PropertySearchFormInput>
 }) {
   const filters = await searchParams;
+  const cookieStore = await cookies()
 
-  const properties = listProperties(filters)
+  const real_estate_id = cookieStore
+    .get(COOKIE_NAMES.REAL_ESTATE)?.value as string
+
+  const properties = listProperties({ ...filters, real_estate_id })
 
   return (
     <main className="flex-col items-center justify-center space-y-4 px-4 lg:px-6">

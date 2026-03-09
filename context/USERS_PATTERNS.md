@@ -1,4 +1,6 @@
-# Patrones Específicos por Tipo de Usuario
+---
+description: Patrones Específicos por Tipo de Usuario
+---
 
 ## 👥 Tres Tipos de Usuarios
 

@@ -1,0 +1,18 @@
+context:
+  sources:
+    - docs/TEMPLATES.md
+    - docs/TROUBLESHOOTING.md
+    - docs/USERS_PATTERNS.md
+
+  codebase:
+    include:
+      - domain/**
+      - application/**
+      - infrastructure/**
+      - features/**
+      - services/**
+
+rules:
+  architecture: DDD
+  language: typescript
+  framework: nextjs

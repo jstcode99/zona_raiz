@@ -527,6 +527,23 @@
     "without_results": "Sin resultados",
     "no-address": "Sin dirección asociada"
   },
+  "dashboard": {
+    "total-revenue": "Ingresos totales",
+    "new-customers": "Nuevos clientes",
+    "active-properties": "Propiedades activas",
+    "visits": "Visitas",
+    "total-listings": "Publicaciones totales",
+    "trending-up-this-month": "Tendiendo al alza este mes",
+    "visits-last-six-months": "Visitas en los últimos seis meses",
+    "down-percent-this-period": "Bajó este período",
+    "acquisition-needs-attention": "La adquisición necesita atención",
+    "properties-trending-up": "Propiedades en tendencia",
+    "properties-over-last-month": "Propiedades del último mes",
+    "visits-trending-up": "Visitas en tendencia",
+    "visits-exceeds-targets": "Las visitas superan los objetivos",
+    "listings-trending-up": "Publicaciones en tendencia",
+    "listings-over-last-month": "Publicaciones del último mes"
+  },
   "validations": {
     "accepted": "El campo {{attribute}} debe ser aceptado.",
     "accepted_if": "El campo {{attribute}} debe ser aceptado cuando {{other}} es :value.",

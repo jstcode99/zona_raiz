@@ -1,11 +1,9 @@
 import { Suspense } from "react";
 import { Spinner } from "@/components/ui/spinner";
 import { Card, CardContent } from '@/components/ui/card'
-import { PropertyFiltersForm } from "@/features/properties/property-form-filters";
 import { Button } from "@/components/ui/button";
-import { IconFilter, IconPlus } from "@tabler/icons-react";
-import Link from "next/link";
-import { ROUTES } from "@/infrastructure/config/constants";
+import { IconFilter } from "@tabler/icons-react";
+import { COOKIE_NAMES } from "@/infrastructure/config/constants";
 import { listListing } from "@/services/listing.services";
 import { ListingSearchFormInput } from "@/application/validation/listing-search.schema";
 import ListingTable from "@/features/listing/listing-table";
@@ -17,15 +15,23 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible"
 import { Separator } from "@/components/ui/separator";
+import { cookies } from "next/headers";
 
 export default async function page({
   searchParams,
 }: {
   searchParams: Promise<ListingSearchFormInput>
 }) {
-  const filters = await searchParams;
+  const cookieStore = await cookies()
 
-  const listing = listListing(filters)
+  const filters = await searchParams;
+  const real_estate_id = cookieStore
+    .get(COOKIE_NAMES.REAL_ESTATE)?.value as string
+
+  const listing = listListing({
+    ...filters,
+    real_estate_id
+  })
 
   return (
     <main className="flex-col items-center justify-center space-y-4 px-4 lg:px-6">

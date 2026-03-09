@@ -1,4 +1,6 @@
-# 📦 Templates Actualizados - Patrones Reales del Proyecto
+---
+description: Templates Actualizados - Patrones Reales del Proyecto
+---
 
 ## 🎯 Ejemplo Real: Módulo Profile
 

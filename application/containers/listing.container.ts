@@ -6,5 +6,5 @@ export async function createListingModule() {
   const supabase = await createSupabaseServerClient();
   const repository = new SupabaseListingAdapter(supabase);
   const useCases = new ListingUseCases(repository);
-  return { useCases };
+  return { repository, useCases };
 }

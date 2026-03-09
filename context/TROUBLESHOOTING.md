@@ -1,4 +1,6 @@
-# 🛠️ Troubleshooting & Comandos Útiles
+---
+description: Troubleshooting & Comandos Útiles
+---
 
 ## 🚀 Comandos del Proyecto
 

@@ -20,6 +20,10 @@ export class PropertyUseCases {
     return this.repository.getByRealEstate(realEstateId)
   }
 
+  count(filters?: any) {
+    return this.repository.count(filters)
+  }
+
   async create(realEstateId: string, input: Partial<PropertyEntity>) {
     // Generar slug si no existe
     let slug = input?.title as string

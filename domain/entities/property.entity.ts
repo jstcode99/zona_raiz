@@ -1,4 +1,5 @@
 import { OptionType } from "./option.entity";
+import { PropertyImageEntity } from "./property-image.entity";
 import { AmenitiesType, PropertyType } from "./property.enums";
 
 export interface PropertyEntity {
@@ -30,6 +31,11 @@ export interface PropertyEntity {
   created_by: string | null;
   created_at: string;
   updated_at: string;
+  property_images: PropertyImageEntity[];
+  real_estate?: {
+    id: string;
+    name: string;
+  }
 }
 
 export const propertyTypeOptions = [
