@@ -8,5 +8,8 @@ export async function createRealEstateModule() {
   const repository = new SupabaseRealEstateAdapter(supabase)
   const useCases = new RealEstateUseCases(repository)
 
-  return { useCases }
+  return {
+    repository,
+    useCases,
+  }
 }

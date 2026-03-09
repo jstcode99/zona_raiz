@@ -534,6 +534,7 @@
     "visits": "Visitas",
     "total-listings": "Publicaciones totales",
     "new-users": "Nuevos usuarios",
+    "real-estates": "Inmobiliarias",
     "trending-up-this-month": "Tendiendo al alza este mes",
     "visits-last-six-months": "Visitas en los últimos seis meses",
     "down-percent-this-period": "Bajó este período",
@@ -545,7 +546,9 @@
     "listings-trending-up": "Publicaciones en tendencia",
     "listings-over-last-month": "Publicaciones del último mes",
     "new-users-trending-up": "Usuarios en tendencia",
-    "new-users-over-last-month": "Usuarios del último mes"
+    "new-users-over-last-month": "Usuarios del último mes",
+    "real-estates-trending-up": "Inmobiliarias en tendencia",
+    "real-estates-over-last-month": "Inmobiliarias del último mes"
   },
   "validations": {
     "accepted": "El campo {{attribute}} debe ser aceptado.",

@@ -1,4 +1,5 @@
 import { PropertyPort } from "@/domain/ports/property.port";
+import { PropertyType } from "@/domain/entities/property.enums";
 import { unstable_cache } from "next/cache";
 
 export interface PropertyCountFilters {
@@ -78,6 +79,25 @@ export class PropertyCountService {
       {
         revalidate: 300,
         tags: ["properties", `real-estate:${realEstateId}`],
+      }
+    )();
+  }
+
+  async countByTypes(realEstateId?: string): Promise<Record<PropertyType, number>> {
+    return this.propertyPort.countByTypes(realEstateId);
+  }
+
+  getCachedCountByTypes(realEstateId?: string) {
+    const cacheKey = realEstateId 
+      ? `property-count-by-types:real-estate:${realEstateId}`
+      : `property-count-by-types:all`;
+    
+    return unstable_cache(
+      async () => this.propertyPort.countByTypes(realEstateId),
+      [cacheKey],
+      {
+        revalidate: 300,
+        tags: ["properties", "property-count-by-types", ...(realEstateId ? [`real-estate:${realEstateId}`] : [])],
       }
     )();
   }

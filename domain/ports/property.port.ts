@@ -1,4 +1,5 @@
 import { PropertyEntity } from "../entities/property.entity";
+import { PropertyType } from "../entities/property.enums";
 
 export interface PropertyPort {
   // Queries
@@ -7,6 +8,7 @@ export interface PropertyPort {
   getBySlug(slug: string): Promise<PropertyEntity | null>;
   getByRealEstate(realEstateId: string): Promise<PropertyEntity[]>;
   count(filters?: any): Promise<number>;
+  countByTypes(realEstateId?: string): Promise<Record<PropertyType, number>>;
 
   // Mutations
   create(realEstateId: string, data: Partial<PropertyEntity>): Promise<PropertyEntity>;

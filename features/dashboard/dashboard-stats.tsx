@@ -14,7 +14,7 @@ import { IconTrendingUp } from '@tabler/icons-react';
 import { formatCurrency } from '@/lib/utils';
 import { Skeleton } from '@/components/ui/skeleton';
 
-export type DashboardStatType = 'properties' | 'visits' | 'listings' | 'newUsers';
+export type DashboardStatType = 'properties' | 'visits' | 'listings' | 'newUsers' | 'realEstates';
 
 export type DashboardStatsProps = {
     activeProperties?: number;
@@ -25,6 +25,8 @@ export type DashboardStatsProps = {
     totalListingsChange?: number;
     newUsers?: number;
     newUsersChange?: number;
+    totalRealEstates?: number;
+    totalRealEstatesChange?: number;
     pending?: boolean;
     visibleCards?: DashboardStatType[];
 };
@@ -75,6 +77,15 @@ const STAT_CONFIG: Record<DashboardStatType, {
         footerSubtextKey: 'dashboard.new-users-over-last-month',
         Icon: IconTrendingUp,
     },
+    realEstates: {
+        key: 'realEstates',
+        titleKey: 'dashboard.real-estates',
+        valueKey: 'totalRealEstates',
+        changeKey: 'totalRealEstatesChange',
+        footerTextKey: 'dashboard.real-estates-trending-up',
+        footerSubtextKey: 'dashboard.real-estates-over-last-month',
+        Icon: IconTrendingUp,
+    },
 };
 
 const CardSkeleton = () => (
@@ -106,8 +117,10 @@ export const DashboardStats = ({
     totalListingsChange = 0,
     newUsers = 0,
     newUsersChange = 0,
+    totalRealEstates = 0,
+    totalRealEstatesChange = 0,
     pending = false,
-    visibleCards = ['properties', 'visits', 'listings', 'newUsers'],
+    visibleCards = ['properties', 'visits', 'listings', 'newUsers', 'realEstates'],
 }: DashboardStatsProps) => {
     const { t } = useTranslation();
 
@@ -121,6 +134,8 @@ export const DashboardStats = ({
             totalListingsChange,
             newUsers,
             newUsersChange,
+            totalRealEstates,
+            totalRealEstatesChange,
         };
         return values[key] ?? 0;
     };
@@ -262,6 +277,30 @@ export const DashboardStats = ({
                         </div>
                         <div className="text-muted-foreground">
                             {t('dashboard.new-users-over-last-month')}
+                        </div>
+                    </CardFooter>
+                </Card>
+            )}
+            {visibleCards.includes('realEstates') && (
+                <Card className="@container/card">
+                    <CardHeader>
+                        <CardDescription>{t('dashboard.real-estates')}</CardDescription>
+                        <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
+                            {totalRealEstates}
+                        </CardTitle>
+                        <CardAction>
+                            <Badge variant="outline">
+                                <IconTrendingUp />
+                                {totalRealEstatesChange}%
+                            </Badge>
+                        </CardAction>
+                    </CardHeader>
+                    <CardFooter className="flex-col items-start gap-1.5 text-sm">
+                        <div className="line-clamp-1 flex gap-2 font-medium">
+                            {t('dashboard.real-estates-trending-up')} <IconTrendingUp className="size-4" />
+                        </div>
+                        <div className="text-muted-foreground">
+                            {t('dashboard.real-estates-over-last-month')}
                         </div>
                     </CardFooter>
                 </Card>

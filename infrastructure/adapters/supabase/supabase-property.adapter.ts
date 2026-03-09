@@ -1,6 +1,6 @@
 import { mapPropertyRowToEntity } from "@/application/mappers/property.mapper";
 import { PropertyEntity } from "@/domain/entities/property.entity";
-import { RealEstateEntity } from "@/domain/entities/real-estate.entity";
+import { PropertyType } from "@/domain/entities/property.enums";
 import { PropertyPort } from "@/domain/ports/property.port";
 import { SupabaseClient } from "@supabase/supabase-js";
 
@@ -94,7 +94,7 @@ export class SupabasePropertyAdapter implements PropertyPort {
         return (data || []).map(item => mapPropertyRowToEntity(item)!) as PropertyEntity[]
     }
 
-    async create(realEstateId: string, data: Partial<RealEstateEntity>): Promise<PropertyEntity> {
+    async create(realEstateId: string, data: Partial<PropertyEntity>): Promise<PropertyEntity> {
         const { data: inserted, error: dbError } = await this.supabase
             .from("properties")
             .insert({
@@ -111,7 +111,7 @@ export class SupabasePropertyAdapter implements PropertyPort {
         return mapPropertyRowToEntity(inserted) as PropertyEntity
     }
 
-    async update(id: string, data: Partial<RealEstateEntity>): Promise<PropertyEntity> {
+    async update(id: string, data: Partial<PropertyEntity>): Promise<PropertyEntity> {
 
         const { data: updated, error: dbError } = await this.supabase
             .from("properties")
@@ -212,5 +212,47 @@ export class SupabasePropertyAdapter implements PropertyPort {
         if (error) throw new Error(error.message)
 
         return count || 0
+    }
+
+    async countByTypes(realEstateId?: string): Promise<Record<PropertyType, number>> {
+        let query = this.supabase
+            .from("properties")
+            .select("property_type, count:property_type", { count: "exact" })
+
+        if (realEstateId) {
+            query = query.eq("real_estate_id", realEstateId)
+        }
+
+        const { data, error } = await query
+
+        if (error) throw new Error(error.message)
+
+        const result: Record<PropertyType, number> = {
+            [PropertyType.House]: 0,
+            [PropertyType.Apartment]: 0,
+            [PropertyType.Condo]: 0,
+            [PropertyType.TownHouse]: 0,
+            [PropertyType.Land]: 0,
+            [PropertyType.Commercial]: 0,
+            [PropertyType.Office]: 0,
+            [PropertyType.Warehouse]: 0,
+            [PropertyType.Other]: 0,
+        }
+
+        const typeCounts = (data || []).reduce((acc, item) => {
+            const type = item.property_type as PropertyType
+            console.log(acc[type], type);
+
+            acc[type] = (acc[type] || 0) + 1
+            return acc
+        }, {} as Record<string, number>)
+
+        for (const [key, value] of Object.entries(typeCounts)) {
+            if (key in result) {
+                result[key as PropertyType] = value
+            }
+        }
+
+        return result
     }
 }

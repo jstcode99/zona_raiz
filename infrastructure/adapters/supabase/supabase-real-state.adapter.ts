@@ -132,4 +132,23 @@ export class SupabaseRealEstateAdapter implements RealEstatePort {
     }
   }
 
+  async count(filters?: { start_date?: string; end_date?: string }): Promise<number> {
+    let query = this.supabase
+      .from("real_estates")
+      .select("*", { count: "exact", head: true })
+
+    if (filters?.start_date) {
+      query = query.gte("created_at", filters.start_date)
+    }
+    if (filters?.end_date) {
+      query = query.lte("created_at", filters.end_date)
+    }
+
+    const { count, error } = await query
+
+    if (error) throw new Error(error.message)
+
+    return count || 0
+  }
+
 }

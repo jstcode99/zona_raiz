@@ -13,4 +13,6 @@ export interface RealEstatePort {
 
   uploadLogo(id: string, file: File): Promise<string>
   updatePathLogo(id: string, logoUrl: string): Promise<void>
+
+  count(filters?: { start_date?: string; end_date?: string }): Promise<number>
 }
