@@ -29,4 +29,8 @@ export class ListingUseCases {
   delete(id: string) {
     return this.listing.delete(id);
   }
+
+  findFeatured(limit?: number, realEstateId?: string) {
+    return this.listing.findFeatured(limit, realEstateId);
+  }
 }

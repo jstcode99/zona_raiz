@@ -9,4 +9,5 @@ export interface ListingPort {
     delete(id: string): Promise<void>;
     count(filters?: any): Promise<number>;
     countWithViews(filters?: any): Promise<number>;
+    findFeatured(limit?: number, realEstateId?: string): Promise<ListingEntity[]>;
 }
