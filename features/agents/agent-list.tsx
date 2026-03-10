@@ -46,7 +46,7 @@ export const AgentList = ({ agents, real_estate_id }: AgentListProps) => {
       {agents.map((agent, index) => (
         <div
           key={index}
-          className="w-full flex items-center gap-2 rounded-xl px-2 py-3 text-left text-sm hover:bg-accent transition-all"
+          className="w-full flex items-center gap-2 rounded-xl px-2 py-3 mt-2 text-left text-sm hover:bg-accent transition-all"
         >
           <Avatar className="h-8 w-8 rounded-lg">
             <AvatarImage src={agent.avatar_url || ""} alt={agent.full_name || "User"} />

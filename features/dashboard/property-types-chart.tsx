@@ -39,12 +39,12 @@ export interface PropertyTypeCount {
   label: string
 }
 
-interface PropertyTypesChartProps {
+interface PropertyTypesChartProps extends React.ComponentProps<"div"> {
   data: Record<PropertyType, number>
   onTypesChange?: (types: PropertyType[]) => void
 }
 
-export function PropertyTypesChart({ data, onTypesChange }: PropertyTypesChartProps) {
+export function PropertyTypesChart({ data, onTypesChange, ...props }: PropertyTypesChartProps) {
   const [selectedTypes, setSelectedTypes] = useState<PropertyType[]>([])
   const [open, setOpen] = useState(false)
 
@@ -76,12 +76,12 @@ export function PropertyTypesChart({ data, onTypesChange }: PropertyTypesChartPr
   }
 
   return (
-    <Card className="w-full">
+    <Card className="w-full" {...props}>
       <CardHeader className="pb-2">
         <CardTitle className="text-base">Propiedades por Tipo</CardTitle>
         <CardDescription className="text-xs">Selecciona los tipos para filtrar</CardDescription>
       </CardHeader>
-      <CardContent className="space-y-3">
+      <CardContent className="space-y-4 min-h-82">
         <Popover open={open} onOpenChange={setOpen}>
           <PopoverTrigger asChild>
             <Button

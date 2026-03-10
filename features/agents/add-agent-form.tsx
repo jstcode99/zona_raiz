@@ -74,7 +74,7 @@ export const AddAgentForm = ({
   return (
     <Form
       form={form}
-      className="py-16 px-6"
+      className="py-4 px-2"
       onSubmit={onSubmit}
     >
       <FieldGroup className="gap-3">

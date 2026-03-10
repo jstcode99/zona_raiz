@@ -4,6 +4,7 @@ import { cookies } from "next/headers";
 import { COOKIE_NAMES } from "@/infrastructure/config/constants";
 import { PropertyCountService } from "@/domain/services/property-count.service";
 import { ListingCountService } from "@/domain/services/listing-count.service";
+import { ListingFeaturedService } from "@/domain/services/listing-featured.service";
 import { ListingViewsCountService } from "@/domain/services/listing-views-count.service";
 import { ProfileCountService } from "@/domain/services/profile-count.service";
 import { RealEstateCountService } from "@/domain/services/real-estate-count.service";
@@ -17,6 +18,14 @@ import { SkeletonAgentList } from "@/features/agents/skeleton-agent-list";
 import { Separator } from "@/components/ui/separator";
 import { Suspense } from "react";
 import { AddAgentModal } from "@/features/agents/add-agent-modal";
+import { FeaturedListingsSlider } from "@/features/dashboard/featured-listings-slider";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardAction,
+  CardContent,
+} from '@/components/ui/card';
 
 function getMonthDateRange(date: Date): { start_date: string; end_date: string } {
   const year = date.getFullYear();
@@ -46,6 +55,7 @@ export default async function DashboardPage() {
   const { repository: listingRepository } = await createListingModule()
   const listingCountService = new ListingCountService(listingRepository)
   const listingViewsCountService = new ListingViewsCountService(listingRepository)
+  const listingFeaturedService = new ListingFeaturedService(listingRepository)
 
   const { repository: profileRepository } = await createProfileModule()
   const profileCountService = new ProfileCountService(profileRepository)
@@ -107,43 +117,69 @@ export default async function DashboardPage() {
 
   const agents = await getListAgentByRealEstateId(real_estate_id)
 
+  const featuredListings = await listingFeaturedService.getCachedFeatured(10, real_estate_id)
+
   return (
     <div className="flex flex-1 flex-col">
       <div className="@container/main flex flex-1 flex-col gap-2">
-        <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
-          <DashboardStats
-            activeProperties={activeProperties}
-            activePropertiesChange={activePropertiesChange}
-            visits={visits}
-            visitsChange={visitsChange}
-            totalListings={totalListings}
-            totalListingsChange={totalListingsChange}
-            newUsers={newUsers}
-            newUsersChange={newUsersChange}
-            totalRealEstates={totalRealEstates}
-            totalRealEstatesChange={totalRealEstatesChange}
-            visibleCards={['properties', 'visits', 'listings', 'newUsers', 'realEstates']}
-          />
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 p-4 md:gap-6 md:py-6">
-            <div className="lg:col-span-2">
-              <PropertyTypesChart data={propertyTypesData} />
-            </div>
-            <div className="lg:col-span-1">
-              <Suspense fallback={<SkeletonAgentList />}>
-                <div className="bg-card rounded-xl border p-4">
-                  <div className="flex items-center justify-between mb-2">
-                    <h3 className="text-lg font-semibold">Agentes</h3>
+        <div className="grid grid-cols-1 gap-8 md:grid-cols-5 auto-rows-[440px] px-4">
+
+          {/* Row 1 */}
+          <div className="md:col-span-3">
+            <DashboardStats
+              activeProperties={activeProperties}
+              activePropertiesChange={activePropertiesChange}
+              visits={visits}
+              visitsChange={visitsChange}
+              totalListings={totalListings}
+              totalListingsChange={totalListingsChange}
+              newUsers={newUsers}
+              newUsersChange={newUsersChange}
+              totalRealEstates={totalRealEstates}
+              totalRealEstatesChange={totalRealEstatesChange}
+              visibleCards={['properties', 'visits', 'listings', 'newUsers', 'realEstates']}
+            />
+          </div>
+
+          <div className="">
+            <PropertyTypesChart data={propertyTypesData} />
+          </div>
+
+          <div className="">
+            <Suspense fallback={<SkeletonAgentList />}>
+              <Card className="pb-2">
+                <CardHeader>
+                  <CardTitle className="text-base">
+                    Agentes
+                  </CardTitle>
+                  <CardAction>
                     <AddAgentModal real_estate_id={real_estate_id} />
-                  </div>
-                  <Separator className="mb-4" />
+                  </CardAction>
+                </CardHeader>
+                <CardContent className="border-t flex-col items-start text-sm min-h-92">
                   <AgentList
                     real_estate_id={real_estate_id}
                     agents={agents}
                   />
-                </div>
-              </Suspense>
-            </div>
+                </CardContent>
+              </Card>
+            </Suspense>          </div>
+
+          {/* Row 2 */}
+          <div className="">
+            {/* Multi users */}
           </div>
+
+          <div className="">
+            {/* Long jobs */}
+          </div>
+
+          <div className="md:col-span-3">
+            {featuredListings.length > 0 && (
+              <FeaturedListingsSlider listings={featuredListings} />
+            )}
+          </div>
+
         </div>
       </div>
     </div>
