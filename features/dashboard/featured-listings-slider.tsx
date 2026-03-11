@@ -11,6 +11,7 @@ import {
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { ListingEntity, listingTypeLabels } from '@/domain/entities/listing.entity';
 
@@ -19,13 +20,14 @@ interface FeaturedListingCardProps {
 }
 
 export const FeaturedListingCard = ({ listing }: FeaturedListingCardProps) => {
+    const { t } = useTranslation();
     const property = listing.property;
     const images = property.property_images || [];
     const mainImage = images.length > 0 ? images[0].public_url : null;
 
     return (
         <Card
-            className="overflow-hidden cursor-pointer pt-0 card-hover active:scale-[0.99] transition-all min-w-[280px] max-w-[280px]"
+            className="overflow-hidden cursor-pointer pt-0 card-hover active:scale-[0.99] transition-all min-w-70 max-w-70"
         >
             <div className="relative h-40 overflow-hidden">
                 {mainImage ? (
@@ -36,7 +38,7 @@ export const FeaturedListingCard = ({ listing }: FeaturedListingCardProps) => {
                     />
                 ) : (
                     <div className="w-full h-full bg-muted flex items-center justify-center">
-                        <span className="text-muted-foreground">Sin imagen</span>
+                        <span className="text-muted-foreground">{t('words.without_image')}</span>
                     </div>
                 )}
 
@@ -46,7 +48,7 @@ export const FeaturedListingCard = ({ listing }: FeaturedListingCardProps) => {
                     </Badge>
                     {listing.featured && (
                         <Badge className="bg-amber-500 hover:bg-amber-600">
-                            Destacado
+                            {t('words.featured')}
                         </Badge>
                     )}
                 </div>
@@ -55,7 +57,7 @@ export const FeaturedListingCard = ({ listing }: FeaturedListingCardProps) => {
             <div className="p-4">
                 <div className="text-lg font-bold text-primary">
                     {listing.currency} {listing.price.toLocaleString('es-ES')}
-                    {listing.price_negotiable && <span className="text-xs font-normal text-muted-foreground ml-1">negociable</span>}
+                    {listing.price_negotiable && <span className="text-xs font-normal text-muted-foreground ml-1">{t('words.negotiable')}</span>}
                 </div>
 
                 <h3 className="font-semibold text-foreground line-clamp-1 mt-1">{property.title}</h3>
@@ -95,6 +97,8 @@ interface FeaturedListingsSliderProps {
 }
 
 export function FeaturedListingsSlider({ listings }: FeaturedListingsSliderProps) {
+    const { t } = useTranslation();
+
     const scrollRef = useRef<HTMLDivElement>(null);
 
     const scroll = (direction: 'left' | 'right') => {
@@ -114,7 +118,7 @@ export function FeaturedListingsSlider({ listings }: FeaturedListingsSliderProps
     return (
         <div className="relative">
             <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold">Propiedades Destacadas</h3>
+                <h3 className="text-lg font-semibold">{t('words.properties')} {t('words.features')}</h3>
                 <div className="flex gap-2">
                     <button
                         onClick={() => scroll('left')}

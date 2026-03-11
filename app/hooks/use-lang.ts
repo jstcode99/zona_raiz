@@ -1,4 +1,4 @@
-import { Lang } from "@/infrastructure/config/routes.i18n"
+import { Lang } from "@/infrastructure/config/routes"
 import { getClientLang, setClientLang } from "@/lib/utils"
 import { useState, useEffect } from "react"
 

@@ -5,13 +5,15 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Button } from "@/components/ui/button"
 import { Building2, Plus, ArrowRight, Loader2 } from "lucide-react"
 import Link from "next/link"
-import i18next from "i18next"
+import { useTranslation } from "react-i18next"
 
 interface Props {
   onSkip: () => void
 }
 
 export function RealEstateRegisterPrompt({ onSkip }: Props) {
+    const { t } = useTranslation()
+  
   const [isPending, startTransition] = useTransition()
 
   const handleSkip = () => {

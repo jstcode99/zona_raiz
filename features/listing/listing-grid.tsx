@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge"
 import { MapPin, Bed, Bath, Maximize } from "lucide-react"
 import { IconHome } from "@tabler/icons-react"
 import Link from "next/link"
-import { ROUTES } from "@/infrastructure/config/constants"
+import { useRoutes } from "@/i18n/client-router"
 
 interface ListingCardProps {
   listing: ListingEntity
@@ -16,9 +16,10 @@ export function ListingCard({ listing }: ListingCardProps) {
   const property = listing.property
   const images = property.property_images || []
   const mainImage = images.length > 0 ? images[0].public_url : null
+  const routes = useRoutes()
 
   return (
-    <Link href={`${ROUTES.LISTING}/${property.slug}`}>
+    <Link href={routes.listings(listing.id.toString())}>
       <Card className="overflow-hidden pt-0 cursor-pointer hover:shadow-lg transition-all group h-full flex flex-col">
         <div className="relative h-48 overflow-hidden">
           {mainImage ? (

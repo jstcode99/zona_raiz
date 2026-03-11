@@ -7,7 +7,7 @@ import {
   ROUTES,
 } from "../config/constants"
 import { sessionModule } from "@/application/modules/session.module"
-import { PUBLIC_ROUTES } from "../config/routes.i18n"
+import { PUBLIC_ROUTES } from "../config/routes"
 
 // ==========================================
 // MIDDLEWARE

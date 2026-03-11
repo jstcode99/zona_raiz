@@ -1,6 +1,5 @@
 'use client'
 
-import { useTranslation } from 'react-i18next';
 import {
     Card,
     CardHeader,
@@ -13,6 +12,7 @@ import { Badge } from '@/components/ui/badge';
 import { IconTrendingUp } from '@tabler/icons-react';
 import { formatCurrency } from '@/lib/utils';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useTranslation } from 'react-i18next';
 
 export type DashboardStatType = 'properties' | 'visits' | 'listings' | 'newUsers' | 'realEstates';
 

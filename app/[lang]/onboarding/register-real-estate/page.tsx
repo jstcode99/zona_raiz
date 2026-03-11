@@ -3,10 +3,10 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { ArrowLeft } from "lucide-react"
 import { RealEstateRegistrationForm } from "@/features/real-states/real-estate-register-form"
-import { createOnboardingService } from "@/application/containers/onboarding-service.container"
+import { onboardingModule } from "@/application/modules/onboarding.module"
 
 export default async function page() {
-  const onboardingService = await OnboardingService()
+  const { onboardingService } = await onboardingModule()
   const state = await onboardingService.getOnboardingState()
 
   if (state.step === "redirect") {

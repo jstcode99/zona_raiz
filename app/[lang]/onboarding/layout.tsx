@@ -1,20 +1,25 @@
 import { ReactNode, Suspense } from "react"
 import { PageLoader } from "@/features/loader/page-loader"
 import { encodedRedirect } from "@/shared/redirect"
-import { Metadata } from "next"
-import { createSessionService } from "@/application/containers/session-service.container"
+import { sessionModule } from "@/application/modules/session.module"
+import { initI18n } from "@/i18n/server"
 
 export default async function PostLoginLayout({
   children,
+  params
 }: {
-  children: ReactNode
+  children: ReactNode,
+  params: { lang: string }
 }) {
 
-  const sessionService = await SessionService()
+  const i18n = await initI18n(params.lang)
+  const t = i18n.getFixedT(params.lang)
+
+  const { sessionService } = await sessionModule()
   const user = await sessionService.getCachedCurrentUser();
 
   if (!user) {
-    return encodedRedirect('error', '/auth/sign-in', 'No se pudo cargar el perfil')
+    return encodedRedirect('error', '/auth/sign-in', t("errors.auth_error"))
   }
 
   return (

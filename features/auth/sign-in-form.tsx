@@ -17,10 +17,11 @@ import { Spinner } from "@/components/ui/spinner"
 import { useServerMutation } from "@/shared/hooks/use-server-mutation.hook"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
-import { cn, route } from "@/lib/utils"
+import { cn } from "@/lib/utils"
 import { defaultSignInValues, SignInFormInput, signInSchema } from "@/application/validation/auth.validation"
 import { signInAction } from "@/application/actions/auth.actions"
 import { useLang } from "@/hooks/use-lang"
+import { getRoute } from "@/i18n/get-route"
 
 export function SignInForm({
   className,
@@ -43,7 +44,7 @@ export function SignInForm({
     action: signInAction,
     setError,
     onSuccess: () => {
-      router.push(route('dashboard', lang))
+      router.push(getRoute('dashboard', lang))
       router.refresh() // Refrescar para actualizar estado de auth
     },
     onError: (error) => {

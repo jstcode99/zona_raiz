@@ -25,7 +25,7 @@ export default async function DepartamentoPage({ params, searchParams }: Departa
   }
 
   const queryString = queryParams.toString()
-  const redirectUrl = queryString ? `${ROUTES.SEARCH}?${queryString}` : ROUTES.SEARCH
+  const redirectUrl = queryString ? `${ROUTES.HOME}?${queryString}` : ROUTES.HOME
   
   redirect(redirectUrl)
 }

@@ -4,14 +4,12 @@ import { ThemeProvider } from 'next-themes';
 import { GoogleOAuthProvider } from '@react-oauth/google'
 import AppToaster from '@/components/ui/toast'
 import { ReactNode } from 'react'
-import '@/lib/i18n'
+import { I18nProvider } from "@/i18n/provider"
 
 export function Providers({
   children,
-  dehydratedState
 }: {
   children: ReactNode,
-  dehydratedState?: unknown
 }) {
   const clientIdGoogle = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID
 
@@ -20,16 +18,18 @@ export function Providers({
   }
 
   return (
-    <ThemeProvider
-      attribute="class"
-      defaultTheme="system"
-      enableSystem
-      disableTransitionOnChange
-    >
+    <I18nProvider>
+      <ThemeProvider
+        attribute="class"
+        defaultTheme="system"
+        enableSystem
+        disableTransitionOnChange
+      >
         <GoogleOAuthProvider clientId={clientIdGoogle}>
           <AppToaster />
           {children}
         </GoogleOAuthProvider>
-    </ThemeProvider>
+      </ThemeProvider>
+    </I18nProvider>
   )
 }

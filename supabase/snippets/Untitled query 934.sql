@@ -1,1 +1,0 @@
-select property_type(count) from public.properties

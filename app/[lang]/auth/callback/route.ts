@@ -1,30 +1,33 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { cookies } from "next/headers"
 import { COOKIE_NAMES, COOKIE_OPTIONS, ROUTES } from "@/infrastructure/config/constants"
-import { createAuthModule } from "@/application/modules/auth.module"
 import { ProfileEntity } from "@/domain/entities/profile.entity"
+import { authModule } from "@/application/modules/auth.module"
+import { initI18n } from "@/i18n/server"
 
 export async function GET(request: NextRequest) {
   const { searchParams, origin } = new URL(request.url)
+  const lang = request.nextUrl.pathname.split("/")[1] || "es"
+  const i18n = await initI18n(lang)
+  const t = i18n.getFixedT(lang)
 
   const cookieStore = await cookies()
   // wiring manual por request
-  const authModule = await AuthModule()
+  const { authService } = await authModule()
 
   const code = searchParams.get("code")
   const token_hash = searchParams.get("token_hash")
   const type = searchParams.get("type")
 
-  let profile: ProfileEntity | null = null 
+  let profile: ProfileEntity | null = null
   /**
    * OAuth login
    */
   if (code) {
-    profile = await authModule.useCases.exchangeCodeForSession(code)
+    profile = await authService.exchangeCodeForSession(code)
 
     if (!profile) {
-      console.error("OAuth callback error")
-      return NextResponse.redirect(`${ROUTES.SIGN_IN}?error=oauth_error`)
+      return NextResponse.redirect(`${ROUTES.SIGN_IN}?error=${t('errors.auth_error')}`)
     }
 
     if (profile?.role) {
@@ -38,11 +41,11 @@ export async function GET(request: NextRequest) {
    * OTP login o email verification
    */
   if (token_hash && type) {
-    profile = await authModule.useCases.verifyOtp(token_hash, type)
+    profile = await authService.verifyOtp(token_hash, type)
 
     if (!profile) {
       console.error("OTP verification error:")
-      return NextResponse.redirect(`${ROUTES.OTP}?error=invalid_or_expired_link`)
+      return NextResponse.redirect(`${ROUTES.OTP}?error=${t('errors.invalid_or_expired_link')}`)
     }
 
     if (profile?.role) {
@@ -57,5 +60,5 @@ export async function GET(request: NextRequest) {
     return NextResponse.redirect(`${origin}${redirectPath}`)
   }
 
-  return NextResponse.redirect(`${origin}/auth/sign-in?error=missing_token`)
+  return NextResponse.redirect(`${origin}/auth/sign-in?error=${t('errors.missing_token')}`)
 }

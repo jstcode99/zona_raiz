@@ -1,8 +1,8 @@
+import { onboardingModule } from "@/application/modules/onboarding.module"
 import { OnboardingWrapper } from "@/features/onboarding/onboarding-wrapper"
-import { createOnboardingService } from "@/application/containers/onboarding-service.container"
 
 export default async function OnboardingPage() {
-  const onboardingService = await OnboardingService()
+  const { onboardingService } = await onboardingModule()
   const state = await onboardingService.getOnboardingState()
 
   return (

@@ -1,7 +1,8 @@
 import type { NextConfig } from "next";
-import { ROUTE_TRANSLATIONS } from "./infrastructure/config/routes.i18n";
 
 const nextConfig: NextConfig = {
+  reactStrictMode: true,
+  trailingSlash: false,
   images: {
     remotePatterns: [
       {
@@ -21,12 +22,6 @@ const nextConfig: NextConfig = {
     fetches: {
       fullUrl: true,
     },
-  },
-  async rewrites() {
-    return Object.entries(ROUTE_TRANSLATIONS).map(([es, en]) => ({
-      source: es,
-      destination: en,
-    }))
   },
 };
 

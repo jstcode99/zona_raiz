@@ -22,6 +22,7 @@ import {
 import { cn } from '@/lib/utils'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
+import { useTranslation } from 'react-i18next';
 
 const COLORS = [
   '#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6',
@@ -45,24 +46,26 @@ interface PropertyTypesChartProps extends React.ComponentProps<"div"> {
 }
 
 export function PropertyTypesChart({ data, onTypesChange, ...props }: PropertyTypesChartProps) {
+  const { t } = useTranslation();
+
   const [selectedTypes, setSelectedTypes] = useState<PropertyType[]>([])
   const [open, setOpen] = useState(false)
 
   const { chartData, total } = useMemo(() => {
     const filtered = selectedTypes.length > 0
       ? selectedTypes.map(type => ({
-          type,
-          count: data[type] || 0,
-          label: propertyTypeLabels[type]
-        })).filter(item => item.count > 0)
+        type,
+        count: data[type] || 0,
+        label: propertyTypeLabels[type]
+      })).filter(item => item.count > 0)
       : Object.entries(data)
-          .map(([type, count]) => ({
-            type: type as PropertyType,
-            count,
-            label: propertyTypeLabels[type as PropertyType]
-          }))
-          .filter(item => item.count > 0)
-    
+        .map(([type, count]) => ({
+          type: type as PropertyType,
+          count,
+          label: propertyTypeLabels[type as PropertyType]
+        }))
+        .filter(item => item.count > 0)
+
     const totalCount = filtered.reduce((sum, item) => sum + item.count, 0)
     return { chartData: filtered, total: totalCount }
   }, [data, selectedTypes])
@@ -78,8 +81,8 @@ export function PropertyTypesChart({ data, onTypesChange, ...props }: PropertyTy
   return (
     <Card className="w-full" {...props}>
       <CardHeader className="pb-2">
-        <CardTitle className="text-base">Propiedades por Tipo</CardTitle>
-        <CardDescription className="text-xs">Selecciona los tipos para filtrar</CardDescription>
+        <CardTitle className="text-base">{t('sentences.properties_by_type')}</CardTitle>
+        <CardDescription className="text-xs">{t('sentences.select_by_type')}</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4 lg:min-h-82">
         <Popover open={open} onOpenChange={setOpen}>
@@ -92,7 +95,7 @@ export function PropertyTypesChart({ data, onTypesChange, ...props }: PropertyTy
             >
               {selectedTypes.length === 0
                 ? "Seleccionar tipos..."
-                : `${selectedTypes.length} tipo(s) seleccionado(s)`}
+                : `${selectedTypes.length} ${t('word.types')}(s) ${t('word.selected')}(s)`}
               <ChevronsUpDown className="ml-2 h-3 w-3 shrink-0 opacity-50" />
             </Button>
           </PopoverTrigger>
@@ -100,7 +103,7 @@ export function PropertyTypesChart({ data, onTypesChange, ...props }: PropertyTy
             <Command>
               <CommandInput placeholder="Buscar tipos..." className="h-8" />
               <CommandList>
-                <CommandEmpty>No se encontraron tipos</CommandEmpty>
+                <CommandEmpty>{t('sentences.not_found_types')}</CommandEmpty>
                 <CommandGroup>
                   {PROPERTY_TYPE_OPTIONS.map((option) => (
                     <CommandItem
@@ -165,7 +168,7 @@ export function PropertyTypesChart({ data, onTypesChange, ...props }: PropertyTy
           </div>
         ) : (
           <div className="flex h-25 items-center justify-center text-muted-foreground text-xs">
-            No hay datos disponibles
+            {t('sentences.not_found_data')}
           </div>
         )}
       </CardContent>

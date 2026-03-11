@@ -1,22 +1,44 @@
-import { updateSession } from "@/infrastructure/db/supabase.proxy"
 import { NextRequest, NextResponse } from "next/server"
-import { translateRoute } from "@/infrastructure/config/routes.i18n"
+import { translateRoute } from "@/i18n/translate-route"
 import { getServerLang } from "@/lib/utils"
 
-export async function proxy(request: NextRequest) {
-  const lang = getServerLang(request)
-  const pathname = request.nextUrl.pathname
+const LANG_REGEX = /^\/(es|en)(\/|$)/
 
-  const translated = translateRoute(pathname, lang)
-  if (translated !== pathname) {
-    return NextResponse.rewrite(new URL(translated, request.url))
+export async function proxy(request: NextRequest) {
+
+  const { pathname } = request.nextUrl
+
+  const lang = getServerLang(request)
+
+  const hasLang = LANG_REGEX.test(pathname)
+
+  if (!hasLang) {
+
+    const url = request.nextUrl.clone()
+
+    url.pathname = `/${lang}${pathname}`
+
+    return NextResponse.redirect(url)
   }
 
-  return await updateSession(request)
+  const urlLang = pathname.split("/")[1] as "es" | "en"
+
+  const cleanPath = pathname.replace(`/${urlLang}`, "") || "/"
+
+  const translated = translateRoute(cleanPath, urlLang)
+
+  if (translated !== cleanPath) {
+
+    const url = request.nextUrl.clone()
+
+    url.pathname = `/${urlLang}${translated}`
+
+    return NextResponse.rewrite(url)
+  }
+
+  return NextResponse.next()
 }
 
 export const config = {
-  matcher: [
-    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico)$).*)",
-  ],
+  matcher: ["/((?!_next|api|.*\\..*).*)"]
 }
