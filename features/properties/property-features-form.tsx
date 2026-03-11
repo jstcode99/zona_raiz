@@ -5,7 +5,7 @@ import { Form } from "@/components/ui/form";
 import { amenitiesOptions, propertyTypeOptions } from "@/domain/entities/property.entity";
 
 export function PropertyFeaturesForm() {
-    const { t } = useTranslation();
+    const { t } = useTranslation('common');
 
     return (
         <>

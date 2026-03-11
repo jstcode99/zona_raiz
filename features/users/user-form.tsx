@@ -29,7 +29,7 @@ export function UserForm({
   defaultValues,
   ...props
 }: UserFormProps) {
-  const { t } = useTranslation()
+  const { t } = useTranslation('common')
   const isUpdateMode = Boolean(id)
 
   const form = useForm<UserInput>({

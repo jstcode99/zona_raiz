@@ -24,7 +24,7 @@ export function RealEstateForm({
   id,
   ...props
 }: RealEstateFormProps) {
-  const { t } = useTranslation()
+  const { t } = useTranslation('common')
   const isUpdateMode = Boolean(id)
 
   const form = useForm<RealEstateInput>({

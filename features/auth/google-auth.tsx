@@ -12,7 +12,7 @@ interface GoogleAuthProps {
 }
 
 export default function GoogleAuth({ disabled }: GoogleAuthProps) {
-  const { t } = useTranslation()
+  const { t } = useTranslation('common')
   const [isLoading, setIsLoading] = useState(false)
 
   const handleGoogleSignIn = async () => {

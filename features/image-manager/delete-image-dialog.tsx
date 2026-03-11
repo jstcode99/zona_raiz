@@ -17,7 +17,7 @@ interface Props {
 }
 
 export function DeleteImageDialog({ open, onClose, onConfirm }: Props) {
-  const { t } = useTranslation()
+  const { t } = useTranslation('components')
 
   return (
     <AlertDialog open={open} onOpenChange={onClose}>

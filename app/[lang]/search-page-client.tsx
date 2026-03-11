@@ -63,7 +63,7 @@ export function SearchPageClient({
       <div className="bg-primary/5 border-b">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <Link href="/" className="hover:text-primary">Inicio</Link>
+            <Link href="/autenticacion/login" className="hover:text-primary">Iniciar sesion</Link>
             <IconMapPin className="size-4" />
             <span>{breadcrumb}</span>
           </div>

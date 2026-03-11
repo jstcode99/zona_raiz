@@ -24,7 +24,7 @@ import countries from '@/lib/countries.json'
 import { useRoutes } from "@/i18n/client-router"
 
 export function RealEstateRegistrationForm() {
-  const { t } = useTranslation()
+  const { t } = useTranslation('common')
   const router = useRouter()
   const routes = useRoutes()
 

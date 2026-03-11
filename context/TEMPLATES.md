@@ -647,7 +647,7 @@ export function ProfileForm({
   defaultValues,
   ...props
 }: ProfileFormProps) {
-  const { t } = useTranslation()
+  const { t } = useTranslation('common')
 
   const form = useForm<ProfileInput>({
     resolver: yupResolver(profileSchema),

@@ -39,7 +39,7 @@ export function NavUser({
 }: {
   profile: ProfileEntity
 }) {
-  const { t } = useTranslation()
+  const { t } = useTranslation('common')
   const { isMobile } = useSidebar()
   const router = useRouter();
   const routes = useRoutes()

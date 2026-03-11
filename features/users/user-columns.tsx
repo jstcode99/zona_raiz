@@ -28,7 +28,7 @@ function roleVariant(role: EUserRole) {
 }
 
 function UserRowActions({ userId }: { userId: string }) {
-  const { t } = useTranslation()
+  const { t } = useTranslation('common')
 
   const mutation = useServerMutation({
     action: deleteUserAction,

@@ -23,7 +23,7 @@ export const AddAgentForm = ({
   real_estate_id
 }: Props) => {
 
-  const { t } = useTranslation()
+  const { t } = useTranslation('common')
 
   const form = useForm<agentToggleFormInput>({
     resolver: yupResolver(agentToggleSchema),

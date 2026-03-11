@@ -27,7 +27,7 @@ interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
 }
 
 export function AppSidebar({ ...props }: AppSidebarProps) {
-  const { t } = useTranslation()
+  const { t } = useTranslation(['app', 'words'])
 
   return (
     <Sidebar collapsible="icon" {...props}>

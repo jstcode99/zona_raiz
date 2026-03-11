@@ -6,7 +6,7 @@ import countries from '@/lib/countries.json'
 import { useFormContext } from "react-hook-form";
 
 export function PropertyLocationForm() {
-  const { t } = useTranslation();
+  const { t } = useTranslation('common');
   const { control } = useFormContext()
 
   return (

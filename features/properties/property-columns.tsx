@@ -96,7 +96,7 @@ export const PropertyColumns: ColumnDef<PropertyRow>[] = [
               {city}
             </span>
           </div>
-          <span className="text-xs text-muted-foreground pl-5 truncate max-w-[180px]">
+          <span className="text-xs text-muted-foreground pl-5 truncate max-w-45">
             {state} {postal_code && `(${postal_code})`}
           </span>
         </div>

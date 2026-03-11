@@ -4,7 +4,7 @@ import { useState, useCallback, useRef } from "react";
 import { GoogleMap, Marker, useLoadScript } from "@react-google-maps/api";
 import usePlacesAutocomplete, { getGeocode, getLatLng } from "use-places-autocomplete";
 import { Command, CommandInput, CommandList, CommandEmpty, CommandItem } from "@/components/ui/command";
-import i18next from "i18next"
+import { useTranslation } from "react-i18next"
 import { Input } from "@/components/ui/input";
 
 export type PlaceData = {
@@ -26,7 +26,7 @@ const mapContainerStyle = { width: "100%", height: "300px" };
 const defaultCenter = { lat: 4.711, lng: -74.072 }; // Bogotá por defecto
 
 export const PlaceSelectorGoogle: React.FC<PlaceSelectorProps> = ({ onSelect, defaultPlace }) => {
-  const t = i18next.t
+  const { t } = useTranslation('common')
 
   const { isLoaded } = useLoadScript({
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "",
@@ -119,20 +119,20 @@ export const PlaceSelectorGoogle: React.FC<PlaceSelectorProps> = ({ onSelect, de
     setMarkerPosition({ lat, lng });
   };
 
-  if (!isLoaded) return <div>{t("loadingMaps")}</div>;
+  if (!isLoaded) return <div>{t("words.loadingMaps")}</div>;
 
   return (
     <div className="space-y-4">
       {/* Command search */}
       <Command>
         <CommandInput
-          placeholder={t("searchPlace")}
+          placeholder={t("words.searchPlace")}
           value={value}
           onValueChange={setValue}
           disabled={!ready}
         />
         <CommandList>
-          <CommandEmpty>{t("noResults")}</CommandEmpty>
+          <CommandEmpty>{t("words.noResults")}</CommandEmpty>
           {status === "OK" &&
             data.map((item) => (
               <CommandItem key={item.place_id} onSelect={() => handleSelect(item.description)}>
@@ -160,23 +160,23 @@ export const PlaceSelectorGoogle: React.FC<PlaceSelectorProps> = ({ onSelect, de
         <div className="space-y-2">
           <Input
             value={selectedPlace.address}
-            placeholder={t("address")}
+            placeholder={t("words.address")}
             onChange={(e) => setSelectedPlace({ ...selectedPlace, address: e.target.value })}
           />
           <div className="flex gap-2">
             <Input
               value={selectedPlace.city}
-              placeholder={t("city")}
+              placeholder={t("words.city")}
               onChange={(e) => setSelectedPlace({ ...selectedPlace, city: e.target.value })}
             />
             <Input
               value={selectedPlace.state}
-              placeholder={t("state")}
+              placeholder={t("words.state")}
               onChange={(e) => setSelectedPlace({ ...selectedPlace, state: e.target.value })}
             />
             <Input
               value={selectedPlace.country}
-              placeholder={t("country")}
+              placeholder={t("words.country")}
               onChange={(e) => setSelectedPlace({ ...selectedPlace, country: e.target.value })}
             />
           </div>
@@ -189,7 +189,7 @@ export const PlaceSelectorGoogle: React.FC<PlaceSelectorProps> = ({ onSelect, de
         disabled={!selectedPlace}
         onClick={() => selectedPlace && onSelect(selectedPlace)}
       >
-        {t("confirm")}
+        {t("words.confirm")}
       </button>
     </div>
   );

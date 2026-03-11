@@ -2,9 +2,15 @@ import { encodedRedirect } from "@/shared/redirect"
 import AuthBackgroundShape from '@/assets/svg/background-shape'
 import AccountSectionCard from "@/features/profile/profile-section-card"
 import { sessionModule } from "@/application/modules/session.module";
+import { Lang } from "@/i18n/settings";
 
-export default async function page() {
-  const { sessionService } = await sessionModule()
+export default async function page({
+  params
+}: {
+  params: { lang: Lang }
+}) {
+  const { lang } = await params;
+  const { sessionService } = await sessionModule(lang)
   const profile = await sessionService.getCachedCurrentUser();
 
   if (!profile) {

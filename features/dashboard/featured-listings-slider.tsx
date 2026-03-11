@@ -20,7 +20,7 @@ interface FeaturedListingCardProps {
 }
 
 export const FeaturedListingCard = ({ listing }: FeaturedListingCardProps) => {
-    const { t } = useTranslation();
+    const { t } = useTranslation('common');
     const property = listing.property;
     const images = property.property_images || [];
     const mainImage = images.length > 0 ? images[0].public_url : null;
@@ -97,7 +97,7 @@ interface FeaturedListingsSliderProps {
 }
 
 export function FeaturedListingsSlider({ listings }: FeaturedListingsSliderProps) {
-    const { t } = useTranslation();
+    const { t } = useTranslation('common');
 
     const scrollRef = useRef<HTMLDivElement>(null);
 

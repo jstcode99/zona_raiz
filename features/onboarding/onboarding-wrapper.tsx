@@ -12,7 +12,7 @@ interface Props {
 }
 
 export function OnboardingWrapper({ initialState }: Props) {
-  const { t } = useTranslation()
+  const { t } = useTranslation('pages')
 
   // Estado inicial determina qué mostrar
   if (initialState.step === "loading") {

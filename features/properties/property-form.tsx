@@ -35,7 +35,7 @@ export function PropertyForm({
   const router = useRouter()
   const routes = useRoutes()
 
-  const { t } = useTranslation();
+  const { t } = useTranslation('common');
   const isUpdateMode = Boolean(id);
 
   const stepFields = {

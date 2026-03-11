@@ -3,7 +3,7 @@ import { propertyTypeOptions } from "@/domain/entities/property.entity";
 import { useTranslation } from "react-i18next";
 
 export function PropertyCeoForm() {
-    const { t } = useTranslation();
+    const { t } = useTranslation('common');
     return (
         <Form.Set legend={t("forms.property.basic-info")}>
             <Form.Input

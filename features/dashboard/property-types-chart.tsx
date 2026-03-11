@@ -46,7 +46,7 @@ interface PropertyTypesChartProps extends React.ComponentProps<"div"> {
 }
 
 export function PropertyTypesChart({ data, onTypesChange, ...props }: PropertyTypesChartProps) {
-  const { t } = useTranslation();
+  const { t } = useTranslation('sentences');
 
   const [selectedTypes, setSelectedTypes] = useState<PropertyType[]>([])
   const [open, setOpen] = useState(false)

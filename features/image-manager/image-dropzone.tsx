@@ -11,7 +11,7 @@ interface Props {
 }
 
 export function ImageDropzone({ onFilesSelect, disabled }: Props) {
-  const { t } = useTranslation()
+  const { t } = useTranslation('components')
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     if (!acceptedFiles?.length) return

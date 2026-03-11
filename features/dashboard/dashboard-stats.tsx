@@ -122,7 +122,7 @@ export const DashboardStats = ({
     pending = false,
     visibleCards = ['properties', 'visits', 'listings', 'newUsers', 'realEstates'],
 }: DashboardStatsProps) => {
-    const { t } = useTranslation();
+    const { t } = useTranslation('common');
 
     const getValue = (key: string): number => {
         const values: Record<string, number> = {

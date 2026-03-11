@@ -1,6 +1,22 @@
 {
   "app": {
-    "name": "Zona Raiz"
+    "name": "Zona Raiz",
+    "description": "Arriendos y ventas de inmuebles"
+  },
+  "pages": {
+    "onboarding": {
+      "title": "No tienes inmobiliaria",
+      "subtitle": "Para acceder al dashboard, necesitas estar asociado a una inmobiliaria.",
+      "call-action": "Registrar mi primera inmobiliaria.",
+      "call-home": "Volver al inicio.",
+      "select-error": "Error al seleccionar inmobiliaria.",
+      "skip": "Vuelve cuando quieras completar el registro de inmobiliaria",
+      "loading": "estamos cargando para ti las inmobiliarias asociadas a cuenta"
+    },
+    "onboarding-selectiobn": {
+      "title": "Inmobiliaria",
+      "subtitle": "Para acceder al dashboard, necesitas selecionar una inmobiliaria."
+    }
   },
   "forms": {
     "sign-in": {
@@ -28,7 +44,8 @@
       "submit": "Iniciar sesión",
       "alternatives": {
         "title": "O continúa con",
-        "google": "Ingresar con Google"
+        "google": "Ingresar con Google",
+        "otp": "Ingresar con codigo via email"
       }
     },
     "sign-up": {
@@ -68,10 +85,8 @@
           "placeholder": "**********",
           "message": "Confirma contraseña debe ser igual a la contraseña"
         },
-        "polices": {
-          "label": "Acepta términos y condiciones",
-          "placeholder": "Términos y condiciones",
-          "message": "Debes aceptar los términos y condiciones para continuar"
+        "type_register": {
+          "label": "Registrarte como Agente"
         },
         "sign-in": {
           "label": "Inicia sesión aquí",
@@ -88,8 +103,10 @@
     "property": {
       "title": "Crear propiedad",
       "subtitle": "Completa la información para publicar la propiedad",
-      "manual_switch": "Completar la información manualmente",
-      "characteristics_legend": "Información basica el inmueble",
+      "basic-info": "Información basica el inmueble",
+      "location": "Información de ubicacion",
+      "features": "Datos del inmueble",
+      "amenities": "Adicionales del inmueble",
       "fields": {
         "title": {
           "label": "Título",
@@ -119,10 +136,10 @@
           "placeholder": "Describe las características principales de la propiedad",
           "message": "La descripción es obligatoria"
         },
-        "business_type": {
-          "label": "Tipo de negocio",
-          "placeholder": "Selecciona tipo de negocio",
-          "message": "Debes seleccionar un tipo de negocio válido"
+        "property_type": {
+          "label": "Tipo de propiedad",
+          "placeholder": "Selecciona tipo de propiedad",
+          "message": "Debes seleccionar un tipo de propiedad válido"
         },
         "status": {
           "label": "Estado",
@@ -169,6 +186,24 @@
           "message": "El país es obligatorio",
           "message1": "No puede tener más de 150 caracteres"
         },
+        "street": {
+          "label": "Calle | Dirección",
+          "placeholder": "Calle ",
+          "message": "La calle es obligatoria"
+        },
+        "postal_code": {
+          "label": "Codio postal",
+          "placeholder": "Codio postal",
+          "message": "El Codio postal es obligatorio"
+        },
+        "floors": {
+          "label": "Plantas",
+          "placeholder": "Plantas"
+        },
+        "year_built": {
+          "label": "Ano de construccion",
+          "placeholder": "Ano de construccion"
+        },
         "latitude": {
           "label": "Latitud",
           "placeholder": "4.7110",
@@ -202,12 +237,34 @@
           "message1": "Debe ser un número entero",
           "message2": "No puede ser negativo"
         },
-        "area_m2": {
+        "total_area": {
           "label": "Área (m²)",
           "placeholder": "120",
           "message": "Debe ser un número válido",
           "message1": "Debe ser un número entero",
           "message2": "El área debe ser al menos 1 m²"
+        },
+        "built_area": {
+          "label": "Área construida (m²)",
+          "placeholder": "120",
+          "message": "Debe ser un número válido",
+          "message1": "Debe ser un número entero",
+          "message2": "El área debe ser al menos 1 m²"
+        },
+        "lot_area": {
+          "label": "Área del lote (m²)",
+          "placeholder": "120",
+          "message": "Debe ser un número válido",
+          "message1": "Debe ser un número entero",
+          "message2": "El área debe ser al menos 1 m²"
+        },
+        "parking_spots": {
+          "label": "Zonas de parqueo",
+          "placeholder": "0"
+        },
+        "amenities": {
+          "label": "Adicionales",
+          "placeholder": "Adicionales"
         },
         "whatsapp_contact": {
           "label": "Contacto de WhatsApp",
@@ -217,15 +274,10 @@
           "message2": "Formato de teléfono no válido"
         }
       },
-      "submit": "Guardar propiedad",
+      "created": "Guardar propiedad",
+      "updated": "Actualizar propiedad",
       "success": "La propiedad ha sido guardada correctamente."
     },
-    "errors": {
-      "password_chart": "La contraseña debe tener al menos 8 caracteres, incluyendo una letra minúscula y una mayúscula.",
-      "confirm_password": "La confirmación de la contraseña debe coincidir con la contraseña.",
-      "check_fields": "Revisa los campos"
-    },
-    "not_found": "Formulario no encontrado para esta categoría.",
     "otp": {
       "title": "Solicitud de codigo OTP",
       "subtitle": "Ingresa a tu correo y copia el código de verificación",
@@ -236,27 +288,32 @@
           "message": "Este campo debe ser un código válido"
         }
       },
-      "submit": "Enviar código",
+      "submit": "Solicitar código",
       "alternatives": {
-        "bacic": "Iniciar sesión con contraseña"
+        "basic": "Iniciar sesión con contraseña"
       },
       "success": "Se ha enviado el codigo de verificacion."
     },
-    "realEstate": {
+    "real-estate": {
       "title": "Inmobiliaria",
       "subtitle": "Completa la información de la inmobiliaria",
+      "basic-info": "Informacion basica de la Inmobiliaria",
       "success": "Guardado correctamente",
-      "submit": "Guardar",
+      "update": "Actualizar Inmobiliaria",
+      "create": "Registrar Inmobiliaria",
       "fields": {
         "name": {
           "label": "Nombre",
           "placeholder": "Nombre de la inmobiliaria"
         },
-        "slug": {
-          "label": "Slug",
-          "placeholder": "identificador-url"
+        "whatsapp": {
+          "label": "Contacto de WhatsApp",
+          "placeholder": "+57 3168416131"
         },
-        "logo_url": {
+        "address": {
+          "label": "Informacion de ubicacion"
+        },
+        "logo": {
           "label": "Logo",
           "placeholder": "Sube el logo"
         },
@@ -264,45 +321,19 @@
           "label": "Descripción",
           "placeholder": "Descripción general"
         },
-        "phone": {
-          "label": "Teléfono",
-          "placeholder": "+1 000 000 000"
+        "postal_code": {
+          "label": "Codio postal",
+          "placeholder": "Codio postal",
+          "message": "El Codio postal es obligatorio"
         },
-        "whatsapp": {
-          "label": "WhatsApp",
-          "placeholder": "+1 000 000 000"
-        },
-        "address": {
-          "label": "Dirección",
-          "placeholder": "Dirección completa"
-        },
-        "city": {
-          "label": "Ciudad",
-          "placeholder": "Ciudad"
-        },
-        "state": {
-          "label": "Estado / Provincia",
-          "placeholder": "Estado"
-        },
-        "country": {
-          "label": "País",
-          "placeholder": "País"
-        },
-        "latitude": {
-          "label": "Latitud",
-          "placeholder": "0.000000"
-        },
-        "longitude": {
-          "label": "Longitud",
-          "placeholder": "0.000000"
-        },
-        "google_maps_url": {
-          "label": "URL Google Maps",
-          "placeholder": "https://maps.google.com/..."
+        "street": {
+          "label": "Calle | Dirección",
+          "placeholder": "Calle ",
+          "message": "La calle es obligatoria"
         }
       }
     },
-    "userAdmin": {
+    "user": {
       "title": "Usuario",
       "subtitle": "Administrar perfil y permisos",
       "success": "Usuario actualizado",
@@ -333,10 +364,122 @@
     },
     "profile": {
       "title": "Perfil",
-      "subtitle": "Administra tus datos personales."
+      "subtitle": "Administra tus datos personales.",
+      "success": "Se ha actualizado los datos del perfil",
+      "fields": {
+        "full_name": {
+          "label": "Nombre completo",
+          "placeholder": "Joe",
+          "message": "El nombre completo deben tener al menos 3 caracteres",
+          "message1": "El nombre completo no pueden tener más de 25 caracteres"
+        },
+        "phone": {
+          "label": "Teléfono",
+          "placeholder": "+ ## ### #### ###",
+          "message": "El número de teléfono debe tener al menos 10 caracteres",
+          "message1": "El número de teléfono no puede tener más de 16 caracteres"
+        }
+      }
+    },
+    "listing": {
+      "title": "Publicar propiedad",
+      "subtitle": "Administra las propiedades de tu inmobiliaria",
+      "create": "Crear nueva publicación",
+      "update": "Actualizar publicación",
+      "created": "Guardar publicación",
+      "updated": "Actualizar publicación",
+      "fields": {
+        "property_id": {
+          "label": "ID de la propiedad",
+          "placeholder": "ID de la propiedad"
+        },
+        "agent_id": {
+          "label": "ID del agente",
+          "placeholder": "ID del agente"
+        },
+        "listing_type": {
+          "label": "Tipo de listado",
+          "placeholder": "Selecciona el tipo de listado"
+        },
+        "price": {
+          "label": "Precio",
+          "placeholder": "100000"
+        },
+        "currency": {
+          "label": "Moneda",
+          "placeholder": "Selecciona moneda"
+        },
+        "price_negotiable": {
+          "label": "Precio negociable"
+        },
+        "status": {
+          "label": "Estado",
+          "placeholder": "Selecciona estado"
+        },
+        "expenses_amount": {
+          "label": "Valor de administración",
+          "placeholder": "Valor de administración"
+        },
+        "expenses_included": {
+          "label": "Gastos incluidos"
+        },
+        "featured": {
+          "label": "Destacar propiedad"
+        },
+        "meta_title": {
+          "label": "Meta título",
+          "placeholder": "Compra apartamento moderno en el centro"
+        },
+        "meta_description": {
+          "label": "Meta descripción",
+          "placeholder": "Descubre este increíble apartamento..."
+        },
+        "keywords": {
+          "label": "Palabras clave",
+          "placeholder": "Palabras clave"
+        },
+        "virtual_tour_url": {
+          "label": "URL de tour virtual",
+          "placeholder": "https://tours.virtuales.com/..."
+        },
+        "video_url": {
+          "label": "URL de video",
+          "placeholder": "https://videos.com/..."
+        },
+        "available_from": {
+          "label": "Disponible desde",
+          "placeholder": "Selecciona fecha"
+        },
+        "minimum_contract_duration": {
+          "label": "Duración mínima del contrato (meses)",
+          "placeholder": "12"
+        },
+        "whatsapp_contact": {
+          "label": "Contacto de WhatsApp",
+          "placeholder": "+57 300 123 4567"
+        }
+      }
+    },
+    "add-agent": {
+      "title": "Agrega tus agentes",
+      "subtitle": "Invita agentes registrados en la plataforma",
+      "add": "Agregar agente",
+      "fields": {
+        "profile_id":{
+          "label" : "Correo del agente",
+          "placeholder" : "agente@email.com"
+        }
+      }
     }
   },
   "words": {
+    "dashboard": "panel",
+    "real_estates": "inmobiliarias",
+    "real_estate": "inmobiliaria",
+    "properties": "propiedades",
+    "listing": "publicaciones",
+    "profile": "perfil",
+    "agents": "agentes",
     "pages": "Páginas",
     "showing": "Mostrando",
     "rows": "Filas",
@@ -363,7 +506,7 @@
     "back": "Volver",
     "contact": "Contacto",
     "loading": "Cargando",
-    "company": "Empresa",
+    "real_state": "Inmobiliaria",
     "welcome": "Bienvenido",
     "saving": "Guardando",
     "validated": "Validado",
@@ -379,14 +522,44 @@
     "value": "Valor",
     "report": "Reporte",
     "next": "Siguiente",
-    "previous": "Anterior"
+    "previous": "Anterior",
+    "city": "Ciudad",
+    "country": "Pais",
+    "state": "Departamento",
+    "street": "Calle",
+    "postal_code": "Codigo postal",
+    "generate": "Generar",
+    "number": "Número",
+    "drop_file": "Arrastra aqui el archivo o da click",
+    "without_results": "Sin resultados",
+    "no-address": "Sin dirección asociada"
   },
-  "word": {
-    "generate": "Generar"
+  "dashboard": {
+    "total-revenue": "Ingresos totales",
+    "new-customers": "Nuevos clientes",
+    "active-properties": "Propiedades activas",
+    "visits": "Visitas",
+    "total-listings": "Publicaciones totales",
+    "new-users": "Nuevos usuarios",
+    "real-estates": "Inmobiliarias",
+    "trending-up-this-month": "Tendiendo al alza este mes",
+    "visits-last-six-months": "Visitas en los últimos seis meses",
+    "down-percent-this-period": "Bajó este período",
+    "acquisition-needs-attention": "La adquisición necesita atención",
+    "properties-trending-up": "Propiedades en tendencia",
+    "properties-over-last-month": "Propiedades del último mes",
+    "visits-trending-up": "Visitas en tendencia",
+    "visits-exceeds-targets": "Las visitas superan los objetivos",
+    "listings-trending-up": "Publicaciones en tendencia",
+    "listings-over-last-month": "Publicaciones del último mes",
+    "new-users-trending-up": "Usuarios en tendencia",
+    "new-users-over-last-month": "Usuarios del último mes",
+    "real-estates-trending-up": "Inmobiliarias en tendencia",
+    "real-estates-over-last-month": "Inmobiliarias del último mes"
   },
   "validations": {
     "accepted": "El campo {{attribute}} debe ser aceptado.",
-    "accepted_if": "El campo {{attribute}} debe ser aceptado cuando :other es :value.",
+    "accepted_if": "El campo {{attribute}} debe ser aceptado cuando {{other}} es :value.",
     "active_url": "El campo {{attribute}} no es una URL válida.",
     "after": "El campo {{attribute}} debe ser una fecha después de :date.",
     "after_or_equal": "El campo {{attribute}} debe ser una fecha después o igual a :date.",
@@ -398,10 +571,10 @@
     "before": "El campo {{attribute}} debe ser una fecha antes de :date.",
     "before_or_equal": "El campo {{attribute}} debe ser una fecha antes o igual a :date.",
     "between": {
-      "numeric": "El campo {{attribute}} debe estar entre :min - :max.",
-      "file": "El campo {{attribute}} debe estar entre :min - :max kilobytes.",
-      "string": "El campo {{attribute}} debe estar entre :min - :max caracteres.",
-      "array": "El campo {{attribute}} debe tener entre :min y :max elementos."
+      "numeric": "El campo {{attribute}} debe estar entre {{min}} - {{max}}.",
+      "file": "El campo {{attribute}} debe estar entre {{min}} - {{max}} kilobytes.",
+      "string": "El campo {{attribute}} debe estar entre {{min}} - {{max}} caracteres.",
+      "array": "El campo {{attribute}} debe tener entre {{min}} y {{max}} elementos."
     },
     "boolean": "El campo {{attribute}} debe ser verdadero o falso.",
     "confirmed": "El campo de confirmación de {{attribute}} no coincide.",
@@ -411,16 +584,16 @@
     "date_format": "El campo {{attribute}} no corresponde con el formato :format.",
     "decimal": "El {{attribute}} debe tener :decimal decimales.",
     "declined": "El campo {{attribute}} debe marcar como rechazado.",
-    "declined_if": "El campo {{attribute}} debe marcar como rechazado cuando :other es :value.",
-    "different": "Los campos {{attribute}} y :other deben ser diferentes.",
+    "declined_if": "El campo {{attribute}} debe marcar como rechazado cuando {{other}} es :value.",
+    "different": "Los campos {{attribute}} y {{other}} deben ser diferentes.",
     "digits": "El campo {{attribute}} debe ser de :digits dígitos.",
-    "digits_between": "El campo {{attribute}} debe tener entre :min y :max dígitos.",
+    "digits_between": "El campo {{attribute}} debe tener entre {{min}} y {{max}} dígitos.",
     "dimensions": "El campo {{attribute}} no tiene una dimensión válida.",
     "distinct": "El campo {{attribute}} tiene un valor duplicado.",
-    "doesnt_end_with": "El campo {{attribute}} no puede finalizar con uno de los siguientes valores: :values.",
-    "doesnt_start_with": "El campo {{attribute}} no puede comenzar con uno de los siguientes valores: :values.",
+    "doesnt_end_with": "El campo {{attribute}} no puede finalizar con uno de los siguientes valores: {{values}}.",
+    "doesnt_start_with": "El campo {{attribute}} no puede comenzar con uno de los siguientes valores: {{values}}.",
     "email": "El formato del {{attribute}} no es válido.",
-    "ends_with": "El campo {{attribute}} debe terminar con alguno de los valores: :values.",
+    "ends_with": "El campo {{attribute}} debe terminar con alguno de los valores: {{values}}.",
     "enum": "El campo seleccionado en {{attribute}} no es válido.",
     "exists": "El campo {{attribute}} seleccionado no es válido o no fue encontrado.",
     "file": "El campo {{attribute}} debe ser un archivo.",
@@ -439,7 +612,7 @@
     },
     "image": "El campo {{attribute}} debe ser una imagen.",
     "in": "El campo {{attribute}} seleccionado no es válido.",
-    "in_array": "El campo {{attribute}} no existe en :other.",
+    "in_array": "El campo {{attribute}} no existe en {{other}}.",
     "integer": "El campo {{attribute}} debe ser un entero.",
     "ip": "El campo {{attribute}} debe ser una dirección IP válida.",
     "ipv4": "El campo {{attribute}} debe ser una dirección IPv4 válida.",
@@ -447,39 +620,39 @@
     "json": "El campo {{attribute}} debe ser una cadena JSON válida.",
     "lowercase": "El {{attribute}} debe ser minusculas.",
     "lt": {
-      "numeric": "El campo {{attribute}} debe ser menor que :max.",
-      "file": "El campo {{attribute}} debe ser menor que :max kilobytes.",
-      "string": "El campo {{attribute}} debe ser menor que :max caracteres.",
-      "array": "El campo {{attribute}} puede tener hasta :max elementos."
+      "numeric": "El campo {{attribute}} debe ser menor que {{max}}.",
+      "file": "El campo {{attribute}} debe ser menor que {{max}} kilobytes.",
+      "string": "El campo {{attribute}} debe ser menor que {{max}} caracteres.",
+      "array": "El campo {{attribute}} puede tener hasta {{max}} elementos."
     },
     "lte": {
-      "numeric": "El campo {{attribute}} debe ser menor o igual que :max.",
-      "file": "El campo {{attribute}} debe ser menor o igual que :max kilobytes.",
-      "string": "El campo {{attribute}} debe ser menor o igual que :max caracteres.",
-      "array": "El campo {{attribute}} no puede tener más que :max elementos."
+      "numeric": "El campo {{attribute}} debe ser menor o igual que {{max}}.",
+      "file": "El campo {{attribute}} debe ser menor o igual que {{max}} kilobytes.",
+      "string": "El campo {{attribute}} debe ser menor o igual que {{max}} caracteres.",
+      "array": "El campo {{attribute}} no puede tener más que {{max}} elementos."
     },
     "mac_address": "El campo {{attribute}} debe ser una dirección MAC válida.",
     "max": {
-      "numeric": "El campo {{attribute}} debe ser menor que :max.",
-      "file": "El campo {{attribute}} debe ser menor que :max kilobytes.",
-      "string": "El campo {{attribute}} debe ser menor que :max caracteres.",
-      "array": "El campo {{attribute}} puede tener hasta :max elementos."
+      "numeric": "El campo {{attribute}} debe ser menor que {{max}}.",
+      "file": "El campo {{attribute}} debe ser menor que {{max}} kilobytes.",
+      "string": "El campo {{attribute}} debe ser menor que {{max}} caracteres.",
+      "array": "El campo {{attribute}} puede tener hasta {{max}} elementos."
     },
-    "max_digits": "El campo {{attribute}} no puede superar los :max dígitos.",
-    "mimes": "El campo {{attribute}} debe ser un archivo de tipo: :values.",
-    "mimetypes": "El campo {{attribute}} debe ser un archivo de tipo: :values.",
+    "max_digits": "El campo {{attribute}} no puede superar los {{max}} dígitos.",
+    "mimes": "El campo {{attribute}} debe ser un archivo de tipo: {{values}}.",
+    "mimetypes": "El campo {{attribute}} debe ser un archivo de tipo: {{values}}.",
     "min": {
-      "numeric": "El campo {{attribute}} debe tener al menos :min.",
-      "file": "El campo {{attribute}} debe tener al menos :min kilobytes.",
-      "string": "El campo {{attribute}} debe tener al menos :min caracteres.",
-      "array": "El campo {{attribute}} debe tener al menos :min elementos."
+      "numeric": "El campo {{attribute}} debe tener al menos {{min}}.",
+      "file": "El campo {{attribute}} debe tener al menos {{min}} kilobytes.",
+      "string": "El campo {{attribute}} debe tener al menos {{min}} caracteres.",
+      "array": "El campo {{attribute}} debe tener al menos {{min}} elementos."
     },
-    "min_digits": "El campo {{attribute}} debe ser como mínimo de :min dígitos.",
+    "min_digits": "El campo {{attribute}} debe ser como mínimo de {{min}} dígitos.",
     "missing": "El campo {{attribute}} debe faltar.",
-    "missing_if": "El campo {{attribute}} debe faltar cuando :other es :value",
-    "missing_unless": "El campo {{attribute}} debe faltar a menos que :other sea :value.",
-    "missing_with": "El campo {{attribute}} debe faltar cuando :values está presente.",
-    "missing_with_all": "El campo {{attribute}} debe faltar cuando :values están presentes",
+    "missing_if": "El campo {{attribute}} debe faltar cuando {{other}} es :value",
+    "missing_unless": "El campo {{attribute}} debe faltar a menos que {{other}} sea :value.",
+    "missing_with": "El campo {{attribute}} debe faltar cuando {{values}} está presente.",
+    "missing_with_all": "El campo {{attribute}} debe faltar cuando {{values}} están presentes",
     "multiple_of": "El campo {{attribute}} debe ser un múltiplo de :value.",
     "not_in": "El campo {{attribute}} seleccionado es invalido.",
     "not_regex": "El formato del campo {{attribute}} no es válido.",
@@ -493,26 +666,26 @@
     },
     "present": "El campo {{attribute}} debe estar presente.",
     "prohibited": "El campo {{attribute}} no está permitido.",
-    "prohibited_if": "El campo {{attribute}} no está permitido cuando :other es :value.",
-    "prohibited_unless": "El campo {{attribute}} no está permitido si :other no está en :values.",
-    "prohibits": "El campo {{attribute}} no permite que :other esté presente.",
+    "prohibited_if": "El campo {{attribute}} no está permitido cuando {{other}} es :value.",
+    "prohibited_unless": "El campo {{attribute}} no está permitido si {{other}} no está en {{values}}.",
+    "prohibits": "El campo {{attribute}} no permite que {{other}} esté presente.",
     "regex": "El formato del campo {{attribute}} no es válido.",
     "required": "El campo {{attribute}} es requerido.",
-    "required_array_keys": "El campo {{attribute}} debe contener entradas para: :values.",
-    "required_if": "El campo {{attribute}} es requerido cuando el campo :other es :value.",
-    "required_unless": "El campo {{attribute}} es requerido a menos que :other esté presente en :values.",
-    "required_with": "El campo {{attribute}} es requerido cuando :values está presente.",
-    "required_with_all": "El campo {{attribute}} es requerido cuando :values está presente.",
-    "required_without": "El campo {{attribute}} es requerido cuando :values no está presente.",
-    "required_without_all": "El campo {{attribute}} es requerido cuando ningún :values está presente.",
-    "same": "El campo {{attribute}} y :other debe coincidir.",
+    "required_array_keys": "El campo {{attribute}} debe contener entradas para: {{values}}.",
+    "required_if": "El campo {{attribute}} es requerido cuando el campo {{other}} es :value.",
+    "required_unless": "El campo {{attribute}} es requerido a menos que {{other}} esté presente en {{values}}.",
+    "required_with": "El campo {{attribute}} es requerido cuando {{values}} está presente.",
+    "required_with_all": "El campo {{attribute}} es requerido cuando {{values}} está presente.",
+    "required_without": "El campo {{attribute}} es requerido cuando {{values}} no está presente.",
+    "required_without_all": "El campo {{attribute}} es requerido cuando ningún {{values}} está presente.",
+    "same": "El campo {{attribute}} y {{other}} debe coincidir.",
     "size": {
-      "numeric": "El campo {{attribute}} debe ser :size.",
-      "file": "El campo {{attribute}} debe tener :size kilobytes.",
-      "string": "El campo {{attribute}} debe tener :size caracteres.",
-      "array": "El campo {{attribute}} debe contener :size elementos."
+      "numeric": "El campo {{attribute}} debe ser {{size}}.",
+      "file": "El campo {{attribute}} debe tener {{size}} kilobytes.",
+      "string": "El campo {{attribute}} debe tener {{size}} caracteres.",
+      "array": "El campo {{attribute}} debe contener {{size}} elementos."
     },
-    "starts_with": "El {{attribute}} debe empezar con uno de los siguientes valores :values",
+    "starts_with": "El {{attribute}} debe empezar con uno de los siguientes valores {{values}}",
     "string": "El campo {{attribute}} debe ser una cadena.",
     "timezone": "El campo {{attribute}} debe ser una zona válida.",
     "unique": "El campo {{attribute}} ya ha sido tomado.",
@@ -537,6 +710,15 @@
     },
     "attributes": {
       "emission_factor_id": "El factor emision {{attribute}} no encontrado"
+    }
+  },
+  "components": {
+    "property-images": {
+      "drag-drop": "Arrastra una imagen aquí",
+      "drop-here": "Suelta la imagen aquí",
+      "delete-warning": "¿Eliminar esta imagen?",
+      "alt": "Texto alternativo",
+      "caption": "Descripción"
     }
   }
 }

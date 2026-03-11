@@ -12,7 +12,7 @@ interface Props {
 }
 
 export function ImageInlineEditor({ alt, caption, onChange }: Props) {
-  const { t } = useTranslation()
+  const { t } = useTranslation('components')
 
   const [altValue, setAltValue] = useState(alt ?? "")
   const [captionValue, setCaptionValue] = useState(caption ?? "")

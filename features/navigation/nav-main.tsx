@@ -61,7 +61,7 @@ export function NavMain({
 }: {
   items: Items[]
 }) {
-  const { t } = useTranslation()
+  const { t } = useTranslation('common')
 
   return (
     <SidebarGroup>

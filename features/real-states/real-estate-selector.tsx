@@ -13,7 +13,7 @@ interface Props {
 }
 
 export function RealEstateSelector({ realEstates }: Props) {
-  const { t } = useTranslation()
+  const { t } = useTranslation('common')
   const [selectingId, startSelecting] = useTransition()
 
   const handleSelect = (id: string) => {

@@ -8,7 +8,7 @@ import Link from "next/link"
 import { useTranslation } from "react-i18next"
 
 export function SiteHeader() {
-  const { t } = useTranslation()
+  const { t } = useTranslation('common')
   const routes = useRoutes()
 
   return (

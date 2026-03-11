@@ -4,7 +4,6 @@ import { useEffect } from "react"
 import { useForm } from "react-hook-form"
 import { yupResolver } from "@hookform/resolvers/yup"
 import { toast } from "sonner"
-import i18next from "i18next"
 import { CreateListingInput, createListingSchema, defaultPropertyValues } from "@/application/validation/listing.validation"
 import { keywordsOptions, ListingEntity, listingStatusOptions, listingTypeOptions } from "@/domain/entities/listing.entity"
 import { Form } from "@/components/ui/form"
@@ -12,10 +11,10 @@ import { currencyOptions } from "@/domain/entities/currency.enums"
 import { useServerMutation } from "@/shared/hooks/use-server-mutation.hook"
 import { createListingAction, updateListingAction } from "@/application/actions/listing.actions"
 import { flatten } from "@/lib/utils"
-import { CalendarDays, DollarSign, FileText, Image, Phone, Sparkles, Tag } from "lucide-react"
+import { Phone, Sparkles } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { useTranslation } from "react-i18next"
 
-const { t } = i18next
 
 interface ListingFormProps {
   id?: string
@@ -28,6 +27,8 @@ export function ListingForm({
   property_id,
   defaultValues = defaultPropertyValues,
 }: ListingFormProps) {
+  const { t } = useTranslation('common');
+
   const isUpdateMode = !!id
 
   const form = useForm<CreateListingInput>({
