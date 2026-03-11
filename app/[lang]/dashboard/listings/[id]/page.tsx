@@ -3,7 +3,7 @@ import { encodedRedirect } from "@/shared/redirect";
 import { Suspense } from "react";
 import { Card, CardContent } from '@/components/ui/card'
 import { ListingForm } from "@/features/listing/listing-form";
-import { createListingService } from "@/application/containers/listing-service.container"
+import { listingModule } from "@/application/modules/listing.module";
 
 export default async function page({
   params,
@@ -11,8 +11,7 @@ export default async function page({
   params: Promise<{ id: string }>
 }) {
   const { id } = await params;
-
-  const listingService = await ListingService()
+  const { listingService } = await listingModule()
   const listing = await listingService.getCachedById(id)
 
   if (!listing) {

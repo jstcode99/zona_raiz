@@ -20,17 +20,15 @@ import Link from "next/link"
 import { cn } from "@/lib/utils"
 import { defaultSignInValues, SignInFormInput, signInSchema } from "@/application/validation/auth.validation"
 import { signInAction } from "@/application/actions/auth.actions"
-import { useLang } from "@/hooks/use-lang"
-import { getRoute } from "@/i18n/get-route"
+import { useRoutes } from "@/i18n/client-router"
 
 export function SignInForm({
   className,
   ...props
 }: ComponentProps<"form">) {
-  const { lang } = useLang()
-
   const { t } = useTranslation()
   const router = useRouter()
+  const routes = useRoutes()
 
   const form = useForm<SignInFormInput>({
     resolver: yupResolver(signInSchema),
@@ -44,7 +42,7 @@ export function SignInForm({
     action: signInAction,
     setError,
     onSuccess: () => {
-      router.push(getRoute('dashboard', lang))
+      router.push(routes.onboarding())
       router.refresh() // Refrescar para actualizar estado de auth
     },
     onError: (error) => {
@@ -109,7 +107,7 @@ export function SignInForm({
           disabled={isLoading}
         />
         <Link
-          href="/auth/otp"
+          href={routes.otp()}
           className="ml-auto text-right text-sm underline-offset-2 hover:underline"
         >
           {t('forms.sign-in.alternatives.otp')}
@@ -136,7 +134,7 @@ export function SignInForm({
         <FieldDescription className="text-center">
           <span>{t('forms.sign-in.fields.sign-up.placeholder')}</span>
           <Link
-            href="/auth/sign-up"
+            href={routes.signup()}
             className="ml-1 text-sm font-medium text-primary hover:underline"
           >
             {t('forms.sign-in.fields.sign-up.label')}

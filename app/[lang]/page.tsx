@@ -64,7 +64,7 @@ function parseSearchParams(sp: { [key: string]: string | string[] | undefined })
   }
 }
 
-export default async function SearchPage({ searchParams }: SearchPageProps) {
+export default async function page({ searchParams }: SearchPageProps) {
   const params = await searchParams
   const filters = parseSearchParams(params)
   const { listings, total } = await getListings(filters)

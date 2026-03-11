@@ -19,7 +19,7 @@ export function ListingCard({ listing }: ListingCardProps) {
   const routes = useRoutes()
 
   return (
-    <Link href={routes.listings(listing.id.toString())}>
+    <Link href={`${routes.listings()}/${listing.id}`}>
       <Card className="overflow-hidden pt-0 cursor-pointer hover:shadow-lg transition-all group h-full flex flex-col">
         <div className="relative h-48 overflow-hidden">
           {mainImage ? (

@@ -32,9 +32,13 @@ export function OnboardingWrapper({ initialState }: Props) {
     )
   }
 
+  if (initialState.step === "redirect") {
+    return redirect(initialState.path)
+  }
+
   if (initialState.step === "register-real-estate") {
     return (
-      <RealEstateRegisterPrompt onSkip={() => redirect('/')}/>
+      <RealEstateRegisterPrompt onSkip={() => redirect('/')} />
     )
   }
 

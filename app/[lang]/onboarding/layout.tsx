@@ -3,23 +3,28 @@ import { PageLoader } from "@/features/loader/page-loader"
 import { encodedRedirect } from "@/shared/redirect"
 import { sessionModule } from "@/application/modules/session.module"
 import { initI18n } from "@/i18n/server"
+import { createRouter } from "@/i18n/router"
+import { Lang } from "@/i18n/settings"
 
 export default async function PostLoginLayout({
   children,
   params
 }: {
   children: ReactNode,
-  params: { lang: string }
+  params: { lang: Lang }
 }) {
 
-  const i18n = await initI18n(params.lang)
-  const t = i18n.getFixedT(params.lang)
+  const { lang } = await params;
+
+  const i18n = await initI18n(lang)
+  const t = i18n.getFixedT(lang)
+  const routes = createRouter(lang)
 
   const { sessionService } = await sessionModule()
   const user = await sessionService.getCachedCurrentUser();
 
   if (!user) {
-    return encodedRedirect('error', '/auth/sign-in', t("errors.auth_error"))
+    return encodedRedirect('error', routes.signin(), t("errors.auth_error"))
   }
 
   return (

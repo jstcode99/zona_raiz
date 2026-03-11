@@ -19,7 +19,7 @@ export const updateProfileAction = withServerAction(
             })
 
             const { profileService } = await profileModule()
-            const { sessionService } = await sessionModule()
+            const { sessionService } = await sessionModule('es')
 
             const id = await sessionService.getCurrentUserId()
 
@@ -52,7 +52,7 @@ export const uploadAvatarAction = withServerAction(
             })
 
             const { profileService } = await profileModule()
-            const { sessionService } = await sessionModule()
+            const { sessionService } = await sessionModule('es')
 
             const id = await sessionService.getCurrentUserId()
 

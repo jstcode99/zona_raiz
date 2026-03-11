@@ -3,12 +3,15 @@ import { unstable_cache } from "next/cache";
 import { ProfilePort } from "../ports/profile.port";
 import { MenuEntity } from "../entities/menu.entity";
 import { EAgentRole } from "../entities/real-estate-agent.entity";
-import { ROUTES } from "@/infrastructure/config/constants";
+import { ROUTES } from "@/infrastructure/config/routes";
+import { Lang } from "@/i18n/settings";
+import { createRouter } from "@/i18n/router";
 
 export class SessionService {
   constructor(
     private sessionPort: SessionPort,
     private profiles: ProfilePort,
+    private lang: Lang,
   ) { }
 
   getCurrentUserId() {
@@ -57,6 +60,7 @@ export class SessionService {
   }
 
   async getMenuByRol(): Promise<MenuEntity[]> {
+    const routes = createRouter(this.lang)
     const id = await this.sessionPort.getCurrentUserId()
     const role = await this.profiles.getRoleByUserId(id as string)
     switch (role) {
@@ -64,46 +68,41 @@ export class SessionService {
         return [
           {
             title: "Dashboard",
-            url: `${ROUTES.DASHBOARD}`,
+            url: `${ROUTES.dashboard[this.lang]}`,
             icon: 'layout-dashboard',
           },
           {
             title: "Inmobiliarias",
-            url: `${ROUTES.DASHBOARD}${ROUTES.REAL_ESTATES}`,
+            url: `${ROUTES.realEstates[this.lang]}`,
             icon: 'map-pin-house',
           },
           {
             title: "Propiedades",
-            url: `${ROUTES.DASHBOARD}${ROUTES.PROPERTIES}`,
+            url: `${ROUTES.properties[this.lang]}`,
             icon: 'building-2',
           },
           {
-            title: "Listados",
-            url: `${ROUTES.DASHBOARD}${ROUTES.LISTING}`,
-            icon: 'list-check',
+            title: "Publicaciones",
+            url: `${ROUTES.listings[this.lang]}`,
+            icon: 'tags',
           }
         ]
       default:
         return [
           {
             title: "Dashboard",
-            url: `${ROUTES.DASHBOARD}`,
+            url: `${ROUTES.dashboard[this.lang]}`,
             icon: 'layout-dashboard',
           },
           {
-            title: "Inmobiliarias",
-            url: `${ROUTES.DASHBOARD}${ROUTES.REAL_ESTATES}`,
-            icon: 'map-pin-house',
-          },
-          {
             title: "Propiedades",
-            url: `${ROUTES.DASHBOARD}${ROUTES.PROPERTIES}`,
+            url: `${ROUTES.properties[this.lang]}`,
             icon: 'building-2',
           },
           {
-            title: "Listados",
-            url: `${ROUTES.DASHBOARD}${ROUTES.LISTING}`,
-            icon: 'list-check',
+            title: "Publicaciones",
+            url: `${ROUTES.listings[this.lang]}`,
+            icon: 'tags',
           }
         ]
     }

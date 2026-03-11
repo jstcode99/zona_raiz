@@ -29,6 +29,7 @@ export default async function page({
     .get(COOKIE_NAMES.REAL_ESTATE)?.value as string
 
   const { listingService } = await listingModule()
+  
   const listing = listingService.getCachedAll({
     ...filters,
     real_estate_id

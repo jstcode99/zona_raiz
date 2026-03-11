@@ -6,14 +6,16 @@ import { Button } from "@/components/ui/button"
 import { Building2, Plus, ArrowRight, Loader2 } from "lucide-react"
 import Link from "next/link"
 import { useTranslation } from "react-i18next"
+import { useRoutes } from "@/i18n/client-router"
 
 interface Props {
   onSkip: () => void
 }
 
 export function RealEstateRegisterPrompt({ onSkip }: Props) {
-    const { t } = useTranslation()
-  
+  const { t } = useTranslation()
+  const routes = useRoutes()
+
   const [isPending, startTransition] = useTransition()
 
   const handleSkip = () => {
@@ -28,19 +30,19 @@ export function RealEstateRegisterPrompt({ onSkip }: Props) {
         <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
           <Building2 className="h-6 w-6 text-primary" />
         </div>
-        <CardTitle className="text-2xl">{i18next.t("pages.onboarding.title")}</CardTitle>
+        <CardTitle className="text-2xl">{t("pages.onboarding.title")}</CardTitle>
         <CardDescription>
-          {i18next.t("pages.onboarding.subtitle")}
+          {t("pages.onboarding.subtitle")}
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         <Button asChild className="w-full" size="lg">
-          <Link href="/onboarding/register-real-estate">
+          <Link href={routes.onboardingReaEstate()}>
             <Plus className="mr-2 h-4 w-4" />
-             {i18next.t("pages.onboarding.call-action")}
+            {t("pages.onboarding.call-action")}
           </Link>
         </Button>
-        
+
         <div className="relative">
           <div className="absolute inset-0 flex items-center">
             <span className="w-full border-t" />
@@ -53,8 +55,8 @@ export function RealEstateRegisterPrompt({ onSkip }: Props) {
         </div>
       </CardContent>
       <CardFooter>
-        <Button 
-          variant="ghost" 
+        <Button
+          variant="ghost"
           className="w-full"
           onClick={handleSkip}
           disabled={isPending}
@@ -64,7 +66,7 @@ export function RealEstateRegisterPrompt({ onSkip }: Props) {
           ) : (
             <ArrowRight className="mr-2 h-4 w-4" />
           )}
-          {i18next.t("pages.onboarding.call-home")}
+          {t("pages.onboarding.call-home")}
         </Button>
       </CardFooter>
     </Card>

@@ -39,6 +39,7 @@ export class SupabaseAgentAdapter implements AgentPort {
         )
       `)
       .eq("real_estate_id", realEstateId)
+
     if (error) throw new Error(error.message)
 
     return data.map((p) => mapRealEstateAgentRowToEntity(p.profile))

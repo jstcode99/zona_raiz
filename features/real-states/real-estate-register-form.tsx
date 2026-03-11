@@ -21,10 +21,12 @@ import { flatten } from "@/lib/utils"
 import { defaultRealEstateValues, RealEstateInput, realEstateSchema } from "@/application/validation/real-estate.validation"
 import { createRealEstateAction } from "@/application/actions/real-estate.actions"
 import countries from '@/lib/countries.json'
+import { useRoutes } from "@/i18n/client-router"
 
 export function RealEstateRegistrationForm() {
   const { t } = useTranslation()
   const router = useRouter()
+  const routes = useRoutes()
 
   const form = useForm<RealEstateInput>({
     resolver: yupResolver(realEstateSchema),
@@ -40,7 +42,7 @@ export function RealEstateRegistrationForm() {
     onSuccess: () => {
       toast.success(t("forms.real-estate.success"))
       reset()
-      router.push("/dashboard")
+      router.push(routes.dashboard())
     },
     onError: (error) => {
       console.error("Create real estate error:", error)

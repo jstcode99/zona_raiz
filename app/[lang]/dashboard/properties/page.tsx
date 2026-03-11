@@ -7,7 +7,7 @@ import { PropertyFiltersForm } from "@/features/properties/property-form-filters
 import { Button } from "@/components/ui/button";
 import { IconFilter, IconPlus } from "@tabler/icons-react";
 import Link from "next/link";
-import { COOKIE_NAMES, ROUTES } from "@/infrastructure/config/constants";
+import { COOKIE_NAMES } from "@/infrastructure/config/constants";
 import { PropertySearchFormInput } from "@/application/validation/property-search.schema";
 import {
   Collapsible,
@@ -17,14 +17,21 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { cookies } from "next/headers";
 import { propertyModule } from "@/application/modules/property.module";
+import { Lang } from "@/i18n/settings";
+import { createRouter } from "@/i18n/router";
 
 export default async function page({
   searchParams,
+  params
 }: {
-  searchParams: Promise<PropertySearchFormInput>
+  searchParams: Promise<PropertySearchFormInput>,
+  params: { lang: Lang }
 }) {
   const filters = await searchParams;
+  const { lang } = await params;
+
   const cookieStore = await cookies()
+  const routes = createRouter(lang)
 
   const real_estate_id = cookieStore
     .get(COOKIE_NAMES.REAL_ESTATE)?.value as string
@@ -45,7 +52,7 @@ export default async function page({
               </Button>
             </CollapsibleTrigger>
             <Button asChild>
-              <Link href={`${ROUTES.DASHBOARD}/${ROUTES.PROPERTIES}/new`}>
+              <Link href={`${routes.properties}/new`}>
                 <IconPlus />
               </Link>
             </Button>

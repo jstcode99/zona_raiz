@@ -2,6 +2,7 @@ import { ProfileEntity } from "@/domain/entities/profile.entity"
 import { RealEstateEntity, RealEstateWithRoleEntity } from "@/domain/entities/real-estate.entity"
 import { ProfilePort } from "@/domain/ports/profile.port"
 import { SessionPort } from "@/domain/ports/sesion.port"
+import { Lang } from "@/i18n/settings"
 import { SupabaseClient } from "@supabase/supabase-js"
 
 export class SupabaseSessionAdapter implements SessionPort {

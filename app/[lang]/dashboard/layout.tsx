@@ -8,29 +8,48 @@ import { AppSidebar } from "@/features/navigation/app-sidebar"
 import { PageLoader } from "@/features/loader/page-loader"
 import { encodedRedirect } from "@/shared/redirect"
 import { EUserRole } from "@/domain/entities/profile.entity"
-import { ROUTES } from "@/infrastructure/config/constants"
 import { DashboardBottomNav } from "@/features/navigation/dashboard-bottom-nav"
 import { sessionModule } from "@/application/modules/session.module"
-import { useLang } from "@/hooks/use-lang"
+import { createRouter } from "@/i18n/router"
+import { Lang } from "@/i18n/settings"
+import { initI18n } from "@/i18n/server"
+import { COOKIE_NAMES } from "@/infrastructure/config/constants"
+import { cookies } from "next/headers"
 
 export default async function DashboardLayout({
   children,
+  params
 }: {
-  children: ReactNode
+  children: ReactNode,
+  params: { lang: Lang }
 }) {
-  const { sessionService } = await sessionModule()
+  const cookieStore = await cookies()
+  const { lang } = await params;
+
+  const routes = createRouter(lang)
+  const i18n = await initI18n(lang)
+  const t = i18n.getFixedT(lang)
+
+  const real_estate_id = cookieStore.get(COOKIE_NAMES.REAL_ESTATE)?.value as string
+
+  if (!real_estate_id) {
+    return encodedRedirect('error', routes.signin(), t('errors.real_estate_not_found'))
+  }
+
+  const { sessionService } = await sessionModule(lang)
   const profile = await sessionService.getCachedCurrentUser();
   const menu = await sessionService.getMenuByRol();
 
+
   if (!profile) {
-    return encodedRedirect('error', '/auth/sign-in', 'No se pudo cargar el perfil')
+    return encodedRedirect('error', routes.signin(), t('errors.profile_not_found'))
   }
 
   if (profile.role == EUserRole.Admin) {
     return encodedRedirect(
       "error",
-      ROUTES.DASHBOARD,
-      "Solo los administradores pueden acceder al dashboard"
+      routes.signin(),
+      t('errors.not_have_access')
     )
   }
 

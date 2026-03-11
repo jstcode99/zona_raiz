@@ -31,15 +31,18 @@ import { useRouter } from "next/navigation"
 import { useTransition } from "react"
 import { ProfileEntity } from "@/domain/entities/profile.entity"
 import { signOutAction } from "@/application/actions/auth.actions"
+import { useTranslation } from "react-i18next"
+import { useRoutes } from "@/i18n/client-router"
 
 export function NavUser({
   profile,
 }: {
   profile: ProfileEntity
 }) {
+  const { t } = useTranslation()
   const { isMobile } = useSidebar()
-
   const router = useRouter();
+  const routes = useRoutes()
   const [isPending, startTransition] = useTransition()
 
   const handleSignOut = () => {
@@ -91,17 +94,17 @@ export function NavUser({
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <Link href="/dashboard/account">
+              <Link href={routes.profile()}>
                 <DropdownMenuItem>
                   <IconUserCircle />
-                  Account
+                  {t('words.profile')}
                 </DropdownMenuItem>
               </Link>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={handleSignOut} disabled={isPending}>
               <IconLogout />
-              Log out
+              {t('words.sign-out')}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

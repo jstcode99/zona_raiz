@@ -172,8 +172,6 @@ export class ListingService {
     )();
   }
 
-  ////
-
   async getCountByRealEstate(realEstateId: string): Promise<number> {
     return this.listingPort.count({ real_estate_id: realEstateId });
   }
@@ -216,13 +214,13 @@ export class ListingService {
   }
 
   private buildCacheKey(filters: ListingSearchFilters): string {
-    const parts = Object.entries(filters)
+    const parts = filters && Object.entries(filters)
       .filter(([, v]) => v !== undefined && v !== null && v !== "")
       .map(([k, v]) => {
         if (Array.isArray(v)) return `${k}:${v.join(",")}`
         return `${k}:${v}`
       })
-    return parts.length > 0 ? parts.join(":") : "default"
+    return parts && parts.length > 0 ? parts.join(":") : "default"
   }
 
   async search(filters: ListingSearchFilters): Promise<ListingSearchResult> {

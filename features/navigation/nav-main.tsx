@@ -14,6 +14,7 @@ import {
 import Link from "next/link";
 import { cn } from '@/lib/utils';
 import { useIsCurrentRoute } from "@/hooks/use-is-current-route";
+import { useTranslation } from "react-i18next";
 
 interface Items {
   title: string
@@ -60,6 +61,8 @@ export function NavMain({
 }: {
   items: Items[]
 }) {
+  const { t } = useTranslation()
+
   return (
     <SidebarGroup>
       <SidebarGroupContent className="flex flex-col gap-2">
@@ -71,17 +74,9 @@ export function NavMain({
                 className="bg-primary cursor-pointer text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground active:bg-primary/90 active:text-primary-foreground min-w-8 duration-200 ease-linear"
               >
                 <IconCirclePlusFilled />
-                <span>Crear properidad</span>
+                <span>{t('sentences.create_property')}</span>
               </SidebarMenuButton>
             </Link>
-            <Button
-              size="icon"
-              className="size-8 group-data-[collapsible=icon]:opacity-0"
-              variant="outline"
-            >
-              <IconBell />
-              <span className="sr-only">Inbox</span>
-            </Button>
           </SidebarMenuItem>
         </SidebarMenu>
         <SidebarMenu>

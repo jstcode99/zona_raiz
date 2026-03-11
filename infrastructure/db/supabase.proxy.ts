@@ -4,10 +4,10 @@ import { EUserRole } from "@/domain/entities/profile.entity"
 import {
   COOKIE_NAMES,
   COOKIE_OPTIONS,
-  ROUTES,
 } from "../config/constants"
 import { sessionModule } from "@/application/modules/session.module"
-import { PUBLIC_ROUTES } from "../config/routes"
+import { PUBLIC_ROUTES, ROUTES } from "../config/routes"
+import { getServerLang } from "@/lib/utils"
 
 // ==========================================
 // MIDDLEWARE
@@ -15,6 +15,7 @@ import { PUBLIC_ROUTES } from "../config/routes"
 
 export async function updateSession(request: NextRequest) {
   const { pathname } = request.nextUrl
+  const lang = getServerLang(request)
 
   if (isPublicRoute(pathname)) {
     return NextResponse.next()
@@ -29,21 +30,21 @@ export async function updateSession(request: NextRequest) {
   } = await supabase.auth.getUser()
 
   if (!user || error) {
-    return redirectTo(ROUTES.SIGN_IN, request)
+    return redirectTo(ROUTES.signin[lang], request)
   }
 
-  const isRealEstateRoute = isRoute(pathname, ROUTES.DASHBOARD)
+  const isRealEstateRoute = isRoute(pathname, ROUTES.dashboard[lang])
 
   const role = request.cookies.get(COOKIE_NAMES.ROLE)?.value as EUserRole | undefined
   const realEstateId = request.cookies.get(COOKIE_NAMES.REAL_ESTATE)?.value
 
   if (!role) {
-    return redirectTo(ROUTES.SIGN_IN, request)
+    return redirectTo(ROUTES.signin[lang], request)
   }
 
   // 🚫 CLIENTE no entra en rutas protegidas (/dashboard, /real-estate, etc.)
   if (role === EUserRole.Client) {
-    const res = redirectTo(ROUTES.HOME, request)
+    const res = redirectTo(ROUTES.home[lang], request)
     res.cookies.set(COOKIE_NAMES.REAL_ESTATE_ROLE, "client", COOKIE_OPTIONS)
     return res
   }
@@ -51,7 +52,7 @@ export async function updateSession(request: NextRequest) {
   // 👮‍♂️ Admin solo puede ver /dashboard (y rutas públicas)
   if (role === EUserRole.Admin) {
     if (isRealEstateRoute) {
-      const res = redirectTo(ROUTES.DASHBOARD, request)
+      const res = redirectTo(ROUTES.dashboard[lang], request)
       res.cookies.set(COOKIE_NAMES.REAL_ESTATE_ROLE, "admin", COOKIE_OPTIONS)
       return res
     }
@@ -63,7 +64,7 @@ export async function updateSession(request: NextRequest) {
 
   // A partir de aquí solo queda EUserRole.RealEstate en rutas protegidas
   if (role !== EUserRole.RealEstate) {
-    return redirectTo(ROUTES.HOME, request)
+    return redirectTo(ROUTES.home[lang], request)
   }
 
 
@@ -73,7 +74,7 @@ export async function updateSession(request: NextRequest) {
   // ==========================================
 
   // 🔁 Si NO tiene contexto → intentar auto-selección
-  const { sessionService } = await sessionModule()
+  const { sessionService } = await sessionModule(lang)
 
   if (!realEstateId) {
     const realEstates = await sessionService.getRealEstatesForUser()
@@ -81,15 +82,15 @@ export async function updateSession(request: NextRequest) {
     // ⭐ Solo uno → guardar cookie de inmobiliaria + rol (agent/coordinator) y entrar a /real-estate
     if (realEstates.length === 1) {
       const current = realEstates[0]
-      const res = redirectTo(ROUTES.DASHBOARD, request)
+      const res = redirectTo(ROUTES.dashboard[lang], request)
       res.cookies.set(COOKIE_NAMES.REAL_ESTATE, current.real_estate.id, COOKIE_OPTIONS)
       res.cookies.set(COOKIE_NAMES.REAL_ESTATE_ROLE, current.role, COOKIE_OPTIONS)
       return res
     }
 
     // ❗ Ninguno o varios → onboarding
-    if (!isRoute(pathname, ROUTES.ONBOARDING)) {
-      return redirectTo(ROUTES.ONBOARDING, request)
+    if (!isRoute(pathname, ROUTES.onboarding[lang])) {
+      return redirectTo(ROUTES.onboarding[lang], request)
     }
 
     return response
@@ -106,8 +107,8 @@ export async function updateSession(request: NextRequest) {
   }
 
   // No puede ir a onboarding si ya tiene contexto
-  if (realEstateId && isRoute(pathname, ROUTES.ONBOARDING)) {
-    return redirectTo(ROUTES.DASHBOARD, request)
+  if (realEstateId && isRoute(pathname, ROUTES.onboarding[lang])) {
+    return redirectTo(ROUTES.dashboard[lang], request)
   }
 
   return response
@@ -150,10 +151,6 @@ function isPublicRoute(pathname: string) {
 
 function isRoute(pathname: string, base: string) {
   return pathname === base || pathname.startsWith(base + "/")
-}
-
-function requiresRealEstateContext(role: EUserRole) {
-  return role === EUserRole.RealEstate
 }
 
 function redirectTo(path: string, request: NextRequest) {

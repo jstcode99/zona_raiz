@@ -1,13 +1,14 @@
 "use server"
 
 import { revalidatePath } from "next/cache"
-import { ROUTES } from "@/infrastructure/config/constants"
 import { propertyImageModule } from "../modules/property-image.module"
 import { propertyImageSchema, propertyImageUpdateSchema } from "../validation/property-image.validation"
 import { propertyModule } from "../modules/property.module"
 import sizeOf from "image-size"
 import { pickDefined } from "@/lib/utils"
 import { withServerAction } from "@/shared/hooks/with-server-action"
+import { ROUTES } from "@/infrastructure/config/routes"
+import { getRoute } from "@/i18n/get-route"
 
 export const createPropertyImageAction = withServerAction(
   async (
@@ -58,10 +59,10 @@ export const createPropertyImageAction = withServerAction(
 
       await propertyImageService.updatePath(propertyImage.id ?? "", url)
 
-      revalidatePath(ROUTES.DASHBOARD)
-      revalidatePath(`/${ROUTES.DASHBOARD}/${ROUTES.PROPERTIES}/${propertyId}`)
-      revalidatePath(`/${ROUTES.DASHBOARD}/${ROUTES.PROPERTIES}/${propertyId}/images`)
-      revalidatePath(`/${ROUTES.DASHBOARD}/${ROUTES.PROPERTIES}/${propertyId}/listing`)
+      revalidatePath(`${ROUTES.properties.es}`)
+      revalidatePath(`${ROUTES.properties.en}`)
+      revalidatePath(`${getRoute('property', 'es', { propertyId })}`)
+      revalidatePath(`${getRoute('property', 'en', { propertyId })}`)
 
     } catch (error) {
       throw new Error("No se pudo crear recurso de la propiedad")
@@ -78,7 +79,6 @@ export const updatePropertyImageAction = withServerAction(
   ) => {
     try {
       const { propertyImageService } = await propertyImageModule()
-      const { propertyService } = await propertyModule()
 
       const raw = Object.fromEntries(formData)
 
@@ -89,13 +89,13 @@ export const updatePropertyImageAction = withServerAction(
 
       const payload = pickDefined(validated)
 
-      const propertyImage = await propertyImageService.update(id, payload)
-      const property = await propertyService.getById(propertyImage.property_id)
+      await propertyImageService.update(id, payload)
 
-      revalidatePath(ROUTES.DASHBOARD)
-      revalidatePath(`/${ROUTES.DASHBOARD}/${ROUTES.PROPERTIES}/${id}`)
-      revalidatePath(`/${ROUTES.PROPERTIES}/${id}`)
-      revalidatePath(`/${ROUTES.PROPERTIES}/${property?.slug}`)
+      revalidatePath(`${ROUTES.properties.es}`)
+      revalidatePath(`${ROUTES.properties.en}`)
+      revalidatePath(`${getRoute('property', 'es', { id })}`)
+      revalidatePath(`${getRoute('property', 'en', { id })}`)
+      
     } catch (error) {
       throw new Error("No se pudo actualizar el recurso de la propiedad")
     }
@@ -109,7 +109,8 @@ export async function deletePropertyImageAction(id: string) {
     const { propertyImageService } = await propertyImageModule()
     await propertyImageService.delete(id)
 
-    revalidatePath(ROUTES.DASHBOARD)
+    revalidatePath(`/es${ROUTES.dashboard.es}`)
+    revalidatePath(`/en${ROUTES.dashboard.en}`)
   } catch (error) {
     throw new Error("No se pudo eliminar la propiedad")
   }

@@ -17,7 +17,7 @@ import { defaultPropertyValues, PropertyInput, propertySchema } from "@/applicat
 import { createPropertyAction, updatePropertyAction } from "@/application/actions/property.action";
 import { PropertyEntity } from "@/domain/entities/property.entity";
 import { useRouter } from "next/navigation";
-import { ROUTES } from "@/infrastructure/config/constants";
+import { useRoutes } from "@/i18n/client-router";
 
 interface PropertyFormProps extends ComponentProps<"form"> {
   realEstateId: string;
@@ -33,6 +33,7 @@ export function PropertyForm({
   ...props
 }: PropertyFormProps) {
   const router = useRouter()
+  const routes = useRoutes()
 
   const { t } = useTranslation();
   const isUpdateMode = Boolean(id);
@@ -95,7 +96,7 @@ export function PropertyForm({
         toast.success(t(`forms.property.${isUpdateMode ? "updated" : "created"}`))
         if (!isUpdateMode) reset()
         wizardRef.current?.complete()
-        router.push(`${ROUTES.DASHBOARD}/${ROUTES.PROPERTIES}/${property.id}/images`)
+        router.push(`${routes.property(property.id)}/images`)
       }
     },
     onError: (error) => {

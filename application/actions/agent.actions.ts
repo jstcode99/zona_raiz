@@ -16,7 +16,7 @@ export const addAgentAction = withServerAction(
 
         revalidatePath("/dashboard/real-estates");
         revalidatePath(`/dashboard/real-estates/${real_estate_id}`);
-    }   
+    }
 )
 
 export const removeAgentAction = withServerAction(

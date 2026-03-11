@@ -19,12 +19,14 @@ import Link from "next/link"
 import { useServerMutation } from "@/shared/hooks/use-server-mutation.hook"
 import { OTPFormInput, otpSchema } from "@/application/validation/auth.validation"
 import { sentOtpAction } from "@/application/actions/auth.actions"
+import { useRoutes } from "@/i18n/client-router"
 
 export function OTPForm({
   className,
   ...props
 }: ComponentProps<"form">) {
   const { t } = useTranslation()
+  const routes = useRoutes()
 
   const {
     register,
@@ -96,7 +98,7 @@ export function OTPForm({
         </Field>
 
         <Link
-          href="/auth/sign-in"
+          href={routes.signin()}
           className="ml-auto text-right text-sm underline-offset-2 hover:underline"
         >
           {t('forms.otp.alternatives.basic')}

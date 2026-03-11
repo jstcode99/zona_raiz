@@ -5,7 +5,8 @@ import { listingModule } from "../modules/listing.module";
 import { createListingSchema } from "../validation/listing.validation";
 import { handleError } from "../errors/handle-error";
 import { revalidatePath } from "next/cache";
-import { ROUTES } from "@/infrastructure/config/constants";
+import { ROUTES } from "@/infrastructure/config/routes"
+import { getRoute } from "@/i18n/get-route"
 import { propertyModule } from "../modules/property.module";
 
 export const createListingAction = withServerAction(
@@ -29,10 +30,10 @@ export const createListingAction = withServerAction(
       if (!listing) throw new Error("Listing not created")
 
 
-      revalidatePath(ROUTES.DASHBOARD)
-      revalidatePath(`${ROUTES.DASHBOARD}/${ROUTES.LISTING}/${listing.id}`)
-      revalidatePath(`${ROUTES.LISTING}/${listing.id}`)
-      revalidatePath(`${ROUTES.LISTING}/${property.slug}`)
+      revalidatePath(`/es${ROUTES.listing.es}`)
+      revalidatePath(`/en${ROUTES.listing.en}`)
+      revalidatePath(`/es${getRoute('listings', 'es', { id: listing.id })}`)
+      revalidatePath(`/en${getRoute('listings', 'en', { id: listing.id })}`)
 
     } catch (error) {
       handleError(error)
@@ -57,10 +58,12 @@ export const updateListingAction = withServerAction(
 
       const listing = await listingService.update(id, validated)
 
-      revalidatePath(ROUTES.DASHBOARD)
-      revalidatePath(`${ROUTES.DASHBOARD}/${ROUTES.LISTING}/${id}`)
-      revalidatePath(`${ROUTES.LISTING}/${id}`)
-      revalidatePath(`${ROUTES.LISTING}/${listing.property.slug}`)
+      if (!listing) throw new Error("Listing not updated")
+
+      revalidatePath(`/es${ROUTES.listing.es}`)
+      revalidatePath(`/en${ROUTES.listing.en}`)
+      revalidatePath(`/es${getRoute('listings', 'es', { id })}`)
+      revalidatePath(`/en${getRoute('listings', 'en', { id })}`)
 
     } catch (error) {
       handleError(error)
@@ -70,5 +73,11 @@ export const updateListingAction = withServerAction(
 
 export async function deleteListingAction(id: string) {
   const { listingService } = await listingModule();
+
+  revalidatePath(`/es${ROUTES.listing.es}`)
+  revalidatePath(`/en${ROUTES.listing.en}`)
+  revalidatePath(`/es${getRoute('listings', 'es', { id })}`)
+  revalidatePath(`/en${getRoute('listings', 'en', { id })}`)
+
   return listingService.delete(id);
 }

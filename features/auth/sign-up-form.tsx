@@ -22,6 +22,7 @@ import Link from "next/link"
 import { Building2 } from "lucide-react"
 import { defaultSignUpValues, SignUpFormInput, signUpSchema } from "@/application/validation/auth.validation"
 import { signUpAction } from "@/application/actions/auth.actions"
+import { useRoutes } from "@/i18n/client-router"
 
 export function SignUpForm({
   className,
@@ -29,6 +30,7 @@ export function SignUpForm({
 }: ComponentProps<"form">) {
   const { t } = useTranslation()
   const router = useRouter()
+  const routes = useRoutes()
 
   const form = useForm<SignUpFormInput>({
     resolver: yupResolver(signUpSchema),
@@ -43,7 +45,7 @@ export function SignUpForm({
     setError,
     onSuccess: () => {
       toast.success(t('forms.sign-up.success'))
-      router.push("/auth/sign-in?registered=true")
+      router.push(routes.signin())
     },
     onError: (error) => {
       console.error("Sign up error:", error)
@@ -161,7 +163,7 @@ export function SignUpForm({
           <FieldDescription className="text-center">
             <span>{t('forms.sign-up.fields.sign-in.placeholder')}</span>
             <Link
-              href="/auth/sign-in"
+              href={routes.signin()}
               className="ml-1 text-sm font-medium text-primary hover:underline"
             >
               {t('forms.sign-up.fields.sign-in.label')}

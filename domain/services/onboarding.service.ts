@@ -2,6 +2,8 @@ import { SessionPort } from "@/domain/ports/sesion.port";
 import { ProfilePort } from "@/domain/ports/profile.port";
 import { EUserRole } from "@/domain/entities/profile.entity";
 import { RealEstateWithRoleEntity } from "@/domain/entities/real-estate.entity";
+import { ROUTES } from "@/infrastructure/config/routes";
+import { Lang } from "@/i18n/settings";
 
 export type OnboardingState = 
   | { step: "loading" }
@@ -13,13 +15,14 @@ export class OnboardingService {
   constructor(
     private sessionPort: SessionPort,
     private profilePort: ProfilePort,
+    private lang: Lang,
   ) {}
 
   async getOnboardingState(): Promise<OnboardingState> {
     const userId = await this.sessionPort.getCurrentUserId();
 
     if (!userId) {
-      return { step: "redirect", path: "/signin" };
+      return { step: "redirect", path: ROUTES.signin[this.lang] };
     }
 
     const profile = await this.profilePort.getProfileByUserId(userId);
@@ -30,7 +33,7 @@ export class OnboardingService {
     }
 
     if (role === EUserRole.Admin) {
-      return { step: "redirect", path: "/dashboard" };
+      return { step: "redirect", path: ROUTES.dashboard[this.lang] };
     }
 
     if (role === EUserRole.RealEstate) {
@@ -42,7 +45,7 @@ export class OnboardingService {
       }
 
       if (count === 1) {
-        return { step: "redirect", path: "/dashboard" };
+        return { step: "redirect", path: ROUTES.dashboard[this.lang] };
       }
 
       return {

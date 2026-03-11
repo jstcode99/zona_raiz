@@ -15,6 +15,7 @@ import i18next from "i18next"
 import { ProfileEntity } from "@/domain/entities/profile.entity"
 import { Building2Icon } from "lucide-react"
 import { Separator } from "@/components/ui/separator"
+import { useTranslation } from "react-i18next"
 
 interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
   profile: ProfileEntity
@@ -26,6 +27,7 @@ interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
 }
 
 export function AppSidebar({ ...props }: AppSidebarProps) {
+  const { t } = useTranslation()
 
   return (
     <Sidebar collapsible="icon" {...props}>
@@ -39,7 +41,7 @@ export function AppSidebar({ ...props }: AppSidebarProps) {
               <h1 className="font-bold text-lg text-foreground">
                 <span className="text-base font-semibold">{i18next.t("app.name")}</span>
               </h1>
-              <p className="text-xs text-muted-foreground">Panel de control</p>
+              <p className="text-xs text-muted-foreground">{t('words.dashboard')}</p>
             </div>
           </div>
         </div>

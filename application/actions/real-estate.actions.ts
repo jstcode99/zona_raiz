@@ -5,9 +5,11 @@ import { realEstateModule } from "../modules/real-estate.module"
 import { logoRealEstateSchema, realEstateSchema } from "../validation/real-estate.validation"
 import { idSchema } from "../validation/base/id.schema"
 import { cookies } from "next/headers"
-import { COOKIE_NAMES, COOKIE_OPTIONS, ROUTES } from "@/infrastructure/config/constants"
+import { COOKIE_NAMES, COOKIE_OPTIONS } from "@/infrastructure/config/constants"
 import { mapRealEstateRowToDomain } from "../mappers/real-estate.mapper"
 import { revalidatePath } from "next/cache"
+import { ROUTES } from "@/infrastructure/config/routes"
+import { getRoute } from "@/i18n/get-route"
 
 export const createRealEstateAction = withServerAction(
     async (formData: FormData) => {
@@ -35,8 +37,10 @@ export const updateRealEstateAction = withServerAction(
 
         await realEstateService.update(id, mapRealEstateRowToDomain(input))
 
-        revalidatePath(`${ROUTES.DASHBOARD}/${ROUTES.REAL_ESTATES}`)
-        revalidatePath(`${ROUTES.DASHBOARD}/${ROUTES.REAL_ESTATES}/${id}`)
+        revalidatePath(`${ROUTES.realEstates.es}`)
+        revalidatePath(`${getRoute('realEstates', 'es', { id })}`)
+        revalidatePath(`${ROUTES.realEstates.en}`)
+        revalidatePath(`${getRoute('realEstates', 'en', { id })}`)
     }
 )
 
@@ -49,8 +53,10 @@ export const deleteRealEstateAction = withServerAction(
         )
         await realEstateService.delete(id)
 
-        revalidatePath(`${ROUTES.DASHBOARD}/${ROUTES.REAL_ESTATES}`)
-        revalidatePath(`${ROUTES.DASHBOARD}/${ROUTES.REAL_ESTATES}/${id}`)
+        revalidatePath(`${ROUTES.realEstates.es}`)
+        revalidatePath(`${getRoute('realEstates', 'es', { id })}`)
+        revalidatePath(`${ROUTES.realEstates.en}`)
+        revalidatePath(`${getRoute('realEstates', 'en', { id })}`)
     }
 )
 
@@ -65,8 +71,10 @@ export const uploadRealEstateLogoAction = withServerAction(
 
         await realEstateService.uploadLogo(id, logo)
 
-        revalidatePath(`${ROUTES.DASHBOARD}/${ROUTES.REAL_ESTATES}`)
-        revalidatePath(`${ROUTES.DASHBOARD}/${ROUTES.REAL_ESTATES}/${id}`)
+        revalidatePath(`${ROUTES.realEstates.es}`)
+        revalidatePath(`${getRoute('realEstates', 'es', { id })}`)
+        revalidatePath(`${ROUTES.realEstates.en}`)
+        revalidatePath(`${getRoute('realEstates', 'en', { id })}`)
     }
 )
 
