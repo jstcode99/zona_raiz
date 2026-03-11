@@ -4,7 +4,7 @@ import { cookies } from "next/headers"
 import { handleError } from "@/application/errors/handle-error"
 import { otpSchema, signInSchema, signUpSchema } from "../validation/auth.validation"
 import { withServerAction } from "@/shared/hooks/with-server-action"
-import { createAuthModule } from "../containers/auth.container"
+import { authModule } from "../modules/auth.module"
 import { CACHE_TAGS, COOKIE_NAMES, COOKIE_OPTIONS } from "@/infrastructure/config/constants"
 import { revalidateTag } from "next/cache"
 
@@ -19,10 +19,8 @@ export const signUpAction = withServerAction(
         formDataToObject(formData),
         { abortEarly: false }
       )
-
-      const { useCases } = await createAuthModule()
-
-      await useCases.signUp(input)
+      const { authService } = await authModule()
+      await authService.signUp(input)
 
     } catch (error) {
       handleError(error)
@@ -38,8 +36,8 @@ export const signInAction = withServerAction(
         { abortEarly: false }
       )
 
-      const { useCases } = await createAuthModule()
-      const role = await useCases.signIn(input.email, input.password)
+      const { authService } = await authModule()
+      const role = await authService.signIn(input.email, input.password)
 
       const cookieStore = await cookies()
       cookieStore.set(COOKIE_NAMES.ROLE, role, COOKIE_OPTIONS)
@@ -55,16 +53,16 @@ export const signOutAction = withServerAction(
     try {
       const cookieStore = await cookies()
 
-      const { useCases } = await createAuthModule()
-      await useCases.signOut()
+      const { authService } = await authModule()
+      await authService.signOut()
 
       cookieStore.delete(COOKIE_NAMES.ROLE)
       cookieStore.delete(COOKIE_NAMES.REAL_ESTATE)
       cookieStore.delete(COOKIE_NAMES.REAL_ESTATE_ROLE)
-      
+
       revalidateTag(CACHE_TAGS.AUTH.USER, {})
       revalidateTag(CACHE_TAGS.AUTH.SESSION, {})
-    
+
     } catch (error) {
       handleError(error)
     }
@@ -79,10 +77,8 @@ export const sentOtpAction = withServerAction(
         formDataToObject(formData),
         { abortEarly: false }
       )
-
-      const { useCases } = await createAuthModule()
-
-      await useCases.sendOtp(input.email)
+      const { authService } = await authModule()
+      await authService.sendOtp(input.email)
 
     } catch (error) {
       handleError(error)

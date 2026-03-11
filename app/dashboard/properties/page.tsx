@@ -3,7 +3,6 @@ import PropertiesTable from "@/features/properties/property-table";
 import { Suspense } from "react";
 import { Spinner } from "@/components/ui/spinner";
 import { Card, CardContent } from '@/components/ui/card'
-import { listProperties } from "@/services/property.services";
 import { PropertyFiltersForm } from "@/features/properties/property-form-filters";
 import { Button } from "@/components/ui/button";
 import { IconFilter, IconPlus } from "@tabler/icons-react";
@@ -17,6 +16,7 @@ import {
 } from "@/components/ui/collapsible"
 import { Separator } from "@/components/ui/separator";
 import { cookies } from "next/headers";
+import { propertyModule } from "@/application/modules/property.module";
 
 export default async function page({
   searchParams,
@@ -29,7 +29,8 @@ export default async function page({
   const real_estate_id = cookieStore
     .get(COOKIE_NAMES.REAL_ESTATE)?.value as string
 
-  const properties = listProperties({ ...filters, real_estate_id })
+  const { propertyService } = await propertyModule()
+  const properties = propertyService.getCachedAll({ ...filters, real_estate_id })
 
   return (
     <main className="flex-col items-center justify-center space-y-4 px-4 lg:px-6">

@@ -473,6 +473,12 @@
     }
   },
   "words": {
+    "dashboard": "panel",
+    "real_estates": "inmobiliarias",
+    "real_estate": "inmobiliaria",
+    "properties": "propiedades",
+    "listing": "publicaciones",
+    "agents": "agentes",
     "pages": "Páginas",
     "showing": "Mostrando",
     "rows": "Filas",

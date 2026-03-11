@@ -8,8 +8,6 @@ export class SupabaseListingAdapter implements ListingPort {
 
   async all(filters?: any): Promise<ListingEntity[]> {
 
-    console.log(filters);
-
     const sortField = filters?.sort_by?.toString().split("_")[0] || "created_at"
     const sortOrder = filters?.sort_by?.includes("desc") ? false : true
 
@@ -163,6 +161,9 @@ export class SupabaseListingAdapter implements ListingPort {
       query = query.eq("status", filters.status)
     }
 
+    if (filters?.agent_id) {
+      query = query.eq("agent_id", filters.agent_id)
+    }
     if (filters?.start_date) {
       query = query.gte("created_at", filters.start_date)
     }
@@ -233,5 +234,20 @@ export class SupabaseListingAdapter implements ListingPort {
     if (error) throw new Error(error.message)
 
     return (data || []).map(item => mapListingRowToEntity(item)!) as ListingEntity[]
+  }
+
+  async findBySlug(slug: string): Promise<ListingEntity | null> {
+    const { data: row, error } = await this.supabase
+      .from("listings")
+      .select(`
+        *,
+        property:properties!inner(*, property_images(*))
+      `)
+      .eq("properties.slug", slug)
+      .eq("status", "active")
+      .single();
+
+    if (error || !row) return null;
+    return mapListingRowToEntity(row) as ListingEntity
   }
 }

@@ -304,12 +304,12 @@ export class SupabaseProfileAdapter implements ProfilePort {
 **Ubicación:** `application/containers/[module].container.ts`
 
 ```typescript
-import { createSupabaseServerClient } from "@/infrastructure/db/supabase.server"
+import { SupabaseServerClient } from "@/infrastructure/db/supabase.server"
 import { SupabaseProfileAdapter } from "@/infrastructure/adapters/supabase/supabase-profile.adapter"
 import { ProfileUseCases } from "@/domain/use-cases/profile.cases"
 
-export async function createProfileModule() {
-  const supabase = await createSupabaseServerClient()
+export async functionProfileModule() {
+  const supabase = await SupabaseServerClient()
   const adapter = new SupabaseProfileAdapter(supabase)
   const useCases = new ProfileUseCases(adapter)
 
@@ -411,8 +411,8 @@ export const updateProfileAction = withServerAction(
       })
 
       // 3. Obtener módulos
-      const profileModule = await createProfileModule()
-      const sessionModule = await createSessionModule()
+      const profileModule = await ProfileModule()
+      const sessionModule = await SessionModule()
 
       // 4. Obtener usuario actual
       const userId = await sessionModule.useCases.getCurrentUserId()
@@ -444,8 +444,8 @@ export const uploadAvatarAction = withServerAction(
         stripUnknown: true
       })
 
-      const profileModule = await createProfileModule()
-      const sessionModule = await createSessionModule()
+      const profileModule = await ProfileModule()
+      const sessionModule = await SessionModule()
 
       const userId = await sessionModule.useCases.getCurrentUserId()
       if (!userId) {
@@ -475,8 +475,8 @@ export const updateRoleAction = withServerAction(
         stripUnknown: true
       })
 
-      const profileModule = await createProfileModule()
-      const sessionModule = await createSessionModule()
+      const profileModule = await ProfileModule()
+      const sessionModule = await SessionModule()
 
       const adminId = await sessionModule.useCases.getCurrentUserId()
       if (!adminId) {
@@ -519,21 +519,21 @@ import { cached } from "@/infrastructure/cache/cache"
 
 export const getCurrentUser = cached(
   async function () {
-    const { useCases } = await createSessionModule()
+    const { useCases } = await SessionModule()
     return useCases.getCurrentUser()
   }
 )
 
 export const getProfileById = cached(
   async function (userId: string) {
-    const { useCases } = await createProfileModule()
+    const { useCases } = await ProfileModule()
     return useCases.getProfile(userId)
   }
 )
 
 export const searchProfiles = cached(
   async function (email: string) {
-    const { useCases } = await createProfileModule()
+    const { useCases } = await ProfileModule()
     return useCases.searchProfilesByEmail(email)
   }
 )

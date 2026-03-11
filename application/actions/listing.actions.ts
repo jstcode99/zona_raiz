@@ -1,12 +1,12 @@
 "use server";
 
 import { withServerAction } from "@/shared/hooks/with-server-action";
-import { createListingModule } from "../containers/listing.container";
+import { listingModule } from "../modules/listing.module";
 import { createListingSchema } from "../validation/listing.validation";
 import { handleError } from "../errors/handle-error";
 import { revalidatePath } from "next/cache";
 import { ROUTES } from "@/infrastructure/config/constants";
-import { createPropertyModule } from "../containers/property.container";
+import { propertyModule } from "../modules/property.module";
 
 export const createListingAction = withServerAction(
   async (formData: FormData) => {
@@ -18,14 +18,14 @@ export const createListingAction = withServerAction(
         stripUnknown: true,
       })
 
-      const listingModule = await createListingModule()
-      const propertyModule = await createPropertyModule()
+      const { listingService } = await listingModule()
+      const { propertyService } = await propertyModule()
 
-      const property = await propertyModule.useCases.getById(validated.property_id)
+      const property = await propertyService.getById(validated.property_id)
       if (!property) throw new Error("Property not found")
 
-      const listing = await listingModule.useCases.create(validated)
-      
+      const listing = await listingService.create(validated)
+
       if (!listing) throw new Error("Listing not created")
 
 
@@ -53,9 +53,9 @@ export const updateListingAction = withServerAction(
         stripUnknown: true,
       })
 
-      const { useCases } = await createListingModule()
+      const { listingService } = await listingModule()
 
-      const listing = await useCases.update(id, validated)
+      const listing = await listingService.update(id, validated)
 
       revalidatePath(ROUTES.DASHBOARD)
       revalidatePath(`${ROUTES.DASHBOARD}/${ROUTES.LISTING}/${id}`)
@@ -69,6 +69,6 @@ export const updateListingAction = withServerAction(
 )
 
 export async function deleteListingAction(id: string) {
-  const { useCases } = await createListingModule();
-  return useCases.delete(id);
+  const { listingService } = await listingModule();
+  return listingService.delete(id);
 }

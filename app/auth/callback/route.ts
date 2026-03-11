@@ -1,7 +1,7 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { cookies } from "next/headers"
 import { COOKIE_NAMES, COOKIE_OPTIONS, ROUTES } from "@/infrastructure/config/constants"
-import { createAuthModule } from "@/application/containers/auth.container"
+import { createAuthModule } from "@/application/modules/auth.module"
 import { ProfileEntity } from "@/domain/entities/profile.entity"
 
 export async function GET(request: NextRequest) {
@@ -9,7 +9,7 @@ export async function GET(request: NextRequest) {
 
   const cookieStore = await cookies()
   // wiring manual por request
-  const authModule = await createAuthModule()
+  const authModule = await AuthModule()
 
   const code = searchParams.get("code")
   const token_hash = searchParams.get("token_hash")

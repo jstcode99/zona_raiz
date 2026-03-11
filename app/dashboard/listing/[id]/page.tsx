@@ -3,7 +3,7 @@ import { encodedRedirect } from "@/shared/redirect";
 import { Suspense } from "react";
 import { Card, CardContent } from '@/components/ui/card'
 import { ListingForm } from "@/features/listing/listing-form";
-import { getListingById } from "@/services/listing.services";
+import { createListingService } from "@/application/containers/listing-service.container"
 
 export default async function page({
   params,
@@ -12,7 +12,8 @@ export default async function page({
 }) {
   const { id } = await params;
 
-  const listing = await getListingById(id)
+  const listingService = await ListingService()
+  const listing = await listingService.getCachedById(id)
 
   if (!listing) {
     return encodedRedirect('error', '/auth/sign-in', 'No se pudo cargar la lista')

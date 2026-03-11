@@ -2,11 +2,11 @@
 
 import { handleError } from "@/application/errors/handle-error"
 import { withServerAction } from "@/shared/hooks/with-server-action"
-import { createProfileModule } from "../containers/profile.container"
 import { profileAvatarSchema, profileSchema } from "../validation/profile.validation"
-import { createSessionModule } from "../containers/session.container"
 import { AppError } from "../errors/app.error"
 import { revalidatePath } from "next/cache"
+import { profileModule } from "../modules/profile.module"
+import { sessionModule } from "../modules/session.module"
 
 export const updateProfileAction = withServerAction(
     async (formData: FormData) => {
@@ -18,16 +18,16 @@ export const updateProfileAction = withServerAction(
                 stripUnknown: true,
             })
 
-            const profileModule = await createProfileModule()
-            const sessionModule = await createSessionModule()
+            const { profileService } = await profileModule()
+            const { sessionService } = await sessionModule()
 
-            const id = await sessionModule.useCases.getCurrentUserId()
+            const id = await sessionService.getCurrentUserId()
 
             if (!id) {
                 throw new AppError("No autorizado", "RLS", 403)
             }
 
-            await profileModule.useCases.updateProfile(id, {
+            await profileService.updateProfile(id, {
                 full_name,
                 phone,
             })
@@ -51,16 +51,16 @@ export const uploadAvatarAction = withServerAction(
                 stripUnknown: true,
             })
 
-            const profileModule = await createProfileModule()
-            const sessionModule = await createSessionModule()
+            const { profileService } = await profileModule()
+            const { sessionService } = await sessionModule()
 
-            const id = await sessionModule.useCases.getCurrentUserId()
+            const id = await sessionService.getCurrentUserId()
 
             if (!id) {
                 throw new AppError("No autorizado", "RLS", 403)
             }
-            const url = await profileModule.useCases.uploadAvatar(id, avatar)
-            await profileModule.useCases.updatePathAvatarProfile(id, url)
+            const url = await profileService.uploadAvatar(id, avatar)
+            await profileService.updatePathAvatarProfile(id, url)
 
             revalidatePath("/dashboard/account")
 

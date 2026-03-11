@@ -91,10 +91,10 @@ export default {
 import { createClient } from "@supabase/supabase-js"
 
 // ✅ Correcto
-import { createSupabaseServerClient } from "@/infrastructure/db/supabase.server"
+import { SupabaseServerClient } from "@/infrastructure/db/supabase.server"
 
-export async function createPropertyModule() {
-  const supabase = await createSupabaseServerClient()
+export async functionPropertyModule() {
+  const supabase = await SupabaseServerClient()
   // ...
 }
 ```
@@ -391,13 +391,13 @@ export class Supabase[Module]Adapter implements I[Module]Repository {
 ```typescript
 "use server"
 
-import { createSupabaseServerClient } from "@/infrastructure/db/supabase.server"
+import { SupabaseServerClient } from "@/infrastructure/db/supabase.server"
 import { get[Module]Module } from "@/application/containers/[module].container"
 import { getCurrentUser } from "@/infrastructure/auth/get-user"
 import { UnauthorizedError, ForbiddenError } from "@/domain/errors/user.error"
 import { [Module]Schema } from "@/application/validation/[module].schema"
 
-export async function create[Module]Action(input: unknown) {
+export async function[Module]Action(input: unknown) {
   // 1. Validar usuario
   const user = await getCurrentUser()
   if (!user) throw new UnauthorizedError()
@@ -421,12 +421,12 @@ export async function create[Module]Action(input: unknown) {
 ### Container Boilerplate
 
 ```typescript
-import { createSupabaseServerClient } from "@/infrastructure/db/supabase.server"
+import { SupabaseServerClient } from "@/infrastructure/db/supabase.server"
 import { [Module]UseCases } from "@/domain/use-cases/[modules].use-cases"
 import { Supabase[Module]Adapter } from "@/infrastructure/adapters/supabase/supabase-[module].adapter"
 
 export async function get[Module]Module() {
-  const supabase = await createSupabaseServerClient()
+  const supabase = await SupabaseServerClient()
   const adapter = new Supabase[Module]Adapter(supabase)
   const useCases = new [Module]UseCases(adapter)
 
@@ -595,7 +595,7 @@ export const getAgentStats = cached(
 ```typescript
 // ✅ Crear container solo cuando se necesita
 export async function getPropertyModule() {
-  const supabase = await createSupabaseServerClient()
+  const supabase = await SupabaseServerClient()
   const adapter = new SupabasePropertyAdapter(supabase)
   return new PropertyUseCases(adapter)
 }

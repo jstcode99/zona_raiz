@@ -1,12 +1,12 @@
 import { Spinner } from "@/components/ui/spinner";
 import { PropertyForm } from "@/features/properties/property-form";
 import { COOKIE_NAMES } from "@/infrastructure/config/constants";
-import { getPropertyById } from "@/services/property.services";
 import { encodedRedirect } from "@/shared/redirect";
 import { cookies } from "next/headers";
 import { Suspense } from "react";
 import { Card, CardContent, } from '@/components/ui/card'
 import { PropertyInput } from "@/application/validation/property.schema";
+import { propertyModule } from "@/application/modules/property.module";
 
 export default async function page({
   params,
@@ -18,7 +18,8 @@ export default async function page({
   const cookieStore = await cookies()
   const realEstateId = cookieStore.get(COOKIE_NAMES.REAL_ESTATE)?.value as string
 
-  const property = await getPropertyById(id)
+  const { propertyService } = await propertyModule()
+  const property = await propertyService.getCachedById(id)
 
   if (!property) {
     return encodedRedirect('error', '/auth/sign-in', 'No se pudo cargar la propiedad')

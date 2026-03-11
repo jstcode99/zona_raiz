@@ -1,4 +1,6 @@
+import { Lang, ROUTE_LANG } from "@/infrastructure/config/routes.i18n";
 import { clsx, type ClassValue } from "clsx"
+import { NextRequest } from "next/server";
 import { twMerge } from "tailwind-merge"
 
 export function cn(...inputs: ClassValue[]) {
@@ -139,4 +141,56 @@ export const optimizeImage = (file: File, maxWidth = 512): Promise<File> => {
 
     reader.readAsDataURL(file)
   })
+}
+
+
+export type RouteKey = keyof typeof ROUTE_LANG
+
+// ==========================================
+// ROUTE HELPER
+// ==========================================
+
+export function route(
+  name: RouteKey,
+  lang: Lang,
+  params?: Record<string, string | number>
+) {
+  let path = ROUTE_LANG[name][lang]
+
+  if (params) {
+    Object.entries(params).forEach(([key, value]) => {
+      path = path.replace(`:${key}`, String(value))
+    })
+  }
+
+  return path
+}
+
+export function getClientLang(): Lang {
+  const cookieLang = document.cookie
+    .split("; ")
+    .find((row) => row.startsWith("lang="))
+    ?.split("=")[1] as Lang
+  if (cookieLang === "es" || cookieLang === "en") return cookieLang
+
+  const navLang = navigator.language
+  if (navLang.startsWith("es")) return "es"
+  return "en"
+}
+
+export function setClientLang(lang: Lang) {
+  document.cookie = `lang=${lang}; path=/; max-age=${60 * 60 * 24 * 365}`
+}
+
+export function getServerLang(request: NextRequest): Lang {
+  // 1️⃣ desde cookie
+  const cookieLang = request.cookies.get("lang")?.value as Lang
+  if (cookieLang === "es" || cookieLang === "en") return cookieLang
+
+  // 2️⃣ desde header
+  const headerLang = request.headers.get("accept-language")
+  if (headerLang?.startsWith("es")) return "es"
+
+  // fallback
+  return "en"
 }

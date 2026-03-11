@@ -4,7 +4,7 @@ import { Loader2 } from "lucide-react"
 import { RealEstateSelector } from "../real-states/real-estate-selector"
 import i18next from "i18next"
 import { RealEstateRegisterPrompt } from "@/features/real-states/real-estate-register-prompt"
-import { OnboardingState } from "@/domain/use-cases/onboarding.cases"
+import { OnboardingState } from "@/domain/services/onboarding.service"
 import { redirect } from "next/navigation"
 
 interface Props {

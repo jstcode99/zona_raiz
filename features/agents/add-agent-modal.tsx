@@ -26,7 +26,7 @@ export function AddAgentModal({ real_estate_id }: AddAgentModalProps) {
           <IconPlus className="h-4 w-4" />
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-106.25">
         <DialogHeader>
           <DialogTitle>Agregar agente</DialogTitle>
         </DialogHeader>

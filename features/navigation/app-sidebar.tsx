@@ -1,11 +1,6 @@
 "use client"
 
 import * as React from "react"
-import {
-  type Icon,
-  IconInnerShadowTop
-} from "@tabler/icons-react"
-
 import { NavMain } from "@/features/navigation/nav-main"
 import { NavUser } from "@/features/navigation/nav-user"
 import {

@@ -1,10 +1,10 @@
 import { Spinner } from "@/components/ui/spinner";
-import { getPropertyById } from "@/services/property.services";
 import { encodedRedirect } from "@/shared/redirect";
 import { Suspense } from "react";
 import { Card, CardContent, } from '@/components/ui/card'
 import { PropertyImagesManager } from "@/features/image-manager/property-images-manager";
-import { getPropertyImagesById } from "@/services/property-image.services"
+import { propertyImageModule } from "@/application/modules/property-image.module";
+import { propertyModule } from "@/application/modules/property.module";
 
 export default async function page({
   params,
@@ -13,12 +13,14 @@ export default async function page({
 }) {
   const { id } = await params;
 
-  const property = await getPropertyById(id)
+  const { propertyService } = await propertyModule()
+  const { propertyImageService } = await propertyImageModule()
+  const property = await propertyService.getCachedById(id)
 
   if (!property) {
     return encodedRedirect('error', '/auth/sign-in', 'No se pudo cargar la propiedad')
   }
-  const fetchImages = getPropertyImagesById(id)
+  const fetchImages = propertyImageService.getCachedByPropertyId(id)
 
   return (
     <main className="min-h-screen p-8">
@@ -34,30 +36,32 @@ export default async function page({
           </p>
         </header>
 
-        <div className="border rounded-2xl p-8 shadow-lg">
-          <div className='w-full'>
-            <Suspense fallback={<Spinner />}>
-              <PropertyImagesManager
-                propertyId={id}
-                fetch={fetchImages}
-              />
-            </Suspense>
-          </div>
-          <div className="mt-6 grid grid-cols-3 gap-4">
-            <div className="border rounded-lg p-4 text-center">
-              <p className="text-2xl font-bold">25MB</p>
-              <p className="text-xs uppercase tracking-wider mt-1 opacity-70">Máx. por archivo</p>
+        <Card>
+          <CardContent>
+            <div className='w-full'>
+              <Suspense fallback={<Spinner />}>
+                <PropertyImagesManager
+                  propertyId={id}
+                  fetch={fetchImages}
+                />
+              </Suspense>
             </div>
-            <div className="border rounded-lg p-4 text-center">
-              <p className="text-2xl font-bold">10</p>
-              <p className="text-xs uppercase tracking-wider mt-1 opacity-70">Se recomiendoa máx archivos .</p>
+            <div className="mt-6 grid grid-cols-3 gap-4">
+              <div className="border rounded-lg p-4 text-center">
+                <p className="text-2xl font-bold">25MB</p>
+                <p className="text-xs uppercase tracking-wider mt-1 opacity-70">Máx. por archivo</p>
+              </div>
+              <div className="border rounded-lg p-4 text-center">
+                <p className="text-2xl font-bold">10</p>
+                <p className="text-xs uppercase tracking-wider mt-1 opacity-70">Se recomiendoa máx archivos .</p>
+              </div>
+              <div className="border rounded-lg p-4 text-center">
+                <p className="text-2xl font-bold">PNG, JPG, WEBP</p>
+                <p className="text-xs uppercase tracking-wider mt-1 opacity-70">Formatos</p>
+              </div>
             </div>
-            <div className="border rounded-lg p-4 text-center">
-              <p className="text-2xl font-bold">PNG, JPG, WEBP</p>
-              <p className="text-xs uppercase tracking-wider mt-1 opacity-70">Formatos</p>
-            </div>
-          </div>
-        </div>
+          </CardContent>
+        </Card>
       </div>
     </main>
   );

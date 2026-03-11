@@ -1,7 +1,7 @@
 "use server"
 
 import { withServerAction } from "@/shared/hooks/with-server-action"
-import { createRealEstateModule } from "../containers/real-estate.container"
+import { realEstateModule } from "../modules/real-estate.module"
 import { logoRealEstateSchema, realEstateSchema } from "../validation/real-estate.validation"
 import { idSchema } from "../validation/base/id.schema"
 import { cookies } from "next/headers"
@@ -11,20 +11,20 @@ import { revalidatePath } from "next/cache"
 
 export const createRealEstateAction = withServerAction(
     async (formData: FormData) => {
-        const { useCases } = await createRealEstateModule()
+        const { realEstateService } = await realEstateModule()
 
         const input = await realEstateSchema.validate(
             Object.fromEntries(formData),
             { abortEarly: false, stripUnknown: true }
         )
 
-        await useCases.create(mapRealEstateRowToDomain(input))
+        await realEstateService.create(mapRealEstateRowToDomain(input))
     }
 )
 
 export const updateRealEstateAction = withServerAction(
     async (formData: FormData) => {
-        const { useCases } = await createRealEstateModule()
+        const { realEstateService } = await realEstateModule()
 
         const id = formData.get("id") as string
 
@@ -33,7 +33,7 @@ export const updateRealEstateAction = withServerAction(
             { abortEarly: false }
         )
 
-        await useCases.update(id, mapRealEstateRowToDomain(input))
+        await realEstateService.update(id, mapRealEstateRowToDomain(input))
 
         revalidatePath(`${ROUTES.DASHBOARD}/${ROUTES.REAL_ESTATES}`)
         revalidatePath(`${ROUTES.DASHBOARD}/${ROUTES.REAL_ESTATES}/${id}`)
@@ -42,12 +42,12 @@ export const updateRealEstateAction = withServerAction(
 
 export const deleteRealEstateAction = withServerAction(
     async (formData: FormData) => {
-        const { useCases } = await createRealEstateModule()
+        const { realEstateService } = await realEstateModule()
         const id = await idSchema.validate(
             Object.fromEntries(formData),
             { abortEarly: false }
         )
-        await useCases.delete(id)
+        await realEstateService.delete(id)
 
         revalidatePath(`${ROUTES.DASHBOARD}/${ROUTES.REAL_ESTATES}`)
         revalidatePath(`${ROUTES.DASHBOARD}/${ROUTES.REAL_ESTATES}/${id}`)
@@ -56,14 +56,14 @@ export const deleteRealEstateAction = withServerAction(
 
 export const uploadRealEstateLogoAction = withServerAction(
     async (formData: FormData) => {
-        const { useCases } = await createRealEstateModule()
+        const { realEstateService } = await realEstateModule()
 
         const { id, logo } = await logoRealEstateSchema.validate(
             Object.fromEntries(formData),
             { abortEarly: false }
         )
 
-        await useCases.uploadLogo(id, logo)
+        await realEstateService.uploadLogo(id, logo)
 
         revalidatePath(`${ROUTES.DASHBOARD}/${ROUTES.REAL_ESTATES}`)
         revalidatePath(`${ROUTES.DASHBOARD}/${ROUTES.REAL_ESTATES}/${id}`)

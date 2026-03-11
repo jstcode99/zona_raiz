@@ -1,10 +1,11 @@
 import { encodedRedirect } from "@/shared/redirect"
 import AuthBackgroundShape from '@/assets/svg/background-shape'
 import AccountSectionCard from "@/features/profile/profile-section-card"
-import { getCurrentUser } from "@/services/session.services";
+import { sessionModule } from "@/application/modules/session.module";
 
 export default async function page() {
-  const profile = await getCurrentUser();
+  const { sessionService } = await sessionModule()
+  const profile = await sessionService.getCachedCurrentUser();
 
   if (!profile) {
     return encodedRedirect('error', '/auth/sign-in', 'No se pudo cargar el perfil')

@@ -1,5 +1,5 @@
 import { Card, CardContent } from "@/components/ui/card"
-import { UserForm } from "@/features/user/user-form"
+import { UserForm } from "@/features/users/user-form"
 
 export default async function page() {
   return (

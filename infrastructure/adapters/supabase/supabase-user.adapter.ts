@@ -1,5 +1,5 @@
 import { SupabaseClient } from "@supabase/supabase-js"
-import { UserPort } from "@/domain/user.port"
+import { UserPort } from "@/domain/ports/user.port"
 import { UserEntity } from "@/domain/entities/user.entity"
 import { EUserRole } from "@/domain/entities/profile.entity"
 

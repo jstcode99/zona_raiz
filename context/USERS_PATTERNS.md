@@ -134,7 +134,7 @@ export async function searchPropertiesAction(filters: PropertySearchInput) {
   const user = await getCurrentUser()
   if (!user) throw new UnauthorizedError()
 
-  const { useCases } = await createPropertyModule()
+  const { useCases } = await PropertyModule()
   return useCases.searchActive(filters)
 }
 
@@ -143,7 +143,7 @@ export async function saveFavoriteAction(propertyId: string) {
   if (!user) throw new UnauthorizedError()
   if (user.role !== "CLIENT") throw new ForbiddenError(user.role)
 
-  const { useCases } = await createPropertyModule()
+  const { useCases } = await PropertyModule()
   return useCases.addToFavorites(propertyId, user.id)
 }
 
@@ -151,7 +151,7 @@ export async function contactAgentAction(agentId: string, message: string) {
   const user = await getCurrentUser()
   if (!user) throw new UnauthorizedError()
 
-  const { useCases } = await createPropertyModule()
+  const { useCases } = await PropertyModule()
   return useCases.sendMessage(agentId, user.id, message)
 }
 ```
@@ -168,13 +168,13 @@ import { UnauthorizedError, ForbiddenError } from "@/domain/errors/user.error"
 import { UserRole } from "@/domain/entities/user.entity"
 import { createPropertySchema } from "@/application/validation/property.schema"
 
-export async function createPropertyAction(input: CreatePropertyInput) {
+export async functionPropertyAction(input: CreatePropertyInput) {
   const user = await getCurrentUser()
   if (!user) throw new UnauthorizedError()
   if (user.role !== "AGENT") throw new ForbiddenError(user.role)
 
   const validated = createPropertySchema.parse(input)
-  const { useCases } = await createPropertyModule()
+  const { useCases } = await PropertyModule()
 
   return useCases.createProperty({ ...validated, agentId: user.id })
 }
@@ -187,7 +187,7 @@ export async function updatePropertyAction(
   if (!user) throw new UnauthorizedError()
   if (user.role !== "AGENT") throw new ForbiddenError(user.role)
 
-  const { useCases } = await createPropertyModule()
+  const { useCases } = await PropertyModule()
   return useCases.updateProperty(id, input, user)
 }
 
@@ -196,7 +196,7 @@ export async function publishPropertyAction(id: string) {
   if (!user) throw new UnauthorizedError()
   if (user.role !== "AGENT") throw new ForbiddenError(user.role)
 
-  const { useCases } = await createPropertyModule()
+  const { useCases } = await PropertyModule()
   return useCases.publishProperty(id, user)
 }
 
@@ -205,7 +205,7 @@ export async function getMyPropertiesAction() {
   if (!user) throw new UnauthorizedError()
   if (user.role !== "AGENT") throw new ForbiddenError(user.role)
 
-  const { useCases } = await createPropertyModule()
+  const { useCases } = await PropertyModule()
   return useCases.findByAgentId(user.id)
 }
 
@@ -214,7 +214,7 @@ export async function getAgentStats() {
   if (!user) throw new UnauthorizedError()
   if (user.role !== "AGENT") throw new ForbiddenError(user.role)
 
-  const { useCases } = await createPropertyModule()
+  const { useCases } = await PropertyModule()
   return useCases.getAgentStats(user.id)
 }
 ```
@@ -239,7 +239,7 @@ export async function moderatePropertyAction(
   if (!user) throw new UnauthorizedError()
   if (user.role !== "ADMIN") throw new ForbiddenError(user.role)
 
-  const { useCases } = await createPropertyModule()
+  const { useCases } = await PropertyModule()
   return useCases.moderateProperty(id, status)
 }
 
@@ -248,7 +248,7 @@ export async function deactivateUserAction(userId: string) {
   if (!user) throw new UnauthorizedError()
   if (user.role !== "ADMIN") throw new ForbiddenError(user.role)
 
-  const { useCases } = await createUserModule()
+  const { useCases } = await UserModule()
   return useCases.deactivateUser(userId)
 }
 
@@ -257,7 +257,7 @@ export async function getAdminDashboardAction() {
   if (!user) throw new UnauthorizedError()
   if (user.role !== "ADMIN") throw new ForbiddenError(user.role)
 
-  const { useCases } = await createPropertyModule()
+  const { useCases } = await PropertyModule()
   return useCases.getDashboardStats()
 }
 ```
@@ -415,7 +415,7 @@ export function PropertyForm() {
   const handleSubmit = useCallback(async (data: CreatePropertyInput) => {
     setIsLoading(true)
     try {
-      await createPropertyAction(data)
+      await PropertyAction(data)
       // Redirigir o mostrar éxito
     } catch (error) {
       console.error(error)
@@ -636,7 +636,7 @@ export async function publishPropertyAction(id: string) {
   const user = await getCurrentUser()
   if (!user) throw new UnauthorizedError()
 
-  const { useCases } = await createPropertyModule()
+  const { useCases } = await PropertyModule()
   return useCases.publishProperty(id, user)
 }
 ```

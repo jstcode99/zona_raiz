@@ -81,7 +81,7 @@ export function PropertyTypesChart({ data, onTypesChange, ...props }: PropertyTy
         <CardTitle className="text-base">Propiedades por Tipo</CardTitle>
         <CardDescription className="text-xs">Selecciona los tipos para filtrar</CardDescription>
       </CardHeader>
-      <CardContent className="space-y-4 min-h-82">
+      <CardContent className="space-y-4 lg:min-h-82">
         <Popover open={open} onOpenChange={setOpen}>
           <PopoverTrigger asChild>
             <Button
@@ -128,7 +128,7 @@ export function PropertyTypesChart({ data, onTypesChange, ...props }: PropertyTy
 
         {chartData.length > 0 ? (
           <div className="flex gap-4">
-            <div className="h-[140px] w-[140px] shrink-0">
+            <div className="h-35 w-35 shrink-0">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <Pie
@@ -148,7 +148,7 @@ export function PropertyTypesChart({ data, onTypesChange, ...props }: PropertyTy
                 </PieChart>
               </ResponsiveContainer>
             </div>
-            <div className="flex-1 space-y-2 overflow-auto max-h-[140px]">
+            <div className="flex-1 space-y-2 overflow-auto max-h-35">
               {chartData.map((item) => {
                 const percentage = total > 0 ? (item.count / total) * 100 : 0
                 return (
@@ -164,7 +164,7 @@ export function PropertyTypesChart({ data, onTypesChange, ...props }: PropertyTy
             </div>
           </div>
         ) : (
-          <div className="flex h-[100px] items-center justify-center text-muted-foreground text-xs">
+          <div className="flex h-25 items-center justify-center text-muted-foreground text-xs">
             No hay datos disponibles
           </div>
         )}

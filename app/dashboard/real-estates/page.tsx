@@ -7,7 +7,6 @@ import Link from "next/link";
 import { ROUTES } from "@/infrastructure/config/constants";
 import { RealEstateFiltersForm } from "@/features/real-states/real-estate-form-filters";
 import RealEstatesTable from "@/features/real-states/real-estate-table";
-import { listRealEstates } from "@/services/real-estate.services";
 import { RealEstateFilters } from "@/domain/entities/real-estate.entity";
 import { RealEstateColumns } from "@/features/real-states/real-estate-columns";
 import {
@@ -16,6 +15,7 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible"
 import { Separator } from "@/components/ui/separator";
+import { realEstateModule } from "@/application/modules/real-estate.module";
 
 export default async function page({
   searchParams,
@@ -24,7 +24,8 @@ export default async function page({
 }) {
   const filters = await searchParams;
 
-  const realEstates = listRealEstates(filters)
+  const { realEstateService } = await realEstateModule()
+  const realEstates = realEstateService.getCachedAll(filters)
 
   return (
     <main className="flex-col items-center justify-center space-y-4 px-4 lg:px-6">

@@ -3,12 +3,12 @@
 import { revalidatePath } from "next/cache"
 import { ROUTES } from "@/infrastructure/config/constants"
 import { withServerAction } from "@/shared/hooks/with-server-action"
-import { createUserModule } from "@/application/containers/user.container"
-import { userSchema } from "@/application/validation/user.validation"
-import { idSchema } from "@/application/validation/base/id.schema"
+import { userModule } from "../modules/user.module"
+import { userSchema } from "../validation/user.validation"
+import { idSchema } from "../validation/base/id.schema"
 
 export const createUserAction = withServerAction(async (formData: FormData) => {
-  const { useCases } = await createUserModule()
+  const { userService } = await userModule()
 
   const raw = Object.fromEntries(formData)
 
@@ -17,7 +17,7 @@ export const createUserAction = withServerAction(async (formData: FormData) => {
     stripUnknown: true,
   })
 
-  await useCases.createUser({
+  await userService.createUser({
     email: input.email,
     full_name: input.full_name as string,
     role: input.role,
@@ -27,7 +27,7 @@ export const createUserAction = withServerAction(async (formData: FormData) => {
 })
 
 export const updateUserAction = withServerAction(async (formData: FormData) => {
-  const { useCases } = await createUserModule()
+  const { userService } = await userModule()
 
   const id = await idSchema.validate(formData.get("id") ?? "", {
     abortEarly: false,
@@ -40,7 +40,7 @@ export const updateUserAction = withServerAction(async (formData: FormData) => {
     stripUnknown: true,
   })
 
-  await useCases.updateUser(id, {
+  await userService.updateUser(id, {
     email: input.email,
     full_name: input.full_name,
     role: input.role,
@@ -51,13 +51,13 @@ export const updateUserAction = withServerAction(async (formData: FormData) => {
 })
 
 export const deleteUserAction = withServerAction(async (formData: FormData) => {
-  const { useCases } = await createUserModule()
+  const { userService } = await userModule()
 
   const id = await idSchema.validate(formData.get("id") ?? "", {
     abortEarly: false,
   })
 
-  await useCases.deleteUser(id)
+  await userService.deleteUser(id)
 
   revalidatePath(`${ROUTES.DASHBOARD}${ROUTES.USERS}`)
 })

@@ -4,7 +4,6 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Button } from "@/components/ui/button";
 import { IconFilter } from "@tabler/icons-react";
 import { COOKIE_NAMES } from "@/infrastructure/config/constants";
-import { listListing } from "@/services/listing.services";
 import { ListingSearchFormInput } from "@/application/validation/listing-search.schema";
 import ListingTable from "@/features/listing/listing-table";
 import { ListingColumns } from "@/features/listing/listing-columns";
@@ -16,6 +15,7 @@ import {
 } from "@/components/ui/collapsible"
 import { Separator } from "@/components/ui/separator";
 import { cookies } from "next/headers";
+import { listingModule } from "@/application/modules/listing.module";
 
 export default async function page({
   searchParams,
@@ -28,7 +28,8 @@ export default async function page({
   const real_estate_id = cookieStore
     .get(COOKIE_NAMES.REAL_ESTATE)?.value as string
 
-  const listing = listListing({
+  const { listingService } = await listingModule()
+  const listing = listingService.getCachedAll({
     ...filters,
     real_estate_id
   })

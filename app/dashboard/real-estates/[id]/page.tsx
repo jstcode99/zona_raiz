@@ -2,8 +2,8 @@ import { Spinner } from "@/components/ui/spinner";
 import { encodedRedirect } from "@/shared/redirect";
 import { Suspense } from "react";
 import { Card, CardContent, } from '@/components/ui/card'
-import { getRealEstateById } from "@/services/real-estate.services";
 import { RealEstateForm } from "@/features/real-states/real-estate-form";
+import { realEstateModule } from "@/application/modules/real-estate.module";
 
 export default async function page({
   params,
@@ -12,7 +12,8 @@ export default async function page({
 }) {
   const { id } = await params;
 
-  const realEstate = await getRealEstateById(id)
+  const { realEstateService } = await realEstateModule()
+  const realEstate = await realEstateService.getCachedById(id)
 
   if (!realEstate) {
     return encodedRedirect('error', '/auth/sign-in', 'No se pudo cargar la inmobiliaria')

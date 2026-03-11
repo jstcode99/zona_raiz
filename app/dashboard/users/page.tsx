@@ -5,12 +5,13 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { IconPlus } from "@tabler/icons-react"
 import { ROUTES } from "@/infrastructure/config/constants"
-import { listUsers } from "@/services/user.services"
-import UsersTable from "@/features/user/user-table"
-import { UserColumns, UserRow } from "@/features/user/user-colums"
+import UsersTable from "@/features/users/user-table"
+import { UserColumns, UserRow } from "@/features/users/user-columns"
+import { userModule } from "@/application/modules/user.module"
 
 async function UsersTableSection() {
-  const users = listUsers()
+  const { userService } = await userModule()
+  const users = userService.getCachedListUsers()
   const rows = users.then((items) => items as unknown as UserRow[])
 
   return <UsersTable users={rows} columns={UserColumns} />

@@ -2,20 +2,13 @@ import { DashboardStats } from "@/features/dashboard/dashboard-stats"
 import { PropertyTypesChart } from "@/features/dashboard/property-types-chart"
 import { cookies } from "next/headers";
 import { COOKIE_NAMES } from "@/infrastructure/config/constants";
-import { PropertyCountService } from "@/domain/services/property-count.service";
-import { ListingCountService } from "@/domain/services/listing-count.service";
-import { ListingFeaturedService } from "@/domain/services/listing-featured.service";
-import { ListingViewsCountService } from "@/domain/services/listing-views-count.service";
-import { ProfileCountService } from "@/domain/services/profile-count.service";
-import { RealEstateCountService } from "@/domain/services/real-estate-count.service";
-import { createPropertyModule } from "@/application/containers/property.container";
-import { createListingModule } from "@/application/containers/listing.container";
-import { createProfileModule } from "@/application/containers/profile.container";
-import { createRealEstateModule } from "@/application/containers/real-estate.container";
-import { getListAgentByRealEstateId } from "@/services/agent.services";
+import { propertyModule } from "@/application/modules/property.module";
+import { listingModule } from "@/application/modules/listing.module";
+import { profileModule } from "@/application/modules/profile.module";
+import { realEstateModule } from "@/application/modules/real-estate.module";
+import { agentModule } from "@/application/modules/agent.module";
 import { AgentList } from "@/features/agents/agent-list";
 import { SkeletonAgentList } from "@/features/agents/skeleton-agent-list";
-import { Separator } from "@/components/ui/separator";
 import { Suspense } from "react";
 import { AddAgentModal } from "@/features/agents/add-agent-modal";
 import { FeaturedListingsSlider } from "@/features/dashboard/featured-listings-slider";
@@ -26,6 +19,7 @@ import {
   CardAction,
   CardContent,
 } from '@/components/ui/card';
+import { UserIcon } from "lucide-react";
 
 function getMonthDateRange(date: Date): { start_date: string; end_date: string } {
   const year = date.getFullYear();
@@ -49,19 +43,15 @@ export default async function DashboardPage() {
   const cookieStore = await cookies()
   const real_estate_id = cookieStore.get(COOKIE_NAMES.REAL_ESTATE)?.value as string
 
-  const { repository: propertyRepository } = await createPropertyModule()
-  const countService = new PropertyCountService(propertyRepository)
+  const { propertyService } = await propertyModule()
 
-  const { repository: listingRepository } = await createListingModule()
-  const listingCountService = new ListingCountService(listingRepository)
-  const listingViewsCountService = new ListingViewsCountService(listingRepository)
-  const listingFeaturedService = new ListingFeaturedService(listingRepository)
+  const { listingService } = await listingModule()
 
-  const { repository: profileRepository } = await createProfileModule()
-  const profileCountService = new ProfileCountService(profileRepository)
+  const { profileService } = await profileModule()
 
-  const { repository: realEstateRepository } = await createRealEstateModule()
-  const realEstateCountService = new RealEstateCountService(realEstateRepository)
+  const { realEstateService } = await realEstateModule()
+
+  const { agentService } = await agentModule()
 
   const now = new Date()
   const currentMonthRange = getMonthDateRange(now)
@@ -69,63 +59,63 @@ export default async function DashboardPage() {
   const previousMonthRange = getMonthDateRange(previousMonth)
 
   const currentMonthProperties = real_estate_id
-    ? await countService.getCachedCountByRealEstateWithDateRange(real_estate_id, currentMonthRange.start_date, currentMonthRange.end_date)
-    : await countService.getCachedCountWithDateRange(currentMonthRange.start_date, currentMonthRange.end_date)
+    ? await propertyService.getCachedCountByRealEstateWithDateRange(real_estate_id, currentMonthRange.start_date, currentMonthRange.end_date)
+    : await propertyService.getCachedCountWithDateRange(currentMonthRange.start_date, currentMonthRange.end_date)
 
   const previousMonthProperties = real_estate_id
-    ? await countService.getCachedCountByRealEstateWithDateRange(real_estate_id, previousMonthRange.start_date, previousMonthRange.end_date)
-    : await countService.getCachedCountWithDateRange(previousMonthRange.start_date, previousMonthRange.end_date)
+    ? await propertyService.getCachedCountByRealEstateWithDateRange(real_estate_id, previousMonthRange.start_date, previousMonthRange.end_date)
+    : await propertyService.getCachedCountWithDateRange(previousMonthRange.start_date, previousMonthRange.end_date)
 
   const activeProperties = currentMonthProperties
   const activePropertiesChange = calculatePercentageChange(currentMonthProperties, previousMonthProperties)
 
   const currentMonthListings = real_estate_id
-    ? await listingCountService.getCachedCountByRealEstateWithDateRange(real_estate_id, currentMonthRange.start_date, currentMonthRange.end_date)
-    : await listingCountService.getCachedCountWithDateRange(currentMonthRange.start_date, currentMonthRange.end_date)
+    ? await listingService.getCachedCountByRealEstateWithDateRange(real_estate_id, currentMonthRange.start_date, currentMonthRange.end_date)
+    : await listingService.getCachedCountWithDateRange(currentMonthRange.start_date, currentMonthRange.end_date)
 
   const previousMonthListings = real_estate_id
-    ? await listingCountService.getCachedCountByRealEstateWithDateRange(real_estate_id, previousMonthRange.start_date, previousMonthRange.end_date)
-    : await listingCountService.getCachedCountWithDateRange(previousMonthRange.start_date, previousMonthRange.end_date)
+    ? await listingService.getCachedCountByRealEstateWithDateRange(real_estate_id, previousMonthRange.start_date, previousMonthRange.end_date)
+    : await listingService.getCachedCountWithDateRange(previousMonthRange.start_date, previousMonthRange.end_date)
 
   const totalListings = currentMonthListings
   const totalListingsChange = calculatePercentageChange(currentMonthListings, previousMonthListings)
 
   const currentMonthVisits = real_estate_id
-    ? await listingViewsCountService.getCachedCountByRealEstateWithDateRange(real_estate_id, currentMonthRange.start_date, currentMonthRange.end_date)
-    : await listingViewsCountService.getCachedCountWithDateRange(currentMonthRange.start_date, currentMonthRange.end_date)
+    ? await listingService.getCachedCountByRealEstateWithDateRange(real_estate_id, currentMonthRange.start_date, currentMonthRange.end_date)
+    : await listingService.getCachedCountWithDateRange(currentMonthRange.start_date, currentMonthRange.end_date)
 
   const previousMonthVisits = real_estate_id
-    ? await listingViewsCountService.getCachedCountByRealEstateWithDateRange(real_estate_id, previousMonthRange.start_date, previousMonthRange.end_date)
-    : await listingViewsCountService.getCachedCountWithDateRange(previousMonthRange.start_date, previousMonthRange.end_date)
+    ? await listingService.getCachedCountByRealEstateWithDateRange(real_estate_id, previousMonthRange.start_date, previousMonthRange.end_date)
+    : await listingService.getCachedCountWithDateRange(previousMonthRange.start_date, previousMonthRange.end_date)
 
   const visits = currentMonthVisits
   const visitsChange = calculatePercentageChange(currentMonthVisits, previousMonthVisits)
 
-  const currentMonthNewUsers = await profileCountService.getCachedCountWithDateRange(currentMonthRange.start_date, currentMonthRange.end_date)
-  const previousMonthNewUsers = await profileCountService.getCachedCountWithDateRange(previousMonthRange.start_date, previousMonthRange.end_date)
+  const currentMonthNewUsers = await profileService.getCachedCountWithDateRange(currentMonthRange.start_date, currentMonthRange.end_date)
+  const previousMonthNewUsers = await profileService.getCachedCountWithDateRange(previousMonthRange.start_date, previousMonthRange.end_date)
 
   const newUsers = currentMonthNewUsers
   const newUsersChange = calculatePercentageChange(currentMonthNewUsers, previousMonthNewUsers)
 
-  const currentMonthRealEstates = await realEstateCountService.getCachedCountWithDateRange(currentMonthRange.start_date, currentMonthRange.end_date)
-  const previousMonthRealEstates = await realEstateCountService.getCachedCountWithDateRange(previousMonthRange.start_date, previousMonthRange.end_date)
+  const currentMonthRealEstates = await realEstateService.getCachedCountWithDateRange(currentMonthRange.start_date, currentMonthRange.end_date)
+  const previousMonthRealEstates = await realEstateService.getCachedCountWithDateRange(previousMonthRange.start_date, previousMonthRange.end_date)
 
   const totalRealEstates = currentMonthRealEstates
   const totalRealEstatesChange = calculatePercentageChange(currentMonthRealEstates, previousMonthRealEstates)
 
-  const propertyTypesData = await countService.getCachedCountByTypes(real_estate_id)
+  const propertyTypesData = await propertyService.getCachedCountByTypes(real_estate_id)
 
-  const agents = await getListAgentByRealEstateId(real_estate_id)
+  const agents = await agentService.getCachedListAgents(real_estate_id)
 
-  const featuredListings = await listingFeaturedService.getCachedFeatured(10, real_estate_id)
+  const featuredListings = await listingService.getCachedFeatured(10, real_estate_id)
 
   return (
     <div className="flex flex-1 flex-col">
       <div className="@container/main flex flex-1 flex-col gap-2">
-        <div className="grid grid-cols-1 gap-8 md:grid-cols-5 auto-rows-[440px] px-4">
+        <div className="grid grid-cols-1 gap-8 md:grid-cols-3 lg:grid-cols-5 lg:auto-rows-[440px] px-4">
 
           {/* Row 1 */}
-          <div className="md:col-span-3">
+          <div className="col-span-full lg:col-span-3">
             <DashboardStats
               activeProperties={activeProperties}
               activePropertiesChange={activePropertiesChange}
@@ -141,30 +131,30 @@ export default async function DashboardPage() {
             />
           </div>
 
-          <div className="">
+          <div className="col-span-full lg:col-span-1">
             <PropertyTypesChart data={propertyTypesData} />
           </div>
 
-          <div className="">
+          <div className="col-span-full lg:col-span-1">
             <Suspense fallback={<SkeletonAgentList />}>
               <Card className="pb-2">
                 <CardHeader>
                   <CardTitle className="text-base">
-                    Agentes
+                    <UserIcon />
                   </CardTitle>
                   <CardAction>
                     <AddAgentModal real_estate_id={real_estate_id} />
                   </CardAction>
                 </CardHeader>
-                <CardContent className="border-t flex-col items-start text-sm min-h-92">
+                <CardContent className="border-t flex-col items-start text-sm lg:min-h-92">
                   <AgentList
                     real_estate_id={real_estate_id}
                     agents={agents}
                   />
                 </CardContent>
               </Card>
-            </Suspense>          </div>
-
+            </Suspense>          
+          </div>
           {/* Row 2 */}
           <div className="">
             {/* Multi users */}

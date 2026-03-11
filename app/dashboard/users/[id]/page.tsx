@@ -1,10 +1,10 @@
 import { Suspense } from "react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Spinner } from "@/components/ui/spinner"
-import { getUserById } from "@/services/user.services"
 import { encodedRedirect } from "@/shared/redirect"
-import { UserForm } from "@/features/user/user-form"
+import { UserForm } from "@/features/users/user-form"
 import { UserInput } from "@/application/validation/user.validation"
+import { userModule } from "@/application/modules/user.module"
 
 export default async function page({
   params,
@@ -14,8 +14,16 @@ export default async function page({
   const { id } = await params
 
   let user: UserInput
+
   try {
-    const data = await getUserById(id)
+    const { userService } = await userModule()
+
+    const data = await userService.getCachedUserById(id)
+
+    if (!data) {
+      return encodedRedirect("error", "/dashboard/users", "No se pudo cargar el usuario")
+    }
+
     user = {
       email: data.email,
       full_name: data.full_name,

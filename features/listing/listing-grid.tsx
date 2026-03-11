@@ -3,10 +3,10 @@
 import { ListingEntity, listingTypeLabels } from "@/domain/entities/listing.entity"
 import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { MapPin, Bed, Bath, Maximize2 } from "lucide-react"
+import { MapPin, Bed, Bath, Maximize } from "lucide-react"
 import { IconHome } from "@tabler/icons-react"
 import Link from "next/link"
-import Image from "next/image"
+import { ROUTES } from "@/infrastructure/config/constants"
 
 interface ListingCardProps {
   listing: ListingEntity
@@ -18,7 +18,7 @@ export function ListingCard({ listing }: ListingCardProps) {
   const mainImage = images.length > 0 ? images[0].public_url : null
 
   return (
-    <Link href={`/listing/${listing.id}`}>
+    <Link href={`${ROUTES.LISTING}/${property.slug}`}>
       <Card className="overflow-hidden pt-0 cursor-pointer hover:shadow-lg transition-all group h-full flex flex-col">
         <div className="relative h-48 overflow-hidden">
           {mainImage ? (
@@ -81,7 +81,7 @@ export function ListingCard({ listing }: ListingCardProps) {
             )}
             {property.total_area && (
               <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                <Maximize2 className="w-4 h-4" />
+                <Maximize className="w-4 h-4" />
                 <span>{property.total_area} m²</span>
               </div>
             )}

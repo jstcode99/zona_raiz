@@ -17,15 +17,17 @@ import { Spinner } from "@/components/ui/spinner"
 import { useServerMutation } from "@/shared/hooks/use-server-mutation.hook"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
-import { cn } from "@/lib/utils"
-import { ROUTES } from "@/infrastructure/config/constants"
+import { cn, route } from "@/lib/utils"
 import { defaultSignInValues, SignInFormInput, signInSchema } from "@/application/validation/auth.validation"
 import { signInAction } from "@/application/actions/auth.actions"
+import { useLang } from "@/hooks/use-lang"
 
 export function SignInForm({
   className,
   ...props
 }: ComponentProps<"form">) {
+  const { lang } = useLang()
+
   const { t } = useTranslation()
   const router = useRouter()
 
@@ -35,13 +37,13 @@ export function SignInForm({
     mode: "onBlur", // Validación al perder foco
   })
 
-  const { setError, handleSubmit, formState: { isSubmitting } } = form
+  const { setError, formState: { isSubmitting } } = form
 
   const mutation = useServerMutation({
     action: signInAction,
     setError,
     onSuccess: () => {
-      router.push(ROUTES.DASHBOARD)
+      router.push(route('dashboard', lang))
       router.refresh() // Refrescar para actualizar estado de auth
     },
     onError: (error) => {

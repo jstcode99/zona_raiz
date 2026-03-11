@@ -8,17 +8,19 @@ import { AppSidebar } from "@/features/navigation/app-sidebar"
 import { PageLoader } from "@/features/loader/page-loader"
 import { encodedRedirect } from "@/shared/redirect"
 import { EUserRole } from "@/domain/entities/profile.entity"
-import { getCurrentUser } from "@/services/session.services"
 import { ROUTES } from "@/infrastructure/config/constants"
 import { DashboardBottomNav } from "@/features/navigation/dashboard-bottom-nav"
+import { sessionModule } from "@/application/modules/session.module"
+import { useLang } from "@/hooks/use-lang"
 
 export default async function DashboardLayout({
   children,
 }: {
   children: ReactNode
 }) {
-
-  const profile = await getCurrentUser();
+  const { sessionService } = await sessionModule()
+  const profile = await sessionService.getCachedCurrentUser();
+  const menu = await sessionService.getMenuByRol();
 
   if (!profile) {
     return encodedRedirect('error', '/auth/sign-in', 'No se pudo cargar el perfil')
@@ -32,28 +34,6 @@ export default async function DashboardLayout({
     )
   }
 
-  const menu = [
-    {
-      title: "Dashboard",
-      url: `${ROUTES.DASHBOARD}`,
-      icon: 'layout-dashboard',
-    },
-    {
-      title: "Inmobiliarias",
-      url: `${ROUTES.DASHBOARD}${ROUTES.REAL_ESTATES}`,
-      icon: 'map-pin-house',
-    },
-    {
-      title: "Propiedades",
-      url: `${ROUTES.DASHBOARD}${ROUTES.PROPERTIES}`,
-      icon: 'building-2',
-    },
-    {
-      title: "Listados",
-      url: `${ROUTES.DASHBOARD}${ROUTES.LISTING}`,
-      icon: 'list-check',
-    }
-  ]
   return (
     <SidebarProvider
       style={

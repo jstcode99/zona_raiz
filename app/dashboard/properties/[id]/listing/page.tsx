@@ -1,11 +1,9 @@
-import { Spinner } from "@/components/ui/spinner";
 import { encodedRedirect } from "@/shared/redirect";
-import { Suspense } from "react";
 import { Card, CardContent } from '@/components/ui/card'
 import { ListingForm } from "@/features/listing/listing-form";
-import { getPropertyById } from "@/services/property.services";
-import { getPropertyImagesById } from "@/services/property-image.services";
 import { PropertyCard } from "@/features/properties/property-card";
+import { propertyImageModule } from "@/application/modules/property-image.module";
+import { propertyModule } from "@/application/modules/property.module";
 
 export default async function page({
   params,
@@ -14,8 +12,10 @@ export default async function page({
 }) {
   const { id } = await params;
 
-  const property = await getPropertyById(id)
-  const images = await getPropertyImagesById(id)
+  const { propertyService } = await propertyModule()
+  const { propertyImageService } = await propertyImageModule()
+  const property = await propertyService.getCachedById(id)
+  const images = await propertyImageService.getCachedByPropertyId(id)
 
   if (!property) {
     return encodedRedirect('error', '/auth/sign-in', 'No se pudo cargar la propiedad')

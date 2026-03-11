@@ -2,12 +2,7 @@ import { ReactNode, Suspense } from "react"
 import { PageLoader } from "@/features/loader/page-loader"
 import { encodedRedirect } from "@/shared/redirect"
 import { Metadata } from "next"
-import { getCurrentUser } from "@/services/session.services"
-
-export const metadata: Metadata = {
-  title: "Configuración de cuenta",
-  description: "Complete su configuración de cuenta",
-}
+import { createSessionService } from "@/application/containers/session-service.container"
 
 export default async function PostLoginLayout({
   children,
@@ -15,7 +10,8 @@ export default async function PostLoginLayout({
   children: ReactNode
 }) {
 
-  const user = await getCurrentUser();
+  const sessionService = await SessionService()
+  const user = await sessionService.getCachedCurrentUser();
 
   if (!user) {
     return encodedRedirect('error', '/auth/sign-in', 'No se pudo cargar el perfil')

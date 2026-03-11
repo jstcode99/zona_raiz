@@ -5,9 +5,9 @@ import {
   COOKIE_NAMES,
   COOKIE_OPTIONS,
   ROUTES,
-  PUBLIC_ROUTES,
 } from "../config/constants"
-import { createSessionModule } from "@/application/containers/session.container"
+import { sessionModule } from "@/application/modules/session.module"
+import { PUBLIC_ROUTES } from "../config/routes.i18n"
 
 // ==========================================
 // MIDDLEWARE
@@ -21,7 +21,7 @@ export async function updateSession(request: NextRequest) {
   }
 
   const response = createMutableResponse(request)
-  const supabase = createSupabaseServerClient(request, response)
+  const supabase = SupabaseServerClient(request, response)
 
   const {
     data: { user },
@@ -73,9 +73,10 @@ export async function updateSession(request: NextRequest) {
   // ==========================================
 
   // 🔁 Si NO tiene contexto → intentar auto-selección
+  const { sessionService } = await sessionModule()
+
   if (!realEstateId) {
-    const { useCases } = await createSessionModule()
-    const realEstates = await useCases.getRealEstatesForUser()
+    const realEstates = await sessionService.getRealEstatesForUser()
 
     // ⭐ Solo uno → guardar cookie de inmobiliaria + rol (agent/coordinator) y entrar a /real-estate
     if (realEstates.length === 1) {
@@ -95,8 +96,7 @@ export async function updateSession(request: NextRequest) {
   }
 
   // ✅ Ya tiene contexto → actualizar cookie de rol en la inmobiliaria activa
-  const { useCases } = await createSessionModule()
-  const realEstates = await useCases.getRealEstatesForUser()
+  const realEstates = await sessionService.getRealEstatesForUser()
   const current = realEstates.find(
     (item) => item.real_estate.id === realEstateId
   )
@@ -123,7 +123,7 @@ function createMutableResponse(request: NextRequest) {
   })
 }
 
-function createSupabaseServerClient(
+function SupabaseServerClient(
   request: NextRequest,
   response: NextResponse
 ) {

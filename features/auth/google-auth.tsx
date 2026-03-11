@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button"
 import { Spinner } from "@/components/ui/spinner"
-import { createSupabaseBrowserClient } from "@/lib/supabase.client"
+import { SupabaseBrowserClient } from "@/lib/supabase.client"
 import { IconBrandGoogle } from "@tabler/icons-react"
 import { useState } from "react"
 import { useTranslation } from "react-i18next"
@@ -18,7 +18,7 @@ export default function GoogleAuth({ disabled }: GoogleAuthProps) {
   const handleGoogleSignIn = async () => {
     try {
       setIsLoading(true)
-      const supabase = await createSupabaseBrowserClient()
+      const supabase = await SupabaseBrowserClient()
       
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "google",

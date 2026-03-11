@@ -199,6 +199,10 @@ export class SupabasePropertyAdapter implements PropertyPort {
         if (filters?.property_type) {
             query = query.eq("property_type", filters.property_type)
         }
+        if (filters?.agent_id || filters?.created_by) {
+            const agentId = filters.agent_id || filters.created_by
+            query = query.eq("created_by", agentId)
+        }
 
         if (filters?.start_date) {
             query = query.gte("created_at", filters.start_date)
@@ -241,8 +245,6 @@ export class SupabasePropertyAdapter implements PropertyPort {
 
         const typeCounts = (data || []).reduce((acc, item) => {
             const type = item.property_type as PropertyType
-            console.log(acc[type], type);
-
             acc[type] = (acc[type] || 0) + 1
             return acc
         }, {} as Record<string, number>)
