@@ -1,5 +1,6 @@
 import { Keywords, ListingStatus, ListingType } from "./listing.enums";
 import { PropertyEntity } from "./property.entity";
+import { ProfileEntity } from "./profile.entity";
 
 type KeywordsType = {
   label: string,
@@ -39,6 +40,7 @@ export interface ListingEntity {
   property: PropertyEntity
   created_at: string;
   updated_at: string;
+  agent?: ProfileEntity | null;
 }
 
 

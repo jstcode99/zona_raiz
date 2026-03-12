@@ -292,4 +292,23 @@ export class SupabaseListingAdapter implements ListingPort {
 
     return result;
   }
+
+  async findSimplePublished(limit: number = 10): Promise<ListingEntity[]> {
+    let query = this.supabase
+      .from("listings")
+      .select(`
+        *,
+        property:properties!inner(*, property_images(*)),
+        agent:agents!inner(profile:profiles!inner(id, full_name, avatar_url, phone))
+      `)
+      .eq("status", "active")
+      .order("created_at", { ascending: false })
+      .limit(limit);
+
+    const { data, error } = await query;
+
+    if (error) throw new Error(error.message);
+
+    return (data || []).map(item => mapListingRowToEntity(item)!) as ListingEntity[];
+  }
 }
