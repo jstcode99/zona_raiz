@@ -20,7 +20,6 @@ import {
   CardAction,
   CardContent,
 } from '@/components/ui/card';
-import { UserIcon } from "lucide-react";
 import { Lang } from "@/i18n/settings";
 import { getTranslation } from "@/i18n/server";
 
@@ -123,7 +122,7 @@ export default async function DashboardPage({
   return (
     <div className="flex flex-1 flex-col">
       <div className="@container/main flex flex-1 flex-col gap-2">
-        <div className="grid grid-cols-1 gap-x-3 gap-y-12 md:grid-cols-3 lg:grid-cols-5 lg:auto-rows-[440px] px-4">
+        <div className="grid grid-cols-1 gap-x-3 gap-y-22 md:grid-cols-3 lg:grid-cols-5 lg:auto-rows-4 px-8">
 
           {/* Row 1 */}
           <div className="col-span-full lg:col-span-3">
@@ -148,7 +147,7 @@ export default async function DashboardPage({
 
           <div className="col-span-full lg:col-span-1">
             <Suspense fallback={<SkeletonAgentList />}>
-              <Card>
+              <Card className="h-full">
                 <CardHeader>
                   <CardTitle className="text-base">
                     {t('sections:agents')}
@@ -157,28 +156,28 @@ export default async function DashboardPage({
                     <AddAgentModal real_estate_id={real_estate_id} />
                   </CardAction>
                 </CardHeader>
-                <CardContent className="border-t flex-col items-start text-sm lg:min-h-92">
+                <CardContent className="border-t flex-col items-start text-sm">
                   <AgentList
                     real_estate_id={real_estate_id}
                     agents={agents}
                   />
                 </CardContent>
               </Card>
-            </Suspense>          
+            </Suspense>
           </div>
           {/* Row 2 */}
           <div className="col-span-full lg:col-span-2">
-            <ListingsByStatusChart data={listingsByStatus as ListingsByStatusData} />
+            <ListingsByStatusChart className="lg:px-0 lg:mx-4 h-full" data={listingsByStatus as ListingsByStatusData} />
           </div>
 
           <div className="col-span-full lg:col-span-3">
-            {/* Long jobs */}
+            {featuredListings.length > 0 && (
+              <FeaturedListingsSlider className="lg:px-4 h-full" listings={featuredListings} />
+            )}
           </div>
 
           <div className="md:col-span-3">
-            {featuredListings.length > 0 && (
-              <FeaturedListingsSlider listings={featuredListings} />
-            )}
+
           </div>
 
         </div>

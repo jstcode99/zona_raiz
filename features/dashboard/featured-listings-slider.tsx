@@ -8,11 +8,18 @@ import {
     ChevronLeft,
     ChevronRight,
 } from 'lucide-react';
-import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ListingEntity, listingTypeLabels } from '@/domain/entities/listing.entity';
+import {
+    Card,
+    CardHeader,
+    CardTitle,
+    CardAction,
+    CardContent,
+} from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 
 interface FeaturedListingCardProps {
     listing: ListingEntity;
@@ -91,11 +98,11 @@ export const FeaturedListingCard = ({ listing }: FeaturedListingCardProps) => {
     );
 }
 
-interface FeaturedListingsSliderProps {
+interface FeaturedListingsSliderProps extends React.ComponentProps<"div"> {
     listings: ListingEntity[];
 }
 
-export function FeaturedListingsSlider({ listings }: FeaturedListingsSliderProps) {
+export function FeaturedListingsSlider({ listings, ...props }: FeaturedListingsSliderProps) {
     const { t } = useTranslation('common');
 
     const scrollRef = useRef<HTMLDivElement>(null);
@@ -115,34 +122,31 @@ export function FeaturedListingsSlider({ listings }: FeaturedListingsSliderProps
     }
 
     return (
-        <div className="relative">
-            <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold">{t('sections:features_listings')}</h3>
-                <div className="flex gap-2">
-                    <button
-                        onClick={() => scroll('left')}
-                        className="p-2 rounded-full border bg-background hover:bg-accent transition-colors"
-                    >
-                        <ChevronLeft className="w-4 h-4" />
-                    </button>
-                    <button
-                        onClick={() => scroll('right')}
-                        className="p-2 rounded-full border bg-background hover:bg-accent transition-colors"
-                    >
-                        <ChevronRight className="w-4 h-4" />
-                    </button>
+        <Card className="relative" {...props}>
+            <CardHeader>
+                <CardTitle className="text-base">
+                    {t('sections:features_listings')}
+                </CardTitle>
+                <CardAction className='flex gap-2'>
+                    <Button onClick={() => scroll('left')}>
+                        <ChevronLeft className="size-4" />
+                    </Button>
+                    <Button onClick={() => scroll('right')}>
+                        <ChevronRight className="size-4" />
+                    </Button>
+                </CardAction>
+            </CardHeader>
+            <CardContent className="flex-col items-start text-sm lg:min-h-92">
+                <div
+                    ref={scrollRef}
+                    className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide"
+                    style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+                >
+                    {listings.map((listing) => (
+                        <FeaturedListingCard key={listing.id} listing={listing} />
+                    ))}
                 </div>
-            </div>
-            
-            <div 
-                ref={scrollRef}
-                className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide"
-                style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-            >
-                {listings.map((listing) => (
-                    <FeaturedListingCard key={listing.id} listing={listing} />
-                ))}
-            </div>
-        </div>
+            </CardContent>
+        </Card>
     );
 }

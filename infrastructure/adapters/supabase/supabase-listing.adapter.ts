@@ -257,7 +257,10 @@ export class SupabaseListingAdapter implements ListingPort {
 
     let query = this.supabase
       .from("listings")
-      .select("status, created_at", { count: "exact", head: false })
+      .select(`
+        status, created_at,
+        property:properties!inner(*, property_images(*))
+      `, { count: "exact", head: false })
 
     if (filters?.real_estate_id) {
       query = query.eq("properties.real_estate_id", filters.real_estate_id)
