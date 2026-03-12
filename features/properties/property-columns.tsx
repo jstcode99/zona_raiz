@@ -30,11 +30,13 @@ import Link from "next/link"
 import { Badge } from "@/components/ui/badge"
 import { PropertyType } from "@/domain/entities/property.enums"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { useTranslation } from "react-i18next"
 
 export type PropertyRow = BaseRow & {
   created_at: string
 } & PropertyEntity
 
+const { t } = useTranslation()
 
 export const propertyTypeIcons: Record<PropertyType, React.ReactNode> = {
   [PropertyType.House]: <IconHome className="size-4" />,
@@ -51,9 +53,9 @@ export const propertyTypeIcons: Record<PropertyType, React.ReactNode> = {
 export const PropertyColumns: ColumnDef<PropertyRow>[] = [
   {
     accessorKey: "title",
-    header: "Propiedad",
+    header: t('words.property').at(0)?.toUpperCase(),
     cell: ({ row }) => {
-      
+
       const type = row.original.property_type
       const thumbnail = row.original.property_images && row.original.property_images[0]?.public_url
       return (

@@ -12,7 +12,7 @@ interface GoogleAuthProps {
 }
 
 export default function GoogleAuth({ disabled }: GoogleAuthProps) {
-  const { t } = useTranslation('common')
+  const { t } = useTranslation()
   const [isLoading, setIsLoading] = useState(false)
 
   const handleGoogleSignIn = async () => {
@@ -51,7 +51,7 @@ export default function GoogleAuth({ disabled }: GoogleAuthProps) {
       ) : (
         <IconBrandGoogle className="mr-2 h-4 w-4" />
       )}
-      {t('forms.sign-in.alternatives.google')}
+      {t('actions:google')}
     </Button>
   )
 }

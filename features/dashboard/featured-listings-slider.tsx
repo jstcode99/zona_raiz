@@ -12,7 +12,6 @@ import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-
 import { ListingEntity, listingTypeLabels } from '@/domain/entities/listing.entity';
 
 interface FeaturedListingCardProps {
@@ -20,7 +19,7 @@ interface FeaturedListingCardProps {
 }
 
 export const FeaturedListingCard = ({ listing }: FeaturedListingCardProps) => {
-    const { t } = useTranslation('common');
+    const { t } = useTranslation();
     const property = listing.property;
     const images = property.property_images || [];
     const mainImage = images.length > 0 ? images[0].public_url : null;
@@ -38,7 +37,7 @@ export const FeaturedListingCard = ({ listing }: FeaturedListingCardProps) => {
                     />
                 ) : (
                     <div className="w-full h-full bg-muted flex items-center justify-center">
-                        <span className="text-muted-foreground">{t('words.without_image')}</span>
+                        <span className="text-muted-foreground">{t('words:without_image')}</span>
                     </div>
                 )}
 
@@ -47,8 +46,8 @@ export const FeaturedListingCard = ({ listing }: FeaturedListingCardProps) => {
                         {listingTypeLabels[listing.listing_type]}
                     </Badge>
                     {listing.featured && (
-                        <Badge className="bg-amber-500 hover:bg-amber-600">
-                            {t('words.featured')}
+                        <Badge className="bg-amber-500 hover:bg-amber-600 capitalize">
+                            {t('words:featured')}
                         </Badge>
                     )}
                 </div>
@@ -57,32 +56,32 @@ export const FeaturedListingCard = ({ listing }: FeaturedListingCardProps) => {
             <div className="p-4">
                 <div className="text-lg font-bold text-primary">
                     {listing.currency} {listing.price.toLocaleString('es-ES')}
-                    {listing.price_negotiable && <span className="text-xs font-normal text-muted-foreground ml-1">{t('words.negotiable')}</span>}
+                    {listing.price_negotiable && <span className="text-xs font-normal text-muted-foreground ml-1">{t('words:negotiable')}</span>}
                 </div>
 
-                <h3 className="font-semibold text-foreground line-clamp-1 mt-1">{property.title}</h3>
+                <h3 className="font-semibold text-foreground line-clamp-1 mt-1 capitalize">{property.title}</h3>
 
                 <div className="flex items-center gap-1 mt-1.5 text-muted-foreground">
-                    <MapPin className="w-3.5 h-3.5 shrink-0" />
-                    <span className="text-sm truncate">{property.neighborhood || property.city}</span>
+                    <MapPin className="size-4 shrink-0" />
+                    <span className="text-sm truncate capitalize">{property.neighborhood || property.city}</span>
                 </div>
 
                 <div className="flex items-center gap-4 mt-3">
                     {property.bedrooms !== null && property.bedrooms > 0 && (
                         <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                            <Bed className="w-4 h-4" />
+                            <Bed className="size-4" />
                             <span>{property.bedrooms}</span>
                         </div>
                     )}
                     {property.bathrooms !== null && property.bathrooms > 0 && (
                         <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                            <Bath className="w-4 h-4" />
+                            <Bath className="size-4" />
                             <span>{property.bathrooms}</span>
                         </div>
                     )}
                     {property.total_area && (
                         <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                            <Maximize2 className="w-4 h-4" />
+                            <Maximize2 className="size-4" />
                             <span>{property.total_area} m²</span>
                         </div>
                     )}
@@ -118,19 +117,17 @@ export function FeaturedListingsSlider({ listings }: FeaturedListingsSliderProps
     return (
         <div className="relative">
             <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold">{t('words.properties')} {t('words.features')}</h3>
+                <h3 className="text-lg font-semibold">{t('sections:features_listings')}</h3>
                 <div className="flex gap-2">
                     <button
                         onClick={() => scroll('left')}
                         className="p-2 rounded-full border bg-background hover:bg-accent transition-colors"
-                        aria-label="Desplazar a la izquierda"
                     >
                         <ChevronLeft className="w-4 h-4" />
                     </button>
                     <button
                         onClick={() => scroll('right')}
                         className="p-2 rounded-full border bg-background hover:bg-accent transition-colors"
-                        aria-label="Desplazar a la derecha"
                     >
                         <ChevronRight className="w-4 h-4" />
                     </button>

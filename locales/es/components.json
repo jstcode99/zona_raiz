@@ -1,0 +1,9 @@
+{
+    "property_images": {
+      "drag_drop": "Arrastra una imagen aquí",
+      "drop_here": "Suelta la imagen aquí",
+      "delete_warning": "¿Eliminar esta imagen?",
+      "alt": "Texto alternativo",
+      "caption": "Descripción"
+    }
+  }

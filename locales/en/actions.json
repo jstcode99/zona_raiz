@@ -1,0 +1,21 @@
+{
+    "register_real_estate": "Registrar mi primera inmobiliaria.",
+    "back_home": "Volver al inicio.",
+    "select_error": "Error al seleccionar inmobiliaria.",
+    "skip": "Vuelve cuando quieras completar el registro de inmobiliaria",
+    "sign_in": "Iniciar sesión",
+    "sign_up": "Hacer registro",
+    "google": "Ingresar con Google",
+    "google_signup": "Registrarme con Google",
+    "otp": "Ingresar con codigo via email",
+    "otp_basic": "Iniciar sesión con contraseña",
+    "request_code": "Solicitar código",
+    "create": "Crear nueva publicación",
+    "update": "Actualizar publicación",
+    "save_property": "Guardar propiedad",
+    "update_property": "Actualizar propiedad",
+    "update_real_estate": "Actualizar Inmobiliaria",
+    "create_real_estate": "Registrar Inmobiliaria",
+    "save_changes": "Guardar cambios",
+    "add_agent": "Agregar agente"
+}

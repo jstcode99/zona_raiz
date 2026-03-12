@@ -12,9 +12,9 @@ export default async function page({
 }: Readonly<{
   params: { lang: Lang }
 }>) {
-  const { onboardingService } = await onboardingModule()
-  const state = await onboardingService.getOnboardingState()
   const { lang } = await params;
+  const { onboardingService } = await onboardingModule(lang)
+  const state = await onboardingService.getOnboardingState()
   const routes = createRouter(lang)
 
   if (state.step === "redirect") {

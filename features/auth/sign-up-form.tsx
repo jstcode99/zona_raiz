@@ -5,7 +5,6 @@ import {
   Field,
   FieldDescription,
   FieldGroup,
-  FieldSeparator,
 } from "@/components/ui/field"
 import { cn } from "@/lib/utils"
 import { useForm } from "react-hook-form"
@@ -28,7 +27,7 @@ export function SignUpForm({
   className,
   ...props
 }: ComponentProps<"form">) {
-  const { t } = useTranslation('common')
+  const { t } = useTranslation()
   const router = useRouter()
   const routes = useRoutes()
 
@@ -44,7 +43,7 @@ export function SignUpForm({
     action: signUpAction,
     setError,
     onSuccess: () => {
-      toast.success(t('forms.sign-up.success'))
+      toast.success(t('messages:success.sign_up'))
       router.push(routes.signin())
     },
     onError: (error) => {
@@ -84,17 +83,17 @@ export function SignUpForm({
       onSubmit={onSubmit}
     >
       <FieldGroup className="gap-2">
-        <div className="flex flex-col items-center gap-1 text-center">
-          <h1 className="text-2xl font-bold">{t('forms.sign-up.title')}</h1>
+        <div className="flex flex-col items-center gap-1 text-center my-2">
+          <h1 className="text-2xl font-bold">{t('titles:sign_up')}</h1>
           <p className="text-muted-foreground text-sm text-balance">
-            {t('forms.sign-up.subtitle')}
+            {t('subtitles:sign_up')}
           </p>
         </div>
 
         <Form.Input
           name="full_name"
-          label={t('forms.sign-up.fields.full_name.label')}
-          placeholder={t('forms.sign-up.fields.full_name.placeholder')}
+          label={t('fields:full_name')}
+          placeholder={t('placeholders:full_name')}
           autoComplete="name"
           disabled={isLoading}
         />
@@ -102,23 +101,23 @@ export function SignUpForm({
         <Form.Input
           name="email"
           type="email"
-          label={t('forms.sign-up.fields.email.label')}
-          placeholder={t('forms.sign-up.fields.email.placeholder')}
+          label={t('fields:email')}
+          placeholder={t('placeholders:email')}
           autoComplete="email"
           disabled={isLoading}
         />
 
         <Form.Phone
           name="phone"
-          label={t('forms.sign-up.fields.phone.label')}
-          placeholder={t('forms.sign-up.fields.phone.placeholder')}
+          label={t('fields:phone')}
+          placeholder={t('placeholders:phone')}
         />
 
         <Form.Input
           name="password"
           type="password"
-          label={t('forms.sign-up.fields.password.label')}
-          placeholder={t('forms.sign-up.fields.password.placeholder')}
+          label={t('fields:password')}
+          placeholder={t('placeholders:password')}
           autoComplete="new-password"
           disabled={isLoading}
         />
@@ -126,18 +125,17 @@ export function SignUpForm({
         <Form.Input
           name="password_confirmation"
           type="password"
-          label={t('forms.sign-up.fields.password-confirmation.label')}
-          placeholder={t('forms.sign-up.fields.password-confirmation.placeholder')}
+          label={t('fields:password_confirmation')}
+          placeholder={t('placeholders:password_confirmation')}
           autoComplete="new-password"
           disabled={isLoading}
         />
-        <div className="flex justify-start gap-2">
-          <Building2  size={25}/>
+        <div className="flex justify-start gap-2 p-2">
           <Form.Checkbox
             name="type_register"
             label={
-              <span className="font-normal ">
-                {t('forms.sign-up.fields.type_register.label')}
+              <span className="font-normal text-sm">
+                {t('fields:type_register')}
               </span>
             }
           />
@@ -149,24 +147,19 @@ export function SignUpForm({
             className="w-full"
           >
             {isLoading && <Spinner data-icon="inline-start" className="mr-2" />}
-            {t('forms.sign-up.submit')}
+            {t('actions:sign_up')}
           </Button>
         </Field>
-
-        <FieldSeparator className="py-4">
-          {t('forms.sign-up.alternatives.title')}
-        </FieldSeparator>
 
         <Field className="py-4">
           <GoogleAuth disabled={isLoading} />
 
           <FieldDescription className="text-center">
-            <span>{t('forms.sign-up.fields.sign-in.placeholder')}</span>
             <Link
               href={routes.signin()}
-              className="ml-1 text-sm font-medium text-primary hover:underline"
+              className="ml-1 text-sm font-medium text-primary underline-offset-0"
             >
-              {t('forms.sign-up.fields.sign-in.label')}
+              {t('actions:sign_in')}
             </Link>
           </FieldDescription>
         </Field>

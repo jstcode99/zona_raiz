@@ -514,7 +514,7 @@ function AutocompleteField({
 
   return (
     <div data-invalid={fieldState.invalid || undefined}>
-      {label && <FieldLabel htmlFor={name}>{label}</FieldLabel>}
+      {label && <FieldLabel className="my-2" htmlFor={name}>{label}</FieldLabel>}
 
       <div className="relative">
         <Command

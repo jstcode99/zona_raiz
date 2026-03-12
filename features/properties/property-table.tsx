@@ -15,7 +15,6 @@ export default function PropertiesTable({
     columns
 }: Props) {
     const allProperties = use(properties)
-
     return (
         <DataTable<PropertyRow>
             data={allProperties}

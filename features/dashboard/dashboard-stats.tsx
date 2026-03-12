@@ -43,47 +43,47 @@ const STAT_CONFIG: Record<DashboardStatType, {
 }> = {
     properties: {
         key: 'properties',
-        titleKey: 'dashboard.active-properties',
+        titleKey: 'sections:active_properties',
         valueKey: 'activeProperties',
         changeKey: 'activePropertiesChange',
-        footerTextKey: 'dashboard.properties-trending-up',
-        footerSubtextKey: 'dashboard.properties-over-last-month',
+        footerTextKey: 'sections:properties_trending_up',
+        footerSubtextKey: 'sections:properties_over_last_month',
         Icon: IconTrendingUp,
     },
     visits: {
         key: 'visits',
-        titleKey: 'dashboard.visits',
+        titleKey: 'sections:visits',
         valueKey: 'visits',
         changeKey: 'visitsChange',
-        footerTextKey: 'dashboard.visits-trending-up',
-        footerSubtextKey: 'dashboard.visits-exceeds-targets',
+        footerTextKey: 'sections:visits_trending_up',
+        footerSubtextKey: 'sections:visits_exceeds_targets',
         Icon: IconTrendingUp,
     },
     listings: {
         key: 'listings',
-        titleKey: 'dashboard.total-listings',
+        titleKey: 'sections:total_listings',
         valueKey: 'totalListings',
         changeKey: 'totalListingsChange',
-        footerTextKey: 'dashboard.listings-trending-up',
-        footerSubtextKey: 'dashboard.listings-over-last-month',
+        footerTextKey: 'sections:listings_trending_up',
+        footerSubtextKey: 'sections:listings_over_last_month',
         Icon: IconTrendingUp,
     },
     newUsers: {
         key: 'newUsers',
-        titleKey: 'dashboard.new-users',
+        titleKey: 'sections:new_users',
         valueKey: 'newUsers',
         changeKey: 'newUsersChange',
-        footerTextKey: 'dashboard.new-users-trending-up',
-        footerSubtextKey: 'dashboard.new-users-over-last-month',
+        footerTextKey: 'sections:new_users_trending_up',
+        footerSubtextKey: 'sections:new_users_over_last_month',
         Icon: IconTrendingUp,
     },
     realEstates: {
         key: 'realEstates',
-        titleKey: 'dashboard.real-estates',
+        titleKey: 'sections:real_estates',
         valueKey: 'totalRealEstates',
         changeKey: 'totalRealEstatesChange',
-        footerTextKey: 'dashboard.real-estates-trending-up',
-        footerSubtextKey: 'dashboard.real-estates-over-last-month',
+        footerTextKey: 'sections:real_estates_trending_up',
+        footerSubtextKey: 'sections:real_estates_over_last_month',
         Icon: IconTrendingUp,
     },
 };
@@ -122,7 +122,7 @@ export const DashboardStats = ({
     pending = false,
     visibleCards = ['properties', 'visits', 'listings', 'newUsers', 'realEstates'],
 }: DashboardStatsProps) => {
-    const { t } = useTranslation('common');
+    const { t } = useTranslation();
 
     const getValue = (key: string): number => {
         const values: Record<string, number> = {
@@ -185,126 +185,7 @@ export const DashboardStats = ({
 
     return (
         <div className="grid grid-cols-1 gap-4 px-4 *:data-[slot=card]:bg-linear-to-t *:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card *:data-[slot=card]:shadow-xs lg:px-6 @xl/main:grid-cols-2 @5xl/main:grid-cols-4 dark:*:data-[slot=card]:bg-card">
-            {visibleCards.includes('properties') && (
-                <Card className="@container/card">
-                    <CardHeader>
-                        <CardDescription>{t('dashboard.active-properties')}</CardDescription>
-                        <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-                            {activeProperties}
-                        </CardTitle>
-                        <CardAction>
-                            <Badge variant="outline">
-                                <IconTrendingUp />
-                                {activePropertiesChange}%
-                            </Badge>
-                        </CardAction>
-                    </CardHeader>
-                    <CardFooter className="flex-col items-start gap-1.5 text-sm">
-                        <div className="line-clamp-1 flex gap-2 font-medium">
-                            {t('dashboard.properties-trending-up')} <IconTrendingUp className="size-4" />
-                        </div>
-                        <div className="text-muted-foreground">
-                            {t('dashboard.properties-over-last-month')}
-                        </div>
-                    </CardFooter>
-                </Card>
-            )}
-            {visibleCards.includes('visits') && (
-                <Card className="@container/card">
-                    <CardHeader>
-                        <CardDescription>{t('dashboard.visits')}</CardDescription>
-                        <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-                            {visits}
-                        </CardTitle>
-                        <CardAction>
-                            <Badge variant="outline">
-                                <IconTrendingUp />
-                                {visitsChange}%
-                            </Badge>
-                        </CardAction>
-                    </CardHeader>
-                    <CardFooter className="flex-col items-start gap-1.5 text-sm">
-                        <div className="line-clamp-1 flex gap-2 font-medium">
-                            {t('dashboard.visits-trending-up')} <IconTrendingUp className="size-4" />
-                        </div>
-                        <div className="text-muted-foreground">
-                            {t('dashboard.visits-exceeds-targets')}
-                        </div>
-                    </CardFooter>
-                </Card>
-            )}
-            {visibleCards.includes('listings') && (
-                <Card className="@container/card">
-                    <CardHeader>
-                        <CardDescription>{t('dashboard.total-listings')}</CardDescription>
-                        <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-                            {totalListings}
-                        </CardTitle>
-                        <CardAction>
-                            <Badge variant="outline">
-                                <IconTrendingUp />
-                                {totalListingsChange}%
-                            </Badge>
-                        </CardAction>
-                    </CardHeader>
-                    <CardFooter className="flex-col items-start gap-1.5 text-sm">
-                        <div className="line-clamp-1 flex gap-2 font-medium">
-                            {t('dashboard.listings-trending-up')} <IconTrendingUp className="size-4" />
-                        </div>
-                        <div className="text-muted-foreground">
-                            {t('dashboard.listings-over-last-month')}
-                        </div>
-                    </CardFooter>
-                </Card>
-            )}
-            {visibleCards.includes('newUsers') && (
-                <Card className="@container/card">
-                    <CardHeader>
-                        <CardDescription>{t('dashboard.new-users')}</CardDescription>
-                        <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-                            {newUsers}
-                        </CardTitle>
-                        <CardAction>
-                            <Badge variant="outline">
-                                <IconTrendingUp />
-                                {newUsersChange}%
-                            </Badge>
-                        </CardAction>
-                    </CardHeader>
-                    <CardFooter className="flex-col items-start gap-1.5 text-sm">
-                        <div className="line-clamp-1 flex gap-2 font-medium">
-                            {t('dashboard.new-users-trending-up')} <IconTrendingUp className="size-4" />
-                        </div>
-                        <div className="text-muted-foreground">
-                            {t('dashboard.new-users-over-last-month')}
-                        </div>
-                    </CardFooter>
-                </Card>
-            )}
-            {visibleCards.includes('realEstates') && (
-                <Card className="@container/card">
-                    <CardHeader>
-                        <CardDescription>{t('dashboard.real-estates')}</CardDescription>
-                        <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-                            {totalRealEstates}
-                        </CardTitle>
-                        <CardAction>
-                            <Badge variant="outline">
-                                <IconTrendingUp />
-                                {totalRealEstatesChange}%
-                            </Badge>
-                        </CardAction>
-                    </CardHeader>
-                    <CardFooter className="flex-col items-start gap-1.5 text-sm">
-                        <div className="line-clamp-1 flex gap-2 font-medium">
-                            {t('dashboard.real-estates-trending-up')} <IconTrendingUp className="size-4" />
-                        </div>
-                        <div className="text-muted-foreground">
-                            {t('dashboard.real-estates-over-last-month')}
-                        </div>
-                    </CardFooter>
-                </Card>
-            )}
+            {visibleCards.map(v => renderCard(v))}
         </div>
     );
 };

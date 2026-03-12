@@ -20,6 +20,8 @@ import {
   CardContent,
 } from '@/components/ui/card';
 import { UserIcon } from "lucide-react";
+import { Lang } from "@/i18n/settings";
+import { getTranslation } from "@/i18n/server";
 
 function getMonthDateRange(date: Date): { start_date: string; end_date: string } {
   const year = date.getFullYear();
@@ -39,10 +41,15 @@ function calculatePercentageChange(current: number, previous: number): number {
 }
 
 
-export default async function DashboardPage() {
+export default async function DashboardPage({
+  params
+}: {
+  params: { lang: Lang }
+}) {
   const cookieStore = await cookies()
   const real_estate_id = cookieStore.get(COOKIE_NAMES.REAL_ESTATE)?.value as string
-
+  const { lang } = await params;
+  const { t } = await getTranslation(lang, ['sections']);
   const { propertyService } = await propertyModule()
 
   const { listingService } = await listingModule()
@@ -112,7 +119,7 @@ export default async function DashboardPage() {
   return (
     <div className="flex flex-1 flex-col">
       <div className="@container/main flex flex-1 flex-col gap-2">
-        <div className="grid grid-cols-1 gap-8 md:grid-cols-3 lg:grid-cols-5 lg:auto-rows-[440px] px-4">
+        <div className="grid grid-cols-1 gap-x-3 gap-y-12 md:grid-cols-3 lg:grid-cols-5 lg:auto-rows-[440px] px-4">
 
           {/* Row 1 */}
           <div className="col-span-full lg:col-span-3">
@@ -137,10 +144,10 @@ export default async function DashboardPage() {
 
           <div className="col-span-full lg:col-span-1">
             <Suspense fallback={<SkeletonAgentList />}>
-              <Card className="pb-2">
+              <Card>
                 <CardHeader>
                   <CardTitle className="text-base">
-                    <UserIcon />
+                    {t('sections:agents')}
                   </CardTitle>
                   <CardAction>
                     <AddAgentModal real_estate_id={real_estate_id} />

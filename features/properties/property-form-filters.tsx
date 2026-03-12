@@ -11,6 +11,7 @@ import { PropertyType } from "@/domain/entities/property.enums"
 import { objectToSearchParams, toNumber } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { PropertySearchFormInput } from "@/application/validation/property-search.schema"
+import { useTranslation } from "react-i18next"
 
 interface PropertyFiltersFormProps {
   onFiltersChange?: (filters: PropertySearchFormInput) => void
@@ -53,6 +54,7 @@ export function PropertyFiltersForm({
   onFiltersChange,
   debounceMs = 300,
 }: PropertyFiltersFormProps) {
+  const { t } = useTranslation()
 
   const router = useRouter()
   const pathname = usePathname()
@@ -122,19 +124,18 @@ export function PropertyFiltersForm({
       <div className="flex gap-2 items-center">
         <Form.Input
           name="search_query"
-          label="Buscar propiedades"
-          placeholder="Buscar propiedades..."
+          label={t('words:search')}
+          placeholder={t('words:search')}
         />
         <Button type="button" size="sm" onClick={handleReset} className="px-2 mt-8">
           <IconClearAll className="size-4 mr-1" />
-          Limpiar
         </Button>
       </div>
 
       <Form.Set
         legend={
-          <span className="flex items-center gap-1 text-xs font-medium text-muted-foreground">
-            <IconMapPin className="size-3" /> Ubicación
+          <span className="flex items-center gap-1 text-xs font-medium text-muted-foreground capitalize">
+            <IconMapPin className="size-3" /> {t('sections:location')}
           </span>
         }
       >
@@ -146,18 +147,18 @@ export function PropertyFiltersForm({
               cityName="city"
               countries={countries}
               control={control}
-              label={"Ubicación Pais/ Estado / Ciudad"}
+              label={t('words:location')}
             />
           </div>
           <Form.Input
             name="street"
-            label="Calle"
-            placeholder="Calle"
+            label={t('fields:street')}
+            placeholder={t('placeholders:street')}
           />
           <Form.Input
             name="neighborhood"
-            label="Barrio"
-            placeholder="Barrio"
+            label={t('fields:neighborhood')}
+            placeholder={t('placeholders:neighborhood')}
           />
         </div>
       </Form.Set>
@@ -165,28 +166,28 @@ export function PropertyFiltersForm({
       <Form.Set
         legend={
           <span className="flex items-center gap-1 text-xs font-medium text-muted-foreground">
-            <IconHome className="size-3" /> Características
+            <IconHome className="size-3" /> {t('sections:features')}
           </span>
         }
       >
         <div className="grid grid-cols-3 gap-2">
           <Form.Select
             name="type"
-            label="Tipo"
-            placeholder="Tipo"
+            label={t('fields:property_type')}
+            placeholder={t('fields:property_type')}
             options={propertyTypeOptions}
           />
           <Form.Input
             name="minBedrooms"
             type="number"
-            label="Hab. mín."
-            placeholder="Hab. mín."
+            label={t('fields:bedrooms')}
+            placeholder={t('placeholders:bedrooms')}
           />
           <Form.Input
             name="min_bathrooms"
             type="number"
-            label="Baños mín."
-            placeholder="Baños mín."
+            label={t('fields:bathrooms')}
+            placeholder={t('placeholders:bathrooms')}
           />
         </div>
       </Form.Set>

@@ -22,8 +22,7 @@ interface Props {
 export const AddAgentForm = ({
   real_estate_id
 }: Props) => {
-
-  const { t } = useTranslation('common')
+  const { t } = useTranslation()
 
   const form = useForm<agentToggleFormInput>({
     resolver: yupResolver(agentToggleSchema),
@@ -77,18 +76,18 @@ export const AddAgentForm = ({
       className="py-4 px-2"
       onSubmit={onSubmit}
     >
-      <FieldGroup className="gap-3">
+      <FieldGroup className="gap-4">
         <div className="flex flex-col items-center gap-2 text-center">
-          <h1 className="text-2xl font-bold">{t('forms.add-agent.title')}</h1>
+          <h1 className="text-2xl font-bold">{t('titles:add_agent')}</h1>
           <p className="text-muted-foreground text-balance">
-            {t('forms.add-agent.subtitle')}
+            {t('subtitles:add_agent')}
           </p>
         </div>
 
         <Form.Autocomplete
           name="profile_id"
-          label={t('forms.add-agent.fields.profile_id.label')}
-          placeholder={t('forms.add-agent.fields.profile_id.placeholder')}
+          label={t('fields:email')}
+          placeholder={t('placeholders:email')}
           onSearch={searchUsersByEmail}
         />
 
@@ -99,7 +98,7 @@ export const AddAgentForm = ({
             disabled={isLoading}
           >
             {isLoading && <Spinner data-icon="inline-start" className="mr-2 h-4 w-4" />}
-            {t('forms.add-agent.add')}
+            {t('actions:add_agent')}
           </Button>
         </Field>
 

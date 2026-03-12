@@ -26,7 +26,7 @@ export function SignInForm({
   className,
   ...props
 }: ComponentProps<"form">) {
-  const { t } = useTranslation('common')
+  const { t } = useTranslation()
   const router = useRouter()
   const routes = useRoutes()
 
@@ -83,17 +83,17 @@ export function SignInForm({
     >
       <FieldGroup className="gap-3">
         <div className="flex flex-col items-center gap-2 text-center">
-          <h1 className="text-2xl font-bold">{t('forms.sign-in.title')}</h1>
+          <h1 className="text-2xl font-bold">{t('titles:sign_in')}</h1>
           <p className="text-muted-foreground text-balance">
-            {t('forms.sign-in.subtitle')}
+            {t('subtitles:sign_in')}
           </p>
         </div>
 
         <Form.Input
           name="email"
           type="email"
-          label={t('forms.sign-in.fields.email.label')}
-          placeholder={t('forms.sign-in.fields.email.placeholder')}
+          label={t('fields:email')}
+          placeholder={t('placeholder:email')}
           autoComplete="email"
           disabled={isLoading}
         />
@@ -101,8 +101,8 @@ export function SignInForm({
         <Form.Input
           name="password"
           type="password"
-          label={t('forms.sign-in.fields.password.label')}
-          placeholder={t('forms.sign-in.fields.password.placeholder')}
+          label={t('fields:password')}
+          placeholder={t('placeholder:password')}
           autoComplete="current-password"
           disabled={isLoading}
         />
@@ -110,7 +110,7 @@ export function SignInForm({
           href={routes.otp()}
           className="ml-auto text-right text-sm underline-offset-2 hover:underline"
         >
-          {t('forms.sign-in.alternatives.otp')}
+          {t('actions:otp')}
         </Link>
         <Field>
           <Button
@@ -119,25 +119,19 @@ export function SignInForm({
             disabled={isLoading}
           >
             {isLoading && <Spinner data-icon="inline-start" className="mr-2 h-4 w-4" />}
-            {t('forms.sign-in.submit')}
+            {t('actions:sign_in')}
           </Button>
         </Field>
-
-        <FieldSeparator className="py-4">
-          {t('forms.sign-in.alternatives.title')}
-        </FieldSeparator>
-
         <Field className="py-4">
           <GoogleAuth disabled={isLoading} />
         </Field>
 
         <FieldDescription className="text-center">
-          <span>{t('forms.sign-in.fields.sign-up.placeholder')}</span>
           <Link
             href={routes.signup()}
             className="ml-1 text-sm font-medium text-primary hover:underline"
           >
-            {t('forms.sign-in.fields.sign-up.label')}
+            {t('actions:sign_up')}
           </Link>
         </FieldDescription>
       </FieldGroup>

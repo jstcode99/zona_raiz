@@ -20,11 +20,11 @@ export default async function PostLoginLayout({
   const t = i18n.getFixedT(lang)
   const routes = createRouter(lang)
 
-  const { sessionService } = await sessionModule()
+  const { sessionService } = await sessionModule(lang)
   const user = await sessionService.getCachedCurrentUser();
 
   if (!user) {
-    return encodedRedirect('error', routes.signin(), t("errors.auth_error"))
+    return encodedRedirect('error', routes.signin(), t("exeptions.auth_error"))
   }
 
   return (

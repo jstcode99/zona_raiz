@@ -16,12 +16,14 @@ import { removeAgentAction } from "@/application/actions/agent.actions"
 import { Spinner } from "@/components/ui/spinner"
 import { useTransition } from "react"
 import { IconDotsVertical } from "@tabler/icons-react"
+import { useTranslation } from "react-i18next"
 
 interface AgentListProps {
   agents: ProfileEntity[],
   real_estate_id: string
 }
 export const AgentList = ({ agents, real_estate_id }: AgentListProps) => {
+  const { t } = useTranslation()
   const [isPending, startTransition] = useTransition()
 
   const handleRemove = ((agent_id: string) => {
@@ -60,7 +62,7 @@ export const AgentList = ({ agents, real_estate_id }: AgentListProps) => {
               </DropdownMenuTrigger>
               <DropdownMenuContent onClick={() => handleRemove(agent.id)}>
                 <DropdownMenuItem>
-                  {isPending ? <Spinner /> : 'Remover'}
+                  {isPending ? <Spinner /> : t('words:delete')}
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

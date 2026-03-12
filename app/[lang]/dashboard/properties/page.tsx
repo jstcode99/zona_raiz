@@ -52,7 +52,7 @@ export default async function page({
               </Button>
             </CollapsibleTrigger>
             <Button asChild>
-              <Link href={`${routes.properties}/new`}>
+              <Link href={`${routes.properties()}/new`}>
                 <IconPlus />
               </Link>
             </Button>

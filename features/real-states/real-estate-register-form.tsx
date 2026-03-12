@@ -40,7 +40,7 @@ export function RealEstateRegistrationForm() {
     action: createRealEstateAction,
     setError,
     onSuccess: () => {
-      toast.success(t("forms.real-estate.success"))
+      toast.success(t("messages.success.real-estate"))
       reset()
       router.push(routes.dashboard())
     },
@@ -65,10 +65,10 @@ export function RealEstateRegistrationForm() {
           <Building2 className="h-6 w-6 text-primary" />
         </div>
         <CardTitle className="text-2xl text-center">
-          {t("forms.real-estate.title")}
+          {t("titles:real_estate")}
         </CardTitle>
         <CardDescription className="text-center">
-          {t("forms.real-estate.subtitle")}
+          {t("subtitles:real_estate")}
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -77,23 +77,23 @@ export function RealEstateRegistrationForm() {
           onSubmit={onSubmit}
           className="space-y-6"
         >
-          <Form.Set legend={t("forms.real-estate.basic-info")}>
+          <Form.Set legend={t("sections:basic_info")}>
             <Form.Input
               name="name"
-              label={t("forms.real-estate.fields.name.label")}
-              placeholder={t("forms.real-estate.fields.name.placeholder")}
+              label={t("fields:name")}
+              placeholder={t("placeholders:name")}
               disabled={isLoading}
             />
             <Form.Textarea
               name="description"
-              label={t("forms.real-estate.fields.description.label")}
-              placeholder={t("forms.real-estate.fields.description.placeholder")}
+              label={t("fields:description")}
+              placeholder={t("placeholders:description")}
               disabled={isLoading}
             />
             <Form.Phone
               name="whatsapp"
-              label={t("forms.real-estate.fields.whatsapp.label")}
-              placeholder={t("forms.real-estate.fields.whatsapp.placeholder")}
+              label={t("fields:whatsapp")}
+              placeholder={t("placeholders:whatsapp")}
             />
             <Form.CountryStateCity
               countryName="country"
@@ -101,25 +101,25 @@ export function RealEstateRegistrationForm() {
               cityName="city"
               countries={countries}
               control={control}
-              label={t("forms.real-estate.fields.address.label")}
+              label={t("fields:address")}
             />
             <Form.Input
               name="postal_code"
-              label={t("forms.real-estate.fields.postal_code.label")}
-              placeholder={t("forms.real-estate.fields.postal_code.placeholder")}
+              label={t("fields:postal_code")}
+              placeholder={t("placeholders:postal_code")}
               disabled={isLoading}
             />
             <Form.Input
               name="street"
-              label={t("forms.real-estate.fields.street.label")}
-              placeholder={t("forms.real-estate.fields.street.placeholder")}
+              label={t("fields:street")}
+              placeholder={t("placeholders:street")}
               disabled={isLoading}
             />
           </Form.Set>
 
           <Button type="submit" className="w-full" size="lg" disabled={isLoading}>
             {isLoading && <Spinner className="mr-2 h-4 w-4 animate-spin" />}
-            {t("forms.real-estate.create")}
+            {t("actions:create_real_estate")}
           </Button>
         </Form>
       </CardContent>

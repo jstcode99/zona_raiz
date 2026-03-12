@@ -26,13 +26,8 @@ export function AddAgentModal({ real_estate_id }: AddAgentModalProps) {
           <IconPlus className="h-4 w-4" />
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-106.25">
-        <DialogHeader>
-          <DialogTitle>Agregar agente</DialogTitle>
-        </DialogHeader>
-        <div className="py-4">
-          <AddAgentForm real_estate_id={real_estate_id} />
-        </div>
+      <DialogContent className="sm:max-w-104">
+        <AddAgentForm real_estate_id={real_estate_id} />
       </DialogContent>
     </Dialog>
   )

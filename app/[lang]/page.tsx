@@ -5,9 +5,12 @@ import { ListingStatus } from "@/domain/entities/listing.enums"
 import { listingModule } from "@/application/modules/listing.module"
 import { ListingSearchFilters } from "@/domain/services/listing.service"
 import { SearchPageClient } from "./search-page-client"
+import { getTranslation } from "@/i18n/server"
+import { Lang } from "@/i18n/settings"
 
 interface SearchPageProps {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>
+  params: { lang: Lang }
 }
 
 const sortOptions = [
@@ -64,9 +67,14 @@ function parseSearchParams(sp: { [key: string]: string | string[] | undefined })
   }
 }
 
-export default async function page({ searchParams }: SearchPageProps) {
-  const params = await searchParams
-  const filters = parseSearchParams(params)
+export default async function page({
+  searchParams,
+  params
+}: SearchPageProps) {
+  const { lang } = await params;
+  const { t } = await getTranslation(lang, ["sections"]);
+  const query = await searchParams
+  const filters = parseSearchParams(query)
   const { listings, total } = await getListings(filters)
 
   const totalPages = Math.ceil(total / (filters.limit || 12))
@@ -77,7 +85,7 @@ export default async function page({ searchParams }: SearchPageProps) {
     if (filters.country) parts.push(filters.country)
     if (filters.state) parts.push(filters.state)
     if (filters.city) parts.push(filters.city)
-    return parts.join(" > ") || "Todas las propiedades"
+    return parts.join(" > ") || t('all_properties')
   }
 
   return (

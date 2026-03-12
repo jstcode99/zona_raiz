@@ -5,14 +5,15 @@ import { useForm, useWatch } from "react-hook-form"
 import { Form } from "@/components/ui/form"
 import { propertyTypeOptions, amenitiesOptions } from "@/domain/entities/property.entity"
 import { ListingType } from "@/domain/entities/listing.enums"
-import { 
-  IconMapPin, 
-  IconHome, 
+import {
+  IconMapPin,
+  IconHome,
   IconClearAll,
   IconCurrencyDollar,
   IconBed,
   IconBath,
   IconCheckbox,
+  IconTag,
 } from "@tabler/icons-react"
 import { useRouter, usePathname, useSearchParams } from "next/navigation"
 import { toNumber } from "@/lib/utils"
@@ -22,6 +23,7 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
 import { listingTypeOptions } from "@/domain/entities/listing.entity"
 import countries from '@/lib/countries.json'
+import { useTranslation } from "react-i18next"
 
 export interface ListingSearchFilters {
   q?: string
@@ -63,9 +65,9 @@ const defaultFilters: ListingSearchFilters = {
 
 function parseSearchParams(sp: URLSearchParams | null): ListingSearchFilters {
   if (!sp) return defaultFilters
-  
+
   const amenities = sp.get("amenities")?.split(",").filter(Boolean) || []
-  
+
   return {
     q: sp.get("q") || "",
     listing_type: sp.get("listing_type") as ListingType || undefined,
@@ -88,7 +90,7 @@ function parseSearchParams(sp: URLSearchParams | null): ListingSearchFilters {
 
 function filtersToSearchParams(filters: ListingSearchFilters): URLSearchParams {
   const params = new URLSearchParams()
-  
+
   if (filters.q) params.set("q", filters.q)
   if (filters.listing_type) params.set("listing_type", filters.listing_type)
   if (filters.type) params.set("type", filters.type)
@@ -105,7 +107,7 @@ function filtersToSearchParams(filters: ListingSearchFilters): URLSearchParams {
   if (filters.sort_by) params.set("sort_by", filters.sort_by)
   if (filters.page && filters.page > 1) params.set("page", String(filters.page))
   if (filters.limit) params.set("limit", String(filters.limit))
-  
+
   return params
 }
 
@@ -120,6 +122,12 @@ export function ListingSearchFilters({
   debounceMs = 300,
   initialFilters,
 }: ListingSearchFiltersProps) {
+  const { t } = useTranslation([
+    "placeholders",
+    "words",
+    "sections"
+  ]);
+
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
@@ -197,12 +205,12 @@ export function ListingSearchFilters({
   ]
 
   return (
-    <Form form={form} onSubmit={() => {}} className="space-y-4">
+    <Form form={form} onSubmit={() => { }} className="space-y-4">
       {/* Búsqueda rápida */}
       <div className="flex gap-2 items-end">
         <Form.Input
           name="q"
-          placeholder="Buscar propiedades..."
+          placeholder={`${t('placeholders:search_properties')}...`}
           className="flex-1 py-2"
         />
         <Button type="button" size="sm" onClick={handleReset} variant="outline">
@@ -214,7 +222,7 @@ export function ListingSearchFilters({
       <Form.Set
         legend={
           <span className="flex items-center gap-1 text-sm font-medium">
-            <IconHome className="size-4" /> Tipo de operación
+            <IconTag className="size-4" /> {t('sections:type_listings')}
           </span>
         }
       >
@@ -240,7 +248,7 @@ export function ListingSearchFilters({
       <Form.Set
         legend={
           <span className="flex items-center gap-1 text-sm font-medium">
-            <IconMapPin className="size-4" /> Ubicación
+            <IconMapPin className="size-4" /> {t('sections:location')}
           </span>
         }
       >
@@ -263,7 +271,7 @@ export function ListingSearchFilters({
       <Form.Set
         legend={
           <span className="flex items-center gap-1 text-sm font-medium">
-            <IconCurrencyDollar className="size-4" /> Rango de precio
+            <IconCurrencyDollar className="size-4" /> {t('sections:price_range')}
           </span>
         }
       >
@@ -288,7 +296,7 @@ export function ListingSearchFilters({
       <Form.Set
         legend={
           <span className="flex items-center gap-1 text-sm font-medium">
-            <IconHome className="size-4" /> Tipo de propiedad
+            <IconHome className="size-4" /> {t('sections:type_properties')}
           </span>
         }
       >
@@ -315,7 +323,7 @@ export function ListingSearchFilters({
       <Form.Set
         legend={
           <span className="flex items-center gap-1 text-sm font-medium">
-            <IconBed className="size-4" /> Habitaciones
+            <IconBed className="size-4" /> {t('sections:rooms')}
           </span>
         }
       >
@@ -341,7 +349,7 @@ export function ListingSearchFilters({
       <Form.Set
         legend={
           <span className="flex items-center gap-1 text-sm font-medium">
-            <IconBath className="size-4" /> Baños
+            <IconBath className="size-4" /> {t('sections:bathrooms')}
           </span>
         }
       >
@@ -367,7 +375,7 @@ export function ListingSearchFilters({
       <Form.Set
         legend={
           <span className="flex items-center gap-1 text-sm font-medium">
-            <IconCheckbox className="size-4" /> Comodidades
+            <IconCheckbox className="size-4" /> {t('sections:amenities')}
           </span>
         }
       >
@@ -399,7 +407,7 @@ export function ListingSearchFilters({
 
       {values.amenities && values.amenities.length > 0 && (
         <Button variant="outline" size="sm" onClick={() => setValue("amenities", [])} className="w-full">
-          Limpiar comodidades
+          {t('actions:clear_amenities')}
         </Button>
       )}
     </Form>

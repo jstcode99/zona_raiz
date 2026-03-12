@@ -1,0 +1,16 @@
+{
+    "success_property": "La propiedad ha sido guardada correctamente.",
+    "success_otp": "Se ha enviado el codigo de verificacion.",
+    "success_real_estate": "Guardado correctamente",
+    "success_user": "Usuario actualizado",
+    "success_profile": "Se ha actualizado los datos del perfil",
+    "success_signup": "Si ya tienes una cuenta, intenta iniciar sesión.\nSi no, revisa tu correo para confirmar.",
+    "loading_real_estates": "estamos cargando para ti las inmobiliarias asociadas a cuenta",
+    "page_not_found": "Pagina no encontrada.",
+    "validated": "Validado",
+    "pending": "Pendiente",
+    "saving": "Guardando",
+    "loading": "Cargando",
+    "without_results": "Sin resultados",
+    "no_address": "Sin dirección asociada"
+}
