@@ -299,7 +299,9 @@ export class SupabaseListingAdapter implements ListingPort {
       .select(`
         *,
         property:properties!inner(*, property_images(*)),
-        agent:agents!inner(profile:profiles!inner(id, full_name, avatar_url, phone))
+        real_estate_agent:real_estate_agents!inner(
+          profile:profiles!inner(id, full_name, avatar_url, phone)
+        )
       `)
       .eq("status", "active")
       .order("created_at", { ascending: false })
@@ -309,6 +311,13 @@ export class SupabaseListingAdapter implements ListingPort {
 
     if (error) throw new Error(error.message);
 
-    return (data || []).map(item => mapListingRowToEntity(item)!) as ListingEntity[];
+    return (data || []).map(item => {
+      const entity = mapListingRowToEntity(item);
+      if (entity && item.real_estate_agent?.profile) {
+        // @ts-ignore - adding agent profile from the join
+        entity.agent = item.real_estate_agent.profile as any;
+      }
+      return entity;
+    }) as ListingEntity[];
   }
 }
