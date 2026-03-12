@@ -1,8 +1,9 @@
 import { PropertyImagePort } from "@/domain/ports/property-image.port";
 import { unstable_cache } from "next/cache";
+import { Lang } from "@/i18n/settings";
 
 export class PropertyImageService {
-  constructor(private propertyImagePort: PropertyImagePort) {}
+  constructor(private propertyImagePort: PropertyImagePort, private lang: Lang = "es") {}
 
   getById(id: string) {
     return this.propertyImagePort.getById(id);

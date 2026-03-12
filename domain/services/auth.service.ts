@@ -1,11 +1,13 @@
 import { ProfileEntity } from "../entities/profile.entity"
 import { AuthPort, SignUpData } from "../ports/auth.port"
 import { ProfilePort } from "../ports/profile.port"
+import { Lang } from "@/i18n/settings"
 
 export class AuthService {
   constructor(
     private readonly auth: AuthPort,
     private readonly profiles: ProfilePort,
+    private readonly lang: Lang = "es",
   ) { }
 
   async signUp(data: SignUpData) {

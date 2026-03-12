@@ -1,9 +1,10 @@
 import { ProfilePort } from "@/domain/ports/profile.port";
 import { EUserRole, ProfileEntity } from "@/domain/entities/profile.entity";
 import { unstable_cache } from "next/cache";
+import { Lang } from "@/i18n/settings";
 
 export class ProfileService {
-  constructor(private profilePort: ProfilePort) { }
+  constructor(private profilePort: ProfilePort, private lang: Lang = "es") { }
 
   searchProfilesByEmail(email: string) {
     return this.profilePort.searchProfilesByEmail(email);

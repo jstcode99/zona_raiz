@@ -1,8 +1,9 @@
 import { UserPort, ListUsersFilters } from "@/domain/ports/user.port";
 import { unstable_cache } from "next/cache";
+import { Lang } from "@/i18n/settings";
 
 export class UserService {
-  constructor(private userPort: UserPort) {}
+  constructor(private userPort: UserPort, private lang: Lang = "es") {}
 
   getUserById(userId: string) {
     return this.userPort.getUserById(userId);

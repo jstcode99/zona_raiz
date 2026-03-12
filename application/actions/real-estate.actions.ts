@@ -10,10 +10,12 @@ import { mapRealEstateRowToDomain } from "../mappers/real-estate.mapper"
 import { revalidatePath } from "next/cache"
 import { ROUTES } from "@/infrastructure/config/routes"
 import { getRoute } from "@/i18n/get-route"
+import { getLangServerSide } from "@/shared/utils/lang"
 
 export const createRealEstateAction = withServerAction(
     async (formData: FormData) => {
-        const { realEstateService } = await realEstateModule()
+        const lang = await getLangServerSide()
+        const { realEstateService } = await realEstateModule(lang)
 
         const input = await realEstateSchema.validate(
             Object.fromEntries(formData),
@@ -26,7 +28,8 @@ export const createRealEstateAction = withServerAction(
 
 export const updateRealEstateAction = withServerAction(
     async (formData: FormData) => {
-        const { realEstateService } = await realEstateModule()
+        const lang = await getLangServerSide()
+        const { realEstateService } = await realEstateModule(lang)
 
         const id = formData.get("id") as string
 
@@ -46,7 +49,8 @@ export const updateRealEstateAction = withServerAction(
 
 export const deleteRealEstateAction = withServerAction(
     async (formData: FormData) => {
-        const { realEstateService } = await realEstateModule()
+        const lang = await getLangServerSide()
+        const { realEstateService } = await realEstateModule(lang)
         const id = await idSchema.validate(
             Object.fromEntries(formData),
             { abortEarly: false }
@@ -62,7 +66,8 @@ export const deleteRealEstateAction = withServerAction(
 
 export const uploadRealEstateLogoAction = withServerAction(
     async (formData: FormData) => {
-        const { realEstateService } = await realEstateModule()
+        const lang = await getLangServerSide()
+        const { realEstateService } = await realEstateModule(lang)
 
         const { id, logo } = await logoRealEstateSchema.validate(
             Object.fromEntries(formData),

@@ -1,9 +1,10 @@
 import { RealEstatePort } from "@/domain/ports/real-estate.port";
 import { RealEstateFilters } from "@/domain/entities/real-estate.entity";
 import { unstable_cache } from "next/cache";
+import { Lang } from "@/i18n/settings";
 
 export class RealEstateService {
-  constructor(private realEstatePort: RealEstatePort) {}
+  constructor(private realEstatePort: RealEstatePort, private lang: Lang = "es") {}
 
   all(filters?: RealEstateFilters) {
     return this.realEstatePort.all(filters);

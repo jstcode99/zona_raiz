@@ -7,6 +7,7 @@ import { withServerAction } from "@/shared/hooks/with-server-action"
 import { authModule } from "../modules/auth.module"
 import { CACHE_TAGS, COOKIE_NAMES, COOKIE_OPTIONS } from "@/infrastructure/config/constants"
 import { revalidateTag } from "next/cache"
+import { getLangServerSide } from "@/shared/utils/lang"
 
 function formDataToObject(fd: FormData) {
   return Object.fromEntries(fd)
@@ -19,7 +20,8 @@ export const signUpAction = withServerAction(
         formDataToObject(formData),
         { abortEarly: false }
       )
-      const { authService } = await authModule()
+      const lang = await getLangServerSide()
+      const { authService } = await authModule(lang)
       await authService.signUp(input)
 
     } catch (error) {
@@ -36,7 +38,8 @@ export const signInAction = withServerAction(
         { abortEarly: false }
       )
 
-      const { authService } = await authModule()
+      const lang = await getLangServerSide()
+      const { authService } = await authModule(lang)
       const role = await authService.signIn(input.email, input.password)
 
       const cookieStore = await cookies()
@@ -53,7 +56,8 @@ export const signOutAction = withServerAction(
     try {
       const cookieStore = await cookies()
 
-      const { authService } = await authModule()
+      const lang = await getLangServerSide()
+      const { authService } = await authModule(lang)
       await authService.signOut()
 
       cookieStore.delete(COOKIE_NAMES.ROLE)
@@ -77,7 +81,8 @@ export const sentOtpAction = withServerAction(
         formDataToObject(formData),
         { abortEarly: false }
       )
-      const { authService } = await authModule()
+      const lang = await getLangServerSide()
+      const { authService } = await authModule(lang)
       await authService.sendOtp(input.email)
 
     } catch (error) {

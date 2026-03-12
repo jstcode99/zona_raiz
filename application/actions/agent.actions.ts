@@ -4,10 +4,12 @@ import { withServerAction } from "@/shared/hooks/with-server-action"
 import { agentModule } from "../modules/agent.module"
 import { agentToggleSchema } from "../validation/agent.validation"
 import { revalidatePath } from "next/cache"
+import { getLangServerSide } from "@/shared/utils/lang"
 
 export const addAgentAction = withServerAction(
     async (formData: FormData) => {
-        const { agentService } = await agentModule()
+        const lang = await getLangServerSide()
+        const { agentService } = await agentModule(lang)
 
         const { real_estate_id, profile_id } = 
         await agentToggleSchema.validate(Object.fromEntries(formData), { abortEarly: false })
@@ -21,7 +23,8 @@ export const addAgentAction = withServerAction(
 
 export const removeAgentAction = withServerAction(
     async (formData: FormData) => {
-        const { agentService } = await agentModule()
+        const lang = await getLangServerSide()
+        const { agentService } = await agentModule(lang)
 
         const { real_estate_id, profile_id } = 
         await agentToggleSchema.validate(Object.fromEntries(formData), { abortEarly: false })

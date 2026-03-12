@@ -9,6 +9,7 @@ import { pickDefined } from "@/lib/utils"
 import { withServerAction } from "@/shared/hooks/with-server-action"
 import { ROUTES } from "@/infrastructure/config/routes"
 import { getRoute } from "@/i18n/get-route"
+import { getLangServerSide } from "@/shared/utils/lang"
 
 export const createPropertyImageAction = withServerAction(
   async (
@@ -16,7 +17,8 @@ export const createPropertyImageAction = withServerAction(
     formData: FormData
   ) => {
     try {
-      const { propertyImageService } = await propertyImageModule()
+      const lang = await getLangServerSide()
+      const { propertyImageService } = await propertyImageModule(lang)
 
       const raw = Object.fromEntries(formData)
       const validated = await propertyImageSchema.validate(raw, {
@@ -78,7 +80,8 @@ export const updatePropertyImageAction = withServerAction(
     formData: FormData
   ) => {
     try {
-      const { propertyImageService } = await propertyImageModule()
+      const lang = await getLangServerSide()
+      const { propertyImageService } = await propertyImageModule(lang)
 
       const raw = Object.fromEntries(formData)
 
@@ -106,7 +109,8 @@ export const updatePropertyImageAction = withServerAction(
  */
 export async function deletePropertyImageAction(id: string) {
   try {
-    const { propertyImageService } = await propertyImageModule()
+    const lang = await getLangServerSide()
+    const { propertyImageService } = await propertyImageModule(lang)
     await propertyImageService.delete(id)
 
     revalidatePath(`/es${ROUTES.dashboard.es}`)
