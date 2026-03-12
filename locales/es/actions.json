@@ -18,5 +18,6 @@
     "save_changes": "Guardar cambios",
     "add_agent": "Agregar agente",
     "clear_amenities": "Limpiar Amenidades",
-    "select_type": "Selecione un tipo"
+    "select_type": "Selecione un tipo",
+    "all_months": "Todos los meses"
 }

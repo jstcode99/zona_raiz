@@ -1,8 +1,9 @@
 import { AgentPort } from "@/domain/ports/agent.port";
 import { unstable_cache } from "next/cache";
+import { Lang } from "@/i18n/settings";
 
 export class AgentService {
-  constructor(private agentPort: AgentPort) {}
+  constructor(private agentPort: AgentPort, private lang: Lang = "es") {}
 
   addAgent(realEstateId: string, profileId: string) {
     return this.agentPort.addAgent(realEstateId, profileId);

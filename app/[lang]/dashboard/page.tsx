@@ -1,5 +1,6 @@
 import { DashboardStats } from "@/features/dashboard/dashboard-stats"
 import { PropertyTypesChart } from "@/features/dashboard/property-types-chart"
+import { ListingsByStatusChart, ListingsByStatusData } from "@/features/dashboard/listings-by-status-chart"
 import { cookies } from "next/headers";
 import { COOKIE_NAMES } from "@/infrastructure/config/constants";
 import { propertyModule } from "@/application/modules/property.module";
@@ -116,6 +117,9 @@ export default async function DashboardPage({
 
   const featuredListings = await listingService.getCachedFeatured(10, real_estate_id)
 
+  const currentYear = now.getFullYear()
+  const listingsByStatus = await listingService.getCachedCountByStatusAndMonth(currentYear, { real_estate_id })
+
   return (
     <div className="flex flex-1 flex-col">
       <div className="@container/main flex flex-1 flex-col gap-2">
@@ -163,11 +167,11 @@ export default async function DashboardPage({
             </Suspense>          
           </div>
           {/* Row 2 */}
-          <div className="">
-            {/* Multi users */}
+          <div className="col-span-full lg:col-span-2">
+            <ListingsByStatusChart data={listingsByStatus as ListingsByStatusData} />
           </div>
 
-          <div className="">
+          <div className="col-span-full lg:col-span-3">
             {/* Long jobs */}
           </div>
 

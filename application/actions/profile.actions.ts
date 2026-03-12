@@ -7,6 +7,9 @@ import { AppError } from "../errors/app.error"
 import { revalidatePath } from "next/cache"
 import { profileModule } from "../modules/profile.module"
 import { sessionModule } from "../modules/session.module"
+import { getLangServerSide } from "@/shared/utils/lang";
+
+
 
 export const updateProfileAction = withServerAction(
     async (formData: FormData) => {
@@ -18,8 +21,9 @@ export const updateProfileAction = withServerAction(
                 stripUnknown: true,
             })
 
-            const { profileService } = await profileModule()
-            const { sessionService } = await sessionModule('es')
+            const lang = await getLangServerSide()
+            const { profileService } = await profileModule(lang)
+            const { sessionService } = await sessionModule(lang)
 
             const id = await sessionService.getCurrentUserId()
 
@@ -51,8 +55,9 @@ export const uploadAvatarAction = withServerAction(
                 stripUnknown: true,
             })
 
-            const { profileService } = await profileModule()
-            const { sessionService } = await sessionModule('es')
+            const lang = await getLangServerSide()
+            const { profileService } = await profileModule(lang)
+            const { sessionService } = await sessionModule(lang)
 
             const id = await sessionService.getCurrentUserId()
 

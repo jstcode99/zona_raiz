@@ -1,6 +1,7 @@
 import { ListingPort } from "@/domain/ports/listing.port";
 import { ListingEntity } from "@/domain/entities/listing.entity";
 import { unstable_cache } from "next/cache";
+import { Lang } from "@/i18n/settings";
 
 export type CreateListingInput = Omit<ListingEntity, "id" | "property_id" | "views_count" | "inquiries_count" | "whatsapp_clicks" | "published_at" | "property">;
 
@@ -45,7 +46,7 @@ export interface ListingSearchResult {
 
 
 export class ListingService {
-  constructor(private readonly listingPort: ListingPort) { }
+  constructor(private readonly listingPort: ListingPort, private lang: Lang = "es") { }
 
   all(filter?: any) {
     return this.listingPort.all(filter);
@@ -188,7 +189,7 @@ export class ListingService {
   }
 
   getCachedCountWithDateRange(startDate: string, endDate: string, filters?: Omit<ListingCountFilters, 'start_date' | 'end_date'>) {
-    const cacheKey = `listing-count:date-range:${startDate}:${endDate}:${this.buildCacheKey(filters)}`;
+    const cacheKey = `listing-count:date-range:${startDate}:${endDate}:${this.buildCacheKey(filters as any)}`;
 
     return unstable_cache(
       async () => this.listingPort.count({ ...filters, start_date: startDate, end_date: endDate }),
@@ -284,5 +285,22 @@ export class ListingService {
         tags: ["listings", "listing-search"],
       }
     )()
+  }
+
+  countByStatusAndMonth(year: number, filters?: any) {
+    return this.listingPort.countByStatusAndMonth(year, filters);
+  }
+
+  getCachedCountByStatusAndMonth(year: number, filters?: any) {
+    const cacheKey = `listing-count:status-month:${year}:${filters?.real_estate_id || "all"}`;
+
+    return unstable_cache(
+      async () => this.listingPort.countByStatusAndMonth(year, filters),
+      [cacheKey],
+      {
+        revalidate: 300,
+        tags: ["listings", "listing-count"],
+      }
+    )();
   }
 }

@@ -1,9 +1,10 @@
 import { PropertyPort } from "@/domain/ports/property.port";
 import { PropertyEntity } from "@/domain/entities/property.entity";
 import { unstable_cache } from "next/cache";
+import { Lang } from "@/i18n/settings";
 
 export class PropertyService {
-  constructor(private propertyPort: PropertyPort) { }
+  constructor(private propertyPort: PropertyPort, private lang: Lang = "es") { }
 
   all(filters?: any) {
     return this.propertyPort.all(filters);
