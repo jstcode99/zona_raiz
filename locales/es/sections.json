@@ -34,5 +34,7 @@
     "rooms": "Cantidad de habitaciones",
     "bathrooms": "Cantidad de Baños",
     "amenities": "Amenidades incluidas",
-    "properties_by_type": "Propiedades por tipo"
+    "properties_by_type": "Propiedades por tipo",
+    "listings_by_status": "Publicaciones por estado",
+    "listings_by_status_description": "Total de publicaciones por mes del año actual"
 }

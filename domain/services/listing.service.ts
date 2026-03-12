@@ -286,4 +286,21 @@ export class ListingService {
       }
     )()
   }
+
+  countByStatusAndMonth(year: number, filters?: any) {
+    return this.listingPort.countByStatusAndMonth(year, filters);
+  }
+
+  getCachedCountByStatusAndMonth(year: number, filters?: any) {
+    const cacheKey = `listing-count:status-month:${year}:${filters?.real_estate_id || "all"}`;
+
+    return unstable_cache(
+      async () => this.listingPort.countByStatusAndMonth(year, filters),
+      [cacheKey],
+      {
+        revalidate: 300,
+        tags: ["listings", "listing-count"],
+      }
+    )();
+  }
 }

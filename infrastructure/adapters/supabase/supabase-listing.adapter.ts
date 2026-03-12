@@ -250,4 +250,43 @@ export class SupabaseListingAdapter implements ListingPort {
     if (error || !row) return null;
     return mapListingRowToEntity(row) as ListingEntity
   }
+
+  async countByStatusAndMonth(year: number, filters?: any): Promise<Record<string, Record<string, number>>> {
+    const startDate = `${year}-01-01`;
+    const endDate = `${year}-12-31`;
+
+    let query = this.supabase
+      .from("listings")
+      .select("status, created_at", { count: "exact", head: false })
+
+    if (filters?.real_estate_id) {
+      query = query.eq("properties.real_estate_id", filters.real_estate_id)
+    }
+
+    query = query.gte("created_at", startDate).lte("created_at", endDate);
+
+    const { data, error } = await query;
+
+    if (error) throw new Error(error.message);
+
+    const result: Record<string, Record<string, number>> = {};
+    const months = ["Ene", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
+
+    months.forEach(month => {
+      result[month] = { draft: 0, active: 0, paused: 0, archived: 0 };
+    });
+
+    (data || []).forEach((item: any) => {
+      const date = new Date(item.created_at);
+      const monthIndex = date.getMonth();
+      const status = item.status as string;
+      if (months[monthIndex] && result[months[monthIndex]]) {
+        if (result[months[monthIndex]][status] !== undefined) {
+          result[months[monthIndex]][status]++;
+        }
+      }
+    });
+
+    return result;
+  }
 }

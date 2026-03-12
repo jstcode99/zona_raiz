@@ -1,5 +1,6 @@
 {
     "properties_not_found": "No se encontraron propiedades",
     "not_found_types": "No se encontraron tipos",
-    "not_found_data": "No se encontraron datos"
+    "not_found_data": "No se encontraron datos",
+    "not_found_months": "No se encontraron meses"
 }
