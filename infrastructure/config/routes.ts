@@ -85,9 +85,9 @@ export const ROUTES = {
     es: "/panel/publicaciones",
     en: "/dashboard/listings",
   },
-  inquires: {
+  inquiries: {
     es: "/panel/consultas",
-    en: "/dashboard/inquires",
+    en: "/dashboard/inquiries",
   },
 } as const
 
@@ -113,7 +113,8 @@ export const PROTECTED_ROUTE_KEYS = [
   "realEstates",
   "realEstate",
   "properties",
-  "property",
+  "listings",
+  "inquiries",
 ] as const
 
 export const PUBLIC_ROUTES = [

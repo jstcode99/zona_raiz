@@ -88,7 +88,7 @@ export class SessionService {
           },
           {
             title: "Consultas",
-            url: `${ROUTES.inquires[this.lang]}`,
+            url: `${ROUTES.inquiries[this.lang]}`,
             icon: 'tags',
           }
         ]
@@ -107,6 +107,11 @@ export class SessionService {
           {
             title: "Publicaciones",
             url: `${ROUTES.listings[this.lang]}`,
+            icon: 'tags',
+          },
+          {
+            title: "Consultas",
+            url: `${ROUTES.inquiries[this.lang]}`,
             icon: 'tags',
           }
         ]
