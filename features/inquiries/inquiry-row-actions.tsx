@@ -10,17 +10,24 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Button } from "@/components/ui/button"
-import { IconDotsVertical } from "@tabler/icons-react"
+import { IconDotsVertical, IconUserPlus } from "@tabler/icons-react"
 import { useServerMutation } from "@/shared/hooks/use-server-mutation.hook"
-import { assignInquiryAction, deleteInquiryAction, updateInquiryStatusAction } from "@/application/actions/inquiry.actions"
+import { deleteInquiryAction, updateInquiryStatusAction } from "@/application/actions/inquiry.actions"
 import { inquiryStatusLabels } from "@/domain/entities/inquiry.entity"
+import { AgentSelector } from "./agent-selector"
+import { cookies } from "next/headers"
+import { COOKIE_NAMES } from "@/infrastructure/config/constants"
+import { use } from "react"
 
 interface InquiryRowActionsProps {
   inquiryId: string
 }
 
 export function InquiryRowActions({ inquiryId }: InquiryRowActionsProps) {
-  const { t } = useTranslation('common')
+  const { t } = useTranslation()
+
+  // Obtener real_estate_id desde cookies (usando use() en cliente)
+  const realEstateId = use(cookies()).get(COOKIE_NAMES.REAL_ESTATE)?.value as string
 
   const deleteMutation = useServerMutation({
     action: deleteInquiryAction as any,
@@ -36,16 +43,6 @@ export function InquiryRowActions({ inquiryId }: InquiryRowActionsProps) {
     action: updateInquiryStatusAction as any,
     onSuccess: () => {
       toast.success(t("words.updated") || "Actualizado")
-    },
-    onError: (error) => {
-      toast.error(error.message || (t("words.error") as string) || "Error")
-    },
-  })
-
-  const assignMutation = useServerMutation({
-    action: assignInquiryAction as any,
-    onSuccess: () => {
-      toast.success(t("words.assigned") || "Asignado")
     },
     onError: (error) => {
       toast.error(error.message || (t("words.error") as string) || "Error")
@@ -69,19 +66,10 @@ export function InquiryRowActions({ inquiryId }: InquiryRowActionsProps) {
     statusMutation.action(data)
   }
 
-  const handleAssign = () => {
-    const userId = window.prompt("Ingresa el ID del usuario para asignar:")
-    if (!userId) return
-    const data = new FormData()
-    data.append("id", inquiryId)
-    data.append("assigned_to", userId)
-    assignMutation.action(data)
-  }
-
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon" className="size-8" disabled={deleteMutation.isPending || statusMutation.isPending || assignMutation.isPending}>
+        <Button variant="ghost" size="icon" className="size-8" disabled={deleteMutation.isPending || statusMutation.isPending}>
           <IconDotsVertical />
         </Button>
       </DropdownMenuTrigger>
@@ -93,9 +81,16 @@ export function InquiryRowActions({ inquiryId }: InquiryRowActionsProps) {
           </DropdownMenuItem>
         ))}
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={handleAssign}>
-          Asignar a usuario
-        </DropdownMenuItem>
+        <AgentSelector
+          inquiryId={inquiryId}
+          realEstateId={realEstateId}
+          onAssigned={() => {}}
+        >
+          <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+            <IconUserPlus className="mr-2 h-4 w-4" />
+            Asignar a usuario
+          </DropdownMenuItem>
+        </AgentSelector>
         <DropdownMenuSeparator />
         <DropdownMenuItem variant="destructive" onClick={handleDelete}>
           Eliminar

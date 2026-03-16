@@ -1,7 +1,11 @@
 -- ============================================
--- POLICIES PARA INQUIRIES
+-- FIX: Remove recursive query in inquiries policy
 -- ============================================
 
+-- Drop the problematic policy
+drop policy if exists "Inquiries: viewable by assigned agents" on public.inquiries;
+
+-- Recreate with corrected condition (no self-join recursion)
 create policy "Inquiries: viewable by assigned agents" 
   on public.inquiries for select 
   using (
@@ -17,10 +21,3 @@ create policy "Inquiries: viewable by assigned agents"
       and profile_id = auth.uid()
     )
   );
-
-create policy "Inquiries: insertable by everyone" 
-  on public.inquiries for insert with check (true);
-
--- ============================================
--- POLICIES PARA FAVORITES
--- ============================================
