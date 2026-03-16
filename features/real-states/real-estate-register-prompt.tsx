@@ -13,7 +13,7 @@ interface Props {
 }
 
 export function RealEstateRegisterPrompt({ onSkip }: Props) {
-  const { t } = useTranslation('common')
+  const { t } = useTranslation()
   const routes = useRoutes()
 
   const [isPending, startTransition] = useTransition()

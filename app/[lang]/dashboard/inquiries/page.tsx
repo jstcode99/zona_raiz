@@ -11,29 +11,36 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible"
 import { Separator } from "@/components/ui/separator";
-import { inquiryModule } from "@/application/modules/inquiry.module";
 import { Lang } from "@/i18n/settings";
-import { createRouter } from "@/i18n/router";
 import { InquirySearchFormInput } from "@/application/validation/inquiry-search.schema";
 import { cookies } from "next/headers";
-import { COOKIE_NAMES } from "@/infrastructure/config/constants";
+import { appModule } from "@/application/modules/app.module";
+import { redirect } from "next/navigation";
+import { encodedRedirect } from "@/shared/redirect";
+import { createRouter } from "@/i18n/router";
+import { initI18n } from "@/i18n/server";
 
-export default async function page({
-  searchParams,
-  params
-}: {
+interface props {
+  params: Promise<{ lang: Lang }>
   searchParams: Promise<InquirySearchFormInput>,
-  params: { lang: Lang }
-}) {
+}
+
+export default async function page({ params, searchParams }: props) {
   const filters = await searchParams;
   const { lang } = await params;
-
+  const i18n = await initI18n(lang)
+  const t = i18n.getFixedT(lang)
+  const cookieStore = await cookies()
   const routes = createRouter(lang)
 
-  const cookieStore = await cookies()
-  const realEstateId = cookieStore.get(COOKIE_NAMES.REAL_ESTATE)?.value as string
+  const { inquiryService, cookiesService } = await appModule(lang, { cookies: cookieStore })
 
-  const { inquiryService } = await inquiryModule()
+  const realEstateId = await cookiesService.getRealEstateId()
+
+  if (!realEstateId) {
+    encodedRedirect('error', routes.inquiries(), t("exceptions:data_not_found"))
+  }
+
   const inquiries = inquiryService.all(filters)
 
   return (

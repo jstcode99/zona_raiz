@@ -3,23 +3,35 @@ import { encodedRedirect } from "@/shared/redirect";
 import { Suspense } from "react";
 import { Card, CardContent, } from '@/components/ui/card'
 import { PropertyImagesManager } from "@/features/image-manager/property-images-manager";
-import { propertyImageModule } from "@/application/modules/property-image.module";
-import { propertyModule } from "@/application/modules/property.module";
+import { Lang } from "@/i18n/settings";
+import { initI18n } from "@/i18n/server";
+import { cookies } from "next/headers";
+import { createRouter } from "@/i18n/router";
+import { appModule } from "@/application/modules/app.module";
 
-export default async function page({
-  params,
-}: {
-  params: Promise<{ id: string }>
-}) {
-  const { id } = await params;
+interface props {
+  params: Promise<{ lang: Lang, id: string }>
+}
 
-  const { propertyService } = await propertyModule()
-  const { propertyImageService } = await propertyImageModule()
+export default async function page({ params }: props) {
+  const { lang, id } = await params;
+  const i18n = await initI18n(lang)
+  const t = i18n.getFixedT(lang)
+  const cookieStore = await cookies()
+  const routes = createRouter(lang)
+  const { cookiesService, propertyService, propertyImageService } = await appModule(lang, { cookies: cookieStore })
+
+  const realEstateId = await cookiesService.getRealEstateId()
   const property = await propertyService.getCachedById(id)
 
-  if (!property) {
-    return encodedRedirect('error', '/auth/sign-in', 'No se pudo cargar la propiedad')
+  if (!realEstateId) {
+    encodedRedirect('error', routes.onboarding(), t("exceptions:data_not_found"))
   }
+
+  if (!property) {
+    encodedRedirect('error', routes.properties(), t("exceptions:data_not_found"))
+  }
+
   const fetchImages = propertyImageService.getCachedByPropertyId(id)
 
   return (
@@ -29,10 +41,10 @@ export default async function page({
         {/* Header */}
         <header className="mb-8">
           <h2 className="text-4xl font-bold mb-2">
-            Galleria de la propiedad
+            {t("titles:property_gallery")}
           </h2>
           <p className="opacity-70">
-            Gestiona y sube tus fotos de forma segura
+            {t("subtitles:property_gallery")}
           </p>
         </header>
 
@@ -49,15 +61,15 @@ export default async function page({
             <div className="mt-6 grid grid-cols-3 gap-4">
               <div className="border rounded-lg p-4 text-center">
                 <p className="text-2xl font-bold">25MB</p>
-                <p className="text-xs uppercase tracking-wider mt-1 opacity-70">Máx. por archivo</p>
+                <p className="text-xs uppercase tracking-wider mt-1 opacity-70">{t("section:max_file_size")}</p>
               </div>
               <div className="border rounded-lg p-4 text-center">
                 <p className="text-2xl font-bold">10</p>
-                <p className="text-xs uppercase tracking-wider mt-1 opacity-70">Se recomiendoa máx archivos .</p>
+                <p className="text-xs uppercase tracking-wider mt-1 opacity-70">{t("section:max_file_quantity")}</p>
               </div>
               <div className="border rounded-lg p-4 text-center">
                 <p className="text-2xl font-bold">PNG, JPG, WEBP</p>
-                <p className="text-xs uppercase tracking-wider mt-1 opacity-70">Formatos</p>
+                <p className="text-xs uppercase tracking-wider mt-1 opacity-70">{t("section:formats_files")}</p>
               </div>
             </div>
           </CardContent>

@@ -6,11 +6,14 @@ import { EAgentRole } from "../entities/real-estate-agent.entity";
 import { ROUTES } from "@/infrastructure/config/routes";
 import { Lang } from "@/i18n/settings";
 import { createRouter } from "@/i18n/router";
+import { CookiesPort } from "../ports/cookies.port";
+import { EUserRole } from "../entities/profile.entity";
 
 export class SessionService {
   constructor(
     private sessionPort: SessionPort,
     private profiles: ProfilePort,
+    private cookiesPort: CookiesPort,
     private lang: Lang,
   ) { }
 
@@ -123,5 +126,17 @@ export class SessionService {
           }
         ]
     }
+  }
+
+  async isAdmin(): Promise<boolean> {
+    return await this.cookiesPort.getProfileRole() === EUserRole.Admin
+  }
+
+  async isCoordinator(): Promise<boolean> {
+    return await this.cookiesPort.getAgentRole() === EAgentRole.Coordinator
+  }
+
+  async isAgent(): Promise<boolean> {
+    return await this.cookiesPort.getAgentRole() === EAgentRole.Agent
   }
 }

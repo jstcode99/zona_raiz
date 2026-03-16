@@ -1,17 +1,20 @@
 "use server"
 
 import { revalidatePath } from "next/cache"
-import { ROUTES } from "@/infrastructure/config/routes"
 import { withServerAction } from "@/shared/hooks/with-server-action"
-import { userModule } from "../modules/user.module"
 import { userSchema } from "../validation/user.validation"
 import { idSchema } from "../validation/base/id.schema"
 import { getLangServerSide } from "@/shared/utils/lang"
+import { cookies } from "next/headers"
+import { createRouter } from "@/i18n/router"
+import { appModule } from "../modules/app.module"
 
 export const createUserAction = withServerAction(async (formData: FormData) => {
   const lang = await getLangServerSide()
-  const { userService } = await userModule(lang)
+  const cookieStore = await cookies()
+  const routes = createRouter(lang)
 
+  const { userService } = await appModule(lang, { cookies: cookieStore })
   const raw = Object.fromEntries(formData)
 
   const input = await userSchema.validate(raw, {
@@ -25,12 +28,16 @@ export const createUserAction = withServerAction(async (formData: FormData) => {
     role: input.role,
   })
 
-  revalidatePath(`/dashboard/users`)
+  revalidatePath(routes.dashboard())
+  revalidatePath(routes.users())
 })
 
 export const updateUserAction = withServerAction(async (formData: FormData) => {
   const lang = await getLangServerSide()
-  const { userService } = await userModule(lang)
+  const cookieStore = await cookies()
+  const routes = createRouter(lang)
+
+  const { userService } = await appModule(lang, { cookies: cookieStore })
 
   const id = await idSchema.validate(formData.get("id") ?? "", {
     abortEarly: false,
@@ -49,13 +56,16 @@ export const updateUserAction = withServerAction(async (formData: FormData) => {
     role: input.role,
   })
 
-  revalidatePath(`/dashboard/users`)
-  revalidatePath(`/dashboard/users/${id}`)
+  revalidatePath(routes.users())
+  revalidatePath(routes.user(id))
 })
 
 export const deleteUserAction = withServerAction(async (formData: FormData) => {
   const lang = await getLangServerSide()
-  const { userService } = await userModule(lang)
+  const cookieStore = await cookies()
+  const routes = createRouter(lang)
+
+  const { userService } = await appModule(lang, { cookies: cookieStore })
 
   const id = await idSchema.validate(formData.get("id") ?? "", {
     abortEarly: false,
@@ -63,6 +73,7 @@ export const deleteUserAction = withServerAction(async (formData: FormData) => {
 
   await userService.deleteUser(id)
 
-  revalidatePath(`/dashboard/users`)
+  revalidatePath(routes.dashboard())
+  revalidatePath(routes.users())
 })
 

@@ -1,21 +1,24 @@
 "use server"
 
 import { withServerAction } from "@/shared/hooks/with-server-action"
-import { realEstateModule } from "../modules/real-estate.module"
 import { logoRealEstateSchema, realEstateSchema } from "../validation/real-estate.validation"
 import { idSchema } from "../validation/base/id.schema"
 import { cookies } from "next/headers"
-import { COOKIE_NAMES, COOKIE_OPTIONS } from "@/infrastructure/config/constants"
+import { COOKIE_NAMES } from "@/infrastructure/config/constants"
 import { mapRealEstateRowToDomain } from "../mappers/real-estate.mapper"
 import { revalidatePath } from "next/cache"
-import { ROUTES } from "@/infrastructure/config/routes"
-import { getRoute } from "@/i18n/get-route"
 import { getLangServerSide } from "@/shared/utils/lang"
+import { appModule } from "../modules/app.module"
+import { createRouter } from "@/i18n/router"
+import { initI18n } from "@/i18n/server"
 
 export const createRealEstateAction = withServerAction(
     async (formData: FormData) => {
         const lang = await getLangServerSide()
-        const { realEstateService } = await realEstateModule(lang)
+        const cookieStore = await cookies()
+        const routes = createRouter(lang)
+
+        const { realEstateService } = await appModule(lang, { cookies: cookieStore })
 
         const input = await realEstateSchema.validate(
             Object.fromEntries(formData),
@@ -23,13 +26,21 @@ export const createRealEstateAction = withServerAction(
         )
 
         await realEstateService.create(mapRealEstateRowToDomain(input))
+
+        revalidatePath(routes.dashboard())
+        revalidatePath(routes.realEstates())
     }
 )
 
 export const updateRealEstateAction = withServerAction(
     async (formData: FormData) => {
         const lang = await getLangServerSide()
-        const { realEstateService } = await realEstateModule(lang)
+        const cookieStore = await cookies()
+        const routes = createRouter(lang)
+        const i18n = await initI18n(lang)
+        const t = i18n.getFixedT(lang)
+
+        const { realEstateService } = await appModule(lang, { cookies: cookieStore })
 
         const id = formData.get("id") as string
 
@@ -40,34 +51,38 @@ export const updateRealEstateAction = withServerAction(
 
         await realEstateService.update(id, mapRealEstateRowToDomain(input))
 
-        revalidatePath(`${ROUTES.realEstates.es}`)
-        revalidatePath(`${getRoute('realEstates', 'es', { id })}`)
-        revalidatePath(`${ROUTES.realEstates.en}`)
-        revalidatePath(`${getRoute('realEstates', 'en', { id })}`)
+        revalidatePath(routes.realEstates())
+        revalidatePath(routes.realEstate(id))
     }
 )
 
 export const deleteRealEstateAction = withServerAction(
     async (formData: FormData) => {
         const lang = await getLangServerSide()
-        const { realEstateService } = await realEstateModule(lang)
+        const cookieStore = await cookies()
+        const routes = createRouter(lang)
+
+        const { realEstateService } = await appModule(lang, { cookies: cookieStore })
+
         const id = await idSchema.validate(
             Object.fromEntries(formData),
             { abortEarly: false }
         )
         await realEstateService.delete(id)
 
-        revalidatePath(`${ROUTES.realEstates.es}`)
-        revalidatePath(`${getRoute('realEstates', 'es', { id })}`)
-        revalidatePath(`${ROUTES.realEstates.en}`)
-        revalidatePath(`${getRoute('realEstates', 'en', { id })}`)
+        revalidatePath(routes.realEstate(id))
+        revalidatePath(routes.realEstates())
+        revalidatePath(routes.dashboard())
     }
 )
 
 export const uploadRealEstateLogoAction = withServerAction(
     async (formData: FormData) => {
         const lang = await getLangServerSide()
-        const { realEstateService } = await realEstateModule(lang)
+        const cookieStore = await cookies()
+        const routes = createRouter(lang)
+
+        const { realEstateService } = await appModule(lang, { cookies: cookieStore })
 
         const { id, logo } = await logoRealEstateSchema.validate(
             Object.fromEntries(formData),
@@ -76,17 +91,23 @@ export const uploadRealEstateLogoAction = withServerAction(
 
         await realEstateService.uploadLogo(id, logo)
 
-        revalidatePath(`${ROUTES.realEstates.es}`)
-        revalidatePath(`${getRoute('realEstates', 'es', { id })}`)
-        revalidatePath(`${ROUTES.realEstates.en}`)
-        revalidatePath(`${getRoute('realEstates', 'en', { id })}`)
+        revalidatePath(routes.realEstate(id))
+        revalidatePath(routes.realEstates())
+        revalidatePath(routes.dashboard())
     }
 )
 
 export const setRealEstateAction = withServerAction(
     async (formData: FormData) => {
+        const lang = await getLangServerSide()
         const cookieStore = await cookies()
+        const routes = createRouter(lang)
+
+        const { cookiesService } = await appModule(lang, { cookies: cookieStore })
+
         const realEstateId = formData.get("realEstateId") as string
-        cookieStore.set(COOKIE_NAMES.REAL_ESTATE, realEstateId, COOKIE_OPTIONS)
+
+        cookiesService.setSession(COOKIE_NAMES.REAL_ESTATE, realEstateId)
+        revalidatePath(routes.dashboard())
     }
 )

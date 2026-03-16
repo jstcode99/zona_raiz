@@ -1,28 +1,36 @@
 import { Spinner } from "@/components/ui/spinner";
 import { PropertyForm } from "@/features/properties/property-form";
-import { COOKIE_NAMES } from "@/infrastructure/config/constants";
 import { encodedRedirect } from "@/shared/redirect";
 import { cookies } from "next/headers";
 import { Suspense } from "react";
 import { Card, CardContent, } from '@/components/ui/card'
 import { PropertyInput } from "@/application/validation/property.schema";
-import { propertyModule } from "@/application/modules/property.module";
+import { Lang } from "@/i18n/settings";
+import { initI18n } from "@/i18n/server";
+import { createRouter } from "@/i18n/router";
+import { appModule } from "@/application/modules/app.module";
 
-export default async function page({
-  params,
-}: {
-  params: Promise<{ id: string }>
-}) {
-  const { id } = await params;
+interface props {
+  params: Promise<{ lang: Lang, id: string }>
+}
 
+export default async function page({ params }: props) {
+  const { lang, id } = await params;
+  const i18n = await initI18n(lang)
+  const t = i18n.getFixedT(lang)
   const cookieStore = await cookies()
-  const realEstateId = cookieStore.get(COOKIE_NAMES.REAL_ESTATE)?.value as string
+  const routes = createRouter(lang)
+  const { cookiesService, propertyService } = await appModule(lang, { cookies: cookieStore })
 
-  const { propertyService } = await propertyModule()
+  const realEstateId = await cookiesService.getRealEstateId()
   const property = await propertyService.getCachedById(id)
 
+  if (!realEstateId) {
+    encodedRedirect('error', routes.onboarding(), t("exceptions:data_not_found"))
+  }
+
   if (!property) {
-    return encodedRedirect('error', '/auth/sign-in', 'No se pudo cargar la propiedad')
+    encodedRedirect('error', routes.properties(), t("exceptions:data_not_found"))
   }
 
   return (

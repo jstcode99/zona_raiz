@@ -1,6 +1,4 @@
-import { DEFAULT_LANG, Lang } from "@/i18n/settings";
 import { clsx, type ClassValue } from "clsx"
-import { NextRequest } from "next/server";
 import { twMerge } from "tailwind-merge"
 
 export function cn(...inputs: ClassValue[]) {
@@ -141,40 +139,4 @@ export const optimizeImage = (file: File, maxWidth = 512): Promise<File> => {
 
     reader.readAsDataURL(file)
   })
-}
-
-
-export function getClientLang(): Lang {
-
-  const cookieLang = document.cookie
-    .split("; ")
-    .find((row) => row.startsWith("lang="))
-    ?.split("=")[1] as Lang
-
-  if (cookieLang === "es" || cookieLang === "en") return cookieLang
-
-  if (navigator.language.startsWith("es")) return "es"
-
-  return "en"
-}
-
-export function setClientLang(lang: Lang) {
-  document.cookie = `lang=${lang}; path=/; max-age=${60 * 60 * 24 * 365}`
-}
-
-export function getServerLang(request: NextRequest): Lang {
-
-  const pathname = request.nextUrl.pathname
-  const urlLang = pathname.split("/")[1] as Lang
-
-  if (urlLang === "es" || urlLang === "en") return urlLang
-
-  const cookieLang = request.cookies.get("lang")?.value as Lang
-  if (cookieLang === "es" || cookieLang === "en") return cookieLang
-
-  const headerLang = request.headers.get("accept-language")
-
-  if (headerLang?.startsWith("es")) return "es"
-
-  return DEFAULT_LANG
 }

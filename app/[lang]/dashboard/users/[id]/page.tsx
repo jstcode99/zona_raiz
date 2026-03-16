@@ -4,24 +4,31 @@ import { Spinner } from "@/components/ui/spinner"
 import { encodedRedirect } from "@/shared/redirect"
 import { UserForm } from "@/features/users/user-form"
 import { UserInput } from "@/application/validation/user.validation"
-import { userModule } from "@/application/modules/user.module"
+import { Lang } from "@/i18n/settings"
+import { initI18n } from "@/i18n/server"
+import { cookies } from "next/headers"
+import { createRouter } from "@/i18n/router"
+import { appModule } from "@/application/modules/app.module"
 
-export default async function page({
-  params,
-}: {
-  params: Promise<{ id: string }>
-}) {
-  const { id } = await params
+interface props {
+  params: Promise<{ lang: Lang, id: string }>
+}
+
+export default async function page({ params }: props) {
+  const { lang, id } = await params;
+  const i18n = await initI18n(lang)
+  const t = i18n.getFixedT(lang)
+  const cookieStore = await cookies()
+  const routes = createRouter(lang)
+  const { userService } = await appModule(lang, { cookies: cookieStore })
 
   let user: UserInput
 
   try {
-    const { userService } = await userModule()
-
     const data = await userService.getCachedUserById(id)
 
-    if (!data) {
-      return encodedRedirect("error", "/dashboard/users", "No se pudo cargar el usuario")
+    if (!data || !id || data === null) {
+      encodedRedirect('error', routes.users(), t("exceptions:data_not_found"))
     }
 
     user = {
@@ -30,7 +37,7 @@ export default async function page({
       role: data.role,
     }
   } catch {
-    return encodedRedirect("error", "/dashboard/users", "No se pudo cargar el usuario")
+    encodedRedirect('error', routes.users(), t("exceptions:data_not_found"))
   }
 
   return (

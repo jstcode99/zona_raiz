@@ -1,117 +1,118 @@
 "use server"
 
 import { withServerAction } from "@/shared/hooks/with-server-action"
-import { inquiryModule } from "@/application/modules/inquiry.module"
-import { sessionModule } from "@/application/modules/session.module"
-import { profileModule } from "@/application/modules/profile.module"
 import { revalidatePath } from "next/cache"
 import { getLangServerSide } from "@/shared/utils/lang"
-import { EUserRole } from "@/domain/entities/profile.entity"
-import { EAgentRole } from "@/domain/entities/real-estate-agent.entity"
+import { cookies } from "next/headers"
+import { createRouter } from "@/i18n/router"
+import { appModule } from "../modules/app.module"
+import { initI18n } from "@/i18n/server"
 
 export const deleteInquiryAction = withServerAction(
   async (formData: FormData) => {
-    const id = formData.get("id") as string
-    if (!id) throw new Error("ID required")
-
     const lang = await getLangServerSide()
-    const { inquiryService } = await inquiryModule()
-    const { sessionService } = await sessionModule(lang)
+    const cookieStore = await cookies()
+    const routes = createRouter(lang)
+    const i18n = await initI18n(lang)
+    const t = i18n.getFixedT(lang)
+
+    const {
+      sessionService,
+      inquiryService
+    } = await appModule(lang, { cookies: cookieStore })
+
+    const id = formData.get("id") as string
+    if (!id) throw new Error(t('validations:required', {
+      attribute: 'ID'
+    }))
 
     const userId = await sessionService.getCurrentUserId()
-    if (!userId) throw new Error("No autorizado")
 
-    const userRole = await sessionService.getCurrentUserAgentRole()
-    if (!userRole) throw new Error("No tienes rol en la inmobiliaria")
+    if (!userId) throw new Error(t('exceptions:unauthorized'))
 
     const inquiry = await inquiryService.findById(id)
-    if (!inquiry || !inquiry.listing) throw new Error("Inquiry no encontrada")
+    if (!inquiry || !inquiry.listing) throw new Error(t('exceptions:data_not_found'))
 
-    const isAdmin = userRole === 'admin'
-    const isCoordinator = userRole === 'coordinator'
+    const isAdmin = await sessionService.isAdmin()
+    const isCoordinator = await sessionService.isCoordinator()
     const isAssignedAgent = inquiry.assigned_to === userId
 
-    if (!isAdmin && !isCoordinator && !isAssignedAgent) {
-      throw new Error("No tienes permiso para eliminar esta consulta. Debes ser administrador, coordinador o el agente asignado.")
-    }
-
+    if (!isAdmin && !isCoordinator && !isAssignedAgent) throw new Error(t('exceptions:unauthorized'))
     await inquiryService.delete(id)
-    revalidatePath("/dashboard/inquiries")
+
+    revalidatePath(routes.inquiries())
   }
 )
 
 export const updateInquiryStatusAction = withServerAction(
   async (formData: FormData) => {
+    const lang = await getLangServerSide()
+    const cookieStore = await cookies()
+    const routes = createRouter(lang)
+    const i18n = await initI18n(lang)
+    const t = i18n.getFixedT(lang)
+
+    const {
+      sessionService,
+      inquiryService
+    } = await appModule(lang, { cookies: cookieStore })
+
     const id = formData.get("id") as string
     const status = formData.get("status") as string
     if (!id || !status) throw new Error("ID and status required")
 
-    const lang = await getLangServerSide()
-    const { inquiryService } = await inquiryModule()
-    const { sessionService } = await sessionModule(lang)
-
     const userId = await sessionService.getCurrentUserId()
     if (!userId) throw new Error("No autorizado")
 
-    const userRole = await sessionService.getCurrentUserAgentRole()
-    if (!userRole) throw new Error("No tienes rol en la inmobiliaria")
-
     const inquiry = await inquiryService.findById(id)
-    if (!inquiry || !inquiry.listing) throw new Error("Inquiry no encontrada")
+    if (!inquiry || !inquiry.listing) throw new Error(t('exceptions:data_not_found'))
 
-    const isAdmin = userRole === 'admin'
-    const isCoordinator = userRole === 'coordinator'
+    const isAdmin = await sessionService.isAdmin()
+    const isCoordinator = await sessionService.isCoordinator()
     const isAssignedAgent = inquiry.assigned_to === userId
 
-    if (!isAdmin && !isCoordinator && !isAssignedAgent) {
-      throw new Error("No tienes permiso para cambiar el estado de esta consulta. Debes ser administrador, coordinador o el agente asignado.")
-    }
+    if (!isAdmin && !isCoordinator && !isAssignedAgent) throw new Error(t('exceptions:unauthorized'))
 
     await inquiryService.update(id, { status: status as any })
-    revalidatePath("/dashboard/inquiries")
+    revalidatePath(routes.inquiries())
   }
 )
 
 export const assignInquiryAction = withServerAction(
   async (formData: FormData) => {
+    const lang = await getLangServerSide()
+    const cookieStore = await cookies()
+    const routes = createRouter(lang)
+    const i18n = await initI18n(lang)
+    const t = i18n.getFixedT(lang)
+
+    const {
+      sessionService,
+      inquiryService,
+      profileService
+    } = await appModule(lang, { cookies: cookieStore })
+
     const id = formData.get("id") as string
     const assigned_to = formData.get("assigned_to") as string
-    if (!id || !assigned_to) throw new Error("ID and assigned_to required")
+    if (!id || !assigned_to) throw new Error(t('exceptions:unauthorized'))
 
-    const lang = await getLangServerSide()
-    const { inquiryService } = await inquiryModule()
-    const { sessionService } = await sessionModule(lang)
-    const { profileService } = await profileModule(lang)
-    
     const inquiry = await inquiryService.findById(id)
-    if (!inquiry || !inquiry.listing) throw new Error("Inquiry no encontrada")
+    if (!inquiry || !inquiry.listing) throw new Error(t('exceptions:data_not_found'))
 
     const userId = await sessionService.getCurrentUserId()
-    if (!userId) throw new Error("No autorizado")
+    if (!userId) throw new Error(t('exceptions:unauthorized'))
 
-    const roleProfile = await profileService.getCachedRoleByUserId(userId)
-    if (!roleProfile) throw new Error("No tienes rol en el perfil")
+    const isAdmin = await sessionService.isAdmin()
+    const isCoordinator = await sessionService.isCoordinator()
 
-    const roleRealEstate = await sessionService.getCurrentUserAgentRole()
-    if (!roleRealEstate) throw new Error("No tienes rol en la inmobiliaria")
-
-    const isAdmin = roleProfile === EUserRole.Admin
-    const isCoordinator = roleRealEstate === EAgentRole.Coordinator
-
-    if (!isAdmin && !isCoordinator) {
-      throw new Error("No tienes permiso para asignar esta consulta. Solo administradores y coordinadores pueden asignar agentes.")
-    }
-
+    if (!isAdmin && !isCoordinator) throw new Error(t('exceptions:unauthorized'))
     const realEstateId = inquiry.listing.real_estate_id
 
-    // Verificar que el agente a asignar pertenezca a la misma inmobiliaria
     const targetAgent = await profileService.getAgentRoleInRealEstate(assigned_to, realEstateId)
+    if (!targetAgent) throw new Error(t('exceptions:unauthorized'))
+    
+      await inquiryService.update(id, { assigned_to })
 
-    if (!targetAgent) {
-      throw new Error("El agente seleccionado no pertenece a la inmobiliaria de esta propiedad.")
-    }
-
-    await inquiryService.update(id, { assigned_to })
-    revalidatePath("/dashboard/inquiries")
+    revalidatePath(routes.inquiries())
   }
 )

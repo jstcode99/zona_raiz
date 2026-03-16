@@ -9,12 +9,11 @@ import { PageLoader } from "@/features/loader/page-loader"
 import { encodedRedirect } from "@/shared/redirect"
 import { EUserRole } from "@/domain/entities/profile.entity"
 import { DashboardBottomNav } from "@/features/navigation/dashboard-bottom-nav"
-import { sessionModule } from "@/application/modules/session.module"
 import { createRouter } from "@/i18n/router"
 import { Lang } from "@/i18n/settings"
 import { initI18n } from "@/i18n/server"
-import { COOKIE_NAMES } from "@/infrastructure/config/constants"
 import { cookies } from "next/headers"
+import { appModule } from "@/application/modules/app.module"
 
 export default async function DashboardLayout({
   children,
@@ -29,27 +28,26 @@ export default async function DashboardLayout({
   const routes = createRouter(lang)
   const i18n = await initI18n(lang)
   const t = i18n.getFixedT(lang)
+  const { cookiesService, sessionService } = await appModule(lang, { cookies: cookieStore })
 
-  const real_estate_id = cookieStore.get(COOKIE_NAMES.REAL_ESTATE)?.value as string
+  const real_estate_id = await cookiesService.getRealEstateId() as string
 
   if (!real_estate_id) {
-    return encodedRedirect('error', routes.signin(), t('errors.real_estate_not_found'))
+    return encodedRedirect('error', routes.onboarding(), t('exceptions:data_not_found'))
   }
 
-  const { sessionService } = await sessionModule(lang)
   const profile = await sessionService.getCachedCurrentUser();
   const menu = await sessionService.getMenuByRol();
 
-
   if (!profile) {
-    return encodedRedirect('error', routes.signin(), t('errors.profile_not_found'))
+    return encodedRedirect('error', routes.signin(), t('exceptions:data_not_found'))
   }
 
   if (profile.role == EUserRole.Admin) {
     return encodedRedirect(
       "error",
       routes.signin(),
-      t('errors.not_have_access')
+      t('exceptions.not_have_access')
     )
   }
 
@@ -65,9 +63,12 @@ export default async function DashboardLayout({
       <AppSidebar variant="inset" menu={menu} profile={profile} />
       <SidebarInset>
         <SiteHeader />
-        <div className="flex flex-1 flex-col">
+        <div
+          style={{ backgroundImage: `url('/images/texture.png')` }}
+          className="flex flex-1 flex-col"
+        >
           <div className="@container/main flex flex-1 flex-col gap-2">
-            <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6 bg-gray-500/15">
+            <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6  h-full">
               <Suspense fallback={<PageLoader />}>{children}</Suspense>
             </div>
           </div>

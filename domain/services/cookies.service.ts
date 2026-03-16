@@ -3,7 +3,9 @@ import { EAgentRole } from "../entities/real-estate-agent.entity";
 import { CookiesPort } from "../ports/cookies.port";
 
 export class CookiesService {
-  constructor(private readonly cookies: CookiesPort) { }
+  constructor(
+    private readonly cookies: CookiesPort
+  ) { }
 
   getProfileRole(): Promise<EUserRole | null> {
     return this.cookies.getProfileRole();
@@ -13,7 +15,7 @@ export class CookiesService {
     return this.cookies.getAgentRole();
   }
 
-  getRealEstateId(): Promise<EAgentRole | null> {
+  getRealEstateId(): Promise<string | null> {
     return this.cookies.getRealEstateId();
   }
 

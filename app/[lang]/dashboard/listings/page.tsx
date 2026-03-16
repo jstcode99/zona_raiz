@@ -3,7 +3,6 @@ import { Spinner } from "@/components/ui/spinner";
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from "@/components/ui/button";
 import { IconFilter } from "@tabler/icons-react";
-import { COOKIE_NAMES } from "@/infrastructure/config/constants";
 import { ListingSearchFormInput } from "@/application/validation/listing-search.schema";
 import ListingTable from "@/features/listing/listing-table";
 import { ListingFiltersForm } from "@/features/listing/listing-form-filters";
@@ -14,24 +13,36 @@ import {
 } from "@/components/ui/collapsible"
 import { Separator } from "@/components/ui/separator";
 import { cookies } from "next/headers";
-import { listingModule } from "@/application/modules/listing.module";
+import { initI18n } from "@/i18n/server";
+import { Lang } from "@/i18n/settings";
+import { createRouter } from "@/i18n/router";
+import { appModule } from "@/application/modules/app.module";
+import { encodedRedirect } from "@/shared/redirect";
 
-export default async function page({
-  searchParams,
-}: {
+
+interface props {
+  params: Promise<{ lang: Lang}>
   searchParams: Promise<ListingSearchFormInput>
-}) {
-  const cookieStore = await cookies()
+}
 
+export default async function page({ params, searchParams }: props) {
+  const { lang } = await params;
   const filters = await searchParams;
-  const real_estate_id = cookieStore
-    .get(COOKIE_NAMES.REAL_ESTATE)?.value as string
+  const i18n = await initI18n(lang)
+  const t = i18n.getFixedT(lang)
+  const cookieStore = await cookies()
+  const routes = createRouter(lang)
+  const { cookiesService, listingService } = await appModule(lang, { cookies: cookieStore })
 
-  const { listingService } = await listingModule()
+  const realEstateId = await cookiesService.getRealEstateId()
+ 
+  if (!realEstateId) {
+    encodedRedirect('error', routes.onboarding(), t("exceptions:data_not_found"))
+  }
   
   const listing = listingService.getCachedAll({
     ...filters,
-    real_estate_id
+    realEstateId
   })
 
   return (

@@ -85,9 +85,20 @@ export const ROUTES = {
     es: "/panel/publicaciones",
     en: "/dashboard/listings",
   },
+  
   inquiries: {
     es: "/panel/consultas",
     en: "/dashboard/inquiries",
+  },
+
+  users: {
+    es: "/panel/usuarios",
+    en: "/dashboard/users",
+  },
+
+  user: {
+    es: "/panel/usuarios/:id",
+    en: "/dashboard/users/:id",
   },
 } as const
 

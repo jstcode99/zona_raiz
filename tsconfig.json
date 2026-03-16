@@ -38,6 +38,9 @@
       "@/infrastructure/*": [
         "./infrastructure/*"
       ],
+      "@/interfaces/*": [
+        "./interfaces/*"
+      ],
       "@/domain/*": [
         "./domain/*"
       ],

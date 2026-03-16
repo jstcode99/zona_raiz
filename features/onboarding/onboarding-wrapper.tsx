@@ -1,26 +1,21 @@
 "use client"
 
-import { Loader2 } from "lucide-react"
 import { RealEstateSelector } from "../real-states/real-estate-selector"
-import { useTranslation } from "react-i18next"
 import { RealEstateRegisterPrompt } from "@/features/real-states/real-estate-register-prompt"
 import { OnboardingState } from "@/domain/services/onboarding.service"
 import { redirect } from "next/navigation"
+import { PageLoader } from "../loader/page-loader"
 
 interface Props {
   initialState: OnboardingState
 }
 
 export function OnboardingWrapper({ initialState }: Props) {
-  const { t } = useTranslation('pages')
 
   // Estado inicial determina qué mostrar
   if (initialState.step === "loading") {
     return (
-      <div className="flex flex-col items-center gap-4">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-        <p className="text-muted-foreground">{t("titles:onboarding")}</p>
-      </div>
+      <PageLoader />
     )
   }
 

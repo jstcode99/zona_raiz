@@ -3,17 +3,19 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { ArrowLeft } from "lucide-react"
 import { RealEstateRegistrationForm } from "@/features/real-states/real-estate-register-form"
-import { onboardingModule } from "@/application/modules/onboarding.module"
 import { Lang } from "@/i18n/settings"
 import { createRouter } from "@/i18n/router"
+import { cookies } from "next/headers"
+import { appModule } from "@/application/modules/app.module"
 
-export default async function page({
-  params
-}: Readonly<{
-  params: { lang: Lang }
-}>) {
+interface props {
+  params: Promise<{ lang: Lang }>
+}
+export default async function page({ params }: props) {
   const { lang } = await params;
-  const { onboardingService } = await onboardingModule(lang)
+  const cookieStore = await cookies()
+  const { onboardingService } = await appModule(lang, { cookies: cookieStore })
+ 
   const state = await onboardingService.getOnboardingState()
   const routes = createRouter(lang)
 
@@ -29,8 +31,6 @@ export default async function page({
     redirect(routes.onboarding())
   }
 
-
-  // Ahora TypeScript sabe que state.step === "register-real-estate"
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-muted/50 p-4">
       <div className="w-full max-w-lg space-y-4">

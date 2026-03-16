@@ -1,94 +1,126 @@
-import { type NextRequest, NextResponse } from "next/server"
+import { NextRequest, NextResponse } from "next/server"
 import { createServerClient } from "@supabase/ssr"
 import { EUserRole } from "@/domain/entities/profile.entity"
-import {
-  COOKIE_NAMES,
-  COOKIE_OPTIONS,
-} from "../config/constants"
-import { sessionModule } from "@/application/modules/session.module"
+import { COOKIE_NAMES } from "../config/constants"
 import { PUBLIC_ROUTES, ROUTES } from "../config/routes"
-import { getServerLang } from "@/lib/utils"
-
-// ==========================================
-// MIDDLEWARE
-// ==========================================
+import { appModule } from "@/application/modules/app.module"
+import { detectLang } from "@/i18n/detect-lang"
 
 export async function updateSession(request: NextRequest) {
+
   const { pathname } = request.nextUrl
-  const lang = getServerLang(request)
+  const lang = detectLang(request)
 
   if (isPublicRoute(pathname)) {
     return NextResponse.next()
   }
 
-  const response = createMutableResponse(request)
+  let response = createMutableResponse(request)
+
   const supabase = SupabaseServerClient(request, response)
 
-  const {
-    data: { user },
-    error,
-  } = await supabase.auth.getUser()
+  const { sessionService, cookiesService } = await appModule(lang, {
+    request,
+    response
+  })
+
+  const redirect = async (path: string) => {
+    const res = redirectTo(path, request)
+    const { cookiesService } = await appModule(lang, {
+      request,
+      response: res
+    })
+
+    return { res, cookiesService }
+  }
+
+  // =========================
+  // AUTH
+  // =========================
+
+  const { data: { user }, error } = await supabase.auth.getUser()
 
   if (!user || error) {
     return redirectTo(ROUTES.signin[lang], request)
   }
 
-  const isRealEstateRoute = isRoute(pathname, ROUTES.dashboard[lang])
-
-  const role = request.cookies.get(COOKIE_NAMES.ROLE)?.value as EUserRole | undefined
-  const realEstateId = request.cookies.get(COOKIE_NAMES.REAL_ESTATE)?.value
+  const role = await cookiesService.getProfileRole()
 
   if (!role) {
     return redirectTo(ROUTES.signin[lang], request)
   }
 
-  // 🚫 CLIENTE no entra en rutas protegidas (/dashboard, /real-estate, etc.)
+  const realEstateId = await cookiesService.getRealEstateId()
+
+  // =========================
+  // CLIENT
+  // =========================
+
   if (role === EUserRole.Client) {
-    const res = redirectTo(ROUTES.home[lang], request)
-    res.cookies.set(COOKIE_NAMES.REAL_ESTATE_ROLE, "client", COOKIE_OPTIONS)
+
+    const { res, cookiesService } = await redirect(ROUTES.home[lang])
+
+    cookiesService.setSession(
+      COOKIE_NAMES.REAL_ESTATE_ROLE,
+      "client"
+    )
+
     return res
   }
 
-  // 👮‍♂️ Admin solo puede ver /dashboard (y rutas públicas)
+  // =========================
+  // ADMIN
+  // =========================
+
   if (role === EUserRole.Admin) {
-    if (isRealEstateRoute) {
-      const res = redirectTo(ROUTES.dashboard[lang], request)
-      res.cookies.set(COOKIE_NAMES.REAL_ESTATE_ROLE, "admin", COOKIE_OPTIONS)
-      return res
+
+    cookiesService.setSession(
+      COOKIE_NAMES.REAL_ESTATE_ROLE,
+      "admin"
+    )
+
+    if (isRoute(pathname, ROUTES.dashboard[lang])) {
+      return response
     }
 
-    // En rutas válidas protegidas, marcamos su rol en cookie y seguimos
-    response.cookies.set(COOKIE_NAMES.REAL_ESTATE_ROLE, "admin", COOKIE_OPTIONS)
-    return response
+    return redirectTo(ROUTES.dashboard[lang], request)
   }
 
-  // A partir de aquí solo queda EUserRole.RealEstate en rutas protegidas
+  // =========================
+  // REAL ESTATE
+  // =========================
+
   if (role !== EUserRole.RealEstate) {
     return redirectTo(ROUTES.home[lang], request)
   }
 
 
-  // ==========================================
-  // ==========================================
-  // REAL ESTATE CONTEXT GUARD (para rol RealEstate)
-  // ==========================================
-
-  // 🔁 Si NO tiene contexto → intentar auto-selección
-  const { sessionService } = await sessionModule(lang)
-
+  // 🔁 Sin contexto
   if (!realEstateId) {
+
     const realEstates = await sessionService.getRealEstatesForUser()
 
-    // ⭐ Solo uno → guardar cookie de inmobiliaria + rol (agent/coordinator) y entrar a /real-estate
     if (realEstates.length === 1) {
+
       const current = realEstates[0]
-      const res = redirectTo(ROUTES.dashboard[lang], request)
-      res.cookies.set(COOKIE_NAMES.REAL_ESTATE, current.real_estate.id, COOKIE_OPTIONS)
-      res.cookies.set(COOKIE_NAMES.REAL_ESTATE_ROLE, current.role, COOKIE_OPTIONS)
+
+      const { res, cookiesService } = await redirect(
+        ROUTES.dashboard[lang]
+      )
+
+      cookiesService.setSession(
+        COOKIE_NAMES.REAL_ESTATE,
+        current.real_estate.id
+      )
+
+      cookiesService.setSession(
+        COOKIE_NAMES.REAL_ESTATE_ROLE,
+        current.role
+      )
+
       return res
     }
 
-    // ❗ Ninguno o varios → onboarding
     if (!isRoute(pathname, ROUTES.onboarding[lang])) {
       return redirectTo(ROUTES.onboarding[lang], request)
     }
@@ -96,18 +128,24 @@ export async function updateSession(request: NextRequest) {
     return response
   }
 
-  // ✅ Ya tiene contexto → actualizar cookie de rol en la inmobiliaria activa
+  // =========================
+  // CONTEXTO ACTIVO
+  // =========================
+
   const realEstates = await sessionService.getRealEstatesForUser()
+
   const current = realEstates.find(
-    (item) => item.real_estate.id === realEstateId
+    (r) => r.real_estate.id === realEstateId
   )
 
   if (current) {
-    response.cookies.set(COOKIE_NAMES.REAL_ESTATE_ROLE, current.role, COOKIE_OPTIONS)
+    cookiesService.setSession(
+      COOKIE_NAMES.REAL_ESTATE_ROLE,
+      current.role
+    )
   }
 
-  // No puede ir a onboarding si ya tiene contexto
-  if (realEstateId && isRoute(pathname, ROUTES.onboarding[lang])) {
+  if (isRoute(pathname, ROUTES.onboarding[lang])) {
     return redirectTo(ROUTES.dashboard[lang], request)
   }
 
