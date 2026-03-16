@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { translateRoute } from "@/i18n/translate-route"
-import { getServerLang } from "@/lib/utils"
 import { updateSession } from "./infrastructure/db/supabase.proxy"
+import { detectLang } from "./i18n/detect-lang"
 
 const LANG_REGEX = /^\/(es|en)(\/|$)/
 
@@ -14,7 +14,7 @@ export async function proxy(request: NextRequest) {
   }
 
   const { pathname } = request.nextUrl
-  const lang = getServerLang(request)
+  const lang = detectLang(request)
 
   if (pathname === "/") {
     const url = request.nextUrl.clone()

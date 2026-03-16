@@ -1,37 +1,45 @@
 "use server"
 
 import { withServerAction } from "@/shared/hooks/with-server-action"
-import { agentModule } from "../modules/agent.module"
 import { agentToggleSchema } from "../validation/agent.validation"
 import { revalidatePath } from "next/cache"
 import { getLangServerSide } from "@/shared/utils/lang"
+import { cookies } from "next/headers"
+import { appModule } from "../modules/app.module"
+import { createRouter } from "@/i18n/router"
 
 export const addAgentAction = withServerAction(
     async (formData: FormData) => {
         const lang = await getLangServerSide()
-        const { agentService } = await agentModule(lang)
+        const cookieStore = await cookies()
+        const routes = createRouter(lang)
 
-        const { real_estate_id, profile_id } = 
-        await agentToggleSchema.validate(Object.fromEntries(formData), { abortEarly: false })
+        const { agentService } = await appModule(lang, { cookies: cookieStore })
 
-        await agentService.addAgent (real_estate_id, profile_id)
+        const { real_estate_id, profile_id } =
+            await agentToggleSchema.validate(Object.fromEntries(formData), { abortEarly: false })
 
-        revalidatePath("/dashboard/real-estates");
-        revalidatePath(`/dashboard/real-estates/${real_estate_id}`);
+        await agentService.addAgent(real_estate_id, profile_id)
+
+        revalidatePath(routes.realEstates())
+        revalidatePath(routes.realEstate(real_estate_id))
     }
 )
 
 export const removeAgentAction = withServerAction(
     async (formData: FormData) => {
         const lang = await getLangServerSide()
-        const { agentService } = await agentModule(lang)
+        const cookieStore = await cookies()
+        const routes = createRouter(lang)
 
-        const { real_estate_id, profile_id } = 
-        await agentToggleSchema.validate(Object.fromEntries(formData), { abortEarly: false })
+        const { agentService } = await appModule(lang, { cookies: cookieStore })
+
+        const { real_estate_id, profile_id } =
+            await agentToggleSchema.validate(Object.fromEntries(formData), { abortEarly: false })
 
         await agentService.removeAgent(real_estate_id, profile_id)
 
-        revalidatePath("/dashboard/real-estates");
-        revalidatePath(`/dashboard/real-estates/${real_estate_id}`);
+        revalidatePath(routes.realEstates())
+        revalidatePath(routes.realEstate(real_estate_id))
     }
 )

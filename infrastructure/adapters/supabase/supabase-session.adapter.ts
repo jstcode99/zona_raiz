@@ -2,7 +2,6 @@ import { ProfileEntity } from "@/domain/entities/profile.entity"
 import { RealEstateEntity, RealEstateWithRoleEntity } from "@/domain/entities/real-estate.entity"
 import { ProfilePort } from "@/domain/ports/profile.port"
 import { SessionPort } from "@/domain/ports/sesion.port"
-import { Lang } from "@/i18n/settings"
 import { SupabaseClient } from "@supabase/supabase-js"
 
 export class SupabaseSessionAdapter implements SessionPort {
@@ -77,5 +76,11 @@ export class SupabaseSessionAdapter implements SessionPort {
       real_estate: item.real_estates as RealEstateEntity,
       role: item.role,
     }))
+  }
+
+  async getCurrentRealEstateId(): Promise<string | null> {
+    const cookieStore = await import("next/headers").then(m => m.cookies())
+    const cookie = cookieStore.get("real_estate_id")
+    return cookie?.value || null
   }
 }

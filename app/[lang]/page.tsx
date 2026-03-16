@@ -2,11 +2,12 @@ import { ListingSearchFilters as ListingSearchFiltersType } from "@/features/lis
 import { ListingEntity } from "@/domain/entities/listing.entity"
 import { pickDefined } from "@/lib/utils"
 import { ListingStatus } from "@/domain/entities/listing.enums"
-import { listingModule } from "@/application/modules/listing.module"
 import { ListingSearchFilters } from "@/domain/services/listing.service"
 import { SearchPageClient } from "./search-page-client"
 import { getTranslation } from "@/i18n/server"
 import { Lang } from "@/i18n/settings"
+import { cookies } from "next/headers"
+import { appModule } from "@/application/modules/app.module"
 
 interface SearchPageProps {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>
@@ -20,8 +21,9 @@ const sortOptions = [
   { label: "Precio: mayor a menor", value: "price_desc" },
 ]
 
-async function getListings(filters: ListingSearchFiltersType): Promise<{ listings: ListingEntity[]; total: number }> {
-  const { listingService } = await listingModule()
+async function getListings(filters: ListingSearchFiltersType, lang: Lang): Promise<{ listings: ListingEntity[]; total: number }> {
+  const cookieStore = await cookies()
+  const { listingService } = await appModule(lang, { cookies: cookieStore })
 
   const searchFilters: ListingSearchFilters = {
     listing_type: filters.listing_type,
@@ -75,7 +77,7 @@ export default async function page({
   const { t } = await getTranslation(lang, ["sections"]);
   const query = await searchParams
   const filters = parseSearchParams(query)
-  const { listings, total } = await getListings(filters)
+  const { listings, total } = await getListings(filters, lang)
 
   const totalPages = Math.ceil(total / (filters.limit || 12))
   const currentPage = filters.page || 1

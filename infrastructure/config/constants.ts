@@ -2,8 +2,6 @@
 // COOKIES
 // ==========================================
 
-import { EUserRole } from "@/domain/entities/profile.entity"
-
 export const COOKIE_OPTIONS = {
   httpOnly: true,
   secure: process.env.NODE_ENV === "production",
@@ -16,7 +14,6 @@ export const COOKIE_NAMES = {
   ROLE: "user_role",
   REAL_ESTATE: "real_estate_id",
   REAL_ESTATE_ROLE: "real_estate_role",
-  SESSION: "supabase_session",
 } as const
 
 // ==========================================

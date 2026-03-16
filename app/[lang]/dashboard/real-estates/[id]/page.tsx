@@ -3,20 +3,28 @@ import { encodedRedirect } from "@/shared/redirect";
 import { Suspense } from "react";
 import { Card, CardContent, } from '@/components/ui/card'
 import { RealEstateForm } from "@/features/real-states/real-estate-form";
-import { realEstateModule } from "@/application/modules/real-estate.module";
+import { Lang } from "@/i18n/settings";
+import { initI18n } from "@/i18n/server";
+import { cookies } from "next/headers";
+import { createRouter } from "@/i18n/router";
+import { appModule } from "@/application/modules/app.module";
 
-export default async function page({
-  params,
-}: {
-  params: Promise<{ id: string }>
-}) {
-  const { id } = await params;
+interface props {
+  params: Promise<{ lang: Lang, id: string }>
+}
 
-  const { realEstateService } = await realEstateModule()
+export default async function page({ params }: props) {
+  const { lang, id } = await params;
+  const i18n = await initI18n(lang)
+  const t = i18n.getFixedT(lang)
+  const cookieStore = await cookies()
+  const routes = createRouter(lang)
+  const { realEstateService } = await appModule(lang, { cookies: cookieStore })
+
   const realEstate = await realEstateService.getCachedById(id)
 
-  if (!realEstate) {
-    return encodedRedirect('error', '/auth/sign-in', 'No se pudo cargar la inmobiliaria')
+  if (!realEstate || !id) {
+    encodedRedirect('error', routes.onboarding(), t("exceptions:data_not_found"))
   }
 
   return (

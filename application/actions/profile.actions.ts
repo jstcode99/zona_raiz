@@ -1,76 +1,75 @@
 "use server"
 
-import { handleError } from "@/application/errors/handle-error"
 import { withServerAction } from "@/shared/hooks/with-server-action"
 import { profileAvatarSchema, profileSchema } from "../validation/profile.validation"
-import { AppError } from "../errors/app.error"
 import { revalidatePath } from "next/cache"
-import { profileModule } from "../modules/profile.module"
-import { sessionModule } from "../modules/session.module"
 import { getLangServerSide } from "@/shared/utils/lang";
-
-
+import { cookies } from "next/headers"
+import { createRouter } from "@/i18n/router"
+import { initI18n } from "@/i18n/server"
+import { appModule } from "../modules/app.module"
 
 export const updateProfileAction = withServerAction(
-    async (formData: FormData) => {
-        try {
-            const raw = Object.fromEntries(formData)
+  async (formData: FormData) => {
 
-            const { full_name, phone } = await profileSchema.validate(raw, {
-                abortEarly: false,
-                stripUnknown: true,
-            })
+    const lang = await getLangServerSide()
+    const cookieStore = await cookies()
+    const routes = createRouter(lang)
+    const i18n = await initI18n(lang)
+    const t = i18n.getFixedT(lang)
 
-            const lang = await getLangServerSide()
-            const { profileService } = await profileModule(lang)
-            const { sessionService } = await sessionModule(lang)
+    const {
+      profileService,
+      sessionService
+    } = await appModule(lang, { cookies: cookieStore })
 
-            const id = await sessionService.getCurrentUserId()
+    const raw = Object.fromEntries(formData)
 
-            if (!id) {
-                throw new AppError("No autorizado", "RLS", 403)
-            }
+    const { full_name, phone } = await profileSchema.validate(raw, {
+      abortEarly: false,
+      stripUnknown: true,
+    })
 
-            await profileService.updateProfile(id, {
-                full_name,
-                phone,
-            })
+    const id = await sessionService.getCurrentUserId()
 
-            revalidatePath("/dashboard/account")
+    if (!id) throw new Error(t('exceptions:unauthorized'))
 
+    await profileService.updateProfile(id, {
+      full_name,
+      phone,
+    })
 
-        } catch (error) {
-            handleError(error)
-        }
-    }
+    revalidatePath(routes.profile())
+  }
 )
 
 export const uploadAvatarAction = withServerAction(
-    async (formData: FormData) => {
-        try {
-            const raw = Object.fromEntries(formData)
+  async (formData: FormData) => {
+    const lang = await getLangServerSide()
+    const cookieStore = await cookies()
+    const routes = createRouter(lang)
+    const i18n = await initI18n(lang)
+    const t = i18n.getFixedT(lang)
 
-            const { avatar } = await profileAvatarSchema.validate(raw, {
-                abortEarly: false,
-                stripUnknown: true,
-            })
+    const {
+      profileService,
+      sessionService
+    } = await appModule(lang, { cookies: cookieStore })
 
-            const lang = await getLangServerSide()
-            const { profileService } = await profileModule(lang)
-            const { sessionService } = await sessionModule(lang)
+    const raw = Object.fromEntries(formData)
 
-            const id = await sessionService.getCurrentUserId()
+    const { avatar } = await profileAvatarSchema.validate(raw, {
+      abortEarly: false,
+      stripUnknown: true,
+    })
 
-            if (!id) {
-                throw new AppError("No autorizado", "RLS", 403)
-            }
-            const url = await profileService.uploadAvatar(id, avatar)
-            await profileService.updatePathAvatarProfile(id, url)
+    const id = await sessionService.getCurrentUserId()
 
-            revalidatePath("/dashboard/account")
+    if (!id) throw new Error(t('exceptions:unauthorized'))
 
-        } catch (error) {
-            handleError(error)
-        }
-    }
+    const url = await profileService.uploadAvatar(id, avatar)
+    await profileService.updatePathAvatarProfile(id, url)
+
+    revalidatePath(routes.profile())
+  }
 )

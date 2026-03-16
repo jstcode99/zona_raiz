@@ -32,9 +32,6 @@ export const FeaturedListingCard = ({ listing }: FeaturedListingCardProps) => {
     const images = property.property_images || [];
     const mainImage = images.length > 0 ? images[0].public_url : null;
 
-    console.log(mainImage);
-    
-
     return (
         <Card
             className="overflow-hidden cursor-pointer pt-0 card-hover active:scale-[0.99] transition-all min-w-70 max-w-70"

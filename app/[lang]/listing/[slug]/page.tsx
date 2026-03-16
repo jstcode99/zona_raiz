@@ -1,15 +1,18 @@
-import { listingModule } from "@/application/modules/listing.module"
 import { ListingDetail } from "@/features/listing/listing-detail"
 import { notFound } from "next/navigation"
 import { Metadata } from "next"
+import { appModule } from "@/application/modules/app.module"
+import { Lang } from "@/i18n/settings"
+import { cookies } from "next/headers"
 
-interface ListingPageProps {
-  params: Promise<{ slug: string }>
+interface props {
+  params: Promise<{ slug: string, lang: Lang }>
 }
 
-export async function generateMetadata({ params }: ListingPageProps): Promise<Metadata> {
-  const { slug } = await params
-  const { listingService } = await listingModule()
+export async function generateMetadata({ params }: props): Promise<Metadata> {
+  const cookieStore = await cookies()
+  const { slug, lang } = await params
+  const { listingService } = await appModule(lang, { cookies: cookieStore })
   const listing = await listingService.getCachedBySlug(slug)
 
   if (!listing) {
@@ -21,7 +24,7 @@ export async function generateMetadata({ params }: ListingPageProps): Promise<Me
   const property = listing.property
   const firstImage = property.property_images?.[0]?.public_url
   const title = listing.meta_title || `${property.title} - ${listing.listing_type === "rent" ? "Renta" : "Venta"} en ${property.city}`
-  const description = listing.meta_description || 
+  const description = listing.meta_description ||
     `${property.title} en ${property.city}, ${property.state}. ${property.bedrooms ? `${property.bedrooms} dormitorios` : ""} ${property.bathrooms ? `${property.bathrooms} baños` : ""} ${property.total_area ? `${property.total_area}m²` : ""}. ${listing.currency} ${listing.price.toLocaleString("es-ES")}`
 
   return {
@@ -54,9 +57,10 @@ export async function generateMetadata({ params }: ListingPageProps): Promise<Me
   }
 }
 
-export default async function ListingPage({ params }: ListingPageProps) {
-  const { slug } = await params
-  const { listingService } = await listingModule()
+export default async function page({ params }: props) {
+  const cookieStore = await cookies()
+  const { slug, lang } = await params
+  const { listingService } = await appModule(lang, { cookies: cookieStore })
   const listing = await listingService.getCachedBySlug(slug)
 
   if (!listing) {

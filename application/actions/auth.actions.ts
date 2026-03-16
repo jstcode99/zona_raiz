@@ -1,13 +1,14 @@
 "use server"
 
-import { cookies } from "next/headers"
 import { handleError } from "@/application/errors/handle-error"
 import { otpSchema, signInSchema, signUpSchema } from "../validation/auth.validation"
 import { withServerAction } from "@/shared/hooks/with-server-action"
-import { authModule } from "../modules/auth.module"
-import { CACHE_TAGS, COOKIE_NAMES, COOKIE_OPTIONS } from "@/infrastructure/config/constants"
-import { revalidateTag } from "next/cache"
+import { COOKIE_NAMES } from "@/infrastructure/config/constants"
+import { revalidatePath } from "next/cache"
 import { getLangServerSide } from "@/shared/utils/lang"
+import { createRouter } from "@/i18n/router"
+import { cookies } from "next/headers"
+import { appModule } from "../modules/app.module"
 
 function formDataToObject(fd: FormData) {
   return Object.fromEntries(fd)
@@ -15,78 +16,62 @@ function formDataToObject(fd: FormData) {
 
 export const signUpAction = withServerAction(
   async (formData: FormData) => {
-    try {
-      const input = await signUpSchema.validate(
-        formDataToObject(formData),
-        { abortEarly: false }
-      )
-      const lang = await getLangServerSide()
-      const { authService } = await authModule(lang)
-      await authService.signUp(input)
+    const input = await signUpSchema.validate(
+      formDataToObject(formData),
+      { abortEarly: false }
+    )
+    const lang = await getLangServerSide()
+    const cookieStore = await cookies()
+    const { authService } = await appModule(lang, { cookies: cookieStore })
 
-    } catch (error) {
-      handleError(error)
-    }
+    await authService.signUp(input)
   }
 )
 
 export const signInAction = withServerAction(
   async (formData: FormData) => {
-    try {
-      const input = await signInSchema.validate(
-        formDataToObject(formData),
-        { abortEarly: false }
-      )
+    const input = await signInSchema.validate(
+      formDataToObject(formData),
+      { abortEarly: false }
+    )
 
-      const lang = await getLangServerSide()
-      const { authService } = await authModule(lang)
-      const role = await authService.signIn(input.email, input.password)
+    const lang = await getLangServerSide()
+    const cookieStore = await cookies()
+    const { authService, cookiesService } = await appModule(lang, { cookies: cookieStore })
 
-      const cookieStore = await cookies()
-      cookieStore.set(COOKIE_NAMES.ROLE, role, COOKIE_OPTIONS)
+    const role = await authService.signIn(input.email, input.password)
 
-    } catch (error) {
-      handleError(error)
-    }
+    cookiesService.setSession(COOKIE_NAMES.ROLE, role)
   }
 )
 
 export const signOutAction = withServerAction(
   async () => {
-    try {
-      const cookieStore = await cookies()
+    const lang = await getLangServerSide()
+    const routes = createRouter(lang)
+    const cookieStore = await cookies()
 
-      const lang = await getLangServerSide()
-      const { authService } = await authModule(lang)
-      await authService.signOut()
+    const { authService, cookiesService } = await appModule(lang, { cookies: cookieStore })
 
-      cookieStore.delete(COOKIE_NAMES.ROLE)
-      cookieStore.delete(COOKIE_NAMES.REAL_ESTATE)
-      cookieStore.delete(COOKIE_NAMES.REAL_ESTATE_ROLE)
+    await authService.signOut()
 
-      revalidateTag(CACHE_TAGS.AUTH.USER, {})
-      revalidateTag(CACHE_TAGS.AUTH.SESSION, {})
-
-    } catch (error) {
-      handleError(error)
-    }
+    cookiesService.clearSession()
+    revalidatePath(routes.dashboard());
   }
 )
 
 
 export const sentOtpAction = withServerAction(
   async (formData: FormData) => {
-    try {
-      const input = await otpSchema.validate(
-        formDataToObject(formData),
-        { abortEarly: false }
-      )
-      const lang = await getLangServerSide()
-      const { authService } = await authModule(lang)
-      await authService.sendOtp(input.email)
+    const input = await otpSchema.validate(
+      formDataToObject(formData),
+      { abortEarly: false }
+    )
 
-    } catch (error) {
-      handleError(error)
-    }
+    const lang = await getLangServerSide()
+    const cookieStore = await cookies()
+    const { authService } = await appModule(lang, { cookies: cookieStore })
+
+    await authService.sendOtp(input.email)
   }
 )

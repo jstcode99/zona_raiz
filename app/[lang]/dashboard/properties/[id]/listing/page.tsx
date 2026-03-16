@@ -2,24 +2,31 @@ import { encodedRedirect } from "@/shared/redirect";
 import { Card, CardContent } from '@/components/ui/card'
 import { ListingForm } from "@/features/listing/listing-form";
 import { PropertyCard } from "@/features/properties/property-card";
-import { propertyImageModule } from "@/application/modules/property-image.module";
-import { propertyModule } from "@/application/modules/property.module";
+import { Lang } from "@/i18n/settings";
+import { initI18n } from "@/i18n/server";
+import { cookies } from "next/headers";
+import { createRouter } from "@/i18n/router";
+import { appModule } from "@/application/modules/app.module";
 
-export default async function page({
-  params,
-}: {
-  params: Promise<{ id: string }>
-}) {
-  const { id } = await params;
+interface props {
+  params: Promise<{ lang: Lang, id: string }>
+}
 
-  const { propertyService } = await propertyModule()
-  const { propertyImageService } = await propertyImageModule()
+export default async function page({ params }: props) {
+  const { lang, id } = await params;
+  const i18n = await initI18n(lang)
+  const t = i18n.getFixedT(lang)
+  const cookieStore = await cookies()
+  const routes = createRouter(lang)
+  const { propertyService, propertyImageService } = await appModule(lang, { cookies: cookieStore })
+
   const property = await propertyService.getCachedById(id)
-  const images = await propertyImageService.getCachedByPropertyId(id)
 
   if (!property) {
-    return encodedRedirect('error', '/auth/sign-in', 'No se pudo cargar la propiedad')
+    encodedRedirect('error', routes.properties(), t("exceptions:data_not_found"))
   }
+
+  const images = await propertyImageService.getCachedByPropertyId(id)
 
   return (
     <div className="mx-auto px-4 sm:px-6 lg:px-2 space-y-2 lg:max-w-5xl w-full">

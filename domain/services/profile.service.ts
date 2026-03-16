@@ -71,6 +71,10 @@ export class ProfileService {
     return this.profilePort.count(filters);
   }
 
+  getAgentRoleInRealEstate(userId: string, realEstateId: string): Promise<{ role: string } | null> {
+    return this.profilePort.getAgentRoleInRealEstate(userId, realEstateId);
+  }
+
   getCachedCount(filters?: { start_date?: string; end_date?: string; real_estate_id?: string }) {
     const cacheKey = filters ? `profile:count:${JSON.stringify(filters)}` : "profile:count";
 
@@ -83,7 +87,7 @@ export class ProfileService {
       }
     )();
   }
-  
+
   getCachedCountWithDateRange(startDate: string, endDate: string) {
     const cacheKey = `profile:count:date-range:${startDate}:${endDate}`;
 

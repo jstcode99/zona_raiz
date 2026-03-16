@@ -19,6 +19,17 @@ export function mapInquiryRowToEntity(row: any): InquiryEntity {
     status: row.status as InquiryStatus,
     notes: row.notes,
     assigned_to: row.assigned_to,
+    listing: row.listing?.property ? {
+      id: row.listing.id,
+      title: row.listing.property.title,
+      slug: row.listing.property.slug
+    } : undefined,
+    assigned_to_profile: row.assigned_to_profile?.profile ? {
+      id: row.assigned_to_profile.profile.id,
+      full_name: row.assigned_to_profile.profile.full_name,
+      avatar_url: row.assigned_to_profile.profile.avatar_url,
+      email: row.assigned_to_profile.profile.email
+    } : undefined,
     created_at: row.created_at,
     contacted_at: row.contacted_at,
     converted_at: row.converted_at,

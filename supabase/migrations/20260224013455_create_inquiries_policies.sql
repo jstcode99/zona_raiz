@@ -12,11 +12,9 @@ create policy "Inquiries: viewable by assigned agents"
       and a.profile_id = auth.uid()
     ) or
     exists (
-      select 1 from inquiries i
-      where i.id = inquiries.id
-      and i.assigned_to in (
-        select id from real_estate_agents where profile_id = auth.uid()
-      )
+      select 1 from real_estate_agents
+      where id = inquiries.assigned_to
+      and profile_id = auth.uid()
     )
   );
 

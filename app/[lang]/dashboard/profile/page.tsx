@@ -1,20 +1,27 @@
 import { encodedRedirect } from "@/shared/redirect"
 import AuthBackgroundShape from '@/assets/svg/background-shape'
 import AccountSectionCard from "@/features/profile/profile-section-card"
-import { sessionModule } from "@/application/modules/session.module";
 import { Lang } from "@/i18n/settings";
+import { initI18n } from "@/i18n/server";
+import { cookies } from "next/headers";
+import { createRouter } from "@/i18n/router";
+import { appModule } from "@/application/modules/app.module";
 
-export default async function page({
-  params
-}: {
-  params: { lang: Lang }
-}) {
+interface props {
+  params: Promise<{ lang: Lang }>
+}
+
+export default async function page({ params }: props) {
   const { lang } = await params;
-  const { sessionService } = await sessionModule(lang)
+  const i18n = await initI18n(lang)
+  const t = i18n.getFixedT(lang)
+  const cookieStore = await cookies()
+  const routes = createRouter(lang)
+  const { sessionService } = await appModule(lang, { cookies: cookieStore })
   const profile = await sessionService.getCachedCurrentUser();
 
   if (!profile) {
-    return encodedRedirect('error', '/auth/sign-in', 'No se pudo cargar el perfil')
+    encodedRedirect('error', routes.signin(), t("exceptions:data_not_found"))
   }
 
   return (

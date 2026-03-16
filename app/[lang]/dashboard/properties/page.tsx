@@ -7,7 +7,6 @@ import { PropertyFiltersForm } from "@/features/properties/property-form-filters
 import { Button } from "@/components/ui/button";
 import { IconFilter, IconPlus } from "@tabler/icons-react";
 import Link from "next/link";
-import { COOKIE_NAMES } from "@/infrastructure/config/constants";
 import { PropertySearchFormInput } from "@/application/validation/property-search.schema";
 import {
   Collapsible,
@@ -16,28 +15,33 @@ import {
 } from "@/components/ui/collapsible"
 import { Separator } from "@/components/ui/separator";
 import { cookies } from "next/headers";
-import { propertyModule } from "@/application/modules/property.module";
 import { Lang } from "@/i18n/settings";
 import { createRouter } from "@/i18n/router";
+import { initI18n } from "@/i18n/server";
+import { appModule } from "@/application/modules/app.module";
+import { encodedRedirect } from "@/shared/redirect";
 
-export default async function page({
-  searchParams,
-  params
-}: {
-  searchParams: Promise<PropertySearchFormInput>,
-  params: { lang: Lang }
-}) {
-  const filters = await searchParams;
+interface props {
+  params: Promise<{ lang: Lang }>
+  searchParams: Promise<PropertySearchFormInput>
+}
+
+export default async function page({ params, searchParams }: props) {
   const { lang } = await params;
-
+  const filters = await searchParams;
+  const i18n = await initI18n(lang)
+  const t = i18n.getFixedT(lang)
   const cookieStore = await cookies()
   const routes = createRouter(lang)
+  const { cookiesService, propertyService } = await appModule(lang, { cookies: cookieStore })
 
-  const real_estate_id = cookieStore
-    .get(COOKIE_NAMES.REAL_ESTATE)?.value as string
+  const realEstateId = await cookiesService.getRealEstateId()
 
-  const { propertyService } = await propertyModule()
-  const properties = propertyService.getCachedAll({ ...filters, real_estate_id })
+  if (!realEstateId) {
+    encodedRedirect('error', routes.onboarding(), t("exceptions:data_not_found"))
+  }
+
+  const properties = propertyService.getCachedAll({ ...filters, realEstateId })
 
   return (
     <main className="flex-col items-center justify-center space-y-4 px-4 lg:px-6">

@@ -1,4 +1,5 @@
 import { ProfileEntity, EUserRole } from "../entities/profile.entity"
+import { EAgentRole } from "../entities/real-estate-agent.entity"
 
 export interface ProfilePort {
   searchProfilesByEmail(email: string): Promise<ProfileEntity[]>
@@ -6,6 +7,8 @@ export interface ProfilePort {
   getRoleByUserId(userId: string): Promise<string>
 
   getProfileByUserId(userId: string): Promise<ProfileEntity>
+
+  getAgentRoleInRealEstate(userId: string, realEstateId: string): Promise<{ role: EAgentRole } | null>
 
   updateProfile(userId: string, data: Partial<ProfileEntity>): Promise<void>
 

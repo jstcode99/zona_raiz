@@ -9,7 +9,16 @@ export class SupabaseInquiryAdapter implements InquiryPort {
   async all(filters?: any): Promise<InquiryEntity[]> {
     let query = this.supabase
       .from("inquiries")
-      .select("*")
+      .select(`
+        *,
+        listing:listings (
+          id,
+          property:properties (id, title, slug)
+        ),
+        assigned_to_profile:real_estate_agents (
+          profile:profiles (id, full_name, avatar_url, email)
+        )
+      `)
       .order("created_at", { ascending: false });
 
     if (filters?.listing_id) {

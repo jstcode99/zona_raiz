@@ -1,74 +1,70 @@
 "use server"
 
 import { revalidatePath } from "next/cache"
-import { propertyImageModule } from "../modules/property-image.module"
 import { propertyImageSchema, propertyImageUpdateSchema } from "../validation/property-image.validation"
-import { propertyModule } from "../modules/property.module"
 import sizeOf from "image-size"
 import { pickDefined } from "@/lib/utils"
 import { withServerAction } from "@/shared/hooks/with-server-action"
-import { ROUTES } from "@/infrastructure/config/routes"
-import { getRoute } from "@/i18n/get-route"
 import { getLangServerSide } from "@/shared/utils/lang"
+import { cookies } from "next/headers"
+import { createRouter } from "@/i18n/router"
+import { initI18n } from "@/i18n/server"
+import { appModule } from "../modules/app.module"
 
 export const createPropertyImageAction = withServerAction(
   async (
     propertyId: string,
     formData: FormData
   ) => {
-    try {
-      const lang = await getLangServerSide()
-      const { propertyImageService } = await propertyImageModule(lang)
+    const lang = await getLangServerSide()
+    const cookieStore = await cookies()
+    const routes = createRouter(lang)
+    const i18n = await initI18n(lang)
+    const t = i18n.getFixedT(lang)
 
-      const raw = Object.fromEntries(formData)
-      const validated = await propertyImageSchema.validate(raw, {
-        abortEarly: false,
-        stripUnknown: true
-      })
+    const { propertyImageService } = await appModule(lang, { cookies: cookieStore })
 
-      const { file } = validated
+    const raw = Object.fromEntries(formData)
+    const validated = await propertyImageSchema.validate(raw, {
+      abortEarly: false,
+      stripUnknown: true
+    })
 
-      const buffer = Buffer.from(await validated?.file.arrayBuffer())
-      const dimensions = sizeOf(buffer)
+    const { file } = validated
 
-      const width = dimensions.width ?? 0
-      const height = dimensions.height ?? 0
+    const buffer = Buffer.from(await validated?.file.arrayBuffer())
+    const dimensions = sizeOf(buffer)
 
-      if (width < 400 || height < 300) {
-        throw new Error("La imagen debe tener mínimo 400x300 píxeles")
-      }
+    const width = dimensions.width ?? 0
+    const height = dimensions.height ?? 0
 
-      const propertyImage = await propertyImageService.create(propertyId, {
-        filename: file.name,
-        file_size: file.size,
-        mime_type: file.type,
-        width: dimensions.width ?? 0,
-        height: dimensions.height ?? 0,
-        display_order: (validated.display_order ?? 0),
-        is_primary: validated.is_primary,
-        alt_text: validated.alt_text ?? file.name,
-        caption: validated.caption ?? file.name
-      })
+    if (width < 400 || height < 300) throw new Error(t('exceptions:max_size_pixels'))
 
-      const slug = file.name
-        .toLowerCase()
-        .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "")
-        .replace(/[^a-z0-9]+/g, "-")
-        .replace(/^-|-$/g, "")
+    const propertyImage = await propertyImageService.create(propertyId, {
+      filename: file.name,
+      file_size: file.size,
+      mime_type: file.type,
+      width: dimensions.width ?? 0,
+      height: dimensions.height ?? 0,
+      display_order: (validated.display_order ?? 0),
+      is_primary: validated.is_primary,
+      alt_text: validated.alt_text ?? file.name,
+      caption: validated.caption ?? file.name
+    })
 
-      const url = await propertyImageService.uploadFile(propertyId, slug, file)
+    const slug = file.name
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-|-$/g, "")
 
-      await propertyImageService.updatePath(propertyImage.id ?? "", url)
+    const url = await propertyImageService.uploadFile(propertyId, slug, file)
 
-      revalidatePath(`${ROUTES.properties.es}`)
-      revalidatePath(`${ROUTES.properties.en}`)
-      revalidatePath(`${getRoute('property', 'es', { propertyId })}`)
-      revalidatePath(`${getRoute('property', 'en', { propertyId })}`)
+    await propertyImageService.updatePath(propertyImage.id ?? "", url)
 
-    } catch (error) {
-      throw new Error("No se pudo crear recurso de la propiedad")
-    }
+    revalidatePath(routes.properties())
+    revalidatePath(routes.property(propertyId))
   })
 
 /**
@@ -79,43 +75,43 @@ export const updatePropertyImageAction = withServerAction(
     id: string,
     formData: FormData
   ) => {
-    try {
-      const lang = await getLangServerSide()
-      const { propertyImageService } = await propertyImageModule(lang)
+    const lang = await getLangServerSide()
+    const cookieStore = await cookies()
+    const routes = createRouter(lang)
 
-      const raw = Object.fromEntries(formData)
+    const { propertyImageService } = await appModule(lang, { cookies: cookieStore })
 
-      const validated = await propertyImageUpdateSchema.validate(raw, {
-        abortEarly: false,
-        stripUnknown: true,
-      })
+    const raw = Object.fromEntries(formData)
 
-      const payload = pickDefined(validated)
+    const validated = await propertyImageUpdateSchema.validate(raw, {
+      abortEarly: false,
+      stripUnknown: true,
+    })
 
-      await propertyImageService.update(id, payload)
+    const payload = pickDefined(validated)
 
-      revalidatePath(`${ROUTES.properties.es}`)
-      revalidatePath(`${ROUTES.properties.en}`)
-      revalidatePath(`${getRoute('property', 'es', { id })}`)
-      revalidatePath(`${getRoute('property', 'en', { id })}`)
-      
-    } catch (error) {
-      throw new Error("No se pudo actualizar el recurso de la propiedad")
-    }
+    await propertyImageService.update(id, payload)
+
+    revalidatePath(routes.properties())
+    revalidatePath(routes.property(id))
   })
 
 /**
  * DELETE
  */
-export async function deletePropertyImageAction(id: string) {
-  try {
+export const deletePropertyImageAction = withServerAction(
+  async (
+    id: string,
+  ) => {
     const lang = await getLangServerSide()
-    const { propertyImageService } = await propertyImageModule(lang)
+    const cookieStore = await cookies()
+    const routes = createRouter(lang)
+
+    const { propertyImageService } = await appModule(lang, { cookies: cookieStore })
+    
     await propertyImageService.delete(id)
 
-    revalidatePath(`/es${ROUTES.dashboard.es}`)
-    revalidatePath(`/en${ROUTES.dashboard.en}`)
-  } catch (error) {
-    throw new Error("No se pudo eliminar la propiedad")
-  }
-}
+    revalidatePath(routes.dashboard())
+    revalidatePath(routes.properties())
+    revalidatePath(routes.property(id))
+  })

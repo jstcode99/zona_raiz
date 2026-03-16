@@ -2,12 +2,6 @@ import { DashboardStats } from "@/features/dashboard/dashboard-stats"
 import { PropertyTypesChart } from "@/features/dashboard/property-types-chart"
 import { ListingsByStatusChart, ListingsByStatusData } from "@/features/dashboard/listings-by-status-chart"
 import { cookies } from "next/headers";
-import { COOKIE_NAMES } from "@/infrastructure/config/constants";
-import { propertyModule } from "@/application/modules/property.module";
-import { listingModule } from "@/application/modules/listing.module";
-import { profileModule } from "@/application/modules/profile.module";
-import { realEstateModule } from "@/application/modules/real-estate.module";
-import { agentModule } from "@/application/modules/agent.module";
 import { AgentList } from "@/features/agents/agent-list";
 import { SkeletonAgentList } from "@/features/agents/skeleton-agent-list";
 import { Suspense } from "react";
@@ -25,6 +19,8 @@ import { getTranslation } from "@/i18n/server";
 import SimpleListingTable from "@/features/listing/simple-listing-table";
 import { SimpleListingColumns } from "@/features/listing/simple-listing-columns";
 import { Spinner } from "@/components/ui/spinner";
+import { createRouter } from "@/i18n/router";
+import { appModule } from "@/application/modules/app.module";
 
 function getMonthDateRange(date: Date): { start_date: string; end_date: string } {
   const year = date.getFullYear();
@@ -44,58 +40,62 @@ function calculatePercentageChange(current: number, previous: number): number {
 }
 
 
-export default async function DashboardPage({
-  params
-}: {
-  params: { lang: Lang }
-}) {
-  const cookieStore = await cookies()
-  const real_estate_id = cookieStore.get(COOKIE_NAMES.REAL_ESTATE)?.value as string
+interface props {
+  params: Promise<{ lang: Lang }>
+}
+
+export default async function page({ params }: props) {
   const { lang } = await params;
   const { t } = await getTranslation(lang, ['sections']);
-  const { propertyService } = await propertyModule()
+  const routes = createRouter(lang)
+  const cookieStore = await cookies()
 
-  const { listingService } = await listingModule()
+  const {
+    cookiesService,
+    propertyService,
+    listingService,
+    profileService,
+    realEstateService,
+    agentService
+  } = await appModule(lang, { cookies: cookieStore })
 
-  const { profileService } = await profileModule()
 
-  const { realEstateService } = await realEstateModule()
+  const realEstateId = await cookiesService.getRealEstateId() as string
 
-  const { agentService } = await agentModule()
 
   const now = new Date()
   const currentMonthRange = getMonthDateRange(now)
   const previousMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1)
   const previousMonthRange = getMonthDateRange(previousMonth)
 
-  const currentMonthProperties = real_estate_id
-    ? await propertyService.getCachedCountByRealEstateWithDateRange(real_estate_id, currentMonthRange.start_date, currentMonthRange.end_date)
+  const currentMonthProperties = realEstateId
+    ? await propertyService.getCachedCountByRealEstateWithDateRange(realEstateId, currentMonthRange.start_date, currentMonthRange.end_date)
     : await propertyService.getCachedCountWithDateRange(currentMonthRange.start_date, currentMonthRange.end_date)
 
-  const previousMonthProperties = real_estate_id
-    ? await propertyService.getCachedCountByRealEstateWithDateRange(real_estate_id, previousMonthRange.start_date, previousMonthRange.end_date)
+  const previousMonthProperties = realEstateId
+    ? await propertyService.getCachedCountByRealEstateWithDateRange(realEstateId, previousMonthRange.start_date, previousMonthRange.end_date)
     : await propertyService.getCachedCountWithDateRange(previousMonthRange.start_date, previousMonthRange.end_date)
 
   const activeProperties = currentMonthProperties
   const activePropertiesChange = calculatePercentageChange(currentMonthProperties, previousMonthProperties)
 
-  const currentMonthListings = real_estate_id
-    ? await listingService.getCachedCountByRealEstateWithDateRange(real_estate_id, currentMonthRange.start_date, currentMonthRange.end_date)
+  const currentMonthListings = realEstateId
+    ? await listingService.getCachedCountByRealEstateWithDateRange(realEstateId, currentMonthRange.start_date, currentMonthRange.end_date)
     : await listingService.getCachedCountWithDateRange(currentMonthRange.start_date, currentMonthRange.end_date)
 
-  const previousMonthListings = real_estate_id
-    ? await listingService.getCachedCountByRealEstateWithDateRange(real_estate_id, previousMonthRange.start_date, previousMonthRange.end_date)
+  const previousMonthListings = realEstateId
+    ? await listingService.getCachedCountByRealEstateWithDateRange(realEstateId, previousMonthRange.start_date, previousMonthRange.end_date)
     : await listingService.getCachedCountWithDateRange(previousMonthRange.start_date, previousMonthRange.end_date)
 
   const totalListings = currentMonthListings
   const totalListingsChange = calculatePercentageChange(currentMonthListings, previousMonthListings)
 
-  const currentMonthVisits = real_estate_id
-    ? await listingService.getCachedCountByRealEstateWithDateRange(real_estate_id, currentMonthRange.start_date, currentMonthRange.end_date)
+  const currentMonthVisits = realEstateId
+    ? await listingService.getCachedCountByRealEstateWithDateRange(realEstateId, currentMonthRange.start_date, currentMonthRange.end_date)
     : await listingService.getCachedCountWithDateRange(currentMonthRange.start_date, currentMonthRange.end_date)
 
-  const previousMonthVisits = real_estate_id
-    ? await listingService.getCachedCountByRealEstateWithDateRange(real_estate_id, previousMonthRange.start_date, previousMonthRange.end_date)
+  const previousMonthVisits = realEstateId
+    ? await listingService.getCachedCountByRealEstateWithDateRange(realEstateId, previousMonthRange.start_date, previousMonthRange.end_date)
     : await listingService.getCachedCountWithDateRange(previousMonthRange.start_date, previousMonthRange.end_date)
 
   const visits = currentMonthVisits
@@ -113,14 +113,14 @@ export default async function DashboardPage({
   const totalRealEstates = currentMonthRealEstates
   const totalRealEstatesChange = calculatePercentageChange(currentMonthRealEstates, previousMonthRealEstates)
 
-  const propertyTypesData = await propertyService.getCachedCountByTypes(real_estate_id)
+  const propertyTypesData = await propertyService.getCachedCountByTypes(realEstateId)
 
-  const agents = await agentService.getCachedListAgents(real_estate_id)
+  const agents = await agentService.getCachedListAgents(realEstateId)
 
-  const featuredListings = await listingService.getCachedFeatured(10, real_estate_id)
+  const featuredListings = await listingService.getCachedFeatured(10, realEstateId)
 
   const currentYear = now.getFullYear()
-  const listingsByStatus = await listingService.getCachedCountByStatusAndMonth(currentYear, { real_estate_id })
+  const listingsByStatus = await listingService.getCachedCountByStatusAndMonth(currentYear, { realEstateId })
   const listings = listingService.getCachedSimplePublished(10);
 
   return (
@@ -157,12 +157,12 @@ export default async function DashboardPage({
                     {t('sections:agents')}
                   </CardTitle>
                   <CardAction>
-                    <AddAgentModal real_estate_id={real_estate_id} />
+                    <AddAgentModal realEstateId={realEstateId} />
                   </CardAction>
                 </CardHeader>
                 <CardContent className="border-t flex-col items-start text-sm">
                   <AgentList
-                    real_estate_id={real_estate_id}
+                    realEstateId={realEstateId}
                     agents={agents}
                   />
                 </CardContent>
@@ -184,8 +184,7 @@ export default async function DashboardPage({
             <Card>
               <CardContent>
                 <div className="p-4 border-b">
-                  <h1 className="text-lg font-semibold">Últimas 10 Propiedades Publicadas</h1>
-                  <p className="text-sm text-muted-foreground">Tabla simple con agente asignado</p>
+                  <h1 className="text-lg font-semibold">{t('sections:last_properties_publisheds')}</h1>
                 </div>
                 <Suspense fallback={<Spinner />}>
                   <SimpleListingTable listings={listings} columns={SimpleListingColumns} />

@@ -13,10 +13,10 @@ import { AddAgentForm } from '@/features/agents/add-agent-form'
 import { IconPlus } from '@tabler/icons-react'
 
 interface AddAgentModalProps {
-  real_estate_id: string
+  realEstateId: string
 }
 
-export function AddAgentModal({ real_estate_id }: AddAgentModalProps) {
+export function AddAgentModal({ realEstateId }: AddAgentModalProps) {
   const [open, setOpen] = useState(false)
 
   return (
@@ -27,7 +27,7 @@ export function AddAgentModal({ real_estate_id }: AddAgentModalProps) {
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-104">
-        <AddAgentForm real_estate_id={real_estate_id} />
+        <AddAgentForm realEstateId={realEstateId} />
       </DialogContent>
     </Dialog>
   )

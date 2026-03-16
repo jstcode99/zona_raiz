@@ -17,17 +17,17 @@ import { addAgentAction } from "@/application/actions/agent.actions"
 import { agentToggleFormInput, agentToggleSchema } from "@/application/validation/agent.validation"
 
 interface Props {
-  real_estate_id: string
+  realEstateId: string
 }
 export const AddAgentForm = ({
-  real_estate_id
+  realEstateId
 }: Props) => {
   const { t } = useTranslation()
 
   const form = useForm<agentToggleFormInput>({
     resolver: yupResolver(agentToggleSchema),
     defaultValues: {
-      real_estate_id: real_estate_id,
+      real_estate_id: realEstateId,
       profile_id: ''
     },
     mode: "onBlur", // Validación al perder foco

@@ -21,6 +21,21 @@ export interface InquiryEntity {
   notes?: string | null;
   assigned_to?: string | null;
 
+  // Relaciones (joins)
+  assigned_to_profile?: {
+    id: string;
+    full_name: string | null;
+    avatar_url: string | null;
+    email: string | null;
+  } | null;
+
+  listing?: {
+    id: string;
+    title: string | null;
+    slug: string | null;
+    real_estate_id: string;
+  } | undefined;
+
   created_at: string;
   contacted_at?: string | null;
   converted_at?: string | null;

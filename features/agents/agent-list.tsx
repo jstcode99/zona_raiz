@@ -20,15 +20,15 @@ import { useTranslation } from "react-i18next"
 
 interface AgentListProps {
   agents: ProfileEntity[],
-  real_estate_id: string
+  realEstateId: string
 }
-export const AgentList = ({ agents, real_estate_id }: AgentListProps) => {
+export const AgentList = ({ agents, realEstateId }: AgentListProps) => {
   const { t } = useTranslation()
   const [isPending, startTransition] = useTransition()
 
   const handleRemove = ((agent_id: string) => {
     const formData = new FormData()
-    formData.append('real_estate_id', real_estate_id)
+    formData.append('real_estate_id', realEstateId)
     formData.append('agent_id', agent_id)
     handleSignOut(formData)
   })

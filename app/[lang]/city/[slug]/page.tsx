@@ -1,13 +1,14 @@
 import { redirect } from "next/navigation"
-import { ROUTES } from "@/infrastructure/config/constants"
+import { ROUTES } from "@/infrastructure/config/routes"
+import { Lang } from "@/i18n/settings"
 
-interface CiudadPageProps {
-  params: Promise<{ slug: string }>
+interface props {
+  params: Promise<{ slug: string, lang: Lang }>
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }
 
-export default async function CiudadPage({ params, searchParams }: CiudadPageProps) {
-  const { slug } = await params
+export default async function page({ params, searchParams }: props) {
+  const { slug, lang } = await params
   const sp = await searchParams
   
   const queryParams = new URLSearchParams()
@@ -25,7 +26,7 @@ export default async function CiudadPage({ params, searchParams }: CiudadPagePro
   }
 
   const queryString = queryParams.toString()
-  const redirectUrl = queryString ? `${ROUTES.SEARCH}?${queryString}` : ROUTES.SEARCH
+  const redirectUrl = queryString ? `${ROUTES.home[lang]}?${queryString}` : ROUTES.home[lang]
   
   redirect(redirectUrl)
 }

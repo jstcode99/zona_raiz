@@ -4,7 +4,6 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Button } from "@/components/ui/button";
 import { IconFilter, IconPlus } from "@tabler/icons-react";
 import Link from "next/link";
-import { ROUTES } from "@/infrastructure/config/constants";
 import { RealEstateFiltersForm } from "@/features/real-states/real-estate-form-filters";
 import RealEstatesTable from "@/features/real-states/real-estate-table";
 import { RealEstateFilters } from "@/domain/entities/real-estate.entity";
@@ -15,16 +14,26 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible"
 import { Separator } from "@/components/ui/separator";
-import { realEstateModule } from "@/application/modules/real-estate.module";
+import { Lang } from "@/i18n/settings";
+import { initI18n } from "@/i18n/server";
+import { cookies } from "next/headers";
+import { createRouter } from "@/i18n/router";
+import { appModule } from "@/application/modules/app.module";
 
-export default async function page({
-  searchParams,
-}: {
+interface props {
+  params: Promise<{ lang: Lang }>
   searchParams: Promise<RealEstateFilters>
-}) {
-  const filters = await searchParams;
+}
 
-  const { realEstateService } = await realEstateModule()
+export default async function page({ params, searchParams }: props) {
+  const { lang } = await params;
+  const filters = await searchParams;
+  const i18n = await initI18n(lang)
+  const t = i18n.getFixedT(lang)
+  const cookieStore = await cookies()
+  const routes = createRouter(lang)
+  const { realEstateService } = await appModule(lang, { cookies: cookieStore })
+
   const realEstates = realEstateService.getCachedAll(filters)
 
   return (
@@ -40,7 +49,7 @@ export default async function page({
               </Button>
             </CollapsibleTrigger>
             <Button asChild>
-              <Link href={`${ROUTES.DASHBOARD}/${ROUTES.REAL_ESTATES}/new`}>
+              <Link href={`${routes.realEstates()}/new`}>
                 <IconPlus />
               </Link>
             </Button>

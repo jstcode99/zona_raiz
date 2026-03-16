@@ -8,7 +8,6 @@ import { PropertyDetail } from "@/features/properties/property-details"
 import { MapPin, Share2, Heart, Eye, MessageCircle } from "lucide-react"
 import Link from "next/link"
 import { useState } from "react"
-import { ROUTES } from "@/infrastructure/config/constants"
 
 interface ListingDetailProps {
   listing: ListingEntity
@@ -24,7 +23,7 @@ export function ListingDetail({ listing }: ListingDetailProps) {
       {/* Header */}
       <div className="mb-6">
         <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
-          <Link href={ROUTES.SEARCH} className="hover:underline">
+          <Link href={``} className="hover:underline">
             Propiedades
           </Link>
           <span>/</span>

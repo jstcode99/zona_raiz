@@ -15,7 +15,6 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { EUserRole } from "@/domain/entities/profile.entity"
 import { UserEntity } from "@/domain/entities/user.entity"
-import { ROUTES } from "@/infrastructure/config/constants"
 import { deleteUserAction } from "@/application/actions/user.actions"
 import { useServerMutation } from "@/shared/hooks/use-server-mutation.hook"
 
@@ -55,7 +54,7 @@ function UserRowActions({ userId }: { userId: string }) {
       </DropdownMenuTrigger>
 
       <DropdownMenuContent align="end" className="w-36">
-        <Link href={`${ROUTES.DASHBOARD}${ROUTES.USERS}/${userId}`}>
+        <Link href={``}>
           <DropdownMenuItem>{t("words.edit") || "Edit"}</DropdownMenuItem>
         </Link>
 

@@ -6,11 +6,14 @@ import { EAgentRole } from "../entities/real-estate-agent.entity";
 import { ROUTES } from "@/infrastructure/config/routes";
 import { Lang } from "@/i18n/settings";
 import { createRouter } from "@/i18n/router";
+import { CookiesPort } from "../ports/cookies.port";
+import { EUserRole } from "../entities/profile.entity";
 
 export class SessionService {
   constructor(
     private sessionPort: SessionPort,
     private profiles: ProfilePort,
+    private cookiesPort: CookiesPort,
     private lang: Lang,
   ) { }
 
@@ -59,6 +62,13 @@ export class SessionService {
     )();
   }
 
+  async getCurrentUserAgentRole(realEstateId: string): Promise<EAgentRole | null> {
+    const userId = await this.sessionPort.getCurrentUserId()
+    if (!userId) return null
+    const agentRole = await this.profiles.getAgentRoleInRealEstate(userId, realEstateId)
+    return agentRole?.role ?? null
+  }
+
   async getMenuByRol(): Promise<MenuEntity[]> {
     const routes = createRouter(this.lang)
     const id = await this.sessionPort.getCurrentUserId()
@@ -85,6 +95,11 @@ export class SessionService {
             title: "Publicaciones",
             url: `${ROUTES.listings[this.lang]}`,
             icon: 'tags',
+          },
+          {
+            title: "Consultas",
+            url: `${ROUTES.inquiries[this.lang]}`,
+            icon: 'tags',
           }
         ]
       default:
@@ -103,8 +118,25 @@ export class SessionService {
             title: "Publicaciones",
             url: `${ROUTES.listings[this.lang]}`,
             icon: 'tags',
+          },
+          {
+            title: "Consultas",
+            url: `${ROUTES.inquiries[this.lang]}`,
+            icon: 'tags',
           }
         ]
     }
+  }
+
+  async isAdmin(): Promise<boolean> {
+    return await this.cookiesPort.getProfileRole() === EUserRole.Admin
+  }
+
+  async isCoordinator(): Promise<boolean> {
+    return await this.cookiesPort.getAgentRole() === EAgentRole.Coordinator
+  }
+
+  async isAgent(): Promise<boolean> {
+    return await this.cookiesPort.getAgentRole() === EAgentRole.Agent
   }
 }
