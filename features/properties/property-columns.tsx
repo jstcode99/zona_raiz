@@ -36,7 +36,6 @@ export type PropertyRow = BaseRow & {
   created_at: string
 } & PropertyEntity
 
-const { t } = useTranslation()
 
 export const propertyTypeIcons: Record<PropertyType, React.ReactNode> = {
   [PropertyType.House]: <IconHome className="size-4" />,
@@ -53,7 +52,7 @@ export const propertyTypeIcons: Record<PropertyType, React.ReactNode> = {
 export const PropertyColumns: ColumnDef<PropertyRow>[] = [
   {
     accessorKey: "title",
-    header: t('words.property').at(0)?.toUpperCase(),
+    header: 'Propiedad',
     cell: ({ row }) => {
 
       const type = row.original.property_type

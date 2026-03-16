@@ -126,7 +126,7 @@ export default async function DashboardPage({
   return (
     <div className="flex flex-1 flex-col">
       <div className="@container/main flex flex-1 flex-col gap-2">
-        <div className="grid grid-cols-1 gap-x-3 gap-y-22 md:grid-cols-3 lg:grid-cols-5 lg:auto-rows-4 px-8">
+        <div className="grid grid-cols-1 gap-x-3 gap-y-10 md:grid-cols-3 lg:grid-cols-5 lg:auto-rows-4 px-8">
 
           {/* Row 1 */}
           <div className="col-span-full lg:col-span-3">
@@ -180,7 +180,7 @@ export default async function DashboardPage({
             )}
           </div>
 
-          <div className="md:col-span-3">
+          <div className="col-span-full">
             <Card>
               <CardContent>
                 <div className="p-4 border-b">

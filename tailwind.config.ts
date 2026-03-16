@@ -11,6 +11,9 @@ const config: Config = {
       fontFamily: {
         sans: ["'Noto Sans'", "sans-serif"],
       },
+      backgroundImage: {
+        'texture-pattern': "url('./images/gray-abstract-wireframe-technology-background.png')",
+      }
     },
   },
   plugins: [

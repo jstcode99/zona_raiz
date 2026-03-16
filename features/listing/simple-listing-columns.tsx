@@ -9,7 +9,6 @@ import {
   IconEye,
   IconMessage,
   IconBrandWhatsapp,
-  IconUser,
 } from "@tabler/icons-react"
 import { Badge } from "@/components/ui/badge"
 import { listingStatusLabels, listingTypeLabels } from "@/domain/entities/listing.entity"
