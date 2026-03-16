@@ -85,6 +85,10 @@ export const ROUTES = {
     es: "/panel/publicaciones",
     en: "/dashboard/listings",
   },
+  inquires: {
+    es: "/panel/consultas",
+    en: "/dashboard/inquires",
+  },
 } as const
 
 type Lang = "es" | "en"

@@ -85,6 +85,11 @@ export class SessionService {
             title: "Publicaciones",
             url: `${ROUTES.listings[this.lang]}`,
             icon: 'tags',
+          },
+          {
+            title: "Consultas",
+            url: `${ROUTES.inquires[this.lang]}`,
+            icon: 'tags',
           }
         ]
       default:
