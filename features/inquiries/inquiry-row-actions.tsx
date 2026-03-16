@@ -15,19 +15,14 @@ import { useServerMutation } from "@/shared/hooks/use-server-mutation.hook"
 import { deleteInquiryAction, updateInquiryStatusAction } from "@/application/actions/inquiry.actions"
 import { inquiryStatusLabels } from "@/domain/entities/inquiry.entity"
 import { AgentSelector } from "./agent-selector"
-import { cookies } from "next/headers"
-import { COOKIE_NAMES } from "@/infrastructure/config/constants"
-import { use } from "react"
 
 interface InquiryRowActionsProps {
   inquiryId: string
+  realEstateId: string
 }
 
-export function InquiryRowActions({ inquiryId }: InquiryRowActionsProps) {
+export function InquiryRowActions({ inquiryId, realEstateId }: InquiryRowActionsProps) {
   const { t } = useTranslation()
-
-  // Obtener real_estate_id desde cookies (usando use() en cliente)
-  const realEstateId = use(cookies()).get(COOKIE_NAMES.REAL_ESTATE)?.value as string
 
   const deleteMutation = useServerMutation({
     action: deleteInquiryAction as any,
