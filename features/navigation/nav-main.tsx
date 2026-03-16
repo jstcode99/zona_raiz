@@ -61,7 +61,7 @@ export function NavMain({
 }: {
   items: Items[]
 }) {
-  const { t } = useTranslation('common')
+  const { t } = useTranslation()
 
   return (
     <SidebarGroup>
@@ -74,7 +74,7 @@ export function NavMain({
                 className="bg-primary cursor-pointer text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground active:bg-primary/90 active:text-primary-foreground min-w-8 duration-200 ease-linear"
               >
                 <IconCirclePlusFilled />
-                <span>{t('sentences.create_property')}</span>
+                <span>{t('actions:create_property')}</span>
               </SidebarMenuButton>
             </Link>
           </SidebarMenuItem>

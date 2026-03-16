@@ -12,4 +12,5 @@ export interface ListingPort {
     findFeatured(limit?: number, realEstateId?: string): Promise<ListingEntity[]>;
     findBySlug(slug: string): Promise<ListingEntity | null>;
     countByStatusAndMonth(year: number, filters?: any): Promise<Record<string, Record<string, number>>>;
+    findSimplePublished(limit?: number): Promise<ListingEntity[]>;
 }

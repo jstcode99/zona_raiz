@@ -22,6 +22,9 @@ import {
 } from '@/components/ui/card';
 import { Lang } from "@/i18n/settings";
 import { getTranslation } from "@/i18n/server";
+import SimpleListingTable from "@/features/listing/simple-listing-table";
+import { SimpleListingColumns } from "@/features/listing/simple-listing-columns";
+import { Spinner } from "@/components/ui/spinner";
 
 function getMonthDateRange(date: Date): { start_date: string; end_date: string } {
   const year = date.getFullYear();
@@ -118,11 +121,12 @@ export default async function DashboardPage({
 
   const currentYear = now.getFullYear()
   const listingsByStatus = await listingService.getCachedCountByStatusAndMonth(currentYear, { real_estate_id })
+  const listings = listingService.getCachedSimplePublished(10);
 
   return (
     <div className="flex flex-1 flex-col">
       <div className="@container/main flex flex-1 flex-col gap-2">
-        <div className="grid grid-cols-1 gap-x-3 gap-y-22 md:grid-cols-3 lg:grid-cols-5 lg:auto-rows-4 px-8">
+        <div className="grid grid-cols-1 gap-x-3 gap-y-10 md:grid-cols-3 lg:grid-cols-5 lg:auto-rows-4 px-8">
 
           {/* Row 1 */}
           <div className="col-span-full lg:col-span-3">
@@ -176,8 +180,18 @@ export default async function DashboardPage({
             )}
           </div>
 
-          <div className="md:col-span-3">
-
+          <div className="col-span-full">
+            <Card>
+              <CardContent>
+                <div className="p-4 border-b">
+                  <h1 className="text-lg font-semibold">Últimas 10 Propiedades Publicadas</h1>
+                  <p className="text-sm text-muted-foreground">Tabla simple con agente asignado</p>
+                </div>
+                <Suspense fallback={<Spinner />}>
+                  <SimpleListingTable listings={listings} columns={SimpleListingColumns} />
+                </Suspense>
+              </CardContent>
+            </Card>
           </div>
 
         </div>

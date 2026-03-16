@@ -214,6 +214,23 @@ export class ListingService {
     )();
   }
 
+  findSimplePublished(limit: number = 10) {
+    return this.listingPort.findSimplePublished(limit);
+  }
+
+  getCachedSimplePublished(limit: number = 10) {
+    const cacheKey = `listing:simple-published:${limit}`;
+
+    return unstable_cache(
+      async () => this.listingPort.findSimplePublished(limit),
+      [cacheKey],
+      {
+        revalidate: 60,
+        tags: ["listings", "listing:simple-published"],
+      }
+    )();
+  }
+
   private buildCacheKey(filters: ListingSearchFilters): string {
     const parts = filters && Object.entries(filters)
       .filter(([, v]) => v !== undefined && v !== null && v !== "")

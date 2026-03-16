@@ -6,9 +6,10 @@ import { SidebarTrigger } from "@/components/ui/sidebar"
 import { useRoutes } from "@/i18n/client-router"
 import Link from "next/link"
 import { useTranslation } from "react-i18next"
+import { Breadcrumbs } from "./breadcrumbs"
 
 export function SiteHeader() {
-  const { t } = useTranslation('common')
+  const { t } = useTranslation()
   const routes = useRoutes()
 
   return (
@@ -19,11 +20,11 @@ export function SiteHeader() {
           orientation="vertical"
           className="mx-2 data-[orientation=vertical]:h-4"
         />
-        <h1 className="text-base font-medium">Documents</h1>
+        <Breadcrumbs lang="es"/>
         <div className="ml-auto flex items-center gap-2">
           <Button variant="ghost" asChild size="sm" className="hidden sm:flex">
-            <Link href={routes.currentRealEstate()}>
-              { t('words.real_estate') }
+            <Link href={routes.currentRealEstate()} className="capitalize">
+              { t('words:real_estate') }
             </Link>
           </Button>
         </div>

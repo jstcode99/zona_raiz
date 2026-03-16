@@ -20,6 +20,7 @@ import {
     CardContent,
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import Image from 'next/image';
 
 interface FeaturedListingCardProps {
     listing: ListingEntity;
@@ -31,13 +32,18 @@ export const FeaturedListingCard = ({ listing }: FeaturedListingCardProps) => {
     const images = property.property_images || [];
     const mainImage = images.length > 0 ? images[0].public_url : null;
 
+    console.log(mainImage);
+    
+
     return (
         <Card
             className="overflow-hidden cursor-pointer pt-0 card-hover active:scale-[0.99] transition-all min-w-70 max-w-70"
         >
             <div className="relative h-40 overflow-hidden">
                 {mainImage ? (
-                    <img
+                    <Image
+                        width={100}
+                        height={400}
                         src={mainImage}
                         alt={property.title}
                         className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
