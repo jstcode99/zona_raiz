@@ -2,6 +2,7 @@ import { SupabaseClient } from "@supabase/supabase-js"
 import { ProfilePort } from "@/domain/ports/profile.port"
 import { ProfileEntity, EUserRole } from "@/domain/entities/profile.entity"
 import { STORAGE_BUCKETS } from "@/infrastructure/config/constants"
+import { EAgentRole } from "@/domain/entities/real-estate-agent.entity"
 
 export class SupabaseProfileAdapter implements ProfilePort {
   constructor(private readonly supabase: SupabaseClient) { }
@@ -120,5 +121,17 @@ export class SupabaseProfileAdapter implements ProfilePort {
     if (error) throw new Error(error.message)
 
     return count || 0
+  }
+
+  async getAgentRoleInRealEstate(userId: string, realEstateId: string): Promise<{ role: EAgentRole } | null> {
+    const { data, error } = await this.supabase
+      .from("real_estate_agents")
+      .select("role")
+      .eq("profile_id", userId)
+      .eq("real_estate_id", realEstateId)
+      .maybeSingle()
+
+    if (error) throw error
+    return data || null
   }
 }

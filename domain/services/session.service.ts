@@ -59,6 +59,13 @@ export class SessionService {
     )();
   }
 
+  async getCurrentUserAgentRole(realEstateId: string): Promise<EAgentRole | null> {
+    const userId = await this.sessionPort.getCurrentUserId()
+    if (!userId) return null
+    const agentRole = await this.profiles.getAgentRoleInRealEstate(userId, realEstateId)
+    return agentRole?.role ?? null
+  }
+
   async getMenuByRol(): Promise<MenuEntity[]> {
     const routes = createRouter(this.lang)
     const id = await this.sessionPort.getCurrentUserId()

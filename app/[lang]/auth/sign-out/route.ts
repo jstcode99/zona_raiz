@@ -37,9 +37,6 @@ export async function GET(request: NextRequest) {
   cookieStore.delete(COOKIE_NAMES.REAL_ESTATE)
   cookieStore.delete(COOKIE_NAMES.REAL_ESTATE_ROLE)
 
-  revalidateTag(CACHE_TAGS.AUTH.USER, {})
-  revalidateTag(CACHE_TAGS.AUTH.SESSION, {})
-
   return NextResponse.redirect(
     `${origin}${routes.signin()}?error=${t("sucess.sign_out_complete")}`
   )

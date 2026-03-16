@@ -35,3 +35,15 @@ export const removeAgentAction = withServerAction(
         revalidatePath(`/dashboard/real-estates/${real_estate_id}`);
     }
 )
+
+export const getAgentsAction = withServerAction(
+    async (formData: FormData) => {
+        const lang = await getLangServerSide()
+        const { agentService } = await agentModule(lang)
+
+        const real_estate_id = formData.get("real_estate_id") as string
+        if (!real_estate_id) throw new Error("real_estate_id required")
+
+        return await agentService.getCachedListAgents(real_estate_id)
+    }
+)

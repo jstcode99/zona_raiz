@@ -14,7 +14,7 @@ import { IconDotsVertical, IconUserPlus } from "@tabler/icons-react"
 import { useServerMutation } from "@/shared/hooks/use-server-mutation.hook"
 import { deleteInquiryAction, updateInquiryStatusAction } from "@/application/actions/inquiry.actions"
 import { inquiryStatusLabels } from "@/domain/entities/inquiry.entity"
-import { AgentSelector } from "./agent-selector"
+import { AgentSelectorClient } from "./agent-selector-client"
 
 interface InquiryRowActionsProps {
   inquiryId: string
@@ -25,7 +25,7 @@ export function InquiryRowActions({ inquiryId, realEstateId }: InquiryRowActions
   const { t } = useTranslation()
 
   const deleteMutation = useServerMutation({
-    action: deleteInquiryAction as any,
+    action: deleteInquiryAction,
     onSuccess: () => {
       toast.success(t("words.deleted") || "Eliminado")
     },
@@ -35,7 +35,7 @@ export function InquiryRowActions({ inquiryId, realEstateId }: InquiryRowActions
   })
 
   const statusMutation = useServerMutation({
-    action: updateInquiryStatusAction as any,
+    action: updateInquiryStatusAction,
     onSuccess: () => {
       toast.success(t("words.updated") || "Actualizado")
     },
@@ -76,16 +76,12 @@ export function InquiryRowActions({ inquiryId, realEstateId }: InquiryRowActions
           </DropdownMenuItem>
         ))}
         <DropdownMenuSeparator />
-        <AgentSelector
-          inquiryId={inquiryId}
-          realEstateId={realEstateId}
-          onAssigned={() => {}}
-        >
+        <AgentSelectorClient inquiryId={inquiryId} realEstateId={realEstateId}>
           <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
             <IconUserPlus className="mr-2 h-4 w-4" />
             Asignar a usuario
           </DropdownMenuItem>
-        </AgentSelector>
+        </AgentSelectorClient>
         <DropdownMenuSeparator />
         <DropdownMenuItem variant="destructive" onClick={handleDelete}>
           Eliminar

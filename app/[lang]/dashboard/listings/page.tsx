@@ -6,7 +6,6 @@ import { IconFilter } from "@tabler/icons-react";
 import { COOKIE_NAMES } from "@/infrastructure/config/constants";
 import { ListingSearchFormInput } from "@/application/validation/listing-search.schema";
 import ListingTable from "@/features/listing/listing-table";
-import { ListingColumns } from "@/features/listing/listing-columns";
 import { ListingFiltersForm } from "@/features/listing/listing-form-filters";
 import {
   Collapsible,
@@ -55,7 +54,7 @@ export default async function page({
             </CollapsibleContent>
           </Collapsible>
           <Suspense fallback={<Spinner />}>
-            <ListingTable listing={listing} columns={ListingColumns} />
+            <ListingTable listing={listing} />
           </Suspense>
         </CardContent>
       </Card>
