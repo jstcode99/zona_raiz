@@ -2,6 +2,7 @@ import { ListingPort } from "@/domain/ports/listing.port";
 import { ListingEntity } from "@/domain/entities/listing.entity";
 import { unstable_cache } from "next/cache";
 import { Lang } from "@/i18n/settings";
+import { ListingStatus } from "../entities/listing.enums";
 
 export type CreateListingInput = Omit<ListingEntity, "id" | "property_id" | "views_count" | "inquiries_count" | "whatsapp_clicks" | "published_at" | "property">;
 
@@ -33,7 +34,6 @@ export interface ListingSearchFilters {
   sort_by?: string
   page?: number
   limit?: number
-  status: string
 }
 
 export interface ListingSearchResult {
@@ -274,13 +274,18 @@ export class ListingService {
     )()
   }
 
+  
+
   async searchWithCount(filters: ListingSearchFilters): Promise<{ listings: ListingEntity[]; total: number }> {
     const page = filters.page || 1
     const limit = filters.limit || 12
     const from = (page - 1) * limit
     const to = from + limit - 1
 
-    const allListings = await this.listingPort.all(filters)
+    const allListings = await this.listingPort.all({
+      ...filters,
+      status: ListingStatus.ACTIVE
+    })
     const total = allListings.length
 
     const paginatedListings = allListings.slice(from, to + 1)

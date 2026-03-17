@@ -1,23 +1,20 @@
 "use client"
-
-import { ListingSearchFilters, ListingSearchFilters as ListingSearchFiltersType } from "@/features/listing/listing-search-filters"
+import {
+  ListingSearchFilters,
+  ListingSearchFilters as ListingSearchFiltersType
+} from "@/features/listing/listing-search-filters"
 import { ListingGrid } from "@/features/listing/listing-grid"
 import { ListingEntity } from "@/domain/entities/listing.entity"
 import { Button } from "@/components/ui/button"
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
+  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select"
-import {
-  IconChevronLeft,
-  IconChevronRight
-} from "@tabler/icons-react"
+import { IconChevronLeft, IconChevronRight, IconMapPin } from "@tabler/icons-react"
 import Link from "next/link"
-import { IconMapPin } from "@tabler/icons-react"
 import { useTranslation } from "react-i18next"
+import { useRouter } from "next/navigation"
+import { buildUrl } from "./_search/helpers"
+import { Lang } from "@/i18n/settings"
 
 interface SearchPageClientProps {
   filters: ListingSearchFiltersType
@@ -25,8 +22,9 @@ interface SearchPageClientProps {
   total: number
   totalPages: number
   currentPage: number
-  sortOptions: { label: string; value: string }[]
   breadcrumb: string
+  basePath: string
+  lang: Lang,
 }
 
 export function SearchPageClient({
@@ -35,38 +33,36 @@ export function SearchPageClient({
   total,
   totalPages,
   currentPage,
-  sortOptions,
-  breadcrumb
+  breadcrumb,
+  basePath,
+  lang,
 }: SearchPageClientProps) {
-  const { t } = useTranslation();
+  const { t } = useTranslation()
+  const router = useRouter()
 
-  const buildQueryString = (page?: number) => {
-    const params = new URLSearchParams()
+  const handleFiltersChange = (newFilters: ListingSearchFiltersType) => {
+    const locationParts = [newFilters.country, newFilters.state, newFilters.city]
+      .filter(Boolean)
+    const newBasePath = `/${lang}${locationParts.length ? `/${locationParts.join("/")}` : ""}`
 
-    if (filters.q) params.set("q", filters.q)
-    if (filters.listing_type) params.set("listing_type", filters.listing_type)
-    if (filters.type) params.set("type", filters.type)
-    if (filters.country) params.set("country", filters.country)
-    if (filters.state) params.set("state", filters.state)
-    if (filters.city) params.set("city", filters.city)
-    if (filters.neighborhood) params.set("neighborhood", filters.neighborhood)
-    if (filters.min_price && filters.min_price > 0) params.set("min_price", String(filters.min_price))
-    if (filters.max_price && filters.max_price < 100000000) params.set("max_price", String(filters.max_price))
-    if (filters.min_bedrooms) params.set("min_bedrooms", String(filters.min_bedrooms))
-    if (filters.min_bathrooms) params.set("min_bathrooms", String(filters.min_bathrooms))
-    if (filters.amenities?.length) params.set("amenities", filters.amenities.join(","))
-    if (filters.sort_by) params.set("sort_by", filters.sort_by)
-    if (page && page > 1) params.set("page", String(page))
+    const url = buildUrl({ ...newFilters, page: 1 }, newBasePath, newFilters)
+    console.log("🔍 navigating to:", url)
+    window.location.href = url
+  }
 
-    return params.toString()
+  const handleSortChange = (value: string) => {
+    const url = buildUrl({ sort_by: value, page: 1 }, basePath, filters)
+    router.push(url, { scroll: false })
   }
 
   return (
     <div className="min-h-screen bg-background">
       <div className="bg-primary/5 border-b">
         <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center gap-2 text-sm text-muted-foreground ">
-            <Link href="/autenticacion/login" className="hover:text-primary">{t("actions:sign_in")}</Link>
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Link href="/autenticacion/login" className="hover:text-primary">
+              {t("actions:sign_in")}
+            </Link>
             <IconMapPin className="size-4" />
             <span className="capitalize">{breadcrumb}</span>
           </div>
@@ -78,7 +74,10 @@ export function SearchPageClient({
           <aside className="w-full lg:w-80 shrink-0">
             <div className="sticky top-4 bg-card rounded-lg border p-4">
               <h2 className="font-semibold mb-4 capitalize">{t("sections:filters")}</h2>
-              <ListingSearchFilters initialFilters={filters} />
+              <ListingSearchFilters
+                initialFilters={filters}
+                onFiltersChange={handleFiltersChange}
+              />
             </div>
           </aside>
 
@@ -97,17 +96,18 @@ export function SearchPageClient({
                 <span className="text-sm text-muted-foreground capitalize">{t("words:order")}:</span>
                 <Select
                   value={filters.sort_by || "created_at_desc"}
-                  onValueChange={(value) => {
-                    const query = buildQueryString()
-                    const separator = query ? "?" : ""
-                    window.location.href = `${separator}${query ? query + "&" : ""}sort_by=${value}`
-                  }}
+                  onValueChange={handleSortChange}
                 >
                   <SelectTrigger className="w-50">
                     <SelectValue placeholder={t("placeholders:order_by")} />
                   </SelectTrigger>
                   <SelectContent>
-                    {sortOptions.map((option) => (
+                    {[
+                      { label: "Más recientes", value: "created_at_desc" },
+                      { label: "Más antiguos", value: "created_at_asc" },
+                      { label: "Precio: menor a mayor", value: "price_asc" },
+                      { label: "Precio: mayor a menor", value: "price_desc" },
+                    ].map((option) => (
                       <SelectItem key={option.value} value={option.value}>
                         {option.label}
                       </SelectItem>
@@ -121,9 +121,7 @@ export function SearchPageClient({
 
             {totalPages > 1 && (
               <div className="flex items-center justify-center gap-2 mt-8">
-                <Link
-                  href={`?${buildQueryString(currentPage - 1)}`}
-                >
+                <Link href={buildUrl({ page: currentPage - 1 }, basePath, filters)}>
                   <Button variant="outline" size="sm" disabled={currentPage <= 1}>
                     <IconChevronLeft className="size-4" />
                     {t("words:back")}
@@ -134,9 +132,7 @@ export function SearchPageClient({
                   {t("words:page")} {currentPage} {t("words:of")} {totalPages}
                 </span>
 
-                <Link
-                  href={`?${buildQueryString(currentPage + 1)}`}
-                >
+                <Link href={buildUrl({ page: currentPage + 1 }, basePath, filters)}>
                   <Button variant="outline" size="sm" disabled={currentPage >= totalPages}>
                     {t("words:next")}
                     <IconChevronRight className="size-4" />

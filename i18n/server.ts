@@ -1,6 +1,7 @@
 import { createInstance } from "i18next";
 import resourcesToBackend from "i18next-resources-to-backend";
 import { initReactI18next } from "react-i18next/initReactI18next";
+import { fallbackLng } from "./settings"
 
 export const namespaces = [
   "actions",
@@ -21,22 +22,21 @@ export async function initI18n(lang: string, ns: string | string[] = "words") {
   const i18nInstance = createInstance();
 
   await i18nInstance
-    .use(initReactI18next) // Importante para que funcione el motor
-    .use(
-      resourcesToBackend(
-        (lng: string, namespace: string) =>
-          import(`@/locales/${lng}/${namespace}.json`)
-      )
+  .use(initReactI18next)
+  .use(
+    resourcesToBackend(
+      (language: string, namespace: string) =>
+        import(`@/locales/${language}/${namespace}.json`)
     )
-    .init({
-      lng: lang,
-      fallbackLng: "es",
-      ns: namespaces, // Cargamos todos los nombres de archivos
-      defaultNS: "words",
-      interpolation: {
-        escapeValue: false,
-      },
-    });
+  )
+  .init({
+    fallbackLng,
+    // Indica a i18n qué namespaces existen
+    ns: namespaces,
+    interpolation: {
+      escapeValue: false
+    }
+  })
 
   return i18nInstance;
 }

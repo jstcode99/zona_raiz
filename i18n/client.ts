@@ -29,10 +29,8 @@ i18n
   )
   .init({
     fallbackLng,
-    // 2. Puedes dejar 'words' como default para textos generales
-    defaultNS: "words",
     // Indica a i18n qué namespaces existen
-    ns: namespaces, 
+    ns: namespaces,
     interpolation: {
       escapeValue: false
     }

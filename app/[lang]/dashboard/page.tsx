@@ -46,7 +46,7 @@ interface props {
 
 export default async function page({ params }: props) {
   const { lang } = await params;
-  const { t } = await getTranslation(lang, ['sections']);
+  const { t } = await getTranslation(lang)
   const routes = createRouter(lang)
   const cookieStore = await cookies()
 

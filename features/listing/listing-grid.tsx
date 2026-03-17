@@ -40,7 +40,7 @@ export function ListingGrid({ listings, loading }: ListingGridProps) {
           { t('exceptions:properties_not_found') }
         </h3>
         <p className="text-sm text-muted-foreground mt-1">
-          { t('messages:try_change_filters') }
+          { t('sections:try_change_filters') }
         </p>
       </div>
     )
