@@ -141,6 +141,60 @@ export function MyForm() {
 }
 ```
 
+## Validación con Yup
+
+**Ubicación:** `application/validation/[nombre].validation.ts`
+
+**IMPORTANTE - Formato de namespace:**
+- El namespace es `validations` y se accede con **dos puntos** (`:`), NO con punto (`.`)
+- Correcto: `i18next.t('validations:required', { attribute: 'name' })`
+- Incorrecto: `i18next.t('validations.required', { attribute: 'name' })`
+
+**Estructura típica:**
+```tsx
+import * as yup from 'yup'
+import i18next from 'i18next'
+import { emailSchema } from './base/email.schema'
+import { idSchema } from './base/id.schema'
+
+export const mySchema = yup.object({
+  name: yup
+    .string()
+    .required(() => i18next.t('validations:required', { attribute: 'name' }))
+    .max(100, () => i18next.t('validations:max.string', { attribute: 'name', max: 100 })),
+  email: emailSchema,
+  foreignId: idSchema,
+})
+
+export type MyFormInput = yup.InferType<typeof mySchema>
+
+export const defaultMyValues: MyFormInput = {
+  name: '',
+  email: null,
+}
+```
+
+**Claves disponibles en `locales/[lang]/validations.json`:**
+- `validations:required` - Campo requerido
+- `validations:email` - Email inválido
+- `validations:min.string`, `validations:min.numeric` - Valor mínimo
+- `validations:max.string`, `validations:max.numeric` - Valor máximo
+- `validations:uuid` - UUID inválido
+- `validations:url` - URL inválida
+- `validations:phone` - Teléfono inválido
+- `validations:slugFormat` - Formato de slug inválido
+- `validations:date_format` - Formato de fecha inválido
+- `validations:enum` - Valor de enumeración inválido
+
+**NOTA:** Usar funciones flecha (`() =>`) para evaluación lazy del mensaje, NO valores directos.
+
+**Schemas base disponibles en `application/validation/base/`:**
+- email.schema.ts, id.schema.ts, phone.schema.ts, price.schema.ts
+- search.schema.ts, status.schema.ts, date-range.schema.ts
+- name.schema.ts, title.schema.ts, description.schema.ts
+- address.schema.ts, latitude.schema.ts, longitude.schema.ts
+- etc.
+
 ## Uso de shadcn/ui
 
 **Componentes disponibles en `@/components/ui/`:**
@@ -157,43 +211,6 @@ export function MyForm() {
 ```bash
 npx shadcn@latest add [component-name]
 ```
-
-## Validación con Yup
-
-**Ubicación:** `application/validation/[nombre].validation.ts`
-
-**Estructura típica:**
-```tsx
-import * as yup from 'yup'
-import i18next from 'i18next'
-import { emailSchema } from './base/email.schema'
-import { idSchema } from './base/id.schema'
-
-export const mySchema = yup.object({
-  name: yup
-    .string()
-    .required(i18next.t('validations.required', { attribute: 'name' }))
-    .max(100, i18next.t('validations.max', { attribute: 'name', max: 100 })),
-  email: emailSchema,
-  foreignId: idSchema,
-})
-
-export type MyFormInput = yup.InferType<typeof mySchema>
-
-export const defaultMyValues: MyFormInput = {
-  name: '',
-  email: null,
-}
-```
-
-**Schemas base disponibles en `application/validation/base/`:**
-- email.schema.ts
-- id.schema.ts
-- phone.schema.ts
-- price.schema.ts
-- search.schema.ts
-- status.schema.ts
-- date-range.schema.ts
 
 ## Internacionalización (i18n)
 
@@ -213,7 +230,8 @@ const { t } = useTranslation()
 
 **En schemas Yup:**
 ```tsx
-i18next.t('validations.required', { attribute: 'name' })
+// IMPORTANTE: Usar dos puntos para el namespace
+() => i18next.t('validations:required', { attribute: 'name' })
 ```
 
 ## Integración con Pages
