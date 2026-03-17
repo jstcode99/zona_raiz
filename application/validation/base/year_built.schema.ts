@@ -4,7 +4,7 @@ import * as yup from 'yup'
 export const yearBuiltSchema = yup
     .number()
     .integer()
-    .min(1800, i18next.t('validations.min.numeric', {
+    .min(1800, i18next.t('validations:min.numeric', {
       attribute: 'year_built',
       min: '1800'
     }))

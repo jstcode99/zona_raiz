@@ -4,4 +4,4 @@ import * as yup from 'yup'
 
 export const inquirySourceSchema = yup
   .string<string>()
-  .oneOf(inquirySourceValues, i18next.t('validations.required', { attribute: 'source' }))
+  .oneOf(inquirySourceValues, () => i18next.t('validations:required', { attribute: 'source' }))

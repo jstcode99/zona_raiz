@@ -11,7 +11,7 @@ export const profileSchema = yup.object({
 
 export const profileAvatarSchema = yup.object({
   avatar: avatarSchema.
-    required(i18next.t('validations.required', {
+    required(i18next.t('validations:required', {
       attribute: 'avatar'
     })),
 })

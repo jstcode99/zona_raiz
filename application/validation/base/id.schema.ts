@@ -3,7 +3,5 @@ import * as yup from 'yup'
 
 export const idSchema = yup
     .string()
-    .uuid('ID inválido')
-    .required(i18next.t('validations.required', {
-        attribute: 'ID'
-    }))
+    .uuid(() => i18next.t('validations:uuid', { attribute: 'ID' }))
+    .required(() => i18next.t('validations:required', { attribute: 'ID' }))

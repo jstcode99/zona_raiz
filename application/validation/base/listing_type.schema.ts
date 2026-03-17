@@ -4,4 +4,4 @@ import * as yup from 'yup'
 
 export const listingTypeSchema = yup
     .string<string>()
-    .oneOf(listingTypeValues, i18next.t('validations.required', { attribute: 'listing_type' }))
+    .oneOf(listingTypeValues, i18next.t('validations:required', { attribute: 'listing_type' }))

@@ -3,6 +3,6 @@ import * as yup from 'yup'
 
 export const typeSchema = yup
     .string()
-    .required(i18next.t('validations.required', {
+    .required(i18next.t('validations:required', {
         attribute: 'type'
     }))

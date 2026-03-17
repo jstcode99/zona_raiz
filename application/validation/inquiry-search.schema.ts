@@ -4,11 +4,11 @@ import { inquirySourceValues } from '@/domain/entities/inquiry.enums';
 import i18next from 'i18next';
 
 export const inquirySearchSchema = yup.object({
-  search: yup.string().max(100, i18next.t('validations.max.string', { attribute: 'query', max: '100' })).nullable(),
+  search: yup.string().max(100, i18next.t('validations:max.string', { attribute: 'query', max: '100' })).nullable(),
   status: yup.string().oneOf(inquiryStatusValues).nullable(),
   source: yup.string().oneOf(inquirySourceValues).nullable(),
-  start_date: yup.string().matches(/^\d{4}-\d{2}-\d{2}$/, i18next.t('validations.date.format')).nullable(),
-  end_date: yup.string().matches(/^\d{4}-\d{2}-\d{2}$/, i18next.t('validations.date.format')).nullable(),
+  start_date: yup.string().matches(/^\d{4}-\d{2}-\d{2}$/, () => i18next.t('validations:date_format')).nullable(),
+  end_date: yup.string().matches(/^\d{4}-\d{2}-\d{2}$/, () => i18next.t('validations:date_format')).nullable(),
 });
 
 export type InquirySearchFormInput = yup.InferType<typeof inquirySearchSchema>;

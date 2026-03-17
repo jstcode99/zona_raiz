@@ -4,4 +4,4 @@ import * as yup from 'yup'
 
 export const statusSchema = yup
     .string<string>()
-    .oneOf(listingStatusValues, i18next.t('validations.required', { attribute: 'status' }))
+    .oneOf(listingStatusValues, i18next.t('validations:required', { attribute: 'status' }))

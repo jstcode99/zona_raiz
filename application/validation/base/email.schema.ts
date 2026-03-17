@@ -3,14 +3,8 @@ import * as yup from 'yup'
 
 export const emailSchema = yup
     .string()
-    .email(i18next.t('validations.email', {
-        attribute: 'email'
-    }))
+    .email(() => i18next.t('validations:email', { attribute: 'email' }))
     .matches(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/, {
-        message: i18next.t('validations.email', {
-            attribute: 'email'
-        })
+        message: () => i18next.t('validations:email', { attribute: 'email' })
     })
-    .required(i18next.t('validations.required', {
-        attribute: 'email'
-    }))
+    .required(() => i18next.t('validations:required', { attribute: 'email' }))

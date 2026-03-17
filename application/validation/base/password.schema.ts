@@ -6,11 +6,11 @@ import i18next from 'i18next'
 export const passwordSchema = yup
     .string()
 
-    .min(8, i18next.t('validations.min.string', {
+    .min(8, i18next.t('validations:min.string', {
         attribute: 'password',
         min: '8'
     }))
-    .max(25, i18next.t('validations.max.string', {
+    .max(25, i18next.t('validations:max.string', {
         attribute: 'password',
         max: '25'
     }))
@@ -26,6 +26,6 @@ export const passwordSchema = yup
     .minSymbols(1, i18next.t('password.symbols', {
         attribute: 'password',
     }))
-    .required(i18next.t('validations.required', {
+    .required(i18next.t('validations:required', {
         attribute: 'password'
     }))

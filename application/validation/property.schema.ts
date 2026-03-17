@@ -24,10 +24,10 @@ import { amenitiesSchema } from './base/amenities.schema';
 // ============================================
 
 export const propertySchema = yup.object({
-  title: titleSchema.required(i18next.t('validations.required', { attribute: 'title' })),
+  title: titleSchema.required(i18next.t('validations:required', { attribute: 'title' })),
   slug: slugSchema,
   description: descriptionSchema,
-  property_type: propertyTypeSchema.required(i18next.t('validations.required', { attribute: 'property_type' })),
+  property_type: propertyTypeSchema.required(i18next.t('validations:required', { attribute: 'property_type' })),
   latitude: latitudeSchema.nullable(),
   longitude: longitudeSchema.nullable(),
   neighborhood: neighborhoodSchema.nullable(),
