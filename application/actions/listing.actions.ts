@@ -1,14 +1,15 @@
-"use server";
+"use server"
 
 import { withServerAction } from "@/shared/hooks/with-server-action";
 import { createListingSchema } from "../validation/listing.validation";
 import { handleError } from "../errors/handle-error";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { getLangServerSide } from "@/shared/utils/lang";
 import { cookies } from "next/headers";
 import { createRouter } from "@/i18n/router";
 import { initI18n } from "@/i18n/server";
 import { appModule } from "../modules/app.module";
+import { CACHE_TAGS } from "@/infrastructure/config/constants";
 
 export const createListingAction = withServerAction(
   async (formData: FormData) => {
@@ -38,7 +39,6 @@ export const createListingAction = withServerAction(
     const agent_id = await sessionService.getCurrentUserId();
     if (!agent_id) throw new Error(t('exceptions:unauthorized'))
 
-
     const listing = await listingService.create({
       ...validated,
       agent_id,
@@ -54,6 +54,18 @@ export const createListingAction = withServerAction(
     revalidatePath(routes.dashboard())
     revalidatePath(routes.listings())
     revalidatePath(routes.listing(listing.id))
+
+    // Invalidar tags específicos del cache
+    revalidateTag(CACHE_TAGS.LISTING.PRINCIPAL, { expire: 0 })
+    revalidateTag(CACHE_TAGS.LISTING.ALL, { expire: 0 })
+    revalidateTag(CACHE_TAGS.LISTING.COUNT, { expire: 0 })
+    revalidateTag(CACHE_TAGS.LISTING.DETAIL(listing.id), { expire: 0 })
+    if (listing.featured) {
+      revalidateTag(CACHE_TAGS.LISTING.FEATURED, { expire: 0 })
+    }
+    if (property.real_estate_id) {
+      revalidateTag(CACHE_TAGS.REAL_ESTATE.DETAIL(property.real_estate_id), { expire: 0 })
+    }
   }
 )
 
@@ -76,15 +88,18 @@ export const updateListingAction = withServerAction(
     const t = i18n.getFixedT(lang)
 
     const {
-      listingService
+      listingService,
+      propertyService
     } = await appModule(lang, { cookies: cookieStore })
-
 
     const currentListing = await listingService.findById(id);
 
     if (!currentListing) throw new Error(t('exceptions:data_not_found'))
 
-    const agent_id = currentListing.agent_id; // Asumiendo que el agent_id no cambia en la actualización
+    const property = await propertyService.getById(currentListing.property_id);
+    const realEstateId = property?.real_estate_id;
+
+    const agent_id = currentListing.agent_id;
 
     const dataToUpdate = {
       ...currentListing,
@@ -94,7 +109,7 @@ export const updateListingAction = withServerAction(
       expenses_included: raw.expenses_included === 'on',
       featured: raw.featured === 'on',
       available_from: validated.available_from ? validated.available_from.toISOString() : currentListing.available_from,
-      property_id: currentListing.property_id, // Asegurar que property_id se mantiene
+      property_id: currentListing.property_id,
     };
 
     const listing = await listingService.update(id, dataToUpdate)
@@ -104,23 +119,53 @@ export const updateListingAction = withServerAction(
     revalidatePath(routes.dashboard())
     revalidatePath(routes.listings())
     revalidatePath(routes.listing(listing.id))
+
+    // Invalidar tags específicos del cache
+    revalidateTag(CACHE_TAGS.LISTING.PRINCIPAL, { expire: 0 })
+    revalidateTag(CACHE_TAGS.LISTING.ALL, { expire: 0 })
+    revalidateTag(CACHE_TAGS.LISTING.COUNT, { expire: 0 })
+    revalidateTag(CACHE_TAGS.LISTING.DETAIL(id), { expire: 0 })
+    if (listing.featured) {
+      revalidateTag(CACHE_TAGS.LISTING.FEATURED, { expire: 0 })
+    }
+    if (realEstateId) {
+      revalidateTag(CACHE_TAGS.REAL_ESTATE.DETAIL(realEstateId), { expire: 0 })
+    }
   }
 )
 
-export async function deleteListingAction(id: string) {
+export const deleteListingAction = withServerAction(
+  async (id: string) => {
+    const lang = await getLangServerSide()
+    const cookieStore = await cookies()
+    const routes = createRouter(lang)
+    const i18n = await initI18n(lang)
+    const t = i18n.getFixedT(lang)
 
-  const lang = await getLangServerSide()
-  const cookieStore = await cookies()
-  const routes = createRouter(lang)
-  const i18n = await initI18n(lang)
+    const {
+      listingService,
+      propertyService
+    } = await appModule(lang, { cookies: cookieStore })
 
-  const {
-    listingService
-  } = await appModule(lang, { cookies: cookieStore })
+    const currentListing = await listingService.findById(id);
+    if (!currentListing) throw new Error(t('exceptions:data_not_found'))
 
-  revalidatePath(routes.dashboard())
-  revalidatePath(routes.listings())
-  revalidatePath(routes.listing(id))
+    const property = await propertyService.getById(currentListing.property_id);
+    const realEstateId = property?.real_estate_id;
 
-  return listingService.delete(id);
-}
+    await listingService.delete(id)
+
+    revalidatePath(routes.dashboard())
+    revalidatePath(routes.listings())
+    revalidatePath(routes.listing(id))
+
+    // Invalidar tags específicos del cache
+    revalidateTag(CACHE_TAGS.LISTING.PRINCIPAL, { expire: 0 })
+    revalidateTag(CACHE_TAGS.LISTING.ALL, { expire: 0 })
+    revalidateTag(CACHE_TAGS.LISTING.COUNT, { expire: 0 })
+    revalidateTag(CACHE_TAGS.LISTING.DETAIL(id), { expire: 0 })
+    if (realEstateId) {
+      revalidateTag(CACHE_TAGS.REAL_ESTATE.DETAIL(realEstateId), { expire: 0 })
+    }
+  }
+)

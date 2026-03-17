@@ -211,7 +211,7 @@ Todo Server Action **debe** seguir este patrón exacto. Ver referencia completa 
 "use server"
 
 import { withServerAction } from "@/shared/hooks/with-server-action"
-import { revalidatePath } from "next/cache"
+import { revalidatePath, revalidateTag } from "next/cache"
 import { getLangServerSide } from "@/shared/utils/lang"
 import { cookies } from "next/headers"
 import { createRouter } from "@/i18n/router"
@@ -244,10 +244,17 @@ export const [nombre]Action = withServerAction(
     // 4. Ejecutar lógica de negocio via service
     await [nombre]Service.delete(id)
 
-    // 5. Revalidar ruta
+    // 5. Revalidar ruta (para Server Components)
     revalidatePath(routes.[nombre]s())
-  }
-)
+
+     // 6. Invalidar tags del cache (para unstable_cache)
+     // Usar constantes de CACHE_TAGS desde infrastructure/config/constants
+     import { CACHE_TAGS } from "@/infrastructure/config/constants"
+     
+     revalidateTag(CACHE_TAGS.LISTING.PRINCIPAL, { expire: 0 })
+     revalidateTag(CACHE_TAGS.LISTING.DETAIL(id), { expire: 0 })
+     revalidateTag(CACHE_TAGS.LISTING.COUNT, { expire: 0 })
+   }
 ```
 
 **Prohibiciones en Server Actions:**

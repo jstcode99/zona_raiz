@@ -1,18 +1,22 @@
 "use server"
 
-import { revalidatePath } from "next/cache"
+import { revalidatePath, revalidateTag } from "next/cache"
 import { withServerAction } from "@/shared/hooks/with-server-action"
 import { userSchema } from "../validation/user.validation"
 import { idSchema } from "../validation/base/id.schema"
 import { getLangServerSide } from "@/shared/utils/lang"
 import { cookies } from "next/headers"
 import { createRouter } from "@/i18n/router"
+import { initI18n } from "@/i18n/server"
 import { appModule } from "../modules/app.module"
+import { CACHE_TAGS } from "@/infrastructure/config/constants"
 
 export const createUserAction = withServerAction(async (formData: FormData) => {
   const lang = await getLangServerSide()
   const cookieStore = await cookies()
   const routes = createRouter(lang)
+  const i18n = await initI18n(lang)
+  const t = i18n.getFixedT(lang)
 
   const { userService } = await appModule(lang, { cookies: cookieStore })
   const raw = Object.fromEntries(formData)
@@ -30,12 +34,18 @@ export const createUserAction = withServerAction(async (formData: FormData) => {
 
   revalidatePath(routes.dashboard())
   revalidatePath(routes.users())
+
+  // Invalidar tags específicos del cache
+  revalidateTag(CACHE_TAGS.USER.PRINCIPAL, { expire: 0 })
+  revalidateTag(CACHE_TAGS.USER.LIST, { expire: 0 })
 })
 
 export const updateUserAction = withServerAction(async (formData: FormData) => {
   const lang = await getLangServerSide()
   const cookieStore = await cookies()
   const routes = createRouter(lang)
+  const i18n = await initI18n(lang)
+  const t = i18n.getFixedT(lang)
 
   const { userService } = await appModule(lang, { cookies: cookieStore })
 
@@ -58,12 +68,19 @@ export const updateUserAction = withServerAction(async (formData: FormData) => {
 
   revalidatePath(routes.users())
   revalidatePath(routes.user(id))
+
+  // Invalidar tags específicos del cache
+  revalidateTag(CACHE_TAGS.USER.PRINCIPAL, { expire: 0 })
+  revalidateTag(CACHE_TAGS.USER.LIST, { expire: 0 })
+  revalidateTag(CACHE_TAGS.USER.DETAIL(id), { expire: 0 })
 })
 
 export const deleteUserAction = withServerAction(async (formData: FormData) => {
   const lang = await getLangServerSide()
   const cookieStore = await cookies()
   const routes = createRouter(lang)
+  const i18n = await initI18n(lang)
+  const t = i18n.getFixedT(lang)
 
   const { userService } = await appModule(lang, { cookies: cookieStore })
 
@@ -75,5 +92,9 @@ export const deleteUserAction = withServerAction(async (formData: FormData) => {
 
   revalidatePath(routes.dashboard())
   revalidatePath(routes.users())
-})
 
+  // Invalidar tags específicos del cache
+  revalidateTag(CACHE_TAGS.USER.PRINCIPAL, { expire: 0 })
+  revalidateTag(CACHE_TAGS.USER.LIST, { expire: 0 })
+  revalidateTag(CACHE_TAGS.USER.DETAIL(id), { expire: 0 })
+})

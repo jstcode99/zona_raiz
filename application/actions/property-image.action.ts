@@ -1,6 +1,6 @@
 "use server"
 
-import { revalidatePath } from "next/cache"
+import { revalidatePath, revalidateTag } from "next/cache"
 import { propertyImageSchema, propertyImageUpdateSchema } from "../validation/property-image.validation"
 import sizeOf from "image-size"
 import { pickDefined } from "@/lib/utils"
@@ -10,6 +10,7 @@ import { cookies } from "next/headers"
 import { createRouter } from "@/i18n/router"
 import { initI18n } from "@/i18n/server"
 import { appModule } from "../modules/app.module"
+import { CACHE_TAGS } from "@/infrastructure/config/constants"
 
 export const createPropertyImageAction = withServerAction(
   async (
@@ -22,7 +23,7 @@ export const createPropertyImageAction = withServerAction(
     const i18n = await initI18n(lang)
     const t = i18n.getFixedT(lang)
 
-    const { propertyImageService } = await appModule(lang, { cookies: cookieStore })
+    const { propertyImageService, propertyService } = await appModule(lang, { cookies: cookieStore })
 
     const raw = Object.fromEntries(formData)
     const validated = await propertyImageSchema.validate(raw, {
@@ -65,7 +66,13 @@ export const createPropertyImageAction = withServerAction(
 
     revalidatePath(routes.properties())
     revalidatePath(routes.property(propertyId))
-  })
+
+    // Invalidar tags específicos del cache
+    revalidateTag(CACHE_TAGS.PROPERTY.PRINCIPAL, { expire: 0 })
+    revalidateTag(CACHE_TAGS.PROPERTY.DETAIL(propertyId), { expire: 0 })
+    revalidateTag(CACHE_TAGS.PROPERTY.COUNT, { expire: 0 })
+  }
+)
 
 /**
  * UPDATE
@@ -78,6 +85,8 @@ export const updatePropertyImageAction = withServerAction(
     const lang = await getLangServerSide()
     const cookieStore = await cookies()
     const routes = createRouter(lang)
+    const i18n = await initI18n(lang)
+    const t = i18n.getFixedT(lang)
 
     const { propertyImageService } = await appModule(lang, { cookies: cookieStore })
 
@@ -94,7 +103,12 @@ export const updatePropertyImageAction = withServerAction(
 
     revalidatePath(routes.properties())
     revalidatePath(routes.property(id))
-  })
+
+    // Invalidar tags generales (sin propertyId específico)
+    revalidateTag(CACHE_TAGS.PROPERTY.PRINCIPAL, { expire: 0 })
+    revalidateTag(CACHE_TAGS.PROPERTY.COUNT, { expire: 0 })
+  }
+)
 
 /**
  * DELETE
@@ -106,6 +120,8 @@ export const deletePropertyImageAction = withServerAction(
     const lang = await getLangServerSide()
     const cookieStore = await cookies()
     const routes = createRouter(lang)
+    const i18n = await initI18n(lang)
+    const t = i18n.getFixedT(lang)
 
     const { propertyImageService } = await appModule(lang, { cookies: cookieStore })
     
@@ -114,4 +130,9 @@ export const deletePropertyImageAction = withServerAction(
     revalidatePath(routes.dashboard())
     revalidatePath(routes.properties())
     revalidatePath(routes.property(id))
-  })
+
+    // Invalidar tags generales
+    revalidateTag(CACHE_TAGS.PROPERTY.PRINCIPAL, { expire: 0 })
+    revalidateTag(CACHE_TAGS.PROPERTY.COUNT, { expire: 0 })
+  }
+)

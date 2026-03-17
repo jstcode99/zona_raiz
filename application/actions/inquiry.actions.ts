@@ -1,12 +1,13 @@
 "use server"
 
 import { withServerAction } from "@/shared/hooks/with-server-action"
-import { revalidatePath } from "next/cache"
+import { revalidatePath, revalidateTag } from "next/cache"
 import { getLangServerSide } from "@/shared/utils/lang"
 import { cookies } from "next/headers"
 import { createRouter } from "@/i18n/router"
 import { appModule } from "../modules/app.module"
 import { initI18n } from "@/i18n/server"
+import { CACHE_TAGS } from "@/infrastructure/config/constants"
 
 export const deleteInquiryAction = withServerAction(
   async (formData: FormData) => {
@@ -38,9 +39,20 @@ export const deleteInquiryAction = withServerAction(
     const isAssignedAgent = inquiry.assigned_to === userId
 
     if (!isAdmin && !isCoordinator && !isAssignedAgent) throw new Error(t('exceptions:unauthorized'))
+    
     await inquiryService.delete(id)
 
     revalidatePath(routes.inquiries())
+
+    // Invalidar tags específicos del cache
+    revalidateTag(CACHE_TAGS.INQUIRY.PRINCIPAL, { expire: 0 })
+    revalidateTag(CACHE_TAGS.INQUIRY.ALL, { expire: 0 })
+    revalidateTag(CACHE_TAGS.INQUIRY.DETAIL(id), { expire: 0 })
+    revalidateTag(CACHE_TAGS.INQUIRY.COUNT, { expire: 0 })
+    revalidateTag(CACHE_TAGS.LISTING.DETAIL(inquiry.listing_id), { expire: 0 })
+    if (inquiry.assigned_to) {
+      revalidateTag(CACHE_TAGS.AGENT.BY_REAL_ESTATE(inquiry.assigned_to), { expire: 0 })
+    }
   }
 )
 
@@ -75,6 +87,16 @@ export const updateInquiryStatusAction = withServerAction(
 
     await inquiryService.update(id, { status: status as any })
     revalidatePath(routes.inquiries())
+
+    // Invalidar tags específicos del cache
+    revalidateTag(CACHE_TAGS.INQUIRY.PRINCIPAL, { expire: 0 })
+    revalidateTag(CACHE_TAGS.INQUIRY.ALL, { expire: 0 })
+    revalidateTag(CACHE_TAGS.INQUIRY.DETAIL(id), { expire: 0 })
+    revalidateTag(CACHE_TAGS.INQUIRY.COUNT, { expire: 0 })
+    revalidateTag(CACHE_TAGS.LISTING.DETAIL(inquiry.listing_id), { expire: 0 })
+    if (inquiry.assigned_to) {
+      revalidateTag(CACHE_TAGS.AGENT.BY_REAL_ESTATE(inquiry.assigned_to), { expire: 0 })
+    }
   }
 )
 
@@ -111,8 +133,20 @@ export const assignInquiryAction = withServerAction(
     const targetAgent = await profileService.getAgentRoleInRealEstate(assigned_to, realEstateId)
     if (!targetAgent) throw new Error(t('exceptions:unauthorized'))
     
-      await inquiryService.update(id, { assigned_to })
+    await inquiryService.update(id, { assigned_to })
 
     revalidatePath(routes.inquiries())
+
+    // Invalidar tags específicos del cache
+    revalidateTag(CACHE_TAGS.INQUIRY.PRINCIPAL, { expire: 0 })
+    revalidateTag(CACHE_TAGS.INQUIRY.ALL, { expire: 0 })
+    revalidateTag(CACHE_TAGS.INQUIRY.DETAIL(id), { expire: 0 })
+    revalidateTag(CACHE_TAGS.INQUIRY.COUNT, { expire: 0 })
+    revalidateTag(CACHE_TAGS.LISTING.DETAIL(inquiry.listing_id), { expire: 0 })
+    // Invalidar agent antiguo y nuevo
+    if (inquiry.assigned_to) {
+      revalidateTag(CACHE_TAGS.AGENT.BY_REAL_ESTATE(inquiry.assigned_to), { expire: 0 })
+    }
+    revalidateTag(CACHE_TAGS.AGENT.BY_REAL_ESTATE(assigned_to), { expire: 0 })
   }
 )

@@ -21,18 +21,62 @@ export const COOKIE_NAMES = {
 // ==========================================
 
 export const CACHE_TAGS = {
-  AUTH: {
-    USER: "auth-user",
-    SESSION: "auth-session",
+  // Listing (Listados)
+  LISTING: {
+    PRINCIPAL: "listings",
+    ALL: "listing:all",
+    ACTIVE: "listing:active",
+    FEATURED: "listing:featured",
+    DETAIL: (id: string) => `listing:${id}`,
+    SLUG: (slug: string) => `listing:slug:${slug}`,
+    COUNT: "listing-count",
+    SEARCH: "listing-search",
   },
-  PROFILE: {
-    BASE: "profile",
-    AVATAR: "profile-avatar",
+
+  // Property (Propiedades)
+  PROPERTY: {
+    PRINCIPAL: "properties",
+    ALL: "property:all",
+    DETAIL: (id: string) => `property:${id}`,
+    SLUG: (slug: string) => `property:slug:${slug}`,
+    COUNT: "property-count",
   },
+
+  // User (Usuarios)
+  USER: {
+    PRINCIPAL: "users",
+    DETAIL: (id: string) => `user:${id}`,
+    EMAIL: (email: string) => `user:email:${email}`,
+    LIST: "user:list",
+  },
+
+  // RealEstate (Inmobiliarias)
   REAL_ESTATE: {
-    LIST: "real-estates-list",
-    DETAIL: (id: string) => `real-estate-${id}`,
-    ALL: "real-estates-all",
+    PRINCIPAL: "real-estates",
+    ALL: "real-estate:all",
+    DETAIL: (id: string) => `real-estate:${id}`,
+    COUNT: "real-estate-count",
+  },
+
+  // Agent (Agentes)
+  AGENT: {
+    PRINCIPAL: "agents",
+    BY_REAL_ESTATE: (realEstateId: string) => `agent:real-estate:${realEstateId}`,
+  },
+
+  // Inquiry (Consultas/Leads)
+  INQUIRY: {
+    PRINCIPAL: "inquiries",
+    ALL: "inquiry:all",
+    DETAIL: (id: string) => `inquiry:${id}`,
+    COUNT: "inquiry-count",
+    BY_LISTING: (listingId: string) => `inquiry:listing:${listingId}`,
+    BY_AGENT: (agentId: string) => `inquiry:agent:${agentId}`,
+  },
+
+  // Dashboard métricas
+  DASHBOARD: {
+    METRICS: "dashboard-metrics",
   },
 } as const
 

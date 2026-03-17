@@ -163,3 +163,6 @@ Si necesitas una clave nueva, agregarla al namespace correspondiente en `i18n/`.
 - [ ] Verifica autorización por rol
 - [ ] Usa `t()` para todos los mensajes de error
 - [ ] Llama a `revalidatePath()` al final si muta datos
+- [ ] Llama a `revalidateTag()` con tags específicos para invalidar cache (obligatorio)
+  - Importar `CACHE_TAGS` desde `@/infrastructure/config/constants`
+  - Ver `references/cache-tags.md` para la lista de tags disponibles
