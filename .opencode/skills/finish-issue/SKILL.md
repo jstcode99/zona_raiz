@@ -1,6 +1,6 @@
 ---
 name: finish-issue
-description: Finaliza el trabajo en un issue: actualiza estado en Linear, hace commit, push y cambia de rama.
+description: Finaliza el trabajo en un issue: actualiza estado en Linear, hace commit, push y cambia de rama, cuando el usuario valide todos los cambios.
 license: MIT
 ---
 
@@ -66,6 +66,7 @@ git checkout master
 ```
 Usuario: Terminé el issue KRO-7f
 Tú: 
+0. Valida todo lo que genere para continuar
 1. Actualizo el estado a Done en Linear
 2. Agrego comentario de completado
 3. Hacemos commit y push
@@ -80,3 +81,4 @@ Tú:
 - Asocia siempre el issue con el prefijo [KRO-N]
 - Confirma con el usuario antes de proceder con cada paso
 - Si hay archivos敏感的 (credenciales, .env), adviértele al usuario
+- Confirma con el usuario antes de hacer push, commits o cambios en linear
