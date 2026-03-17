@@ -1,22 +1,7 @@
 import { createInstance } from "i18next";
 import resourcesToBackend from "i18next-resources-to-backend";
 import { initReactI18next } from "react-i18next/initReactI18next";
-import { fallbackLng } from "./settings"
-
-export const namespaces = [
-  "actions",
-  "components",
-  "exceptions",
-  "fields",
-  "placeholders", 
-  "sections",
-  "status", 
-  "subtitles", 
-  "titles", 
-  "validations", 
-  "words"
-]
-
+import { fallbackLng, namespaces } from "./settings"
 
 export async function initI18n(lang: string, ns: string | string[] = "words") {
   const i18nInstance = createInstance();

@@ -3,21 +3,9 @@
 import i18n from "i18next"
 import { initReactI18next } from "react-i18next"
 import resourcesToBackend from "i18next-resources-to-backend"
-import { fallbackLng } from "./settings"
+import { fallbackLng, namespaces } from "./settings"
 
-export const namespaces = [
-  "actions",
-  "components",
-  "exceptions",
-  "fields",
-  "placeholders", 
-  "sections",
-  "status", 
-  "subtitles", 
-  "titles", 
-  "validations", 
-  "words"
-]
+
 
 i18n
   .use(initReactI18next)

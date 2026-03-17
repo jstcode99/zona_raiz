@@ -1,0 +1,57 @@
+{
+  "nav": {
+    "brand": "ZonaRaíz",
+    "home": "Inicio",
+    "listing": "Listados",
+    "property": "Propiedades",
+    "pages": "Páginas",
+    "login": "Login / Sign Up",
+    "cta": "Publicar Propiedad"
+  },
+  "hero": {
+    "title_1": "Compra",
+    "title_2": "Arrienda",
+    "title_3": "Vende Propiedad",
+    "explore": "Explorar Propiedades",
+    "search_title": "Encuentra tu Mejor",
+    "search_subtitle": "¡Propiedad ideal!",
+    "location": "Ubicación",
+    "location_placeholder": "Bogotá, Colombia",
+    "property_type": "Tipo de Propiedad",
+    "property_placeholder": "Tipo de apartamento",
+    "beds": "4 Hab",
+    "baths": "2 Baños",
+    "max_price": "Precio Máximo",
+    "search_btn": "Buscar"
+  },
+  "trust": {
+    "count": "1250+",
+    "companies": "Empresas",
+    "trust_us": "Confían en nosotros.",
+    "more": "+Mil más",
+    "description": "Tu asesor inmobiliario líder. Transformamos sueños en hogares. Confía en nosotros para encontrar perfectamente tu hogar.",
+    "cta": "Saber más",
+    "logos_label": "Miles de propietarios"
+  },
+  "listings": {
+    "title": "Listados Populares",
+    "subtitle": "Explora las mejores propiedades para arrendar, comprar e hipotecar.",
+    "explore": "Explorar todo"
+  },
+  "cities": {
+    "title": "Ciudades Populares",
+    "subtitle": "Encuentra propiedades en las mejores ciudades de Colombia.",
+    "explore": "Explorar todo",
+    "listings": "Listados"
+  },
+  "agents": {
+    "title": "Nuestros Agentes",
+    "cta": "Ver Agentes"
+  },
+  "cta": {
+    "title": "Mantente Actualizado con las Últimas Propiedades",
+    "subtitle": "Nunca pierdas una propiedad. Suscríbete y recibe alertas.",
+    "placeholder": "Ingresa tu correo...",
+    "btn": "Suscribirse"
+  }
+}
