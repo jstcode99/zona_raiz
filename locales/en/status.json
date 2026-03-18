@@ -6,6 +6,7 @@
     "success_profile": "Se ha actualizado los datos del perfil",
     "success_signout": "Se ha cerrado la session",
     "success_signup": "Si ya tienes una cuenta, intenta iniciar sesión.\nSi no, revisa tu correo para confirmar.",
+    "success_favorite": "Se ha agregado favoritos",
     "loading_real_estates": "estamos cargando para ti las inmobiliarias asociadas a cuenta",
     "page_not_found": "Pagina no encontrada.",
     "validated": "Validado",
@@ -13,5 +14,6 @@
     "saving": "Guardando",
     "loading": "Cargando",
     "without_results": "Sin resultados",
+    "error_favorite": "No se pudeo agregar favoritos, lo sentimos",
     "no_address": "Sin dirección asociada"
 }
