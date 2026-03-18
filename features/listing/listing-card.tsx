@@ -1,25 +1,33 @@
-"use client"
+"use client";
 
-import { ListingEntity, listingTypeLabels } from "@/domain/entities/listing.entity"
-import { Card } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { MapPin, Bed, Bath, Maximize } from "lucide-react"
-import { IconHome } from "@tabler/icons-react"
-import Link from "next/link"
-import { useRoutes } from "@/i18n/client-router"
-import { useTranslation } from "react-i18next"
+import {
+  ListingEntity,
+  listingTypeLabels,
+} from "@/domain/entities/listing.entity";
+import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { MapPin, Bed, Bath, Maximize } from "lucide-react";
+import { IconHome } from "@tabler/icons-react";
+import Link from "next/link";
+import { useRoutes } from "@/i18n/client-router";
+import { useTranslation } from "react-i18next";
+import { FavoriteToggleButton } from "@/features/favorites/favorite-toggle-button";
 
 interface ListingCardProps {
-  listing: ListingEntity
+  listing: ListingEntity;
+  isFavInitial?: boolean;
 }
 
-export function ListingCard({ listing }: ListingCardProps) {
+export function ListingCard({
+  listing,
+  isFavInitial = false,
+}: ListingCardProps) {
   const { t } = useTranslation();
 
-  const property = listing.property
-  const images = property.property_images || []
-  const mainImage = images.length > 0 ? images[0].public_url : null
-  const routes = useRoutes()
+  const property = listing.property;
+  const images = property.property_images || [];
+  const mainImage = images.length > 0 ? images[0].public_url : null;
+  const routes = useRoutes();
 
   return (
     <Link href={`${routes.listings()}/${listing.id}`}>
@@ -48,8 +56,18 @@ export function ListingCard({ listing }: ListingCardProps) {
             )}
           </div>
 
+          <div className="absolute top-3 right-3">
+            <FavoriteToggleButton
+              listingId={listing.id}
+              isFavInitial={isFavInitial}
+            />
+          </div>
+
           <div className="absolute bottom-3 right-3">
-            <Badge variant="outline" className="bg-white/90 backdrop-blur-sm text-foreground capitalize">
+            <Badge
+              variant="outline"
+              className="bg-white/90 backdrop-blur-sm text-foreground capitalize"
+            >
               {listing.currency} {listing.price.toLocaleString("es-ES")}
               {listing.price_negotiable && t("words:negotiable")}
             </Badge>
@@ -97,5 +115,5 @@ export function ListingCard({ listing }: ListingCardProps) {
         </div>
       </Card>
     </Link>
-  )
+  );
 }

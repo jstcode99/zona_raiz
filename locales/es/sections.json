@@ -37,5 +37,7 @@
     "properties_by_type": "Propiedades por tipo",
     "listings_by_status": "Publicaciones por estado",
     "listings_by_status_description": "Total de publicaciones por mes del año actual",
-    "try_change_filters": "Realiza otra busqueda..."
+    "try_change_filters": "Realiza otra busqueda...",
+    "favorites": "Favoritos",
+    "no_favorites": "Aún no tienes favoritos"
 }

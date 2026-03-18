@@ -22,7 +22,7 @@ Buscar archivos .env en el proyecto:
 ```bash
 find . -name ".env*" -type f 2>/dev/null
 ```
-- Verificar si hay .env.local, .env.example, .env.production
+- Verificar si hay .env, .env.example, .env.production
 - Confirmar que las variables necesarias están configuradas
 
 #### 0.3 Ver cambios pendientes (git status)

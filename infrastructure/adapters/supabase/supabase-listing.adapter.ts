@@ -4,101 +4,110 @@ import { ListingPort } from "@/domain/ports/listing.port";
 import { SupabaseClient } from "@supabase/supabase-js";
 
 export class SupabaseListingAdapter implements ListingPort {
-  constructor(private readonly supabase: SupabaseClient) { }
+  constructor(private readonly supabase: SupabaseClient) {}
 
   async all(filters?: any): Promise<ListingEntity[]> {
-
-    const sortField = filters?.sort_by?.toString().split("_")[0] || "created_at"
-    const sortOrder = filters?.sort_by?.includes("desc") ? false : true
+    const sortField =
+      filters?.sort_by?.toString().split("_")[0] || "created_at";
+    const sortOrder = filters?.sort_by?.includes("desc") ? false : true;
 
     let query = this.supabase
       .from("listings")
-      .select(`
+      .select(
+        `
       *,
       property:properties!inner(*, property_images(*))
-    `)
-      .order(sortField === "price" ? "price" : "created_at", { ascending: sortOrder })
+    `,
+      )
+      .order(sortField === "price" ? "price" : "created_at", {
+        ascending: sortOrder,
+      });
 
     if (filters?.status) {
-      query = query.eq("status", filters.status)
+      query = query.eq("status", filters.status);
     }
     if (filters?.real_estate_id) {
-      query = query.eq("properties.real_estate_id", filters.real_estate_id)
+      query = query.eq("properties.real_estate_id", filters.real_estate_id);
     }
     if (filters?.property_id) {
-      query = query.eq("property_id", filters.property_id)
+      query = query.eq("property_id", filters.property_id);
     }
     if (filters?.type) {
-      query = query.eq("property.property_type", filters.type)
+      query = query.eq("property.property_type", filters.type);
     }
     if (filters?.listing_type) {
-      query = query.eq("listing_type", filters.listing_type)
+      query = query.eq("listing_type", filters.listing_type);
     }
     if (filters?.price) {
-      query = query.eq("price", filters.price)
+      query = query.eq("price", filters.price);
     }
     if (filters?.status) {
-      query = query.eq("status", filters.status)
+      query = query.eq("status", filters.status);
     }
 
     if (filters?.street) {
-      query = query.ilike("property.street", `%${filters.street}%`)
+      query = query.ilike("property.street", `%${filters.street}%`);
     }
     if (filters?.city) {
-      query = query.ilike("property.city", `%${filters.city}%`)
+      query = query.ilike("property.city", `%${filters.city}%`);
     }
     if (filters?.state) {
-      query = query.ilike("property.state", `%${filters.state}%`)
+      query = query.ilike("property.state", `%${filters.state}%`);
     }
     if (filters?.postal_code) {
-      query = query.eq("property.postal_code", filters.postal_code)
+      query = query.eq("property.postal_code", filters.postal_code);
     }
     if (filters?.country) {
-      query = query.eq("property.country", filters.country)
+      query = query.eq("property.country", filters.country);
     }
     if (filters?.neighborhood) {
-      query = query.ilike("property.neighborhood", `%${filters.neighborhood}%`)
+      query = query.ilike("property.neighborhood", `%${filters.neighborhood}%`);
     }
     if (filters?.min_bedrooms) {
-      query = query.gte("property.bedrooms", filters.min_bedrooms)
+      query = query.gte("property.bedrooms", filters.min_bedrooms);
     }
     if (filters?.min_bathrooms) {
-      query = query.gte("property.bathrooms", filters.min_bathrooms)
+      query = query.gte("property.bathrooms", filters.min_bathrooms);
     }
     if (filters?.min_price) {
-      query = query.gte("price", filters.min_price)
+      query = query.gte("price", filters.min_price);
     }
     if (filters?.max_price) {
-      query = query.lte("price", filters.max_price)
+      query = query.lte("price", filters.max_price);
     }
     if (filters?.q) {
-      query = query.or(`property.title.ilike.%${filters.q}%,property.description.ilike.%${filters.q}%`)
+      query = query.or(
+        `property.title.ilike.%${filters.q}%,property.description.ilike.%${filters.q}%`,
+      );
     }
     if (filters?.search_query) {
-      query = query.textSearch("property.search_vector", filters.search_query)
+      query = query.textSearch("property.search_vector", filters.search_query);
     }
 
-    const { data, error } = await query
+    const { data, error } = await query;
 
-    if (error) throw new Error(error.message)
+    if (error) throw new Error(error.message);
 
-    return (data || []).map(item => mapListingRowToEntity(item)!) as ListingEntity[]
+    return (data || []).map(
+      (item) => mapListingRowToEntity(item)!,
+    ) as ListingEntity[];
   }
 
   async create(data: Partial<ListingEntity>): Promise<ListingEntity> {
-
     const { data: row, error } = await this.supabase
       .from("listings")
       .insert(data)
       .select()
       .single();
 
-    if (error) throw new Error(error.message)
-    return mapListingRowToEntity(row)
+    if (error) throw new Error(error.message);
+    return mapListingRowToEntity(row);
   }
 
-  async update(id: string, data: Partial<ListingEntity>): Promise<ListingEntity> {
-
+  async update(
+    id: string,
+    data: Partial<ListingEntity>,
+  ): Promise<ListingEntity> {
     const { data: row, error } = await this.supabase
       .from("listings")
       .update(data)
@@ -106,8 +115,8 @@ export class SupabaseListingAdapter implements ListingPort {
       .select()
       .single();
 
-    if (error) throw new Error(error.message)
-    return mapListingRowToEntity(row)
+    if (error) throw new Error(error.message);
+    return mapListingRowToEntity(row);
   }
 
   async findById(id: string): Promise<ListingEntity | null> {
@@ -118,7 +127,23 @@ export class SupabaseListingAdapter implements ListingPort {
       .single();
 
     if (error || !row) return null;
-    return mapListingRowToEntity(row)
+    return mapListingRowToEntity(row);
+  }
+
+  async findByIds(ids: string[]): Promise<ListingEntity[]> {
+    if (ids.length === 0) return [];
+    const { data: rows, error } = await this.supabase
+      .from("listings")
+      .select(
+        `
+        *,
+        property:properties(*, property_images(*))
+      `,
+      )
+      .in("id", ids);
+
+    if (error) throw error;
+    return (rows || []).map(mapListingRowToEntity);
   }
 
   async findActive(): Promise<ListingEntity[]> {
@@ -128,7 +153,7 @@ export class SupabaseListingAdapter implements ListingPort {
       .eq("status", "active");
 
     if (error) throw error;
-    return row.map(mapListingRowToEntity)
+    return row.map(mapListingRowToEntity);
   }
 
   async delete(id: string): Promise<void> {
@@ -141,129 +166,146 @@ export class SupabaseListingAdapter implements ListingPort {
   }
 
   async count(filters?: any): Promise<number> {
-    let query = this.supabase
-      .from("listings")
-      .select(`
+    let query = this.supabase.from("listings").select(
+      `
       *,
       property:properties!inner(*)
-    `, { count: "exact", head: true })
+    `,
+      { count: "exact", head: true },
+    );
 
     if (filters?.real_estate_id) {
-      query = query.eq("properties.real_estate_id", filters.real_estate_id)
+      query = query.eq("properties.real_estate_id", filters.real_estate_id);
     }
     if (filters?.property_id) {
-      query = query.eq("property_id", filters.property_id)
+      query = query.eq("property_id", filters.property_id);
     }
     if (filters?.listing_type) {
-      query = query.eq("listing_type", filters.listing_type)
+      query = query.eq("listing_type", filters.listing_type);
     }
     if (filters?.status) {
-      query = query.eq("status", filters.status)
+      query = query.eq("status", filters.status);
     }
 
     if (filters?.agent_id) {
-      query = query.eq("agent_id", filters.agent_id)
+      query = query.eq("agent_id", filters.agent_id);
     }
     if (filters?.start_date) {
-      query = query.gte("created_at", filters.start_date)
+      query = query.gte("created_at", filters.start_date);
     }
     if (filters?.end_date) {
-      query = query.lte("created_at", filters.end_date)
+      query = query.lte("created_at", filters.end_date);
     }
 
-    const { count, error } = await query
+    const { count, error } = await query;
 
-    if (error) throw new Error(error.message)
+    if (error) throw new Error(error.message);
 
-    return count || 0
+    return count || 0;
   }
 
   async countWithViews(filters?: any): Promise<number> {
     let query = this.supabase
       .from("listings")
-      .select(`
+      .select(
+        `
       *,
       property:properties!inner(*)
-    `, { count: "exact", head: true })
-      .gt("views_count", 0)
+    `,
+        { count: "exact", head: true },
+      )
+      .gt("views_count", 0);
 
     if (filters?.real_estate_id) {
-      query = query.eq("properties.real_estate_id", filters.real_estate_id)
+      query = query.eq("properties.real_estate_id", filters.real_estate_id);
     }
     if (filters?.property_id) {
-      query = query.eq("property_id", filters.property_id)
+      query = query.eq("property_id", filters.property_id);
     }
     if (filters?.listing_type) {
-      query = query.eq("listing_type", filters.listing_type)
+      query = query.eq("listing_type", filters.listing_type);
     }
     if (filters?.status) {
-      query = query.eq("status", filters.status)
+      query = query.eq("status", filters.status);
     }
 
     if (filters?.start_date) {
-      query = query.gte("created_at", filters.start_date)
+      query = query.gte("created_at", filters.start_date);
     }
     if (filters?.end_date) {
-      query = query.lte("created_at", filters.end_date)
+      query = query.lte("created_at", filters.end_date);
     }
 
-    const { count, error } = await query
+    const { count, error } = await query;
 
-    if (error) throw new Error(error.message)
+    if (error) throw new Error(error.message);
 
-    return count || 0
+    return count || 0;
   }
 
-  async findFeatured(limit: number = 10, realEstateId?: string): Promise<ListingEntity[]> {
+  async findFeatured(
+    limit: number = 10,
+    realEstateId?: string,
+  ): Promise<ListingEntity[]> {
     let query = this.supabase
       .from("listings")
-      .select(`
+      .select(
+        `
         *,
         property:properties(*, property_images:property_images(*))
-      `)
+      `,
+      )
       .eq("featured", true)
       .order("created_at", { ascending: false })
-      .limit(limit)
+      .limit(limit);
 
     if (realEstateId) {
-      query = query.eq("properties.real_estate_id", realEstateId)
+      query = query.eq("properties.real_estate_id", realEstateId);
     }
 
-    const { data, error } = await query
+    const { data, error } = await query;
 
-    if (error) throw new Error(error.message)
+    if (error) throw new Error(error.message);
 
-    return (data || []).map(item => mapListingRowToEntity(item)!) as ListingEntity[]
+    return (data || []).map(
+      (item) => mapListingRowToEntity(item)!,
+    ) as ListingEntity[];
   }
 
   async findBySlug(slug: string): Promise<ListingEntity | null> {
     const { data: row, error } = await this.supabase
       .from("listings")
-      .select(`
+      .select(
+        `
         *,
         property:properties!inner(*, property_images(*))
-      `)
+      `,
+      )
       .eq("properties.slug", slug)
       .eq("status", "active")
       .single();
 
     if (error || !row) return null;
-    return mapListingRowToEntity(row) as ListingEntity
+    return mapListingRowToEntity(row) as ListingEntity;
   }
 
-  async countByStatusAndMonth(year: number, filters?: any): Promise<Record<string, Record<string, number>>> {
+  async countByStatusAndMonth(
+    year: number,
+    filters?: any,
+  ): Promise<Record<string, Record<string, number>>> {
     const startDate = `${year}-01-01`;
     const endDate = `${year}-12-31`;
 
-    let query = this.supabase
-      .from("listings")
-      .select(`
+    let query = this.supabase.from("listings").select(
+      `
         status, created_at,
         property:properties!inner(*, property_images(*))
-      `, { count: "exact", head: false })
+      `,
+      { count: "exact", head: false },
+    );
 
     if (filters?.real_estate_id) {
-      query = query.eq("properties.real_estate_id", filters.real_estate_id)
+      query = query.eq("properties.real_estate_id", filters.real_estate_id);
     }
 
     query = query.gte("created_at", startDate).lte("created_at", endDate);
@@ -273,9 +315,22 @@ export class SupabaseListingAdapter implements ListingPort {
     if (error) throw new Error(error.message);
 
     const result: Record<string, Record<string, number>> = {};
-    const months = ["Ene", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
+    const months = [
+      "Ene",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Ago",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dic",
+    ];
 
-    months.forEach(month => {
+    months.forEach((month) => {
       result[month] = { draft: 0, active: 0, paused: 0, archived: 0 };
     });
 
@@ -296,13 +351,15 @@ export class SupabaseListingAdapter implements ListingPort {
   async findSimplePublished(limit: number = 10): Promise<ListingEntity[]> {
     let query = this.supabase
       .from("listings")
-      .select(`
+      .select(
+        `
         *,
         property:properties!inner(*, property_images(*)),
         real_estate_agent:real_estate_agents!inner(
           profile:profiles!inner(id, full_name, avatar_url, phone)
         )
-      `)
+      `,
+      )
       .eq("status", "active")
       .order("created_at", { ascending: false })
       .limit(limit);
@@ -311,7 +368,7 @@ export class SupabaseListingAdapter implements ListingPort {
 
     if (error) throw new Error(error.message);
 
-    return (data || []).map(item => {
+    return (data || []).map((item) => {
       const entity = mapListingRowToEntity(item);
       if (entity && item.real_estate_agent?.profile) {
         // @ts-ignore - adding agent profile from the join

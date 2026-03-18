@@ -1,14 +1,3 @@
--- ============================================
--- REEMPLAZAR POLICIES DE INQUIRIES
--- ============================================
-
--- Eliminar policies existentes
-drop policy if exists "Inquiries: viewable by assigned agents" on public.inquiries;
-drop policy if exists "Inquiries: updatable by assigned agents or listing agents" on public.inquiries;
-drop policy if exists "Inquiries: deletable by assigned agents or listing agents" on public.inquiries;
-drop policy if exists "Inquiries: insertable by everyone" on public.inquiries;
-
--- SELECT: Admin, Coordinador, Agente asignado, Agente de la propiedad
 create policy "Inquiries: selectable by admins, coordinators, assigned agents, property agents" 
   on public.inquiries for select 
   using (
@@ -24,13 +13,9 @@ create policy "Inquiries: selectable by admins, coordinators, assigned agents, p
       where id = inquiries.assigned_to
       and profile_id = auth.uid()
     )
-    or public.is_coordinator_of(
-      (select real_estate_id from listings where id = inquiries.listing_id),
-      auth.uid()
-    )
+    or public.can_manage_property ((select property_id from listings where id = inquiries.listing_id))
   );
 
--- UPDATE: Admin, Coordinador, Agente asignado
 create policy "Inquiries: updatable by admins, coordinators, assigned agents" 
   on public.inquiries for update 
   using (
@@ -40,10 +25,7 @@ create policy "Inquiries: updatable by admins, coordinators, assigned agents"
       where id = inquiries.assigned_to
       and profile_id = auth.uid()
     )
-    or public.is_coordinator_of(
-      (select real_estate_id from listings where id = inquiries.listing_id),
-      auth.uid()
-    )
+    or public.can_manage_property ((select property_id from listings where id = inquiries.listing_id))
   );
 
 -- DELETE: Admin, Coordinador, Agente asignado
@@ -56,10 +38,7 @@ create policy "Inquiries: deletable by admins, coordinators, assigned agents"
       where id = inquiries.assigned_to
       and profile_id = auth.uid()
     )
-    or public.is_coordinator_of(
-      (select real_estate_id from listings where id = inquiries.listing_id),
-      auth.uid()
-    )
+    or public.can_manage_property ((select property_id from listings where id = inquiries.listing_id))
   );
 
 -- INSERT: Todos autenticados pueden crear

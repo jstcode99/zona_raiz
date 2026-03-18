@@ -1,22 +1,30 @@
-"use client"
+"use client";
 
-import { ListingEntity, listingTypeLabels } from "@/domain/entities/listing.entity"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
-import { PropertyDetail } from "@/features/properties/property-details"
-import { MapPin, Share2, Heart, Eye, MessageCircle } from "lucide-react"
-import Link from "next/link"
-import { useState } from "react"
+import {
+  ListingEntity,
+  listingTypeLabels,
+} from "@/domain/entities/listing.entity";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { PropertyDetail } from "@/features/properties/property-details";
+import { MapPin, Share2, Eye, MessageCircle } from "lucide-react";
+import Link from "next/link";
+import { FavoriteToggleButton } from "@/features/favorites/favorite-toggle-button";
 
 interface ListingDetailProps {
-  listing: ListingEntity
+  listing: ListingEntity;
+  isFavInitial?: boolean;
 }
 
-export function ListingDetail({ listing }: ListingDetailProps) {
-  const property = listing.property
-  const images = (property.property_images?.map(img => img.public_url).filter(Boolean) || []) as string[]
-  const [isFavorite, setIsFavorite] = useState(false)
+export function ListingDetail({
+  listing,
+  isFavInitial = false,
+}: ListingDetailProps) {
+  const property = listing.property;
+  const images = (property.property_images
+    ?.map((img) => img.public_url)
+    .filter(Boolean) || []) as string[];
 
   return (
     <div className="max-w-6xl mx-auto">
@@ -32,12 +40,19 @@ export function ListingDetail({ listing }: ListingDetailProps) {
           <span className="text-foreground">{property.city}</span>
         </div>
 
-        <h1 className="text-3xl font-bold text-foreground mb-2">{property.title}</h1>
-        
+        <h1 className="text-3xl font-bold text-foreground mb-2">
+          {property.title}
+        </h1>
+
         <div className="flex items-center gap-2 text-muted-foreground">
           <MapPin className="w-4 h-4" />
           <span>
-            {[property.neighborhood, property.city, property.state, property.country]
+            {[
+              property.neighborhood,
+              property.city,
+              property.state,
+              property.country,
+            ]
               .filter(Boolean)
               .join(", ")}
           </span>
@@ -54,11 +69,15 @@ export function ListingDetail({ listing }: ListingDetailProps) {
           <Card className="mt-6">
             <CardContent className="p-6">
               <h3 className="font-semibold mb-4">Detalles del anuncio</h3>
-              
+
               <div className="grid grid-cols-2 gap-4 text-sm">
                 <div>
-                  <span className="text-muted-foreground">Tipo de operación</span>
-                  <p className="font-medium">{listingTypeLabels[listing.listing_type]}</p>
+                  <span className="text-muted-foreground">
+                    Tipo de operación
+                  </span>
+                  <p className="font-medium">
+                    {listingTypeLabels[listing.listing_type]}
+                  </p>
                 </div>
                 <div>
                   <span className="text-muted-foreground">Precio</span>
@@ -71,7 +90,8 @@ export function ListingDetail({ listing }: ListingDetailProps) {
                   <div>
                     <span className="text-muted-foreground">Expensas</span>
                     <p className="font-medium">
-                      {listing.currency} {listing.expenses_amount.toLocaleString("es-ES")}
+                      {listing.currency}{" "}
+                      {listing.expenses_amount.toLocaleString("es-ES")}
                       {listing.expenses_included && " incluidas"}
                     </p>
                   </div>
@@ -79,9 +99,9 @@ export function ListingDetail({ listing }: ListingDetailProps) {
                 {listing.virtual_tourUrl && (
                   <div>
                     <span className="text-muted-foreground">Tour virtual</span>
-                    <a 
-                      href={listing.virtual_tourUrl} 
-                      target="_blank" 
+                    <a
+                      href={listing.virtual_tourUrl}
+                      target="_blank"
                       rel="noopener noreferrer"
                       className="font-medium text-primary hover:underline"
                     >
@@ -92,9 +112,9 @@ export function ListingDetail({ listing }: ListingDetailProps) {
                 {listing.video_url && (
                   <div>
                     <span className="text-muted-foreground">Video</span>
-                    <a 
-                      href={listing.video_url} 
-                      target="_blank" 
+                    <a
+                      href={listing.video_url}
+                      target="_blank"
                       rel="noopener noreferrer"
                       className="font-medium text-primary hover:underline"
                     >
@@ -126,19 +146,26 @@ export function ListingDetail({ listing }: ListingDetailProps) {
                 {listing.currency} {listing.price.toLocaleString("es-ES")}
               </div>
               {listing.price_negotiable && (
-                <p className="text-sm text-muted-foreground mb-4">Precio negociable</p>
+                <p className="text-sm text-muted-foreground mb-4">
+                  Precio negociable
+                </p>
               )}
-              
+
               <div className="flex gap-2">
                 <Button className="flex-1" asChild>
-                  <a href={`https://wa.me/?text=Me interesa: ${property.title}`} target="_blank" rel="noopener noreferrer">
+                  <a
+                    href={`https://wa.me/?text=Me interesa: ${property.title}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
                     <MessageCircle className="w-4 h-4 mr-2" />
                     WhatsApp
                   </a>
                 </Button>
-                <Button variant="outline" size="icon" onClick={() => setIsFavorite(!isFavorite)}>
-                  <Heart className={`w-4 h-4 ${isFavorite ? "fill-red-500 text-red-500" : ""}`} />
-                </Button>
+                <FavoriteToggleButton
+                  listingId={listing.id}
+                  isFavInitial={isFavInitial}
+                />
                 <Button variant="outline" size="icon">
                   <Share2 className="w-4 h-4" />
                 </Button>
@@ -190,5 +217,5 @@ export function ListingDetail({ listing }: ListingDetailProps) {
         </div>
       </div>
     </div>
-  )
+  );
 }

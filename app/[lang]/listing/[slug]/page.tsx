@@ -1,31 +1,34 @@
-import { ListingDetail } from "@/features/listing/listing-detail"
-import { notFound } from "next/navigation"
-import { Metadata } from "next"
-import { appModule } from "@/application/modules/app.module"
-import { Lang } from "@/i18n/settings"
-import { cookies } from "next/headers"
+import { ListingDetail } from "@/features/listing/listing-detail";
+import { notFound } from "next/navigation";
+import { Metadata } from "next";
+import { appModule } from "@/application/modules/app.module";
+import { Lang } from "@/i18n/settings";
+import { cookies } from "next/headers";
 
-interface props {
-  params: Promise<{ slug: string, lang: Lang }>
+interface Props {
+  params: Promise<{ slug: string; lang: Lang }>;
 }
 
-export async function generateMetadata({ params }: props): Promise<Metadata> {
-  const cookieStore = await cookies()
-  const { slug, lang } = await params
-  const { listingService } = await appModule(lang, { cookies: cookieStore })
-  const listing = await listingService.getCachedBySlug(slug)
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const cookieStore = await cookies();
+  const { slug, lang } = await params;
+  const { listingService } = await appModule(lang, { cookies: cookieStore });
+  const listing = await listingService.getCachedBySlug(slug);
 
   if (!listing) {
     return {
       title: "Propiedad no encontrada",
-    }
+    };
   }
 
-  const property = listing.property
-  const firstImage = property.property_images?.[0]?.public_url
-  const title = listing.meta_title || `${property.title} - ${listing.listing_type === "rent" ? "Renta" : "Venta"} en ${property.city}`
-  const description = listing.meta_description ||
-    `${property.title} en ${property.city}, ${property.state}. ${property.bedrooms ? `${property.bedrooms} dormitorios` : ""} ${property.bathrooms ? `${property.bathrooms} baños` : ""} ${property.total_area ? `${property.total_area}m²` : ""}. ${listing.currency} ${listing.price.toLocaleString("es-ES")}`
+  const property = listing.property;
+  const firstImage = property.property_images?.[0]?.public_url;
+  const title =
+    listing.meta_title ||
+    `${property.title} - ${listing.listing_type === "rent" ? "Renta" : "Venta"} en ${property.city}`;
+  const description =
+    listing.meta_description ||
+    `${property.title} en ${property.city}, ${property.state}. ${property.bedrooms ? `${property.bedrooms} dormitorios` : ""} ${property.bathrooms ? `${property.bathrooms} baños` : ""} ${property.total_area ? `${property.total_area}m²` : ""}. ${listing.currency} ${listing.price.toLocaleString("es-ES")}`;
 
   return {
     title,
@@ -35,14 +38,16 @@ export async function generateMetadata({ params }: props): Promise<Metadata> {
       description,
       type: "website",
       locale: "es_ES",
-      images: firstImage ? [
-        {
-          url: firstImage,
-          width: 1200,
-          height: 630,
-          alt: property.title,
-        }
-      ] : undefined,
+      images: firstImage
+        ? [
+            {
+              url: firstImage,
+              width: 1200,
+              height: 630,
+              alt: property.title,
+            },
+          ]
+        : undefined,
     },
     twitter: {
       card: "summary_large_image",
@@ -54,18 +59,31 @@ export async function generateMetadata({ params }: props): Promise<Metadata> {
       index: true,
       follow: true,
     },
-  }
+  };
 }
 
-export default async function page({ params }: props) {
-  const cookieStore = await cookies()
-  const { slug, lang } = await params
-  const { listingService } = await appModule(lang, { cookies: cookieStore })
-  const listing = await listingService.getCachedBySlug(slug)
+export default async function page({ params }: Props) {
+  const cookieStore = await cookies();
+  const { slug, lang } = await params;
+  const { listingService, sessionService, favoriteService } = await appModule(
+    lang,
+    { cookies: cookieStore },
+  );
+  const listing = await listingService.getCachedBySlug(slug);
 
   if (!listing) {
-    notFound()
+    notFound();
   }
 
-  return <ListingDetail listing={listing} />
+  let isFavInitial = false;
+  try {
+    const userId = await sessionService.getCurrentUserId();
+    if (userId) {
+      isFavInitial = await favoriteService.exists(userId, listing.id);
+    }
+  } catch {
+    isFavInitial = false;
+  }
+
+  return <ListingDetail listing={listing} isFavInitial={isFavInitial} />;
 }
