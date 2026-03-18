@@ -6,7 +6,7 @@ import { withServerAction } from "@/shared/hooks/with-server-action";
 import { getLangServerSide } from "@/shared/utils/lang";
 import { createRouter } from "@/i18n/router";
 import { initI18n } from "@/i18n/server";
-import { appModule } from "../modules/app.module";
+import { appModule } from "@/application/modules/app.module";
 
 export const toggleFavoriteAction = withServerAction(
   async (listingId: string) => {

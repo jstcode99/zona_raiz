@@ -1,30 +1,27 @@
-"use server"
+"use server";
 
 import { withServerAction } from "@/shared/hooks/with-server-action";
-import { createListingSchema } from "../validation/listing.validation";
-import { handleError } from "../errors/handle-error";
+import { createListingSchema } from "@/application/validation/listing.validation";
 import { revalidatePath, revalidateTag } from "next/cache";
 import { getLangServerSide } from "@/shared/utils/lang";
 import { cookies } from "next/headers";
 import { createRouter } from "@/i18n/router";
 import { initI18n } from "@/i18n/server";
-import { appModule } from "../modules/app.module";
+import { appModule } from "@/application/modules/app.module";
 import { CACHE_TAGS } from "@/infrastructure/config/constants";
 
 export const createListingAction = withServerAction(
   async (formData: FormData) => {
+    const lang = await getLangServerSide();
+    const cookieStore = await cookies();
+    const routes = createRouter(lang);
+    const i18n = await initI18n(lang);
+    const t = i18n.getFixedT(lang);
 
-    const lang = await getLangServerSide()
-    const cookieStore = await cookies()
-    const routes = createRouter(lang)
-    const i18n = await initI18n(lang)
-    const t = i18n.getFixedT(lang)
-
-    const {
-      propertyService,
-      sessionService,
-      listingService
-    } = await appModule(lang, { cookies: cookieStore })
+    const { propertyService, sessionService, listingService } = await appModule(
+      lang,
+      { cookies: cookieStore },
+    );
 
     const raw = Object.fromEntries(formData);
 
@@ -34,67 +31,67 @@ export const createListingAction = withServerAction(
     });
 
     const property = await propertyService.getById(validated.property_id);
-    if (!property) throw new Error(t('exceptions:data_not_found'))
+    if (!property) throw new Error(t("exceptions:data_not_found"));
 
     const agent_id = await sessionService.getCurrentUserId();
-    if (!agent_id) throw new Error(t('exceptions:unauthorized'))
+    if (!agent_id) throw new Error(t("exceptions:unauthorized"));
 
     const listing = await listingService.create({
       ...validated,
       agent_id,
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
-      expenses_included: raw.expenses_included === 'on',
-      featured: raw.featured === 'on',
-      available_from: validated.available_from ? validated.available_from.toISOString() : undefined,
+      expenses_included: raw.expenses_included === "on",
+      featured: raw.featured === "on",
+      available_from: validated.available_from
+        ? validated.available_from.toISOString()
+        : undefined,
     });
 
-    if (!listing) throw new Error(t('exceptions:create_fail'))
+    if (!listing) throw new Error(t("exceptions:create_fail"));
 
-    revalidatePath(routes.dashboard())
-    revalidatePath(routes.listings())
-    revalidatePath(routes.listing(listing.id))
+    revalidatePath(routes.dashboard());
+    revalidatePath(routes.listings());
+    revalidatePath(routes.listing(listing.id));
 
     // Invalidar tags específicos del cache
-    revalidateTag(CACHE_TAGS.LISTING.PRINCIPAL, { expire: 0 })
-    revalidateTag(CACHE_TAGS.LISTING.ALL, { expire: 0 })
-    revalidateTag(CACHE_TAGS.LISTING.COUNT, { expire: 0 })
-    revalidateTag(CACHE_TAGS.LISTING.DETAIL(listing.id), { expire: 0 })
+    revalidateTag(CACHE_TAGS.LISTING.PRINCIPAL, { expire: 0 });
+    revalidateTag(CACHE_TAGS.LISTING.ALL, { expire: 0 });
+    revalidateTag(CACHE_TAGS.LISTING.COUNT, { expire: 0 });
+    revalidateTag(CACHE_TAGS.LISTING.DETAIL(listing.id), { expire: 0 });
     if (listing.featured) {
-      revalidateTag(CACHE_TAGS.LISTING.FEATURED, { expire: 0 })
+      revalidateTag(CACHE_TAGS.LISTING.FEATURED, { expire: 0 });
     }
     if (property.real_estate_id) {
-      revalidateTag(CACHE_TAGS.REAL_ESTATE.DETAIL(property.real_estate_id), { expire: 0 })
+      revalidateTag(CACHE_TAGS.REAL_ESTATE.DETAIL(property.real_estate_id), {
+        expire: 0,
+      });
     }
-  }
-)
+  },
+);
 
 export const updateListingAction = withServerAction(
-  async (
-    id: string,
-    formData: FormData
-  ) => {
-    const raw = Object.fromEntries(formData)
+  async (id: string, formData: FormData) => {
+    const raw = Object.fromEntries(formData);
 
     const validated = await createListingSchema.validate(raw, {
       abortEarly: false,
       stripUnknown: true,
-    })
+    });
 
-    const lang = await getLangServerSide()
-    const cookieStore = await cookies()
-    const routes = createRouter(lang)
-    const i18n = await initI18n(lang)
-    const t = i18n.getFixedT(lang)
+    const lang = await getLangServerSide();
+    const cookieStore = await cookies();
+    const routes = createRouter(lang);
+    const i18n = await initI18n(lang);
+    const t = i18n.getFixedT(lang);
 
-    const {
-      listingService,
-      propertyService
-    } = await appModule(lang, { cookies: cookieStore })
+    const { listingService, propertyService } = await appModule(lang, {
+      cookies: cookieStore,
+    });
 
     const currentListing = await listingService.findById(id);
 
-    if (!currentListing) throw new Error(t('exceptions:data_not_found'))
+    if (!currentListing) throw new Error(t("exceptions:data_not_found"));
 
     const property = await propertyService.getById(currentListing.property_id);
     const realEstateId = property?.real_estate_id;
@@ -106,66 +103,65 @@ export const updateListingAction = withServerAction(
       ...validated,
       agent_id,
       updated_at: new Date().toISOString(),
-      expenses_included: raw.expenses_included === 'on',
-      featured: raw.featured === 'on',
-      available_from: validated.available_from ? validated.available_from.toISOString() : currentListing.available_from,
+      expenses_included: raw.expenses_included === "on",
+      featured: raw.featured === "on",
+      available_from: validated.available_from
+        ? validated.available_from.toISOString()
+        : currentListing.available_from,
       property_id: currentListing.property_id,
     };
 
-    const listing = await listingService.update(id, dataToUpdate)
+    const listing = await listingService.update(id, dataToUpdate);
 
-    if (!listing) throw new Error(t('exceptions:update_fail'))
+    if (!listing) throw new Error(t("exceptions:update_fail"));
 
-    revalidatePath(routes.dashboard())
-    revalidatePath(routes.listings())
-    revalidatePath(routes.listing(listing.id))
+    revalidatePath(routes.dashboard());
+    revalidatePath(routes.listings());
+    revalidatePath(routes.listing(listing.id));
 
     // Invalidar tags específicos del cache
-    revalidateTag(CACHE_TAGS.LISTING.PRINCIPAL, { expire: 0 })
-    revalidateTag(CACHE_TAGS.LISTING.ALL, { expire: 0 })
-    revalidateTag(CACHE_TAGS.LISTING.COUNT, { expire: 0 })
-    revalidateTag(CACHE_TAGS.LISTING.DETAIL(id), { expire: 0 })
+    revalidateTag(CACHE_TAGS.LISTING.PRINCIPAL, { expire: 0 });
+    revalidateTag(CACHE_TAGS.LISTING.ALL, { expire: 0 });
+    revalidateTag(CACHE_TAGS.LISTING.COUNT, { expire: 0 });
+    revalidateTag(CACHE_TAGS.LISTING.DETAIL(id), { expire: 0 });
     if (listing.featured) {
-      revalidateTag(CACHE_TAGS.LISTING.FEATURED, { expire: 0 })
+      revalidateTag(CACHE_TAGS.LISTING.FEATURED, { expire: 0 });
     }
     if (realEstateId) {
-      revalidateTag(CACHE_TAGS.REAL_ESTATE.DETAIL(realEstateId), { expire: 0 })
+      revalidateTag(CACHE_TAGS.REAL_ESTATE.DETAIL(realEstateId), { expire: 0 });
     }
+  },
+);
+
+export const deleteListingAction = withServerAction(async (id: string) => {
+  const lang = await getLangServerSide();
+  const cookieStore = await cookies();
+  const routes = createRouter(lang);
+  const i18n = await initI18n(lang);
+  const t = i18n.getFixedT(lang);
+
+  const { listingService, propertyService } = await appModule(lang, {
+    cookies: cookieStore,
+  });
+
+  const currentListing = await listingService.findById(id);
+  if (!currentListing) throw new Error(t("exceptions:data_not_found"));
+
+  const property = await propertyService.getById(currentListing.property_id);
+  const realEstateId = property?.real_estate_id;
+
+  await listingService.delete(id);
+
+  revalidatePath(routes.dashboard());
+  revalidatePath(routes.listings());
+  revalidatePath(routes.listing(id));
+
+  // Invalidar tags específicos del cache
+  revalidateTag(CACHE_TAGS.LISTING.PRINCIPAL, { expire: 0 });
+  revalidateTag(CACHE_TAGS.LISTING.ALL, { expire: 0 });
+  revalidateTag(CACHE_TAGS.LISTING.COUNT, { expire: 0 });
+  revalidateTag(CACHE_TAGS.LISTING.DETAIL(id), { expire: 0 });
+  if (realEstateId) {
+    revalidateTag(CACHE_TAGS.REAL_ESTATE.DETAIL(realEstateId), { expire: 0 });
   }
-)
-
-export const deleteListingAction = withServerAction(
-  async (id: string) => {
-    const lang = await getLangServerSide()
-    const cookieStore = await cookies()
-    const routes = createRouter(lang)
-    const i18n = await initI18n(lang)
-    const t = i18n.getFixedT(lang)
-
-    const {
-      listingService,
-      propertyService
-    } = await appModule(lang, { cookies: cookieStore })
-
-    const currentListing = await listingService.findById(id);
-    if (!currentListing) throw new Error(t('exceptions:data_not_found'))
-
-    const property = await propertyService.getById(currentListing.property_id);
-    const realEstateId = property?.real_estate_id;
-
-    await listingService.delete(id)
-
-    revalidatePath(routes.dashboard())
-    revalidatePath(routes.listings())
-    revalidatePath(routes.listing(id))
-
-    // Invalidar tags específicos del cache
-    revalidateTag(CACHE_TAGS.LISTING.PRINCIPAL, { expire: 0 })
-    revalidateTag(CACHE_TAGS.LISTING.ALL, { expire: 0 })
-    revalidateTag(CACHE_TAGS.LISTING.COUNT, { expire: 0 })
-    revalidateTag(CACHE_TAGS.LISTING.DETAIL(id), { expire: 0 })
-    if (realEstateId) {
-      revalidateTag(CACHE_TAGS.REAL_ESTATE.DETAIL(realEstateId), { expire: 0 })
-    }
-  }
-)
+});

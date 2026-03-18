@@ -1,5 +1,5 @@
-import { RealEstateEntity } from "@/domain/entities/real-estate.entity"
-import { RealEstateInput } from "../validation/real-estate.validation"
+import { RealEstateEntity } from "@/domain/entities/real-estate.entity";
+import { RealEstateInput } from "@/application/validation/real-estate.validation";
 
 export function mapRealEstateRowToEntity(row: any): RealEstateEntity {
   return {
@@ -15,10 +15,12 @@ export function mapRealEstateRowToEntity(row: any): RealEstateEntity {
     logo_url: row.logo_url,
     created_at: row.created_at,
     updated_at: row.updated_at,
-  }
+  };
 }
 
-export function mapRealEstateRowToDomain(row: RealEstateInput): Partial<RealEstateEntity> {
+export function mapRealEstateRowToDomain(
+  row: RealEstateInput,
+): Partial<RealEstateEntity> {
   return {
     name: row.name,
     description: row.description,
@@ -28,6 +30,5 @@ export function mapRealEstateRowToDomain(row: RealEstateInput): Partial<RealEsta
     state: row.state,
     postal_code: row.postal_code,
     country: row.country,
-  }
+  };
 }
-
