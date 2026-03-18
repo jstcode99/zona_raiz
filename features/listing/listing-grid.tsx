@@ -1,18 +1,22 @@
-"use client"
+"use client";
 
-import { ListingEntity } from "@/domain/entities/listing.entity"
-import { Card } from "@/components/ui/card"
-import { IconHome } from "@tabler/icons-react"
-import { useTranslation } from "react-i18next"
-import { ListingCard } from "./listing-card"
-
+import { ListingEntity } from "@/domain/entities/listing.entity";
+import { Card } from "@/components/ui/card";
+import { IconHome } from "@tabler/icons-react";
+import { useTranslation } from "react-i18next";
+import { ListingCard } from "./listing-card";
 
 interface ListingGridProps {
-  listings: ListingEntity[]
-  loading?: boolean
+  listings: ListingEntity[];
+  loading?: boolean;
+  favoriteIds?: string[];
 }
 
-export function ListingGrid({ listings, loading }: ListingGridProps) {
+export function ListingGrid({
+  listings,
+  loading,
+  favoriteIds = [],
+}: ListingGridProps) {
   const { t } = useTranslation();
 
   if (loading) {
@@ -29,7 +33,7 @@ export function ListingGrid({ listings, loading }: ListingGridProps) {
           </Card>
         ))}
       </div>
-    )
+    );
   }
 
   if (listings.length === 0) {
@@ -37,20 +41,24 @@ export function ListingGrid({ listings, loading }: ListingGridProps) {
       <div className="flex flex-col items-center justify-center py-12 text-center">
         <IconHome className="w-16 h-16 text-muted-foreground/30 mb-4" />
         <h3 className="text-lg font-semibold text-muted-foreground">
-          { t('exceptions:properties_not_found') }
+          {t("exceptions:properties_not_found")}
         </h3>
         <p className="text-sm text-muted-foreground mt-1">
-          { t('sections:try_change_filters') }
+          {t("sections:try_change_filters")}
         </p>
       </div>
-    )
+    );
   }
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
       {listings.map((listing) => (
-        <ListingCard key={listing.id} listing={listing} />
+        <ListingCard
+          key={listing.id}
+          listing={listing}
+          isFavInitial={favoriteIds.includes(listing.id)}
+        />
       ))}
     </div>
-  )
+  );
 }
