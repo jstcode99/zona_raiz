@@ -1,33 +1,44 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import { NavMain } from "@/features/navigation/nav-main"
-import { NavUser } from "@/features/navigation/nav-user"
+import * as React from "react";
+import { NavMain } from "@/features/navigation/nav-main";
+import { NavUser } from "@/features/navigation/nav-user";
 import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
   SidebarHeader,
   SidebarMenu,
-} from "@/components/ui/sidebar"
-import { IconName } from "lucide-react/dynamic"
-import i18next from "i18next"
-import { ProfileEntity } from "@/domain/entities/profile.entity"
-import { Building2Icon } from "lucide-react"
-import { Separator } from "@/components/ui/separator"
-import { useTranslation } from "react-i18next"
+} from "@/components/ui/sidebar";
+import { IconName } from "lucide-react/dynamic";
+import i18next from "i18next";
+import { ProfileEntity } from "@/domain/entities/profile.entity";
+import { Building2Icon } from "lucide-react";
+import { Separator } from "@/components/ui/separator";
+import { useTranslation } from "react-i18next";
+import { FavoritesList } from "@/features/favorites/favorites-list";
+import { ListingEntity } from "@/domain/entities/listing.entity";
+
+interface FavoriteWithListing {
+  id: string;
+  listing_id: string;
+  created_at: string;
+  listing?: ListingEntity;
+}
 
 interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
-  profile: ProfileEntity
+  profile: ProfileEntity;
   menu: {
-    title: string
-    url: string
-    icon?: IconName | string
-  }[]
+    title: string;
+    url: string;
+    icon?: IconName | string;
+  }[];
+  favorites?: FavoriteWithListing[];
 }
 
 export function AppSidebar({ ...props }: AppSidebarProps) {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
+  const favorites = props.favorites || [];
 
   return (
     <Sidebar collapsible="icon" {...props}>
@@ -41,18 +52,22 @@ export function AppSidebar({ ...props }: AppSidebarProps) {
               <h1 className="font-bold text-lg text-foreground group-data-[collapsible=icon]:hidden">
                 <span className="text-base font-semibold">Zona Raiz</span>
               </h1>
-              <p className="text-xs text-muted-foreground group-data-[collapsible=icon]:hidden">{t('words:dashboard')}</p>
+              <p className="text-xs text-muted-foreground group-data-[collapsible=icon]:hidden">
+                {t("words:dashboard")}
+              </p>
             </div>
           </div>
         </div>
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={props.menu} />
+        <Separator className="my-2" />
+        {favorites.length > 0 && <FavoritesList favorites={favorites} />}
       </SidebarContent>
       <Separator />
       <SidebarFooter>
         <NavUser profile={props.profile} />
       </SidebarFooter>
     </Sidebar>
-  )
+  );
 }
