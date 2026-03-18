@@ -8,10 +8,8 @@ import {
   SidebarContent,
   SidebarFooter,
   SidebarHeader,
-  SidebarMenu,
 } from "@/components/ui/sidebar";
 import { IconName } from "lucide-react/dynamic";
-import i18next from "i18next";
 import { ProfileEntity } from "@/domain/entities/profile.entity";
 import { Building2Icon } from "lucide-react";
 import { Separator } from "@/components/ui/separator";

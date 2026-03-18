@@ -1,4 +1,4 @@
-import { EUserRole } from "@/domain/entities/profile.entity"
+import { EUserRole } from "@/domain/entities/profile.entity";
 
 export const ROUTES = {
   home: {
@@ -85,10 +85,15 @@ export const ROUTES = {
     es: "/panel/publicaciones",
     en: "/dashboard/listings",
   },
-  
+
   inquiries: {
     es: "/panel/consultas",
     en: "/dashboard/inquiries",
+  },
+
+  favorites: {
+    es: "/panel/favoritos",
+    en: "/dashboard/favorites",
   },
 
   users: {
@@ -100,15 +105,12 @@ export const ROUTES = {
     es: "/panel/usuarios/:id",
     en: "/dashboard/users/:id",
   },
-} as const
+} as const;
 
-type Lang = "es" | "en"
+type Lang = "es" | "en";
 
-export function getRoutes(
-  keys: readonly (keyof typeof ROUTES)[],
-  lang: Lang
-) {
-  return keys.map((key) => ROUTES[key][lang])
+export function getRoutes(keys: readonly (keyof typeof ROUTES)[], lang: Lang) {
+  return keys.map((key) => ROUTES[key][lang]);
 }
 
 export const PUBLIC_ROUTE_KEYS = [
@@ -117,7 +119,7 @@ export const PUBLIC_ROUTE_KEYS = [
   "signup",
   "otp",
   "callback",
-] as const
+] as const;
 
 export const PROTECTED_ROUTE_KEYS = [
   "dashboard",
@@ -126,23 +128,22 @@ export const PROTECTED_ROUTE_KEYS = [
   "properties",
   "listings",
   "inquiries",
-] as const
+  "favorites",
+] as const;
 
 export const PUBLIC_ROUTES = [
   ...getRoutes(PUBLIC_ROUTE_KEYS, "en"),
   ...getRoutes(PUBLIC_ROUTE_KEYS, "es"),
-]
+];
 
 export const PROTECTED_BASE_ROUTES = [
   ...getRoutes(PROTECTED_ROUTE_KEYS, "en"),
   ...getRoutes(PROTECTED_ROUTE_KEYS, "es"),
   "/api",
-]
+];
 
 export const ROLE_ACCESS: Record<EUserRole, string[]> = {
   admin: PROTECTED_BASE_ROUTES,
   "real-estate": PROTECTED_BASE_ROUTES,
   client: PROTECTED_BASE_ROUTES,
-}
-
-
+};

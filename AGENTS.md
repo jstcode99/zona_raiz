@@ -1,6 +1,9 @@
 # AGENTS.md
 
-Este archivo es leído por opencode en cada sesión.
+Este archivo es leído por opencode antes de cualquier ejecución.
+Define la arquitectura, patrones y reglas del proyecto.
+
+---
 
 ## Stack
 

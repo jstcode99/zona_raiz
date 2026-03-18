@@ -6,5 +6,8 @@
     "saving": "Guardando",
     "loading": "Cargando",
     "without_results": "Sin resultados",
-    "no_address": "Sin dirección asociada"
+    "no_address": "Sin dirección asociada",
+    "favorite_added": "Agregado a favoritos",
+    "favorite_removed": "Eliminado de favoritos",
+    "favorite_error": "Error al procesar favorito"
 }
