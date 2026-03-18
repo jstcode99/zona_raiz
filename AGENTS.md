@@ -114,6 +114,22 @@ zona_raiz/
 → @pr-manager
 ```
 
+## Gestión de Issues
+
+### ⚠️ SOLO Linear
+
+**NUNCA usar:**
+- GitHub Issues
+- Otros tableros (Trello, Asana, Jira, etc.)
+
+**SIEMPRE usar Linear** para todas las issues del proyecto.
+
+### Reglas
+- Crear issues SOLO en Linear
+- Actualizar estados en Linear
+- Reportar IDs de Linear
+- Si existe issue en otro sistema, migrarla a Linear primero
+
 ## Carga lazy de reglas
 
 CRITICAL: Carga estos archivos solo cuando sean relevantes:
