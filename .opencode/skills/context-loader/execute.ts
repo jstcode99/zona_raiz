@@ -46,10 +46,10 @@ function readAvailableSkills(): string[] {
 }
 
 /**
- * Lee las variables de entorno del archivo .env.local
+ * Lee las variables de entorno del archivo .env
  */
 function readEnvironmentVariables(): Record<string, string> {
-  const envPath = path.join(process.cwd(), ".env.local");
+  const envPath = path.join(process.cwd(), ".env");
   const variables: Record<string, string> = {};
 
   try {

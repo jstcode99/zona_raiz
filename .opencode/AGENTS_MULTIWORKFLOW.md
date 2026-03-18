@@ -14,10 +14,13 @@ Esta guía explica cómo trabajar con dos o más agentes de IA simultáneamente 
 
 | Agente | Especialidad | Modelo | Modo |
 |--------|--------------|--------|------|
-| `frontend-developer` | Next.js, Tailwind, shadcn/ui | Claude Sonnet 4 | Primary |
-| `backend-developer` | Supabase, Clean Architecture, TypeScript | Claude Sonnet 4 | Primary |
-| `code-reviewer` | Revisión de seguridad y buenas prácticas | GPT-4 Turbo | Subagent |
-| `test-writer` | Tests TDD | Claude Haiku 4 | Subagent |
+| `frontend-developer` | Next.js, Tailwind, shadcn/ui | Gemini 2.5 Flash | Primary |
+| `backend-developer` | Supabase, Clean Architecture, TypeScript | Gemini 2.5 Flash | Primary |
+| `planner` | Planificación y estimaciones | Gemini 2.5 Flash | Primary |
+| `orchestrator` | Coordinación entre agentes | Gemini 2.5 Flash | Primary |
+| `code-reviewer` | Revisión de seguridad y buenas prácticas | Mistral Small | Subagent |
+| `test-writer` | Tests TDD | Gemini 2.0 Flash | Subagent |
+| `pr-manager` | Gestión de Pull Requests | Mistral Codestral | Subagent |
 
 ## Flujo de Trabajo Recomendado
 
@@ -38,11 +41,11 @@ git worktree add .opencode/worktrees/backend feature/backend-api
 ```bash
 # Terminal 1 - Agente Frontend
 cd .opencode/worktrees/frontend
-claude
+opencode
 
 # Terminal 2 - Agente Backend
 cd .opencode/worktrees/backend
-claude
+opencode
 ```
 
 #### Paso 3: Trabajar en paralelo
@@ -156,6 +159,81 @@ git stash pop
 ### Problema: Duplicación de Trabajo
 **Solución**: Usar task board de opencode-ensemble para asignar tareas claras.
 
+## Flujo de Trabajo con Nuevos Agentes
+
+### Proceso Completo: Planning → Orchestration → PR Management
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│  1. PLANNING (planner) - Gemini 2.5 Flash                      │
+├─────────────────────────────────────────────────────────────────┤
+│  • Analiza requirements del usuario                            │
+│  • Crea task board en Linear                                   │
+│  • Estima esfuerzo (puntos Fibonacci)                          │
+│  • Prioriza y asigna tareas a agentes                          │
+└───────────────────────────────┬─────────────────────────────────┘
+                                ↓
+┌─────────────────────────────────────────────────────────────────┐
+│  2. DEVELOPMENT (frontend + backend) - Gemini 2.5 Flash         │
+├─────────────────────────────────────────────────────────────────┤
+│  • Trabajan en paralelo (worktrees)                            │
+│  • Commits frecuentes en sus ramas                             │
+│  • Actualizan task board                                       │
+└───────────────────────────────┬─────────────────────────────────┘
+                                ↓
+┌─────────────────────────────────────────────────────────────────┐
+│  3. ORCHESTRATION (orchestrator) - Gemini 2.5 Flash             │
+├─────────────────────────────────────────────────────────────────┤
+│  • Monitoriza progreso de tareas                               │
+│  • Facilita comunicación (team-message)                        │
+│  • Resuelve bloqueos entre agentes                             │
+│  • Actualiza task board en Linear                              │
+└───────────────────────────────┬─────────────────────────────────┘
+                                ↓
+┌─────────────────────────────────────────────────────────────────┐
+│  4. PR MANAGEMENT (pr-manager) - Mistral Codestral              │
+├─────────────────────────────────────────────────────────────────┤
+│  • Detecta tareas completadas                                  │
+│  • Crea Pull Request en GitHub                                 │
+│  • Asigna code-reviewer y test-writer                          │
+│  • Monitorea checks CI/CD                                      │
+│  • Merge cuando todo pasa                                      │
+└───────────────────────────────┬─────────────────────────────────┘
+                                ↓
+┌─────────────────────────────────────────────────────────────────┐
+│  5. REVIEW & TEST (code-reviewer + test-writer)                 │
+├─────────────────────────────────────────────────────────────────┤
+│  • Revisión de seguridad y buenas prácticas (Mistral Small)    │
+│  • Escritura de tests TDD (Gemini 2.0 Flash)                   │
+│  • Aprobación de PR para merge                                 │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+### Comandos con Nuevos Agentes
+
+```bash
+# Verificar estado del equipo (orchestrator)
+/team-status
+
+# Enviar mensaje entre agentes (orchestrator)
+/team-message "Backend: API lista para revisión"
+
+# Añadir tarea al board (orchestrator)
+/team-task-add "Implementar validación de usuarios"
+
+# Crear issue en Linear (planner)
+/linear-create-issue --title "Tarea" --teamId "team-id" --priority 2
+
+# Verificar issues asignados (planner)
+/linear-get-user-issues --limit 20
+
+# Ver Pull Requests (pr-manager)
+gh pr list
+
+# Crear PR (pr-manager)
+gh pr create --title "Feature X" --body "Descripción" --base main --head feature-x
+```
+
 ## Referencias
 
 - **opencode-ensemble**: https://github.com/hueyexe/opencode-ensemble
@@ -164,5 +242,5 @@ git stash pop
 
 ---
 
-**Última actualización**: 2026-03-17
+**Última actualización**: 2026-03-18
 **Proyecto**: Zona Raiz

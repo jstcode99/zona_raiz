@@ -22,7 +22,7 @@ Este proyecto es una aplicación Next.js 16+ con TypeScript, Clean Architecture 
 ```
 zona_raiz/
 ├── .env.ia
-├── .env.local
+├── .env
 ├── .gitignore
 ├── .npmrc
 ├── components.json
@@ -256,7 +256,7 @@ Activos estáticos (imágenes, favicon, etc.)
 - **`eslint.config.mjs`**: Configuración de ESLint
 - **`components.json`**: Configuración de shadcn/ui
 - **`proxy.ts`**: Configuración de proxy para APIs externas
-- **`.env.local`**: Variables de entorno locales (no versionadas)
+- **`.env`**: Variables de entorno locales (no versionadas)
 - **`.opencode/`**: Skills y configuraciones de opencode
 - **`.vscode/`**: Configuraciones del espacio de trabajo VSCode
 

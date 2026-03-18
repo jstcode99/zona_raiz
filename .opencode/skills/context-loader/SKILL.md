@@ -26,7 +26,7 @@ Analiza todos los skills en `.opencode/skills/`:
 - Cualquier otro skill personalizado
 
 ### 2. Lectura de Variables de Entorno
-Lee `.env.local` para conocer las configuraciones:
+Lee `.env` para conocer las configuraciones:
 - URLs de APIs
 - Claves de Supabase
 - Configuraciones de Google Client
@@ -46,7 +46,7 @@ Inicio de Chat
     ↓
 1. Listar skills disponibles en .opencode/skills/
     ↓
-2. Leer archivo .env.local
+2. Leer archivo .env
     ↓
 3. Leer archivo AGENTS.md
     ↓
@@ -94,7 +94,7 @@ Como skill, se carga en el contexto del agente y debe ser invocado automáticame
 1. **Verifica si el contexto ya fue cargado** (para evitar repetición en la misma sesión)
 2. **Lee los archivos necesarios**:
    - Lista los skills en `.opencode/skills/`
-   - Lee `.env.local`
+   - Lee `.env`
    - Lee `AGENTS.md`
 3. **Presenta el contexto inicial** al usuario
 
