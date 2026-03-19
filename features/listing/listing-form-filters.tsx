@@ -49,8 +49,8 @@ function filtersToSearchParams(filters: ListingSearchFormInput) {
     city: filters.city,
     neighborhood: filters.neighborhood,
     street: filters.street,
-    bedrooms: filters.bathrooms,
-    bathrooms: filters.bedrooms,
+    bedrooms: filters.bedrooms,
+    bathrooms: filters.bathrooms,
 
     real_estate_id: filters.real_estate_id ?? undefined,
     property_id: filters.property_id ?? undefined,
@@ -136,7 +136,7 @@ export function ListingFiltersForm({
       {/* Búsqueda rápida */}
       <div className="flex gap-2 items-center">
         <Form.Input
-          name="search_query"
+          name="search"
           label="Buscar propiedades"
           placeholder="Buscar propiedades..."
         />
