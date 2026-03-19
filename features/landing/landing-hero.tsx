@@ -1,11 +1,16 @@
 "use client"
+
 import { useState } from "react"
 import { useTranslation } from "react-i18next"
 import { useRouter } from "next/navigation"
-import * as yup from "yup"
+import { useForm } from "react-hook-form"
+import { yupResolver } from "@hookform/resolvers/yup"
 import { Lang } from "@/i18n/settings"
 import { Button } from "@/components/ui/button"
-import { IconBed, IconBath, IconRuler } from "@tabler/icons-react"
+import { IconBed, IconBath } from "@tabler/icons-react"
+import { defaultLandingSearchValues, LandingSearchFormInput, landingSearchSchema } from "@/application/validation/landing-search.schema"
+import { searchListingsAction } from "@/application/actions/landing.actions"
+import { useServerMutation } from "@/shared/hooks/use-server-mutation.hook"
 
 interface LandingHeroProps {
   lang: Lang
@@ -23,66 +28,42 @@ const propertyTypes = [
   { value: "warehouse", label: "Bodega" },
 ]
 
-const searchSchema = yup.object({
-  city: yup.string().optional(),
-  property_type: yup.string().optional(),
-  min_bedrooms: yup.number().min(0).optional(),
-  min_bathrooms: yup.number().min(0).optional(),
-  max_price: yup.number().min(0).optional(),
-})
-
 export function LandingHero({ lang, cities = [] }: LandingHeroProps) {
   const { t } = useTranslation("landing")
   const router = useRouter()
-  const [city, setCity] = useState("")
-  const [propType, setPropType] = useState("")
-  const [beds, setBeds] = useState("")
-  const [baths, setBaths] = useState("")
-  const [maxPrice, setMaxPrice] = useState("")
-  const [errors, setErrors] = useState<Record<string, string>>({})
 
-  const validateAndSearch = async () => {
-    const formData = {
-      city,
-      property_type: propType,
-      min_bedrooms: beds ? parseInt(beds, 10) : undefined,
-      min_bathrooms: baths ? parseInt(baths, 10) : undefined,
-      max_price: maxPrice ? parseFloat(maxPrice) : undefined,
+  const form = useForm({
+    resolver: yupResolver(landingSearchSchema) as any,
+    defaultValues: defaultLandingSearchValues,
+    mode: "onBlur",
+  })
+
+  const { setError, formState: { errors } } = form as any
+
+  const mutation = useServerMutation({
+    action: searchListingsAction,
+    setError,
+    onError: (error) => {
+      console.error("Search error:", error)
     }
+  })
 
-    try {
-      await searchSchema.validate(formData, { abortEarly: false })
-      setErrors({})
+  const onSubmit = (values: any) => {
+    const formData = new FormData()
 
-      const params = new URLSearchParams()
-      if (propType) params.set("type", propType)
-      if (beds) params.set("min_bedrooms", beds)
-      if (baths) params.set("min_bathrooms", baths)
-      if (maxPrice) params.set("max_price", maxPrice)
-      
-      const citySlug = city 
-        ? cities.find(c => c.name.toLowerCase() === city.toLowerCase())?.slug 
-          || city.toLowerCase().replace(/\s+/g, "-")
-        : "colombia"
-      
-      const qs = params.toString()
-      router.push(`/${lang}/${citySlug}${qs ? `?${qs}` : ""}`)
-    } catch (err) {
-      if (err instanceof yup.ValidationError) {
-        const newErrors: Record<string, string> = {}
-        err.inner.forEach((e) => {
-          if (e.path) {
-            newErrors[e.path] = e.message
-          }
-        })
-        setErrors(newErrors)
-      }
-    }
+    if (values.city) formData.set("city", values.city)
+    if (values.property_type) formData.set("type", values.property_type)
+    if (values.min_bedrooms) formData.set("min_bedrooms", String(values.min_bedrooms))
+    if (values.min_bathrooms) formData.set("min_bathrooms", String(values.min_bathrooms))
+    if (values.max_price) formData.set("max_price", String(values.max_price))
+    formData.set("country", "es")
+
+    mutation.action(formData)
   }
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter") {
-      validateAndSearch()
+      form.handleSubmit(onSubmit)()
     }
   }
 
@@ -132,7 +113,7 @@ export function LandingHero({ lang, cities = [] }: LandingHeroProps) {
               </h2>
             </div>
 
-            <div className="p-6 pt-4 flex flex-col gap-3">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="p-6 pt-4 flex flex-col gap-3">
               <div>
                 <label className="text-[11px] font-semibold text-neutral-500 uppercase tracking-wider mb-1.5 block">
                   {t("hero.location")}
@@ -142,8 +123,7 @@ export function LandingHero({ lang, cities = [] }: LandingHeroProps) {
                   <input
                     className="flex-1 text-[13px] text-neutral-700 outline-none bg-transparent placeholder:text-neutral-400"
                     placeholder={t("hero.location_placeholder")}
-                    value={city}
-                    onChange={e => setCity(e.target.value)}
+                    {...form.register("city")}
                     onKeyDown={handleKeyDown}
                     list="cities-list"
                   />
@@ -157,7 +137,7 @@ export function LandingHero({ lang, cities = [] }: LandingHeroProps) {
                   <span className="text-neutral-300 text-xs">▾</span>
                 </div>
                 {errors.city && (
-                  <p className="text-[11px] text-red-500 mt-1">{errors.city}</p>
+                  <p className="text-[11px] text-red-500 mt-1">{errors.city.message}</p>
                 )}
               </div>
 
@@ -169,15 +149,14 @@ export function LandingHero({ lang, cities = [] }: LandingHeroProps) {
                   <span className="text-neutral-400">🏠</span>
                   <select
                     className="flex-1 text-[13px] text-neutral-700 outline-none bg-transparent"
-                    value={propType}
-                    onChange={e => setPropType(e.target.value)}
+                    {...form.register("property_type")}
                   >
                     <option value="">{t("hero.property_placeholder")}</option>
                     {propertyTypes.map(p => <option key={p.value} value={p.value}>{p.label}</option>)}
                   </select>
                 </div>
                 {errors.property_type && (
-                  <p className="text-[11px] text-red-500 mt-1">{errors.property_type}</p>
+                  <p className="text-[11px] text-red-500 mt-1">{errors.property_type.message}</p>
                 )}
               </div>
 
@@ -186,25 +165,22 @@ export function LandingHero({ lang, cities = [] }: LandingHeroProps) {
                 <input
                   className="w-12 text-[12px] text-neutral-700 outline-none bg-transparent placeholder:text-neutral-400"
                   placeholder={t("hero.beds")}
-                  value={beds}
-                  onChange={e => setBeds(e.target.value)}
-                  onKeyDown={handleKeyDown}
+                  {...form.register("min_bedrooms", { valueAsNumber: true })}
                   type="number"
                   min="0"
+                  onKeyDown={handleKeyDown}
                 />
                 <span className="text-neutral-200">|</span>
                 <IconBath className="size-4 text-neutral-400 shrink-0" />
                 <input
                   className="w-16 text-[12px] text-neutral-700 outline-none bg-transparent placeholder:text-neutral-400"
                   placeholder={t("hero.baths")}
-                  value={baths}
-                  onChange={e => setBaths(e.target.value)}
-                  onKeyDown={handleKeyDown}
+                  {...form.register("min_bathrooms", { valueAsNumber: true })}
                   type="number"
                   min="0"
+                  onKeyDown={handleKeyDown}
                 />
                 <span className="text-neutral-200">|</span>
-                <IconRuler className="size-4 text-neutral-400 shrink-0" />
                 <span className="text-[12px] text-neutral-400">m²</span>
               </div>
 
@@ -218,24 +194,24 @@ export function LandingHero({ lang, cities = [] }: LandingHeroProps) {
                     className="flex-1 text-[13px] text-neutral-700 outline-none bg-transparent placeholder:text-neutral-400"
                     placeholder="590.00 max"
                     type="number"
-                    value={maxPrice}
-                    onChange={e => setMaxPrice(e.target.value)}
-                    onKeyDown={handleKeyDown}
+                    {...form.register("max_price", { valueAsNumber: true })}
                     min="0"
+                    onKeyDown={handleKeyDown}
                   />
                 </div>
                 {errors.max_price && (
-                  <p className="text-[11px] text-red-500 mt-1">{errors.max_price}</p>
+                  <p className="text-[11px] text-red-500 mt-1">{errors.max_price.message}</p>
                 )}
               </div>
 
               <Button
+                type="submit"
                 className="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold rounded-xl h-12 text-[14px] mt-1 transition-all hover:shadow-lg hover:shadow-orange-200"
-                onClick={validateAndSearch}
+                disabled={mutation.isPending}
               >
                 {t("hero.search_btn")}
               </Button>
-            </div>
+            </form>
           </div>
         </div>
       </div>

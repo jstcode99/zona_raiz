@@ -8,26 +8,13 @@ import { getLangServerSide } from "@/shared/utils/lang";
 import { cookies } from "next/headers";
 import { createRouter } from "@/i18n/router";
 import { Lang } from "@/i18n/settings";
-import { ListingEntity } from "@/domain/entities/listing.entity";
+import {
+  LandingCity,
+  LandingStats,
+  LandingData,
+} from "@/domain/types/landing.types";
 
-export type LandingCity = {
-  name: string;
-  slug: string;
-  count: number;
-  image?: string;
-};
-
-export type LandingStats = {
-  totalListings: number;
-  totalAgents: number;
-  totalCities: number;
-};
-
-export type LandingData = {
-  listings: ListingEntity[];
-  cities: LandingCity[];
-  stats: LandingStats;
-};
+export type { LandingCity, LandingStats, LandingData };
 
 export async function getLandingData(): Promise<LandingData> {
   const lang = await getLangServerSide();

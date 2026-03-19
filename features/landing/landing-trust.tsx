@@ -1,13 +1,11 @@
-"use client"
 import { useTranslation } from "react-i18next"
-import { Button } from "@/components/ui/button"
-import { useRouter } from "next/navigation"
+import Link from "next/link"
 import { Lang } from "@/i18n/settings"
-import type { PlatformStats } from "@/domain/ports/listing.port"
+import type { LandingStats } from "@/domain/types/landing.types"
 
 interface LandingTrustProps { 
   lang: Lang
-  stats: PlatformStats
+  stats: LandingStats
   agentAvatars?: string[]
 }
 
@@ -21,7 +19,6 @@ const logos = ["Grammarly", "Linear", "Coinbase", "Webflow", "Tinder", "Uber"]
 
 export function LandingTrust({ lang, stats, agentAvatars = defaultAvatars }: LandingTrustProps) {
   const { t } = useTranslation("landing")
-  const router = useRouter()
 
   return (
     <section className="border-b border-neutral-100 py-12">
@@ -57,12 +54,12 @@ export function LandingTrust({ lang, stats, agentAvatars = defaultAvatars }: Lan
             <p className="text-[14px] text-neutral-500 leading-relaxed mb-4">
               {t("trust.description")}
             </p>
-            <Button
-              className="bg-neutral-900 text-white hover:bg-neutral-800 rounded-full px-6 h-9 text-[13px] font-semibold transition-all duration-200 hover:scale-105 cursor-pointer"
-              onClick={() => router.push(`/${lang}/colombia`)}
+            <Link
+              href={`/${lang}/colombia`}
+              className="inline-flex items-center justify-center w-full bg-neutral-900 text-white hover:bg-neutral-800 rounded-full px-6 h-9 text-[13px] font-semibold transition-all duration-200 hover:scale-105"
             >
               {t("trust.cta")}
-            </Button>
+            </Link>
           </div>
 
           <div className="hidden lg:block w-px h-20 bg-neutral-200 shrink-0" />

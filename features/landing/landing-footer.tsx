@@ -1,4 +1,3 @@
-"use client"
 import { useTranslation } from "react-i18next"
 import Link from "next/link"
 import { Lang } from "@/i18n/settings"
@@ -27,7 +26,6 @@ export function LandingFooter({ lang }: LandingFooterProps) {
     <footer className="bg-neutral-900 text-white">
       <div className="max-w-6xl mx-auto px-6 py-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-10 mb-10">
-          {/* Brand Column */}
           <div className="md:col-span-2">
             <Link href={`/${lang}`} className="flex items-center gap-2.5 mb-4">
               <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center">
@@ -42,7 +40,6 @@ export function LandingFooter({ lang }: LandingFooterProps) {
             </p>
           </div>
 
-          {/* Links Column */}
           <div>
             <h4 className="text-[11px] font-semibold text-neutral-400 uppercase tracking-widest mb-4">
               Links
@@ -61,7 +58,6 @@ export function LandingFooter({ lang }: LandingFooterProps) {
             </ul>
           </div>
 
-          {/* Social Column */}
           <div>
             <h4 className="text-[11px] font-semibold text-neutral-400 uppercase tracking-widest mb-4">
               {t("footer.follow_us")}
@@ -82,7 +78,6 @@ export function LandingFooter({ lang }: LandingFooterProps) {
           </div>
         </div>
 
-        {/* Bottom Bar */}
         <div className="pt-6 border-t border-neutral-800 flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-[12px] text-neutral-500">
             {t("footer.copyright")}

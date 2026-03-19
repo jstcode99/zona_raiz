@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Lang } from "@/i18n/settings"
-import type { LandingCity } from "@/application/actions/landing.actions"
+import type { LandingCity } from "@/domain/types/landing.types"
 
 interface LandingCitiesProps { 
   lang: Lang
