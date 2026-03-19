@@ -1,20 +1,58 @@
 import { ListingEntity } from "../entities/listing.entity";
 
+export interface ListingCountFilters {
+  agent_id?: string;
+  real_estate_id?: string;
+  property_id?: string;
+  type?: string;
+  listing_type?: string;
+  status?: string;
+  start_date?: string;
+  end_date?: string;
+}
+
+export interface ListingSearchFilters {
+  q?: string;
+  listing_type?: string;
+  type?: string;
+  country?: string;
+  state?: string;
+  city?: string;
+  neighborhood?: string;
+  street?: string;
+  postal_code?: string;
+  min_price?: number;
+  max_price?: number;
+  min_bedrooms?: number;
+  min_bathrooms?: number;
+  amenities?: string[];
+  sort_by?: string;
+  search_query?: string;
+  page?: number;
+  limit?: number;
+  real_estate_id?: string;
+  property_id?: string;
+  status?: string;
+  price?: number;
+}
+
 export interface ListingPort {
-  all(filter?: any): Promise<ListingEntity[]>;
+  all(filter?: ListingSearchFilters): Promise<ListingEntity[]>;
   create(data: Partial<ListingEntity>): Promise<ListingEntity>;
   update(id: string, data: Partial<ListingEntity>): Promise<ListingEntity>;
   findById(id: string): Promise<ListingEntity | null>;
   findByIds(ids: string[]): Promise<ListingEntity[]>;
   findActive(): Promise<ListingEntity[]>;
   delete(id: string): Promise<void>;
-  count(filters?: any): Promise<number>;
-  countWithViews(filters?: any): Promise<number>;
+  count(filters?: ListingCountFilters): Promise<number>;
+  countWithViews(filters?: ListingCountFilters): Promise<number>;
   findFeatured(limit?: number, realEstateId?: string): Promise<ListingEntity[]>;
   findBySlug(slug: string): Promise<ListingEntity | null>;
   countByStatusAndMonth(
     year: number,
-    filters?: any,
+    filters?: Omit<ListingCountFilters, "start_date" | "end_date">,
   ): Promise<Record<string, Record<string, number>>>;
   findSimplePublished(limit?: number): Promise<ListingEntity[]>;
+  findCitiesWithListings(): Promise<unknown[]>;
+  getStats(): Promise<unknown>;
 }

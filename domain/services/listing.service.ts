@@ -1,4 +1,4 @@
-import { ListingPort, CityWithCount, PlatformStats } from "@/domain/ports/listing.port";
+import { ListingPort, ListingCountFilters, ListingSearchFilters } from "@/domain/ports/listing.port";
 import { ListingEntity } from "@/domain/entities/listing.entity";
 import { unstable_cache } from "next/cache";
 import { Lang } from "@/i18n/settings";
@@ -16,36 +16,6 @@ export type CreateListingInput = Omit<
   | "property"
 >;
 
-export interface ListingCountFilters {
-  agent_id?: string;
-  real_estate_id?: string;
-  property_id?: string;
-  type?: string;
-  listing_type?: string;
-  status?: string;
-  start_date?: string;
-  end_date?: string;
-}
-
-export interface ListingSearchFilters {
-  q?: string;
-  listing_type?: string;
-  type?: string;
-  country?: string;
-  state?: string;
-  city?: string;
-  neighborhood?: string;
-  street?: string;
-  min_price?: number;
-  max_price?: number;
-  min_bedrooms?: number;
-  min_bathrooms?: number;
-  amenities?: string[];
-  sort_by?: string;
-  page?: number;
-  limit?: number;
-}
-
 export interface ListingSearchResult {
   listings: ListingEntity[];
   total: number;
@@ -60,11 +30,11 @@ export class ListingService {
     private lang: Lang = "es",
   ) {}
 
-  all(filter?: any) {
+  all(filter?: ListingSearchFilters) {
     return this.listingPort.all(filter);
   }
 
-  getCachedAll(filter?: any) {
+  getCachedAll(filter?: ListingSearchFilters) {
     const cacheKey = filter
       ? `listing:all:${JSON.stringify(filter)}`
       : "listing:all";
@@ -162,11 +132,11 @@ export class ListingService {
     )();
   }
 
-  count(filters?: any) {
+  count(filters?: ListingCountFilters) {
     return this.listingPort.count(filters);
   }
 
-  getCachedCount(filters?: any) {
+  getCachedCount(filters?: ListingCountFilters) {
     const cacheKey = filters
       ? `listing:count:${JSON.stringify(filters)}`
       : "listing:count";
@@ -181,11 +151,11 @@ export class ListingService {
     )();
   }
 
-  countWithViews(filters?: any) {
+  countWithViews(filters?: ListingCountFilters) {
     return this.listingPort.countWithViews(filters);
   }
 
-  getCachedCountWithViews(filters?: any) {
+  getCachedCountWithViews(filters?: ListingCountFilters) {
     const cacheKey = filters
       ? `listing:count:with-views:${JSON.stringify(filters)}`
       : "listing:count:with-views";
@@ -220,7 +190,7 @@ export class ListingService {
     endDate: string,
     filters?: Omit<ListingCountFilters, "start_date" | "end_date">,
   ) {
-    const cacheKey = `listing-count:date-range:${startDate}:${endDate}:${this.buildCacheKey(filters as any)}`;
+    const cacheKey = `listing-count:date-range:${startDate}:${endDate}:${this.buildCacheKey(filters as ListingSearchFilters | undefined)}`;
 
     return unstable_cache(
       async () =>
@@ -276,7 +246,7 @@ export class ListingService {
     )();
   }
 
-  private buildCacheKey(filters: ListingSearchFilters): string {
+  private buildCacheKey(filters?: ListingSearchFilters): string {
     const parts =
       filters &&
       Object.entries(filters)
@@ -352,11 +322,11 @@ export class ListingService {
     )();
   }
 
-  countByStatusAndMonth(year: number, filters?: any) {
+  countByStatusAndMonth(year: number, filters?: Omit<ListingCountFilters, "start_date" | "end_date">) {
     return this.listingPort.countByStatusAndMonth(year, filters);
   }
 
-  getCachedCountByStatusAndMonth(year: number, filters?: any) {
+  getCachedCountByStatusAndMonth(year: number, filters?: Omit<ListingCountFilters, "start_date" | "end_date">) {
     const cacheKey = `listing-count:status-month:${year}:${filters?.real_estate_id || "all"}`;
 
     return unstable_cache(
