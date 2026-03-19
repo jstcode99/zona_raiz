@@ -31,6 +31,9 @@ export const CACHE_TAGS = {
     SLUG: (slug: string) => `listing:slug:${slug}`,
     COUNT: "listing-count",
     SEARCH: "listing-search",
+    SIMPLE_PUBLISHED: "listing:simple-published",
+    CITIES: "listing:cities",
+    STATS: "listing:stats",
   },
 
   // Property (Propiedades)

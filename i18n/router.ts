@@ -6,7 +6,7 @@ export function createRouter(lang: Lang) {
     Object.entries(ROUTES).map(([key, value]) => [
       key,
       (...params: string[]) => {
-        let path = value[lang]
+        let path: string = value[lang]
 
         params.forEach((param) => {
           path = path.replace(/:[^/]+/, param)

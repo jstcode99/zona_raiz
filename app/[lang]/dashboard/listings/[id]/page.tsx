@@ -25,6 +25,7 @@ export default async function page({ params }: props) {
 
   if (!listing) {
     encodedRedirect('error', routes.listings(), t("exceptions:data_not_found"))
+    return null
   }
 
   return (
@@ -34,7 +35,7 @@ export default async function page({ params }: props) {
           <CardContent>
             <ListingForm
               id={id}
-              defaultValues={listing}
+              defaultValues={listing as unknown as Partial<import("@/application/validation/listing.validation").CreateListingInput>}
             />
           </CardContent>
         </Card>

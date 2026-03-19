@@ -7,7 +7,7 @@ export function getRoute(
   params?: Record<string, string>
 ) {
 
-  let path = ROUTES[key][lang]
+  let path: string = ROUTES[key][lang]
 
   if (params) {
     for (const p in params) {

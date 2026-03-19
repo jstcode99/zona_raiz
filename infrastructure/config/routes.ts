@@ -105,6 +105,11 @@ export const ROUTES = {
     es: "/panel/usuarios/:id",
     en: "/dashboard/users/:id",
   },
+
+  search: {
+    es: "/colombia",
+    en: "/colombia",
+  },
 } as const;
 
 type Lang = "es" | "en";

@@ -56,11 +56,11 @@ export const AddAgentForm = ({
     return () => subscription.unsubscribe()
   }, [form, mutation])
 
-  const onSubmit = handleSubmit((values) => {
+  const onSubmit = async (values: agentToggleFormInput) => {
     const formData = new FormData()
     const data = flatten(values, "", formData);
     mutation.action(data)
-  })
+  }
 
   const searchUsersByEmail = async (email: string) => {
     if (!email || email.length < 2) return []

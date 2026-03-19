@@ -22,19 +22,17 @@ export function RealEstateForm({
   className,
   defaultValues,
   id,
-  ...props
 }: RealEstateFormProps) {
   const { t } = useTranslation('common')
   const isUpdateMode = Boolean(id)
 
   const form = useForm<RealEstateInput>({
-    resolver: yupResolver(realEstateSchema),
+    resolver: yupResolver(realEstateSchema) as any,
     defaultValues: defaultValues || defaultRealEstateValues,
     mode: "onBlur",
   })
 
   const {
-    handleSubmit,
     reset,
     control,
     formState: { isSubmitting, isDirty }
@@ -60,19 +58,18 @@ export function RealEstateForm({
     }
   }, [defaultValues, reset])
 
-  const onSubmit = handleSubmit((values) => {
+  const onSubmit = async (values: RealEstateInput) => {
     const formData = new FormData()
 
     const data = flatten(values, '', formData)
     if (id) data.append("id", id)
     mutation.action(data)
-  })
+  }
 
   const isLoading = isSubmitting || mutation.isPending
 
   return (
     <Form
-      {...props}
       form={form}
       className={cn("p-4 mx-auto space-y-4", className)}
       onSubmit={onSubmit}

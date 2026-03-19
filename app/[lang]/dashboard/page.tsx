@@ -120,7 +120,7 @@ export default async function page({ params }: props) {
   const featuredListings = await listingService.getCachedFeatured(10, realEstateId)
 
   const currentYear = now.getFullYear()
-  const listingsByStatus = await listingService.getCachedCountByStatusAndMonth(currentYear, { realEstateId })
+  const listingsByStatus = await listingService.getCachedCountByStatusAndMonth(currentYear, { real_estate_id: realEstateId })
   const listings = listingService.getCachedSimplePublished(10);
 
   return (

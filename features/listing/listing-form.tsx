@@ -32,7 +32,7 @@ export function ListingForm({
   const isUpdateMode = !!id
 
   const form = useForm<CreateListingInput>({
-    resolver: yupResolver(createListingSchema),
+    resolver: yupResolver(createListingSchema) as any,
     defaultValues: defaultValues,
   })
 
@@ -41,12 +41,12 @@ export function ListingForm({
   const type = watch("listing_type")
 
   const mutation = useServerMutation<ListingEntity>({
-    action: (formData: FormData) => {
+    action: ((formData: FormData) => {
       if (isUpdateMode && id) {
         return updateListingAction(id, formData);
       }
       return createListingAction(formData);
-    },
+    }) as any,
     setError,
     onSuccess: (result) => {
       if (result.success) {
