@@ -27,7 +27,7 @@ interface AgentSelectorClientProps {
 }
 
 export function AgentSelectorClient({ realEstateId, inquiryId, children }: AgentSelectorClientProps) {
-  const { t } = useTranslation()
+  const { t } = useTranslation("agents")
   const [agents, setAgents] = useState<ProfileEntity[]>([])
   const [loading, setLoading] = useState(true)
 

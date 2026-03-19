@@ -22,7 +22,7 @@ interface Props {
 export const AddAgentForm = ({
   realEstateId
 }: Props) => {
-  const { t } = useTranslation()
+  const { t } = useTranslation("agents")
 
   const form = useForm<agentToggleFormInput>({
     resolver: yupResolver(agentToggleSchema),

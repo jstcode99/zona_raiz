@@ -25,7 +25,7 @@ export function OTPForm({
   className,
   ...props
 }: ComponentProps<"form">) {
-  const { t } = useTranslation('common')
+  const { t } = useTranslation("auth")
   const routes = useRoutes()
 
   const {

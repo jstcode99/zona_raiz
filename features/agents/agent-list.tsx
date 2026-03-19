@@ -23,7 +23,7 @@ interface AgentListProps {
   realEstateId: string
 }
 export const AgentList = ({ agents, realEstateId }: AgentListProps) => {
-  const { t } = useTranslation()
+  const { t } = useTranslation("agents")
   const [isPending, startTransition] = useTransition()
 
   const handleRemove = ((agent_id: string) => {

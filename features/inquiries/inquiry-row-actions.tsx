@@ -22,7 +22,7 @@ interface InquiryRowActionsProps {
 }
 
 export function InquiryRowActions({ inquiryId, realEstateId }: InquiryRowActionsProps) {
-  const { t } = useTranslation()
+  const { t } = useTranslation("inquiries")
 
   const deleteMutation = useServerMutation({
     action: deleteInquiryAction,

@@ -27,7 +27,7 @@ interface FeaturedListingCardProps {
 }
 
 export const FeaturedListingCard = ({ listing }: FeaturedListingCardProps) => {
-    const { t } = useTranslation();
+    const { t } = useTranslation("dashboard");
     const property = listing.property;
     const images = property.property_images || [];
     const mainImage = images.length > 0 ? images[0].public_url : null;

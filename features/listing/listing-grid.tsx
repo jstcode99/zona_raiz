@@ -17,7 +17,7 @@ export function ListingGrid({
   loading,
   favoriteIds = [],
 }: ListingGridProps) {
-  const { t } = useTranslation();
+  const { t } = useTranslation("listings");
 
   if (loading) {
     return (

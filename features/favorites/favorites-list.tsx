@@ -20,7 +20,7 @@ interface FavoritesListProps {
 }
 
 export function FavoritesList({ favorites }: FavoritesListProps) {
-  const { t } = useTranslation();
+  const { t } = useTranslation("listings");
   const routes = useRoutes();
 
   if (favorites.length === 0) {

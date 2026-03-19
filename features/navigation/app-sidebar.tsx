@@ -35,7 +35,7 @@ interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
 }
 
 export function AppSidebar({ ...props }: AppSidebarProps) {
-  const { t } = useTranslation();
+  const { t } = useTranslation("dashboard");
   const favorites = props.favorites || [];
 
   return (

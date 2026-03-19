@@ -22,7 +22,7 @@ export function ListingCard({
   listing,
   isFavInitial = false,
 }: ListingCardProps) {
-  const { t } = useTranslation();
+  const { t } = useTranslation("listings");
 
   const property = listing.property;
   const images = property.property_images || [];
