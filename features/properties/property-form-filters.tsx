@@ -44,8 +44,8 @@ function filtersToSearchParams(filters: PropertySearchFormInput) {
     city: filters.city,
     neighborhood: filters.neighborhood,
     street: filters.street,
-    bedrooms: filters.bathrooms,
-    bathrooms: filters.bedrooms,
+    bedrooms: filters.bedrooms,
+    bathrooms: filters.bathrooms,
   })
 }
 
@@ -126,7 +126,7 @@ export function PropertyFiltersForm({
       {/* Búsqueda rápida */}
       <div className="flex gap-2 items-center">
         <Form.Input
-          name="search_query"
+          name="search"
           label={t('words:search')}
           placeholder={t('words:search')}
         />

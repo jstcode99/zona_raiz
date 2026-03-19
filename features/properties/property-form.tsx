@@ -56,7 +56,7 @@ export function PropertyForm({
   const form = useForm<PropertyInput>({
     resolver: yupResolver(propertySchema) as any,
     defaultValues: defaultValues || defaultPropertyValues,
-    mode: "onTouched",
+    mode: "onBlur",
   });
 
   const wizardRef = useRef<WizardRef>(null)
@@ -109,6 +109,13 @@ export function PropertyForm({
       reset(defaultValues);
     }
   }, [defaultValues, reset]);
+
+  useEffect(() => {
+    const subscription = form.watch(() => {
+      if (mutation.isError) mutation.reset()
+    })
+    return () => subscription.unsubscribe()
+  }, [form, mutation])
 
   async function handleValidSubmit(values: PropertyInput) {
     wizardRef.current?.setBusy(true)

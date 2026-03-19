@@ -34,6 +34,7 @@ export function ListingForm({
   const form = useForm<CreateListingInput>({
     resolver: yupResolver(createListingSchema) as any,
     defaultValues: defaultValues,
+    mode: "onBlur",
   })
 
   const { reset, setError, watch } = form
@@ -71,6 +72,13 @@ export function ListingForm({
       }))
     }
   }, [id, defaultValues, reset])
+
+  useEffect(() => {
+    const subscription = form.watch(() => {
+      if (mutation.isError) mutation.reset()
+    })
+    return () => subscription.unsubscribe()
+  }, [form, mutation])
 
   async function handleSubmit(values: CreateListingInput) {
     try {
