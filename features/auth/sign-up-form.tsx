@@ -33,7 +33,7 @@ export function SignUpForm({
   const form = useForm<SignUpFormInput>({
     resolver: yupResolver(signUpSchema) as any,
     defaultValues: defaultSignUpValues,
-    mode: "onBlur", // Validación al perder foco para mejor UX
+    mode: "onBlur",
   })
 
   const { setError, formState: { isSubmitting } } = form

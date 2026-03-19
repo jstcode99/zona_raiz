@@ -57,6 +57,13 @@ export function ProfileForm({
     }
   }, [defaultValues, reset])
 
+  useEffect(() => {
+    const subscription = form.watch(() => {
+      if (mutation.isError) mutation.reset()
+    })
+    return () => subscription.unsubscribe()
+  }, [form, mutation])
+
   const onSubmit = async (values: ProfileInput) => {
     const formData = new FormData()
 
