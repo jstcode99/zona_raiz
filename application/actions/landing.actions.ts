@@ -31,22 +31,12 @@ export async function getLandingData(): Promise<LandingData> {
     listingService.getCachedStats(),
   ]);
 
-  // Get top agents with avatars
+  // Get top agents with avatars using agentService
   let agents: LandingAgent[] = [];
   try {
-    // Get agents from listings (unique agents)
-    const agentIds = [...new Set(listings.map((l) => l.agent_id).filter(Boolean))];
-    if (agentIds.length > 0) {
-      // For now, use a default set of agents with avatars
-      // In production, you'd fetch actual agent profiles
-      agents = agentIds.slice(0, 6).map((id, i) => ({
-        id,
-        full_name: "Agente",
-        avatar_url: `https://images.unsplash.com/photo-${["1560250097-0b93528c311a", "1507003211169-0a1dd7228f2d", "1500648767791-00dcc994a43e", "1573496359142-b8d87734a5a2", "1580489944761-15a19d654956", "1507003211169-0a1dd7228f2d"][i % 6]}?w=100&q=80`,
-      }));
-    }
+    agents = await agentService.getTopAgents(6);
   } catch {
-    // Ignore agent fetch errors
+    // Ignore agent fetch errors - will show empty avatars
   }
 
   return { listings, cities, stats, agents };
