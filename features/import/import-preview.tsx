@@ -75,8 +75,7 @@ export function ImportPreview({
         <DataTable
           columns={columns as any}
           data={prepareDataForTable(editedData)}
-          pagination={true}
-          pageSizeOptions={[10, 25, 50] as unknown as number}
+          pageSize={25}
         />
       </div>
       

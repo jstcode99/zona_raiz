@@ -21,12 +21,7 @@ export const uploadImportFileAction = withServerAction(
     const { importService } = await appModule(lang, { cookies: cookieStore });
 
     // 3. Ejecutar lógica de upload
-    const result = await importService.uploadFile(file);
-
-    // 4. Revalidar cache si es necesario
-    // revalidatePath(routes.imports()); // Si tuviéramos una ruta de imports
-
-    return result;
+    await importService.uploadFile(file);
   },
 );
 
@@ -35,7 +30,7 @@ export const parseImportFileAction = withServerAction(
     // 1. Validar input
     const raw = Object.fromEntries(formData);
     // Asumimos que fileId viene como string en el formData
-    const { fileId } = yup
+    const { fileId } = await yup
       .object({
         fileId: yup.string().required("File ID is required"),
       })
