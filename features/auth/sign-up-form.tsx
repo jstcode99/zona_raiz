@@ -31,12 +31,12 @@ export function SignUpForm({
   const routes = useRoutes()
 
   const form = useForm<SignUpFormInput>({
-    resolver: yupResolver(signUpSchema),
+    resolver: yupResolver(signUpSchema) as any,
     defaultValues: defaultSignUpValues,
     mode: "onBlur", // Validación al perder foco para mejor UX
   })
 
-  const { setError, handleSubmit, formState: { isSubmitting } } = form
+  const { setError, formState: { isSubmitting } } = form
 
   const mutation = useServerMutation({
     action: signUpAction,
@@ -60,7 +60,7 @@ export function SignUpForm({
     return () => subscription.unsubscribe()
   }, [form, mutation])
 
-  const onSubmit = handleSubmit((values) => {
+  const onSubmit = async (values: SignUpFormInput) => {
     const formData = new FormData()
 
     Object.entries(values).forEach(([key, value]) => {
@@ -70,7 +70,7 @@ export function SignUpForm({
     })
 
     mutation.action(formData)
-  })
+  }
 
   const isLoading = isSubmitting || mutation.isPending
 
