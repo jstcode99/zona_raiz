@@ -13,8 +13,15 @@ export interface LandingStats {
   totalCities: number;
 }
 
+export interface LandingAgent {
+  id: string;
+  full_name: string;
+  avatar_url: string | null;
+}
+
 export interface LandingData {
   listings: ListingEntity[];
   cities: LandingCity[];
   stats: LandingStats;
+  agents?: LandingAgent[];
 }

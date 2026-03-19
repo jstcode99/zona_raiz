@@ -4,47 +4,16 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { Lang } from "@/i18n/settings";
-import type { LandingCity } from "@/domain/types/landing.types";
+import { LandingCity } from "@/domain/types/landing.types";
 
 interface LandingCitiesProps {
-  lang: Lang;
   cities: LandingCity[];
 }
 
-const defaultCities: LandingCity[] = [
-  {
-    name: "Bogotá",
-    slug: "colombia/cundinamarca/bogota",
-    count: 0,
-    image: "photo-1599940824399-b87987ceb72a",
-  },
-  {
-    name: "Medellín",
-    slug: "colombia/antioquia/medellin",
-    count: 0,
-    image: "photo-1586500036706-41963de24d8b",
-  },
-  {
-    name: "Cartagena",
-    slug: "colombia/bolivar/cartagena",
-    count: 0,
-    image: "photo-1558618666-fcd25c85cd64",
-  },
-  {
-    name: "Cali",
-    slug: "colombia/valle-del-cauca/cali",
-    count: 0,
-    image: "photo-1545324418-cc1a3fa10c00",
-  },
-];
-
-export function LandingCities({ lang, cities }: LandingCitiesProps) {
+export function LandingCities({ cities }: LandingCitiesProps) {
   const { t } = useTranslation("landing");
   const router = useRouter();
   const [hoveredCity, setHoveredCity] = useState<string | null>(null);
-
-  const displayCities = cities.length > 0 ? cities : defaultCities;
 
   return (
     <section className="py-16 bg-neutral-50">
@@ -68,18 +37,18 @@ export function LandingCities({ lang, cities }: LandingCitiesProps) {
           <Button
             variant="outline"
             className="rounded-full border-neutral-200 text-neutral-700 hover:bg-white text-[13px] font-semibold px-5 h-9 transition-all duration-200 hover:scale-105 cursor-pointer"
-            onClick={() => router.push(`/${lang}/colombia`)}
+            onClick={() => router.push("/colombia")}
           >
             {t("cities.explore")} →
           </Button>
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-          {displayCities.map((city) => (
+          {cities.slice(0, 4).map((city) => (
             <div
               key={city.slug}
               className="flex flex-col items-center cursor-pointer group"
-              onClick={() => router.push(`/${lang}/${city.slug}`)}
+              onClick={() => router.push(`/colombia?city=${city.slug}`)}
               onMouseEnter={() => setHoveredCity(city.slug)}
               onMouseLeave={() => setHoveredCity(null)}
             >

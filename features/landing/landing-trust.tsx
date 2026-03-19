@@ -2,25 +2,23 @@
 
 import { useTranslation } from "react-i18next"
 import Link from "next/link"
-import { Lang } from "@/i18n/settings"
-import type { LandingStats } from "@/domain/types/landing.types"
+import { LandingStats, LandingAgent } from "@/domain/types/landing.types"
 
 interface LandingTrustProps { 
-  lang: Lang
   stats: LandingStats
-  agentAvatars?: string[]
+  agentAvatars?: LandingAgent[]
 }
 
-const defaultAvatars = [
-  "photo-1560250097-0b93528c311a",
-  "photo-1507003211169-0a1dd7228f2d",
-  "photo-1500648767791-00dcc994a43e",
-]
-
-const logos = ["Grammarly", "Linear", "Coinbase", "Webflow", "Tinder", "Uber"]
-
-export function LandingTrust({ lang, stats, agentAvatars = defaultAvatars }: LandingTrustProps) {
+export function LandingTrust({ stats, agentAvatars = [] }: LandingTrustProps) {
   const { t } = useTranslation("landing")
+
+  const displayAvatars = agentAvatars.length > 0 
+    ? agentAvatars.slice(0, 3) 
+    : [
+        { id: "1", full_name: "Agente", avatar_url: "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=48&q=70" },
+        { id: "2", full_name: "Agente", avatar_url: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=48&q=70" },
+        { id: "3", full_name: "Agente", avatar_url: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=48&q=70" },
+      ]
 
   return (
     <section className="border-b border-neutral-100 py-12">
@@ -36,13 +34,13 @@ export function LandingTrust({ lang, stats, agentAvatars = defaultAvatars }: Lan
             </p>
             <div className="flex items-center gap-2">
               <div className="flex">
-                {agentAvatars.slice(0, 3).map((avatarId, i) => (
+                {displayAvatars.map((agent, i) => (
                   <img
-                    key={i}
-                    src={`https://images.unsplash.com/${avatarId}?w=48&q=70`}
+                    key={agent.id}
+                    src={agent.avatar_url || "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=48&q=70"}
                     className="w-8 h-8 rounded-full border-2 border-white object-cover"
                     style={{ marginLeft: i > 0 ? "-8px" : 0 }}
-                    alt=""
+                    alt={agent.full_name}
                   />
                 ))}
               </div>
@@ -57,24 +55,11 @@ export function LandingTrust({ lang, stats, agentAvatars = defaultAvatars }: Lan
               {t("trust.description")}
             </p>
             <Link
-              href={`/${lang}/colombia`}
+              href="/colombia"
               className="inline-flex items-center justify-center w-full bg-neutral-900 text-white hover:bg-neutral-800 rounded-full px-6 h-9 text-[13px] font-semibold transition-all duration-200 hover:scale-105"
             >
               {t("trust.cta")}
             </Link>
-          </div>
-
-          <div className="hidden lg:block w-px h-20 bg-neutral-200 shrink-0" />
-
-          <div className="flex-1">
-            <p className="text-[11px] font-semibold text-neutral-400 uppercase tracking-widest mb-4">
-              {t("trust.logos_label")} →
-            </p>
-            <div className="flex flex-wrap gap-x-8 gap-y-3">
-              {logos.map(l => (
-                <span key={l} className="text-[14px] font-semibold text-neutral-300">{l}</span>
-              ))}
-            </div>
           </div>
         </div>
       </div>

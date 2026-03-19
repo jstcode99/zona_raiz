@@ -2,10 +2,7 @@
 
 import { useTranslation } from "react-i18next"
 import Link from "next/link"
-import { Lang } from "@/i18n/settings"
 import { IconBrandTwitter, IconBrandInstagram, IconBrandLinkedin, IconBrandFacebook } from "@tabler/icons-react"
-
-interface LandingFooterProps { lang: Lang }
 
 const socialLinks = [
   { icon: IconBrandTwitter, href: "https://twitter.com" },
@@ -21,7 +18,7 @@ const footerLinks = [
   { key: "footer.contact", href: "/contact" },
 ]
 
-export function LandingFooter({ lang }: LandingFooterProps) {
+export function LandingFooter() {
   const { t } = useTranslation("landing")
 
   return (
@@ -29,7 +26,7 @@ export function LandingFooter({ lang }: LandingFooterProps) {
       <div className="max-w-6xl mx-auto px-6 py-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-10 mb-10">
           <div className="md:col-span-2">
-            <Link href={`/${lang}`} className="flex items-center gap-2.5 mb-4">
+            <Link href="/" className="flex items-center gap-2.5 mb-4">
               <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center">
                 <span className="text-neutral-900 text-xs font-bold">ZR</span>
               </div>
@@ -50,7 +47,7 @@ export function LandingFooter({ lang }: LandingFooterProps) {
               {footerLinks.map(({ key, href }) => (
                 <li key={key}>
                   <Link
-                    href={`/${lang}${href}`}
+                    href={href}
                     className="text-[13px] text-neutral-300 hover:text-white transition-colors"
                   >
                     {t(key)}
@@ -85,13 +82,13 @@ export function LandingFooter({ lang }: LandingFooterProps) {
             {t("footer.copyright")}
           </p>
           <div className="flex items-center gap-6">
-            <Link href={`/${lang}`} className="text-[12px] text-neutral-500 hover:text-white transition-colors">
+            <Link href="/" className="text-[12px] text-neutral-500 hover:text-white transition-colors">
               {t("nav.home")}
             </Link>
-            <Link href={`/${lang}/colombia`} className="text-[12px] text-neutral-500 hover:text-white transition-colors">
+            <Link href="/colombia" className="text-[12px] text-neutral-500 hover:text-white transition-colors">
               {t("nav.listing")}
             </Link>
-            <Link href={`/${lang}/agents`} className="text-[12px] text-neutral-500 hover:text-white transition-colors">
+            <Link href="/agents" className="text-[12px] text-neutral-500 hover:text-white transition-colors">
               {t("agents.title")}
             </Link>
           </div>
