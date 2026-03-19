@@ -1,8 +1,9 @@
-import { ListingPort } from "@/domain/ports/listing.port";
+import { ListingPort, CityWithCount, PlatformStats } from "@/domain/ports/listing.port";
 import { ListingEntity } from "@/domain/entities/listing.entity";
 import { unstable_cache } from "next/cache";
 import { Lang } from "@/i18n/settings";
 import { ListingStatus } from "../entities/listing.enums";
+import { CACHE_TAGS } from "@/infrastructure/config/constants";
 
 export type CreateListingInput = Omit<
   ListingEntity,
@@ -73,7 +74,7 @@ export class ListingService {
       [cacheKey],
       {
         revalidate: 300,
-        tags: ["listings", "listing:all"],
+        tags: [CACHE_TAGS.LISTING.PRINCIPAL, CACHE_TAGS.LISTING.ALL],
       },
     )();
   }
@@ -101,7 +102,7 @@ export class ListingService {
       [`listing:${id}`],
       {
         revalidate: 300,
-        tags: ["listings", `listing:${id}`],
+        tags: [CACHE_TAGS.LISTING.PRINCIPAL, CACHE_TAGS.LISTING.DETAIL(id)],
       },
     )();
   }
@@ -116,7 +117,7 @@ export class ListingService {
       ["listing:active"],
       {
         revalidate: 300,
-        tags: ["listings", "listing:active"],
+        tags: [CACHE_TAGS.LISTING.PRINCIPAL, CACHE_TAGS.LISTING.ACTIVE],
       },
     )();
   }
@@ -138,9 +139,9 @@ export class ListingService {
       {
         revalidate: 300,
         tags: [
-          "listings",
-          "listing:featured",
-          ...(realEstateId ? [`real-estate:${realEstateId}`] : []),
+          CACHE_TAGS.LISTING.PRINCIPAL,
+          CACHE_TAGS.LISTING.FEATURED,
+          ...(realEstateId ? [CACHE_TAGS.REAL_ESTATE.DETAIL(realEstateId)] : []),
         ],
       },
     )();
@@ -156,7 +157,7 @@ export class ListingService {
       [`listing:slug:${slug}`],
       {
         revalidate: 300,
-        tags: ["listings", `listing:slug:${slug}`],
+        tags: [CACHE_TAGS.LISTING.PRINCIPAL, CACHE_TAGS.LISTING.SLUG(slug)],
       },
     )();
   }
@@ -175,7 +176,7 @@ export class ListingService {
       [cacheKey],
       {
         revalidate: 300,
-        tags: ["listings", "listing-count"],
+        tags: [CACHE_TAGS.LISTING.PRINCIPAL, CACHE_TAGS.LISTING.COUNT],
       },
     )();
   }
@@ -194,7 +195,7 @@ export class ListingService {
       [cacheKey],
       {
         revalidate: 300,
-        tags: ["listings", "listing-count"],
+        tags: [CACHE_TAGS.LISTING.PRINCIPAL, CACHE_TAGS.LISTING.COUNT],
       },
     )();
   }
@@ -209,7 +210,7 @@ export class ListingService {
       [`listing-count:real-estate:${realEstateId}`],
       {
         revalidate: 300,
-        tags: ["listings", `real-estate:${realEstateId}`],
+        tags: [CACHE_TAGS.LISTING.PRINCIPAL, CACHE_TAGS.REAL_ESTATE.DETAIL(realEstateId)],
       },
     )();
   }
@@ -231,7 +232,7 @@ export class ListingService {
       [cacheKey],
       {
         revalidate: 300,
-        tags: ["listings", "listing-count"],
+        tags: [CACHE_TAGS.LISTING.PRINCIPAL, CACHE_TAGS.LISTING.COUNT],
       },
     )();
   }
@@ -253,7 +254,7 @@ export class ListingService {
       [cacheKey],
       {
         revalidate: 300,
-        tags: ["listings", `real-estate:${realEstateId}`],
+        tags: [CACHE_TAGS.LISTING.PRINCIPAL, CACHE_TAGS.REAL_ESTATE.DETAIL(realEstateId)],
       },
     )();
   }
@@ -270,7 +271,7 @@ export class ListingService {
       [cacheKey],
       {
         revalidate: 60,
-        tags: ["listings", "listing:simple-published"],
+        tags: [CACHE_TAGS.LISTING.PRINCIPAL, CACHE_TAGS.LISTING.SIMPLE_PUBLISHED],
       },
     )();
   }
@@ -312,7 +313,7 @@ export class ListingService {
 
     return unstable_cache(async () => this.search(filters), [cacheKey], {
       revalidate: 60,
-      tags: ["listings", "listing-search"],
+      tags: [CACHE_TAGS.LISTING.PRINCIPAL, CACHE_TAGS.LISTING.SEARCH],
     })();
   }
 
@@ -346,7 +347,7 @@ export class ListingService {
       [cacheKey],
       {
         revalidate: 60,
-        tags: ["listings", "listing-search"],
+        tags: [CACHE_TAGS.LISTING.PRINCIPAL, CACHE_TAGS.LISTING.SEARCH],
       },
     )();
   }
@@ -363,7 +364,37 @@ export class ListingService {
       [cacheKey],
       {
         revalidate: 300,
-        tags: ["listings", "listing-count"],
+        tags: [CACHE_TAGS.LISTING.PRINCIPAL, CACHE_TAGS.LISTING.COUNT],
+      },
+    )();
+  }
+
+  findCitiesWithListings() {
+    return this.listingPort.findCitiesWithListings();
+  }
+
+  getCachedCitiesWithListings() {
+    return unstable_cache(
+      async () => this.listingPort.findCitiesWithListings(),
+      [CACHE_TAGS.LISTING.CITIES],
+      {
+        revalidate: 300,
+        tags: [CACHE_TAGS.LISTING.PRINCIPAL, CACHE_TAGS.LISTING.CITIES],
+      },
+    )();
+  }
+
+  getStats() {
+    return this.listingPort.getStats();
+  }
+
+  getCachedStats() {
+    return unstable_cache(
+      async () => this.listingPort.getStats(),
+      [CACHE_TAGS.LISTING.STATS],
+      {
+        revalidate: 300,
+        tags: [CACHE_TAGS.LISTING.PRINCIPAL, CACHE_TAGS.LISTING.STATS],
       },
     )();
   }

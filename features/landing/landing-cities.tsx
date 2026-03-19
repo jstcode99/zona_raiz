@@ -1,21 +1,29 @@
 "use client"
+import { useState } from "react"
 import { useTranslation } from "react-i18next"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Lang } from "@/i18n/settings"
+import type { LandingCity } from "@/application/actions/landing.actions"
 
-interface LandingCitiesProps { lang: Lang }
+interface LandingCitiesProps { 
+  lang: Lang
+  cities: LandingCity[]
+}
 
-const cities = [
-  { name: "Bogotá", slug: "colombia/cundinamarca/bogota", count: "1,240", img: "photo-1599940824399-b87987ceb72a" },
-  { name: "Medellín", slug: "colombia/antioquia/medellin", count: "890", img: "photo-1586500036706-41963de24d8b" },
-  { name: "Cartagena", slug: "colombia/bolivar/cartagena", count: "430", img: "photo-1558618666-fcd25c85cd64" },
-  { name: "Cali", slug: "colombia/valle-del-cauca/cali", count: "610", img: "photo-1545324418-cc1a3fa10c00" },
+const defaultCities: LandingCity[] = [
+  { name: "Bogotá", slug: "colombia/cundinamarca/bogota", count: 0, image: "photo-1599940824399-b87987ceb72a" },
+  { name: "Medellín", slug: "colombia/antioquia/medellin", count: 0, image: "photo-1586500036706-41963de24d8b" },
+  { name: "Cartagena", slug: "colombia/bolivar/cartagena", count: 0, image: "photo-1558618666-fcd25c85cd64" },
+  { name: "Cali", slug: "colombia/valle-del-cauca/cali", count: 0, image: "photo-1545324418-cc1a3fa10c00" },
 ]
 
-export function LandingCities({ lang }: LandingCitiesProps) {
+export function LandingCities({ lang, cities }: LandingCitiesProps) {
   const { t } = useTranslation("landing")
   const router = useRouter()
+  const [hoveredCity, setHoveredCity] = useState<string | null>(null)
+
+  const displayCities = cities.length > 0 ? cities : defaultCities
 
   return (
     <section className="py-16 bg-neutral-50">
@@ -30,7 +38,7 @@ export function LandingCities({ lang }: LandingCitiesProps) {
           </div>
           <Button
             variant="outline"
-            className="rounded-full border-neutral-200 text-neutral-700 hover:bg-white text-[13px] font-semibold px-5 h-9"
+            className="rounded-full border-neutral-200 text-neutral-700 hover:bg-white text-[13px] font-semibold px-5 h-9 transition-all duration-200 hover:scale-105 cursor-pointer"
             onClick={() => router.push(`/${lang}/colombia`)}
           >
             {t("cities.explore")} →
@@ -38,21 +46,32 @@ export function LandingCities({ lang }: LandingCitiesProps) {
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-          {cities.map((c, i) => (
+          {displayCities.map((city) => (
             <div
-              key={i}
+              key={city.slug}
               className="flex flex-col items-center cursor-pointer group"
-              onClick={() => router.push(`/${lang}/${c.slug}`)}
+              onClick={() => router.push(`/${lang}/${city.slug}`)}
+              onMouseEnter={() => setHoveredCity(city.slug)}
+              onMouseLeave={() => setHoveredCity(null)}
             >
-              <div className="w-36 h-36 rounded-full overflow-hidden border-[3px] border-white shadow-md group-hover:border-orange-400 group-hover:scale-105 transition-all duration-300 mb-3">
+              <div 
+                className={`w-36 h-36 rounded-full overflow-hidden border-[3px] border-white shadow-md transition-all duration-300 mb-3 ${
+                  hoveredCity === city.slug 
+                    ? "border-orange-400 scale-105 shadow-lg" 
+                    : "group-hover:border-orange-300"
+                }`}
+              >
                 <img
-                  src={`https://images.unsplash.com/${c.img}?w=300&q=80`}
-                  alt={c.name}
-                  className="w-full h-full object-cover"
+                  src={city.image?.startsWith("http") 
+                    ? city.image 
+                    : `https://images.unsplash.com/${city.image}?w=300&q=80`
+                  }
+                  alt={city.name}
+                  className="w-full h-full object-cover transition-transform duration-500"
                 />
               </div>
-              <p className="text-[15px] font-bold text-neutral-800">{c.name}</p>
-              <p className="text-[12px] text-neutral-400">{c.count} {t("cities.listings")}</p>
+              <p className="text-[15px] font-bold text-neutral-800">{city.name}</p>
+              <p className="text-[12px] text-neutral-400">{city.count} {t("cities.listings")}</p>
             </div>
           ))}
         </div>

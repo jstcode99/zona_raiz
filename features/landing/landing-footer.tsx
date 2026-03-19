@@ -1,0 +1,105 @@
+"use client"
+import { useTranslation } from "react-i18next"
+import Link from "next/link"
+import { Lang } from "@/i18n/settings"
+import { IconBrandTwitter, IconBrandInstagram, IconBrandLinkedin, IconBrandFacebook } from "@tabler/icons-react"
+
+interface LandingFooterProps { lang: Lang }
+
+const socialLinks = [
+  { icon: IconBrandTwitter, href: "https://twitter.com" },
+  { icon: IconBrandInstagram, href: "https://instagram.com" },
+  { icon: IconBrandLinkedin, href: "https://linkedin.com" },
+  { icon: IconBrandFacebook, href: "https://facebook.com" },
+]
+
+const footerLinks = [
+  { key: "footer.about", href: "/about" },
+  { key: "footer.terms", href: "/terms" },
+  { key: "footer.privacy", href: "/privacy" },
+  { key: "footer.contact", href: "/contact" },
+]
+
+export function LandingFooter({ lang }: LandingFooterProps) {
+  const { t } = useTranslation("landing")
+
+  return (
+    <footer className="bg-neutral-900 text-white">
+      <div className="max-w-6xl mx-auto px-6 py-12">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-10 mb-10">
+          {/* Brand Column */}
+          <div className="md:col-span-2">
+            <Link href={`/${lang}`} className="flex items-center gap-2.5 mb-4">
+              <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center">
+                <span className="text-neutral-900 text-xs font-bold">ZR</span>
+              </div>
+              <span className="font-semibold text-white text-[15px] tracking-tight">
+                {t("footer.brand")}
+              </span>
+            </Link>
+            <p className="text-[13px] text-neutral-400 max-w-xs leading-relaxed">
+              {t("footer.tagline")}
+            </p>
+          </div>
+
+          {/* Links Column */}
+          <div>
+            <h4 className="text-[11px] font-semibold text-neutral-400 uppercase tracking-widest mb-4">
+              Links
+            </h4>
+            <ul className="space-y-2">
+              {footerLinks.map(({ key, href }) => (
+                <li key={key}>
+                  <Link
+                    href={`/${lang}${href}`}
+                    className="text-[13px] text-neutral-300 hover:text-white transition-colors"
+                  >
+                    {t(key)}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Social Column */}
+          <div>
+            <h4 className="text-[11px] font-semibold text-neutral-400 uppercase tracking-widest mb-4">
+              {t("footer.follow_us")}
+            </h4>
+            <div className="flex items-center gap-3">
+              {socialLinks.map(({ icon: Icon, href }, i) => (
+                <a
+                  key={i}
+                  href={href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-9 h-9 rounded-full bg-neutral-800 hover:bg-neutral-700 flex items-center justify-center transition-colors"
+                >
+                  <Icon className="size-4 text-neutral-300" />
+                </a>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Bottom Bar */}
+        <div className="pt-6 border-t border-neutral-800 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <p className="text-[12px] text-neutral-500">
+            {t("footer.copyright")}
+          </p>
+          <div className="flex items-center gap-6">
+            <Link href={`/${lang}`} className="text-[12px] text-neutral-500 hover:text-white transition-colors">
+              {t("nav.home")}
+            </Link>
+            <Link href={`/${lang}/colombia`} className="text-[12px] text-neutral-500 hover:text-white transition-colors">
+              {t("nav.listing")}
+            </Link>
+            <Link href={`/${lang}/agents`} className="text-[12px] text-neutral-500 hover:text-white transition-colors">
+              {t("agents.title")}
+            </Link>
+          </div>
+        </div>
+      </div>
+    </footer>
+  )
+}
