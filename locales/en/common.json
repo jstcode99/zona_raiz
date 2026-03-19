@@ -1,46 +1,44 @@
 {
-  "common": {
-    "labels": {
-      "without_image": "Without image",
-      "no_results": "No results",
-      "name": "Name",
-      "description": "Description",
-      "created_at": "Created",
-      "updated_at": "Updated",
-      "status": "Status",
-      "actions": "Actions"
-    },
-    "actions": {
-      "cancel": "Cancel",
-      "confirm": "Confirm",
-      "delete": "Delete",
-      "edit": "Edit",
-      "save": "Save",
-      "close": "Close",
-      "back": "Back",
-      "next": "Next",
-      "previous": "Previous",
-      "search": "Search",
-      "filter": "Filter",
-      "sort": "Sort",
-      "create_property": "Create property"
-    },
-    "status": {
-      "loading": "Loading...",
-      "error": "Error",
-      "success": "Success",
-      "favorite_added": "Added to favorites",
-      "favorite_removed": "Removed from favorites",
-      "favorite_error": "Error with favorite",
-      "error_favorite": "Error processing favorite"
-    },
-    "words": {
-      "dashboard": "Dashboard",
-      "real_estate": "Real Estate"
-    },
-    "sections": {
-      "favorites": "Favorites",
-      "no_favorites": "No favorites yet"
-    }
+  "labels": {
+    "without_image": "Without image",
+    "no_results": "No results",
+    "name": "Name",
+    "description": "Description",
+    "created_at": "Created",
+    "updated_at": "Updated",
+    "status": "Status",
+    "actions": "Actions"
+  },
+  "actions": {
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "delete": "Delete",
+    "edit": "Edit",
+    "save": "Save",
+    "close": "Close",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "search": "Search",
+    "filter": "Filter",
+    "sort": "Sort",
+    "create_property": "Create property"
+  },
+  "status": {
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "favorite_added": "Added to favorites",
+    "favorite_removed": "Removed from favorites",
+    "favorite_error": "Error with favorite",
+    "error_favorite": "Error processing favorite"
+  },
+  "words": {
+    "dashboard": "Dashboard",
+    "real_estate": "Real Estate"
+  },
+  "sections": {
+    "favorites": "Favorites",
+    "no_favorites": "No favorites yet"
   }
 }

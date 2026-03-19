@@ -1,19 +1,17 @@
 {
-  "agents": {
-    "title": "Agentes",
-    "subtitle": "Gestiona los agentes de tu inmobiliaria",
-    "labels": {
-      "agent-id": "ID del agente",
-      "email": "Correo electrónico",
-      "phone": "Teléfono",
-      "full-name": "Nombre completo",
-      "role": "Rol"
-    },
-    "placeholders": {
-      "agent-email": "agente@email.com"
-    },
-    "actions": {
-      "add-agent": "Agregar agente"
-    }
+  "title": "Agentes",
+  "subtitle": "Gestiona los agentes de tu inmobiliaria",
+  "labels": {
+    "agent-id": "ID del agente",
+    "email": "Correo electrónico",
+    "phone": "Teléfono",
+    "full-name": "Nombre completo",
+    "role": "Rol"
+  },
+  "placeholders": {
+    "agent-email": "agente@email.com"
+  },
+  "actions": {
+    "add-agent": "Agregar agente"
   }
 }

@@ -1,65 +1,63 @@
 {
-  "real-estates": {
-    "title": "Inmobiliaria",
-    "subtitle": "Gestiona tu inmobiliaria",
-    "sections": {
-      "basic_info": "Informacion basica de la inmobiliaria"
-    },
-    "labels": {
-      "name": "Nombre",
-      "logo": "Logo",
-      "whatsapp": "Contacto de WhatsApp",
-      "phone": "Telefono",
-      "address": "Direccion",
-      "street": "Calle",
-      "postal_code": "Codigo postal",
-      "city": "Ciudad",
-      "state": "Estado / Provincia",
-      "country": "Pais",
-      "description": "Descripcion"
-    },
-    "placeholders": {
-      "name": "Nombre de la inmobiliaria",
-      "logo": "Sube el logo",
-      "description": "Descripcion general",
-      "whatsapp": "+57 300 123 4567",
-      "street": "Calle",
-      "postal_code": "Codigo postal"
-    },
-    "actions": {
-      "create": "Registrar inmobiliaria",
-      "update": "Actualizar inmobiliaria",
-      "save_changes": "Guardar cambios",
-      "add_agent": "Agregar agente"
-    },
-    "messages": {
-      "created": "Inmobiliaria registrada exitosamente",
-      "updated": "Inmobiliaria actualizada exitosamente",
-      "error": "Error al guardar la inmobiliaria"
-    },
-    "titles": {
-      "onboarding": "No tienes inmobiliaria",
-      "selection": "Selecciona tu inmobiliaria"
-    },
-    "subtitles": {
-      "onboarding": "Registra tu primera inmobiliaria para comenzar",
-      "selection": "Elige con cual inmobiliaria trabajar"
-    },
-    "words": {
-      "no_address": "Sin direccion",
-      "skip": "Omitir por ahora",
-      "back_home": "Volver al inicio"
-    },
-    "roles": {
-      "owner": "Propietario",
-      "admin": "Administrador",
-      "agent": "Agente"
-    },
-    "pages": {
-      "selection": {
-        "title": "Selecciona tu inmobiliaria",
-        "subtitle": "Tienes {{count}} inmobiliaria(s)"
-      }
+  "title": "Inmobiliaria",
+  "subtitle": "Gestiona tu inmobiliaria",
+  "sections": {
+    "basic_info": "Informacion basica de la inmobiliaria"
+  },
+  "labels": {
+    "name": "Nombre",
+    "logo": "Logo",
+    "whatsapp": "Contacto de WhatsApp",
+    "phone": "Telefono",
+    "address": "Direccion",
+    "street": "Calle",
+    "postal_code": "Codigo postal",
+    "city": "Ciudad",
+    "state": "Estado / Provincia",
+    "country": "Pais",
+    "description": "Descripcion"
+  },
+  "placeholders": {
+    "name": "Nombre de la inmobiliaria",
+    "logo": "Sube el logo",
+    "description": "Descripcion general",
+    "whatsapp": "+57 300 123 4567",
+    "street": "Calle",
+    "postal_code": "Codigo postal"
+  },
+  "actions": {
+    "create": "Registrar inmobiliaria",
+    "update": "Actualizar inmobiliaria",
+    "save_changes": "Guardar cambios",
+    "add_agent": "Agregar agente"
+  },
+  "messages": {
+    "created": "Inmobiliaria registrada exitosamente",
+    "updated": "Inmobiliaria actualizada exitosamente",
+    "error": "Error al guardar la inmobiliaria"
+  },
+  "titles": {
+    "onboarding": "No tienes inmobiliaria",
+    "selection": "Selecciona tu inmobiliaria"
+  },
+  "subtitles": {
+    "onboarding": "Registra tu primera inmobiliaria para comenzar",
+    "selection": "Elige con cual inmobiliaria trabajar"
+  },
+  "words": {
+    "no_address": "Sin direccion",
+    "skip": "Omitir por ahora",
+    "back_home": "Volver al inicio"
+  },
+  "roles": {
+    "owner": "Propietario",
+    "admin": "Administrador",
+    "agent": "Agente"
+  },
+  "pages": {
+    "selection": {
+      "title": "Selecciona tu inmobiliaria",
+      "subtitle": "Tienes {{count}} inmobiliaria(s)"
     }
   }
 }
