@@ -49,7 +49,7 @@ export function NavUser({
     startTransition(async () => {
       try {
         await signOutAction()
-        router.push('/auth/sign-in')
+        router.push(routes.signin())
       } catch (err) {
         console.error("Sign out failed:", err)
       }
