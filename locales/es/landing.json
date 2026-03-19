@@ -1,5 +1,6 @@
 {
-  "nav": {
+  "landing": {
+    "nav": {
     "brand": "ZonaRaíz",
     "home": "Inicio",
     "listing": "Listados",
@@ -53,5 +54,6 @@
     "subtitle": "Nunca pierdas una propiedad. Suscríbete y recibe alertas.",
     "placeholder": "Ingresa tu correo...",
     "btn": "Suscribirse"
+    }
   }
 }

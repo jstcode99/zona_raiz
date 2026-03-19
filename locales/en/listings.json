@@ -1,0 +1,48 @@
+{
+  "listings": {
+    "title": "Publish property",
+    "subtitle": "Manage your property listings",
+    "labels": {
+      "listing-type": "Listing type",
+      "price-negotiable": "Negotiable price",
+      "expenses-amount": "Maintenance fees",
+      "expenses-included": "Fees included",
+      "featured": "Feature property",
+      "keywords": "Keywords",
+      "virtual-tour-url": "Virtual tour URL",
+      "video-url": "Video URL",
+      "available-from": "Available from",
+      "minimum-contract-duration": "Minimum contract duration (months)"
+    },
+    "placeholders": {
+      "select-listing-type": "Select listing type",
+      "expenses-amount": "Maintenance fees",
+      "keywords": "Keywords",
+      "virtual-tour-url": "https://virtualtours.com/...",
+      "video-url": "https://videos.com/...",
+      "available-from": "Select date",
+      "minimum-contract-duration": "12"
+    },
+    "sections": {
+      "all-properties": "All properties",
+      "filters": "Filters",
+      "type-properties": "Property types",
+      "type-listings": "Listing types",
+      "price-range": "Price range",
+      "rooms": "Number of rooms",
+      "bathrooms": "Number of bathrooms",
+      "amenities": "Included amenities"
+    },
+    "actions": {
+      "create": "Create new listing",
+      "update": "Update listing",
+      "save-property": "Save property",
+      "update-property": "Update property",
+      "search": "Search properties"
+    },
+    "status": {
+      "no-results": "No results found",
+      "try-filters": "Try with different filters..."
+    }
+  }
+}

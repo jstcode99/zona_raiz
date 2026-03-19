@@ -1,0 +1,36 @@
+{
+  "dashboard": {
+    "title": "Dashboard",
+    "subtitle": "Overview of your real estate business",
+    "sections": {
+      "total-revenue": "Total revenue",
+      "new-customers": "New customers",
+      "active-properties": "Active properties",
+      "visits": "Visits",
+      "agents": "Agents",
+      "features-listings": "Featured listings",
+      "total-listings": "Total listings",
+      "new-users": "New users",
+      "real-estates": "Real estates"
+    },
+    "trends": {
+      "trending-up": "Trending up this month",
+      "down-this-period": "Down this period",
+      "needs-attention": "Needs attention",
+      "exceeds-targets": "Exceeds targets",
+      "properties-over-last-month": "Properties over last month",
+      "visits-last-six-months": "Visits in the last six months",
+      "listings-over-last-month": "Listings over last month",
+      "new-users-over-last-month": "New users over last month",
+      "real-estates-over-last-month": "Real estates over last month"
+    },
+    "charts": {
+      "properties-by-type": "Properties by type",
+      "listings-by-status": "Listings by status",
+      "listings-by-status-description": "Total listings by month of current year"
+    },
+    "actions": {
+      "view-all": "View all"
+    }
+  }
+}

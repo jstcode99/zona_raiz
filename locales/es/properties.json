@@ -1,0 +1,71 @@
+{
+  "properties": {
+    "title": "Crear propiedad",
+    "subtitle": "Gestiona las propiedades de tu inmobiliaria",
+    "sections": {
+      "basic-info": "Información básica",
+      "location": "Ubicación",
+      "features": "Datos del inmueble"
+    },
+    "labels": {
+      "title": "Título",
+      "slug": "Slug",
+      "meta-title": "Meta título",
+      "meta-description": "Meta descripción",
+      "description": "Descripción",
+      "property-type": "Tipo de propiedad",
+      "status": "Estado",
+      "price": "Precio",
+      "currency": "Moneda",
+      "neighborhood": "Barrio",
+      "city": "Ciudad",
+      "state": "Estado / Provincia",
+      "country": "País",
+      "street": "Calle",
+      "postal-code": "Código postal",
+      "floors": "Plantas",
+      "year-built": "Año de construcción",
+      "latitude": "Latitud",
+      "longitude": "Longitud",
+      "google-maps-url": "URL de Google Maps",
+      "bedrooms": "Habitaciones",
+      "bathrooms": "Baños",
+      "total-area": "Área (m²)",
+      "built-area": "Área construida (m²)",
+      "lot-area": "Área del lote (m²)",
+      "parking-spots": "Zonas de parqueo",
+      "amenities": "Adicionales",
+      "whatsapp-contact": "Contacto de WhatsApp"
+    },
+    "placeholders": {
+      "title": "Apartamento moderno en el centro",
+      "slug": "apartamento-moderno-centro",
+      "meta-title": "Compra apartamento moderno en el centro",
+      "meta-description": "Descubre este increíble apartamento...",
+      "description": "Describe las características principales de la propiedad",
+      "select-property-type": "Selecciona tipo de propiedad",
+      "select-status": "Selecciona estado",
+      "price": "100000",
+      "select-currency": "Selecciona moneda",
+      "neighborhood": "Chapinero",
+      "city": "Bogotá",
+      "state": "Cundinamarca",
+      "country": "Colombia",
+      "street": "Calle ",
+      "postal-code": "Código postal",
+      "latitude": "4.7110",
+      "longitude": "-74.0721",
+      "google-maps-url": "https://maps.google.com/...",
+      "bedrooms": "3",
+      "bathrooms": "2",
+      "total-area": "120",
+      "parking-spots": "0"
+    },
+    "actions": {
+      "create": "Crear propiedad",
+      "update": "Actualizar propiedad",
+      "save": "Guardar cambios",
+      "add-images": "Agregar imágenes"
+    }
+  }
+}

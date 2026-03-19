@@ -1,0 +1,33 @@
+{
+  "common": {
+    "labels": {
+      "without-image": "Sin imagen",
+      "no-results": "Sin resultados",
+      "name": "Nombre",
+      "description": "Descripción",
+      "created-at": "Creado",
+      "updated-at": "Actualizado",
+      "status": "Estado",
+      "actions": "Acciones"
+    },
+    "actions": {
+      "cancel": "Cancelar",
+      "confirm": "Confirmar",
+      "delete": "Eliminar",
+      "edit": "Editar",
+      "save": "Guardar",
+      "close": "Cerrar",
+      "back": "Volver",
+      "next": "Siguiente",
+      "previous": "Anterior",
+      "search": "Buscar",
+      "filter": "Filtrar",
+      "sort": "Ordenar"
+    },
+    "status": {
+      "loading": "Cargando...",
+      "error": "Error",
+      "success": "Éxito"
+    }
+  }
+}

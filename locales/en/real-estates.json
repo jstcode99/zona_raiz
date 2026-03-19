@@ -1,0 +1,31 @@
+{
+  "real-estates": {
+    "title": "Real Estate",
+    "subtitle": "Manage your real estate",
+    "sections": {
+      "basic-info": "Basic Real Estate information"
+    },
+    "labels": {
+      "name": "Name",
+      "logo": "Logo",
+      "whatsapp-contact": "WhatsApp contact",
+      "phone": "Phone",
+      "address": "Address",
+      "city": "City",
+      "state": "State / Province",
+      "country": "Country",
+      "description": "Description"
+    },
+    "placeholders": {
+      "name": "Real estate name",
+      "logo": "Upload logo",
+      "description": "General description"
+    },
+    "actions": {
+      "create": "Register real estate",
+      "update": "Update real estate",
+      "save-changes": "Save changes",
+      "add-agent": "Add agent"
+    }
+  }
+}

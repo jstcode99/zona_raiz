@@ -1,0 +1,31 @@
+{
+  "real-estates": {
+    "title": "Inmobiliaria",
+    "subtitle": "Gestiona tu inmobiliaria",
+    "sections": {
+      "basic-info": "Información básica de la inmobiliaria"
+    },
+    "labels": {
+      "name": "Nombre",
+      "logo": "Logo",
+      "whatsapp-contact": "Contacto de WhatsApp",
+      "phone": "Teléfono",
+      "address": "Dirección",
+      "city": "Ciudad",
+      "state": "Estado / Provincia",
+      "country": "País",
+      "description": "Descripción"
+    },
+    "placeholders": {
+      "name": "Nombre de la inmobiliaria",
+      "logo": "Sube el logo",
+      "description": "Descripción general"
+    },
+    "actions": {
+      "create": "Registrar inmobiliaria",
+      "update": "Actualizar inmobiliaria",
+      "save-changes": "Guardar cambios",
+      "add-agent": "Agregar agente"
+    }
+  }
+}
