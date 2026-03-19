@@ -1,0 +1,48 @@
+{
+  "listings": {
+    "title": "Publicar propiedad",
+    "subtitle": "Gestiona las publicaciones de tus propiedades",
+    "labels": {
+      "listing-type": "Tipo de listado",
+      "price-negotiable": "Precio negociable",
+      "expenses-amount": "Valor de administración",
+      "expenses-included": "Gastos incluidos",
+      "featured": "Destacar propiedad",
+      "keywords": "Palabras clave",
+      "virtual-tour-url": "URL de tour virtual",
+      "video-url": "URL de video",
+      "available-from": "Disponible desde",
+      "minimum-contract-duration": "Duración mínima del contrato (meses)"
+    },
+    "placeholders": {
+      "select-listing-type": "Selecciona el tipo de listado",
+      "expenses-amount": "Valor de administración",
+      "keywords": "Palabras clave",
+      "virtual-tour-url": "https://tours.virtuales.com/...",
+      "video-url": "https://videos.com/...",
+      "available-from": "Selecciona fecha",
+      "minimum-contract-duration": "12"
+    },
+    "sections": {
+      "all-properties": "Todas las propiedades",
+      "filters": "Filtros",
+      "type-properties": "Tipo de propiedades",
+      "type-listings": "Tipo de Publicaciones",
+      "price-range": "Rango de precio",
+      "rooms": "Cantidad de habitaciones",
+      "bathrooms": "Cantidad de baños",
+      "amenities": "Amenidades incluidas"
+    },
+    "actions": {
+      "create": "Crear nueva publicación",
+      "update": "Actualizar publicación",
+      "save-property": "Guardar propiedad",
+      "update-property": "Actualizar propiedad",
+      "search": "Buscar propiedades"
+    },
+    "status": {
+      "no-results": "No se encontraron resultados",
+      "try-filters": "Intenta con otros filtros..."
+    }
+  }
+}

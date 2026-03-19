@@ -1,5 +1,6 @@
 {
-  "nav": {
+  "landing": {
+    "nav": {
     "brand": "ZonaRaíz",
     "home": "Home",
     "listing": "Listings",
@@ -66,5 +67,6 @@
     "contact": "Contact",
     "follow_us": "Follow Us",
     "copyright": "© 2026 ZonaRaíz. All rights reserved."
+    }
   }
 }

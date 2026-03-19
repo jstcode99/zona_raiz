@@ -1,0 +1,21 @@
+{
+  "profile": {
+    "title": "Perfil",
+    "subtitle": "Gestiona tu información personal",
+    "labels": {
+      "full-name": "Nombre completo",
+      "last-name": "Apellido",
+      "email": "Correo electrónico",
+      "phone": "Teléfono",
+      "role": "Rol",
+      "avatar": "Avatar"
+    },
+    "placeholders": {
+      "full-name": "Joe",
+      "last-name": "Doe"
+    },
+    "actions": {
+      "save-changes": "Guardar cambios"
+    }
+  }
+}

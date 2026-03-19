@@ -1,0 +1,21 @@
+{
+  "profile": {
+    "title": "Profile",
+    "subtitle": "Manage your personal information",
+    "labels": {
+      "full-name": "Full name",
+      "last-name": "Last name",
+      "email": "Email",
+      "phone": "Phone",
+      "role": "Role",
+      "avatar": "Avatar"
+    },
+    "placeholders": {
+      "full-name": "John",
+      "last-name": "Doe"
+    },
+    "actions": {
+      "save-changes": "Save changes"
+    }
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "agents": {
+    "title": "Agents",
+    "subtitle": "Manage your real estate agents",
+    "labels": {
+      "agent-id": "Agent ID",
+      "email": "Email",
+      "phone": "Phone",
+      "full-name": "Full name",
+      "role": "Role"
+    },
+    "placeholders": {
+      "agent-email": "agent@email.com"
+    },
+    "actions": {
+      "add-agent": "Add agent"
+    }
+  }
+}

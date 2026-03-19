@@ -1,0 +1,33 @@
+{
+  "common": {
+    "labels": {
+      "without-image": "Without image",
+      "no-results": "No results",
+      "name": "Name",
+      "description": "Description",
+      "created-at": "Created",
+      "updated-at": "Updated",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "actions": {
+      "cancel": "Cancel",
+      "confirm": "Confirm",
+      "delete": "Delete",
+      "edit": "Edit",
+      "save": "Save",
+      "close": "Close",
+      "back": "Back",
+      "next": "Next",
+      "previous": "Previous",
+      "search": "Search",
+      "filter": "Filter",
+      "sort": "Sort"
+    },
+    "status": {
+      "loading": "Loading...",
+      "error": "Error",
+      "success": "Success"
+    }
+  }
+}
