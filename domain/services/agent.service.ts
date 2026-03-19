@@ -1,6 +1,7 @@
 import { AgentPort } from "@/domain/ports/agent.port";
 import { unstable_cache } from "next/cache";
 import { Lang } from "@/i18n/settings";
+import { LandingAgent } from "@/domain/types/landing.types";
 
 export class AgentService {
   constructor(private agentPort: AgentPort, private lang: Lang = "es") {}
@@ -24,6 +25,18 @@ export class AgentService {
       {
         revalidate: 300,
         tags: ["agents", `real-estate:${realEstateId}`],
+      }
+    )();
+  }
+
+  async getTopAgents(limit: number = 6): Promise<LandingAgent[]> {
+    const cacheKey = `agent:top:${limit}`;
+    return unstable_cache(
+      async () => this.agentPort.getTopAgents(limit),
+      [cacheKey],
+      {
+        revalidate: 300,
+        tags: ["agents", "landing"],
       }
     )();
   }
