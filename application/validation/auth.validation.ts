@@ -51,5 +51,6 @@ export const defaultSignUpValues: SignUpFormInput = {
   phone: '+57 3168314191',
   password: 'wEUpZ#8RqT@ne-f',
   password_confirmation: 'wEUpZ#8RqT@ne-f',
-  type_register: true
+  type_register: true,
+  captchaToken: undefined,
 };
