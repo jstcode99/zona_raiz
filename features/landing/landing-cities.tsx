@@ -1,40 +1,69 @@
+"use client";
 
-import { useState } from "react"
-import { useTranslation } from "react-i18next"
-import { useRouter } from "next/navigation"
-import { Button } from "@/components/ui/button"
-import { Lang } from "@/i18n/settings"
-import type { LandingCity } from "@/domain/types/landing.types"
+import { useState } from "react";
+import { useTranslation } from "react-i18next";
+import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { Lang } from "@/i18n/settings";
+import type { LandingCity } from "@/domain/types/landing.types";
 
-interface LandingCitiesProps { 
-  lang: Lang
-  cities: LandingCity[]
+interface LandingCitiesProps {
+  lang: Lang;
+  cities: LandingCity[];
 }
 
 const defaultCities: LandingCity[] = [
-  { name: "Bogotá", slug: "colombia/cundinamarca/bogota", count: 0, image: "photo-1599940824399-b87987ceb72a" },
-  { name: "Medellín", slug: "colombia/antioquia/medellin", count: 0, image: "photo-1586500036706-41963de24d8b" },
-  { name: "Cartagena", slug: "colombia/bolivar/cartagena", count: 0, image: "photo-1558618666-fcd25c85cd64" },
-  { name: "Cali", slug: "colombia/valle-del-cauca/cali", count: 0, image: "photo-1545324418-cc1a3fa10c00" },
-]
+  {
+    name: "Bogotá",
+    slug: "colombia/cundinamarca/bogota",
+    count: 0,
+    image: "photo-1599940824399-b87987ceb72a",
+  },
+  {
+    name: "Medellín",
+    slug: "colombia/antioquia/medellin",
+    count: 0,
+    image: "photo-1586500036706-41963de24d8b",
+  },
+  {
+    name: "Cartagena",
+    slug: "colombia/bolivar/cartagena",
+    count: 0,
+    image: "photo-1558618666-fcd25c85cd64",
+  },
+  {
+    name: "Cali",
+    slug: "colombia/valle-del-cauca/cali",
+    count: 0,
+    image: "photo-1545324418-cc1a3fa10c00",
+  },
+];
 
 export function LandingCities({ lang, cities }: LandingCitiesProps) {
-  const { t } = useTranslation("landing")
-  const router = useRouter()
-  const [hoveredCity, setHoveredCity] = useState<string | null>(null)
+  const { t } = useTranslation("landing");
+  const router = useRouter();
+  const [hoveredCity, setHoveredCity] = useState<string | null>(null);
 
-  const displayCities = cities.length > 0 ? cities : defaultCities
+  const displayCities = cities.length > 0 ? cities : defaultCities;
 
   return (
     <section className="py-16 bg-neutral-50">
       <div className="max-w-6xl mx-auto px-6">
         <div className="flex items-end justify-between mb-10">
           <div>
-            <h2 className="text-neutral-900"
-              style={{ fontFamily: "'Fraunces', serif", fontSize: "clamp(24px, 3vw, 32px)", fontWeight: 400 }}>
+            <h2
+              className="text-neutral-900"
+              style={{
+                fontFamily: "'Fraunces', serif",
+                fontSize: "clamp(24px, 3vw, 32px)",
+                fontWeight: 400,
+              }}
+            >
               {t("cities.title")}
             </h2>
-            <p className="text-[13px] text-neutral-400 mt-1">{t("cities.subtitle")}</p>
+            <p className="text-[13px] text-neutral-400 mt-1">
+              {t("cities.subtitle")}
+            </p>
           </div>
           <Button
             variant="outline"
@@ -54,28 +83,33 @@ export function LandingCities({ lang, cities }: LandingCitiesProps) {
               onMouseEnter={() => setHoveredCity(city.slug)}
               onMouseLeave={() => setHoveredCity(null)}
             >
-              <div 
+              <div
                 className={`w-36 h-36 rounded-full overflow-hidden border-[3px] border-white shadow-md transition-all duration-300 mb-3 ${
-                  hoveredCity === city.slug 
-                    ? "border-orange-400 scale-105 shadow-lg" 
+                  hoveredCity === city.slug
+                    ? "border-orange-400 scale-105 shadow-lg"
                     : "group-hover:border-orange-300"
                 }`}
               >
                 <img
-                  src={city.image?.startsWith("http") 
-                    ? city.image 
-                    : `https://images.unsplash.com/${city.image}?w=300&q=80`
+                  src={
+                    city.image?.startsWith("http")
+                      ? city.image
+                      : `https://images.unsplash.com/${city.image}?w=300&q=80`
                   }
                   alt={city.name}
                   className="w-full h-full object-cover transition-transform duration-500"
                 />
               </div>
-              <p className="text-[15px] font-bold text-neutral-800">{city.name}</p>
-              <p className="text-[12px] text-neutral-400">{city.count} {t("cities.listings")}</p>
+              <p className="text-[15px] font-bold text-neutral-800">
+                {city.name}
+              </p>
+              <p className="text-[12px] text-neutral-400">
+                {city.count} {t("cities.listings")}
+              </p>
             </div>
           ))}
         </div>
       </div>
     </section>
-  )
+  );
 }
