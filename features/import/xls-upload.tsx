@@ -18,16 +18,16 @@ export function XlsUpload({
   acceptedTypes = ['.xlsx', '.xls', '.csv'],
   maxSize = 10 * 1024 * 1024 // 10MB
 }: XlsUploadProps) {
-  const { t } = useTranslation();
+  const { t } = useTranslation("import");
   const [isUploading, setIsUploading] = useState(false);
 
   const onDrop = useCallback((acceptedFiles: File[], fileRejections: any[]) => {
     if (fileRejections.length > 0) {
       const file = fileRejections[0];
       if (file.size > maxSize) {
-        onError(t('import:errors.fileTooLarge', { size: `${maxSize / (1024*1024)}MB` }));
+        onError(t('exceptions.file-too-large', { size: `${maxSize / (1024*1024)}MB` }));
       } else {
-        onError(t('import:errors.invalidFileType'));
+        onError(t('exceptions.invalid-format'));
       }
       return;
     }
@@ -54,7 +54,7 @@ export function XlsUpload({
         onDataLoaded(mockData);
       } catch (error) {
         console.error('Upload error:', error);
-        onError(t('import:errors.uploadFailed'));
+        onError(t('exceptions.upload-failed'));
       } finally {
         setIsUploading(false);
       }
@@ -90,25 +90,25 @@ export function XlsUpload({
         <>
           <div className="flex items-center justify-center mb-2">
             <div className="h-4 w-4 animate-spin rounded-full border-2 border-primary border-t-transparent"></div>
-            <span className="ml-2">{t('import:upload.uploading')}</span>
+            <span className="ml-2">{t('actions.uploading')}</span>
           </div>
         </>
       ) : (
         <>
           <p className="text-sm text-muted-foreground">
-            {t('import:upload.clickOrDrag')} 
-            <span className="font-medium">{t('import:upload.browseFiles')}</span>
+            {t('placeholders.drag-drop')} 
+            <span className="font-medium">{t('placeholders.or-click')}</span>
           </p>
           <p className="text-xs text-muted-foreground mt-1">
-            {t('import:upload.supportedFormats')}: 
+            {t('placeholders.supported-formats')}: 
             {acceptedTypes.join(', ')}
           </p>
           <p className="text-xs text-muted-foreground">
-            {t('import:upload.maxSize')}: {maxSize / (1024*1024)}MB
+            {t('placeholders.max-size')}: {maxSize / (1024*1024)}MB
           </p>
           {!isDragActive && (
             <Button variant="outline" size="sm" className="mt-3">
-              {t('import:upload.browseFiles')}
+              {t('actions.upload')}
             </Button>
           )}
         </>

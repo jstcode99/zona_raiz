@@ -1,4 +1,5 @@
 import { useState } from "react"
+import { useTranslation } from "react-i18next"
 import { Button } from "@/components/ui/button"
 import { DataTable } from "@/components/ui/data-table"
 
@@ -18,6 +19,7 @@ export function ImportPreview({
   onCancel, 
   editable = false 
 }: ImportPreviewProps) {
+  const { t } = useTranslation("import")
   const [editedData, setEditedData] = useState<any[][]>(data.rows)
   const [isConfirming, setIsConfirming] = useState(false)
 
@@ -84,14 +86,14 @@ export function ImportPreview({
           onClick={onCancel}
           disabled={isConfirming}
         >
-          Cancelar
+          {t("actions.cancel")}
         </Button>
         <Button 
           onClick={handleConfirm}
           disabled={isConfirming || editedData.length === 0}
           className={isConfirming ? "opacity-70" : ""}
         >
-          {isConfirming ? 'Confirmando...' : 'Confirmar importación'}
+          {isConfirming ? t("actions.confirming") : t("actions.confirm")}
         </Button>
       </div>
     </div>

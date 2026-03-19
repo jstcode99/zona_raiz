@@ -1,0 +1,53 @@
+{
+  "import": {
+    "title": "Import Data",
+    "subtitle": "Upload and preview your data before importing",
+    "actions": {
+      "cancel": "Cancel",
+      "confirm": "Confirm Import",
+      "confirming": "Confirming...",
+      "upload": "Upload File",
+      "uploading": "Uploading...",
+      "retry": "Retry",
+      "close": "Close"
+    },
+    "labels": {
+      "file": "File",
+      "headers": "Headers",
+      "rows": "Rows",
+      "preview": "Preview",
+      "status": "Status",
+      "progress": "Progress"
+    },
+    "placeholders": {
+      "drag-drop": "Drag and drop your file here",
+      "or-click": "or click to browse",
+      "supported-formats": "Supported formats: XLS, XLSX, CSV",
+      "max-size": "Maximum size: 10MB"
+    },
+    "status": {
+      "pending": "Pending",
+      "uploading": "Uploading",
+      "processing": "Processing",
+      "ready": "Ready",
+      "error": "Error",
+      "success": "Success"
+    },
+    "exceptions": {
+      "file-too-large": "File is too large. Maximum size is 10MB",
+      "invalid-format": "Invalid file format. Supported: XLS, XLSX, CSV",
+      "upload-failed": "Upload failed. Please try again",
+      "parse-failed": "Failed to parse file. Please check the format",
+      "confirm-failed": "Failed to confirm import. Please try again",
+      "no-data": "No data to import",
+      "network-error": "Network error. Please check your connection"
+    },
+    "messages": {
+      "upload-success": "File uploaded successfully",
+      "import-success": "Data imported successfully",
+      "import-cancelled": "Import cancelled",
+      "processing-file": "Processing file...",
+      "validating-data": "Validating data..."
+    }
+  }
+}

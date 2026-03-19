@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button"
 import { XlsUpload } from "./xls-upload"
 import { ImportPreview } from "./import-preview"
 import { useState } from "react"
+import { useTranslation } from "react-i18next"
 
 interface ImportDialogProps {
   open: boolean
@@ -20,6 +21,7 @@ interface ImportDialogProps {
 }
 
 export function ImportDialog({ open, onOpenChange }: ImportDialogProps) {
+  const { t } = useTranslation("import")
   const [importData, setImportData] = useState<any>(null)
   const [previewData, setPreviewData] = useState<any>(null)
   const [step, setStep] = useState<'upload' | 'preview' | 'confirm'>('upload')
@@ -49,6 +51,12 @@ export function ImportDialog({ open, onOpenChange }: ImportDialogProps) {
     }, 1500)
   }
 
+  const handleConfirmClick = () => {
+    if (previewData) {
+      handlePreviewConfirm(previewData.rows || [])
+    }
+  }
+
   const handlePreviewCancel = () => {
     setStep('upload')
     setImportData(null)
@@ -63,10 +71,10 @@ export function ImportDialog({ open, onOpenChange }: ImportDialogProps) {
       <DialogContent className="w-[900px] max-w-full">
         <DialogHeader>
           <DialogTitle>
-            Importar datos desde archivo
+            {t("title")}
           </DialogTitle>
           <DialogDescription>
-            Suba un archivo XLS/XLSX/CSV para importar datos
+            {t("subtitle")}
           </DialogDescription>
         </DialogHeader>
         
@@ -95,10 +103,10 @@ export function ImportDialog({ open, onOpenChange }: ImportDialogProps) {
               </div>
             </div>
             <h3 className="text-lg font-semibold mb-2">
-              Importación completada
+              {t("messages.import-success")}
             </h3>
             <p className="text-muted-foreground">
-              Los datos han sido procesados correctamente
+              {t("messages.import-success")}
             </p>
           </div>
         )}
@@ -115,13 +123,13 @@ export function ImportDialog({ open, onOpenChange }: ImportDialogProps) {
                 onClick={handlePreviewCancel}
                 className="btn-ghost"
               >
-                Cancelar
+                {t("actions.cancel")}
               </button>
               <button 
-                onClick={handlePreviewConfirm}
+                onClick={handleConfirmClick}
                 className="btn-primary"
               >
-                Confirmar importación
+                {t("actions.confirm")}
               </button>
             </>
           )}
@@ -130,7 +138,7 @@ export function ImportDialog({ open, onOpenChange }: ImportDialogProps) {
               onClick={() => onOpenChange(false)}
               className="btn-primary"
             >
-              Cerrar
+              {t("actions.close")}
             </button>
           )}
         </DialogFooter>
