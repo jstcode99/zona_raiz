@@ -89,7 +89,7 @@ export const searchListingsAction = withServerAction(
     const lang = (validated.country || "es") as Lang;
     const routes = createRouter(lang);
     const qs = params.toString();
-    const searchPath = `/${lang}/_search${qs ? `?${qs}` : ""}`;
+    const searchPath = `${routes.search()}${qs ? `?${qs}` : ""}`;
 
     redirect(searchPath);
   },

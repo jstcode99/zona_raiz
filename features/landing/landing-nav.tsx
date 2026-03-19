@@ -6,11 +6,9 @@ import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { IconLock, IconMenu2, IconDashboard } from "@tabler/icons-react"
-import { Lang } from "@/i18n/settings"
-import { createRouter } from "@/i18n/router"
+import { useRoutes } from "@/i18n/client-router"
 
 interface LandingNavProps { 
-  lang: Lang
   isLoggedIn: boolean
 }
 
@@ -19,32 +17,31 @@ const navLinks = [
   { key: "nav.listing", hrefKey: "listings" },
 ]
 
-export function LandingNav({ lang, isLoggedIn }: LandingNavProps) {
+export function LandingNav({ isLoggedIn }: LandingNavProps) {
   const { t } = useTranslation("landing")
   const router = useRouter()
-  const routes = createRouter(lang)
+  const routes = useRoutes()
   const [mobileOpen, setMobileOpen] = useState(false)
 
   const handleNavClick = (hrefKey: string) => {
     if (hrefKey === "listings") {
-      router.push(`/${lang}/colombia`)
+      router.push(routes.search())
     } else if (hrefKey === "home") {
       router.push(routes.home())
     }
   }
 
   const handleCtaClick = () => {
-    const signupPath = lang === "es" ? "/autenticacion/registro" : "/auth/sign-up"
-    router.push(signupPath)
+    router.push(routes.signup())
   }
 
-  const loginPath = lang === "es" ? "/autenticacion/login" : "/auth/sign-in"
-  const dashboardPath = lang === "es" ? "/panel" : "/dashboard"
+  const loginPath = routes.signin()
+  const dashboardPath = routes.dashboard()
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-b border-neutral-100 animate-fade-in">
       <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-        <Link href={`/${lang}`} className="flex items-center gap-2.5 cursor-pointer transition-transform hover:scale-[1.02]">
+        <Link href={routes.home()} className="flex items-center gap-2.5 cursor-pointer transition-transform hover:scale-[1.02]">
           <div className="w-8 h-8 bg-neutral-900 rounded-full flex items-center justify-center">
             <span className="text-white text-xs font-bold">ZR</span>
           </div>
@@ -100,7 +97,7 @@ export function LandingNav({ lang, isLoggedIn }: LandingNavProps) {
           <SheetContent side="right" className="w-[280px] p-0">
             <div className="flex flex-col h-full">
               <div className="flex items-center justify-between p-4 border-b border-neutral-100">
-                <Link href={`/${lang}`} className="flex items-center gap-2.5 cursor-pointer" onClick={() => setMobileOpen(false)}>
+                <Link href={routes.home()} className="flex items-center gap-2.5 cursor-pointer" onClick={() => setMobileOpen(false)}>
                   <div className="w-8 h-8 bg-neutral-900 rounded-full flex items-center justify-center">
                     <span className="text-white text-xs font-bold">ZR</span>
                   </div>
@@ -160,16 +157,6 @@ export function LandingNav({ lang, isLoggedIn }: LandingNavProps) {
           </SheetContent>
         </Sheet>
       </div>
-
-      <style jsx>{`
-        @keyframes fade-in {
-          from { opacity: 0; transform: translateY(-10px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-        .animate-fade-in {
-          animation: fade-in 0.4s ease-out;
-        }
-      `}</style>
     </nav>
   )
 }
