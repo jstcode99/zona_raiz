@@ -9,7 +9,7 @@ import { useTranslation } from "react-i18next"
 import { Breadcrumbs } from "./breadcrumbs"
 
 export function SiteHeader() {
-  const { t } = useTranslation()
+  const { t } = useTranslation("dashboard")
   const routes = useRoutes()
 
   return (
