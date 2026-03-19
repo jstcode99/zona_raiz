@@ -103,8 +103,10 @@ export function InquiryFiltersForm({
     onFiltersChange?.({})
   }
 
+  const onSubmit = () => {}
+
   return (
-    <Form form={form} className="space-y-3 bg-gray-500/10 p-4 rounded-md">
+    <Form form={form} className="space-y-3 bg-gray-500/10 p-4 rounded-md" onSubmit={onSubmit}>
       <div className="flex gap-2 items-center">
         <Form.Input
           name="search"

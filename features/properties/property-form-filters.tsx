@@ -10,7 +10,7 @@ import countries from '@/lib/countries.json'
 import { PropertyType } from "@/domain/entities/property.enums"
 import { objectToSearchParams, toNumber } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
-import { PropertySearchFormInput } from "@/application/validation/property-search.schema"
+import { PropertySearchFormInput, defaultPropertySearchValues } from "@/application/validation/property-search.schema"
 import { useTranslation } from "react-i18next"
 
 interface PropertyFiltersFormProps {
@@ -20,7 +20,7 @@ interface PropertyFiltersFormProps {
 
 
 function parseSearchParams(sp: URLSearchParams | null): PropertySearchFormInput {
-  if (!sp) return {}
+  if (!sp) return defaultPropertySearchValues
   return {
     search: sp.get("q") ?? undefined,
     type: sp.get("type") as PropertyType ?? undefined,
@@ -31,6 +31,7 @@ function parseSearchParams(sp: URLSearchParams | null): PropertySearchFormInput 
     city: sp.get("city") ?? undefined,
     bathrooms: toNumber(sp.get("bathrooms")),
     bedrooms: toNumber(sp.get("bedrooms")),
+    real_estate_id: sp.get("real_estate_id") ?? null,
   }
 }
 
@@ -95,7 +96,7 @@ export function PropertyFiltersForm({
     }
 
     const timeout = setTimeout(() => {
-      const params = filtersToSearchParams(values)
+      const params = filtersToSearchParams(values as PropertySearchFormInput)
       const queryString = params.toString()
 
       if (queryString === lastQueryRef.current) return
@@ -104,7 +105,7 @@ export function PropertyFiltersForm({
 
       const newUrl = queryString ? `${pathname}?${queryString}` : pathname
       router.replace(newUrl, { scroll: false })
-      onFiltersChange?.(values)
+      onFiltersChange?.(values as PropertySearchFormInput)
 
     }, debounceMs)
 
@@ -113,13 +114,15 @@ export function PropertyFiltersForm({
 
   const handleReset = () => {
     lastQueryRef.current = ""
-    form.reset({})
+    form.reset(defaultPropertySearchValues)
     router.replace(pathname, { scroll: false })
-    onFiltersChange?.({})
+    onFiltersChange?.(defaultPropertySearchValues)
   }
 
+  const onSubmit = () => {}
+
   return (
-    <Form form={form} className="space-y-3 bg-gray-500/10 p-4 rounded-md">
+    <Form form={form} className="space-y-3 bg-gray-500/10 p-4 rounded-md" onSubmit={onSubmit}>
       {/* Búsqueda rápida */}
       <div className="flex gap-2 items-center">
         <Form.Input

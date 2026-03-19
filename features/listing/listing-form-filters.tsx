@@ -52,8 +52,8 @@ function filtersToSearchParams(filters: ListingSearchFormInput) {
     bedrooms: filters.bathrooms,
     bathrooms: filters.bedrooms,
 
-    real_estate_id: filters.real_estate_id,
-    property_id: filters.property_id,
+    real_estate_id: filters.real_estate_id ?? undefined,
+    property_id: filters.property_id ?? undefined,
     listing_type: filters.listing_type,
     status: filters.status,
     price: filters.price,
@@ -74,7 +74,7 @@ export function ListingFiltersForm({
   const lastQueryRef = useRef("")
   const isSyncingFromUrl = useRef(false)
 
-  const form = useForm<PropertySearchFormInput>({
+  const form = useForm<ListingSearchFormInput>({
     defaultValues: parseSearchParams(searchParams),
   })
 
@@ -106,7 +106,7 @@ export function ListingFiltersForm({
     }
 
     const timeout = setTimeout(() => {
-      const params = filtersToSearchParams(values)
+      const params = filtersToSearchParams(values as ListingSearchFormInput)
       const queryString = params.toString()
 
       if (queryString === lastQueryRef.current) return
@@ -115,7 +115,7 @@ export function ListingFiltersForm({
 
       const newUrl = queryString ? `${pathname}?${queryString}` : pathname
       router.replace(newUrl, { scroll: false })
-      onFiltersChange?.(values)
+      onFiltersChange?.(values as ListingSearchFormInput)
 
     }, debounceMs)
 
@@ -129,8 +129,10 @@ export function ListingFiltersForm({
     onFiltersChange?.(defaultListingValues)
   }
 
+  const onSubmit = () => {}
+
   return (
-    <Form form={form} className="space-y-3 bg-gray-500/10 p-4 rounded-md">
+    <Form form={form} className="space-y-3 bg-gray-500/10 p-4 rounded-md" onSubmit={onSubmit}>
       {/* Búsqueda rápida */}
       <div className="flex gap-2 items-center">
         <Form.Input
