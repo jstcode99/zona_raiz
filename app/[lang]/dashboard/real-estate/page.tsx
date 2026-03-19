@@ -30,7 +30,7 @@ export default async function page({ params }: props) {
   const realEstate = await realEstateService.getCachedById(realEstateId)
 
   if (!realEstate || !realEstateId) {
-    encodedRedirect('error', routes.onboarding(), t("exceptions:data_not_found"))
+    encodedRedirect('error', routes.onboarding(), t("common:exceptions.data_not_found"))
   }
 
   const agents = await agentService.getCachedListAgents(realEstateId)

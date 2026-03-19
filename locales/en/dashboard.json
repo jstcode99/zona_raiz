@@ -10,7 +10,9 @@
     "features_listings": "Featured listings",
     "properties_by_type": "Properties by type",
     "listings_by_status": "Listings by status",
-    "listings_by_status_description": "Total listings by month of current year"
+    "listings_by_status_description": "Total listings by month of current year",
+    "agents": "Agents",
+    "last_properties_publisheds": "Last published properties"
   },
   "trends": {
     "trending_up": "Trending up this month",

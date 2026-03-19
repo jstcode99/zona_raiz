@@ -41,10 +41,10 @@ export function ListingGrid({
       <div className="flex flex-col items-center justify-center py-12 text-center">
         <IconHome className="w-16 h-16 text-muted-foreground/30 mb-4" />
         <h3 className="text-lg font-semibold text-muted-foreground">
-          {t("exceptions:properties_not_found")}
+          {t("listings:exceptions.properties_not_found")}
         </h3>
         <p className="text-sm text-muted-foreground mt-1">
-          {t("sections:try_change_filters")}
+          {t("listings:sections.try_change_filters")}
         </p>
       </div>
     );

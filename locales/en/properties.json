@@ -4,7 +4,8 @@
   "sections": {
     "basic_info": "Basic information",
     "location": "Location",
-    "features": "Property details"
+    "features": "Property details",
+    "search_meta_description": "Search properties"
   },
   "labels": {
     "title": "Title",
@@ -59,7 +60,8 @@
     "bathrooms": "2",
     "total_area": "120",
     "parking_spots": "0",
-    "amenities": "Pool, Garage, Garden"
+    "amenities": "Pool, Garage, Garden",
+    "order_by": "Order by"
   },
   "actions": {
     "create": "Create property",
@@ -75,5 +77,14 @@
   "words": {
     "search": "Search...",
     "location": "Location"
+  },
+  "exceptions": {
+    "max_size_pixels": "Image exceeds maximum size"
+  },
+  "titles": {
+    "property_gallery": "Property gallery"
+  },
+  "subtitles": {
+    "property_gallery": "Property gallery"
   }
 }

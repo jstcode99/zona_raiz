@@ -32,7 +32,8 @@
     "rooms": "Cantidad de habitaciones",
     "bathrooms": "Cantidad de banos",
     "amenities": "Amenidades incluidas",
-    "location": "Ubicacion"
+    "location": "Ubicacion",
+    "try_change_filters": "Intenta con otros filtros..."
   },
   "actions": {
     "create": "Crear nueva publicacion",
@@ -51,5 +52,10 @@
     "without_image": "Sin imagen",
     "featured": "Destacado",
     "negotiable": "Negociable"
+  },
+  "exceptions": {
+    "create_fail": "Error al crear publicación",
+    "update_fail": "Error al actualizar publicación",
+    "properties_not_found": "Propiedades no encontradas"
   }
 }

@@ -32,7 +32,8 @@
     "rooms": "Number of rooms",
     "bathrooms": "Number of bathrooms",
     "amenities": "Included amenities",
-    "location": "Location"
+    "location": "Location",
+    "try_change_filters": "Try another search..."
   },
   "actions": {
     "create": "Create new listing",
@@ -51,5 +52,10 @@
     "without_image": "No image",
     "featured": "Featured",
     "negotiable": "Negotiable"
+  },
+  "exceptions": {
+    "create_fail": "Failed to create listing",
+    "update_fail": "Failed to update listing",
+    "properties_not_found": "Properties not found"
   }
 }

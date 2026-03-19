@@ -39,6 +39,15 @@
   },
   "sections": {
     "favorites": "Favorites",
-    "no_favorites": "No favorites yet"
+    "no_favorites": "No favorites yet",
+    "all_properties": "All properties",
+    "filters": "Filters"
+  },
+  "exceptions": {
+    "data_not_found": "No se encontraron datos...",
+    "unauthorized": "Unauthorized"
+  },
+  "titles": {
+    "app": "Real estate rentals and sales"
   }
 }

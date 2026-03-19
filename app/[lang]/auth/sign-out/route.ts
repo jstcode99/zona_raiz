@@ -24,6 +24,6 @@ export async function GET(request: NextRequest) {
   revalidatePath(routes.dashboard());
 
   return NextResponse.redirect(
-    `${origin}${routes.signin()}?success=${t("status:success_signout")}`
+    `${origin}${routes.signin()}?success=${t("auth:status.success_signout")}`
   )
 }

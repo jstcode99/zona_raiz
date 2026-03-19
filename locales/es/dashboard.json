@@ -10,7 +10,9 @@
     "features_listings": "Publicaciones destacadas",
     "properties_by_type": "Propiedades por tipo",
     "listings_by_status": "Publicaciones por estado",
-    "listings_by_status_description": "Total de publicaciones por mes del año actual"
+    "listings_by_status_description": "Total de publicaciones por mes del año actual",
+    "agents": "Agentes",
+    "last_properties_publisheds": "Últimas propiedades publicadas"
   },
   "trends": {
     "trending_up": "Tendencia al alza este mes",

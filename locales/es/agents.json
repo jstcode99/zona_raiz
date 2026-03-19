@@ -13,5 +13,14 @@
   },
   "actions": {
     "add-agent": "Agregar agente"
+  },
+  "titles": {
+    "add_agent": "Agregar agente"
+  },
+  "subtitles": {
+    "add_agent": "Invita agentes registrados en la plataforma"
+  },
+  "fields": {
+    "email": "Correo electrónico"
   }
 }

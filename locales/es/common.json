@@ -39,6 +39,15 @@
   },
   "sections": {
     "favorites": "Favoritos",
-    "no_favorites": "Sin favoritos aun"
+    "no_favorites": "Sin favoritos aun",
+    "all_properties": "Todas las propiedades",
+    "filters": "Filtros"
+  },
+  "exceptions": {
+    "data_not_found": "No se encontraron datos...",
+    "unauthorized": "No autorizado"
+  },
+  "titles": {
+    "app": "Arriendos y ventas de inmuebles"
   }
 }
