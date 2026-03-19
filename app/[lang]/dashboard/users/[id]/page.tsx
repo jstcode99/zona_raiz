@@ -28,7 +28,7 @@ export default async function page({ params }: props) {
     const data = await userService.getCachedUserById(id)
 
     if (!data || !id || data === null) {
-      encodedRedirect('error', routes.users(), t("exceptions:data_not_found"))
+      return encodedRedirect('error', routes.users(), t("exceptions:data_not_found"))
     }
 
     user = {
@@ -37,7 +37,7 @@ export default async function page({ params }: props) {
       role: data.role,
     }
   } catch {
-    encodedRedirect('error', routes.users(), t("exceptions:data_not_found"))
+    return encodedRedirect('error', routes.users(), t("exceptions:data_not_found"))
   }
 
   return (
