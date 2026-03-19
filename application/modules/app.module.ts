@@ -26,6 +26,7 @@ import { SupabasePropertyImageAdapter } from "@/infrastructure/adapters/supabase
 import { PropertyImageService } from "@/domain/services/property-image.service";
 import { SupabaseFavoriteAdapter } from "@/infrastructure/adapters/supabase/supabase-favorite.adapter";
 import { FavoriteService } from "@/domain/services/favorite.service";
+import { SupabaseImportAdapter } from "@/infrastructure/adapters/supabase/supabase-import.adapter";
 
 export async function appModule(lang: Lang = "es", ctx: CookieContext) {
   const supabase = await SupabaseServerClient();
@@ -69,6 +70,7 @@ export async function appModule(lang: Lang = "es", ctx: CookieContext) {
     lang,
   );
   const favoriteService = new FavoriteService(favoriteAdapter);
+  const importService = new SupabaseImportAdapter(supabase);
 
   return {
     authService,
@@ -85,5 +87,6 @@ export async function appModule(lang: Lang = "es", ctx: CookieContext) {
     propertyService,
     propertyImageService,
     favoriteService,
+    importService,
   };
 }
