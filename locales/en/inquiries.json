@@ -1,17 +1,15 @@
 {
-  "inquiries": {
-    "title": "Inquiries",
-    "subtitle": "Manage property inquiries",
-    "labels": {
-      "inquiry": "Inquiry",
-      "new-inquiries": "New inquiries"
-    },
-    "status": {
-      "pending": "Pending",
-      "contacted": "Contacted",
-      "qualified": "Qualified",
-      "converted": "Converted",
-      "lost": "Lost"
-    }
+  "title": "Inquiries",
+  "subtitle": "Manage property inquiries",
+  "labels": {
+    "inquiry": "Inquiry",
+    "new-inquiries": "New inquiries"
+  },
+  "status": {
+    "pending": "Pending",
+    "contacted": "Contacted",
+    "qualified": "Qualified",
+    "converted": "Converted",
+    "lost": "Lost"
   }
 }

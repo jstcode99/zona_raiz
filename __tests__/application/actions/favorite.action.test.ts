@@ -109,7 +109,7 @@ describe("Favorite Actions", () => {
       mocks.sessionService.getCurrentUserId.mockResolvedValue(null);
 
       await expect(toggleFavoriteAction("listing-456")).rejects.toThrow(
-        "exceptions:unauthorized",
+        "common:exceptions.unauthorized",
       );
     });
 
@@ -118,7 +118,7 @@ describe("Favorite Actions", () => {
       mocks.listingService.findById.mockResolvedValue(null);
 
       await expect(toggleFavoriteAction("listing-456")).rejects.toThrow(
-        "exceptions:data_not_found",
+        "common:exceptions.data_not_found",
       );
     });
   });
@@ -167,7 +167,7 @@ describe("Favorite Actions", () => {
       mocks.sessionService.getCurrentUserId.mockResolvedValue(null);
 
       await expect(getUserFavoritesAction()).rejects.toThrow(
-        "exceptions:unauthorized",
+        "common:exceptions.unauthorized",
       );
     });
   });

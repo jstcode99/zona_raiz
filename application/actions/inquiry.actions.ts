@@ -31,18 +31,18 @@ export const deleteInquiryAction = withServerAction(
 
     const userId = await sessionService.getCurrentUserId();
 
-    if (!userId) throw new Error(t("exceptions:unauthorized"));
+    if (!userId) throw new Error(t("common:exceptions.unauthorized"));
 
     const inquiry = await inquiryService.findById(id);
     if (!inquiry || !inquiry.listing)
-      throw new Error(t("exceptions:data_not_found"));
+      throw new Error(t("common:exceptions.data_not_found"));
 
     const isAdmin = await sessionService.isAdmin();
     const isCoordinator = await sessionService.isCoordinator();
     const isAssignedAgent = inquiry.assigned_to === userId;
 
     if (!isAdmin && !isCoordinator && !isAssignedAgent)
-      throw new Error(t("exceptions:unauthorized"));
+      throw new Error(t("common:exceptions.unauthorized"));
 
     await inquiryService.delete(id);
 
@@ -83,14 +83,14 @@ export const updateInquiryStatusAction = withServerAction(
 
     const inquiry = await inquiryService.findById(id);
     if (!inquiry || !inquiry.listing)
-      throw new Error(t("exceptions:data_not_found"));
+      throw new Error(t("common:exceptions.data_not_found"));
 
     const isAdmin = await sessionService.isAdmin();
     const isCoordinator = await sessionService.isCoordinator();
     const isAssignedAgent = inquiry.assigned_to === userId;
 
     if (!isAdmin && !isCoordinator && !isAssignedAgent)
-      throw new Error(t("exceptions:unauthorized"));
+      throw new Error(t("common:exceptions.unauthorized"));
 
     await inquiryService.update(id, { status: status as any });
     revalidatePath(routes.inquiries());
@@ -124,27 +124,27 @@ export const assignInquiryAction = withServerAction(
 
     const id = formData.get("id") as string;
     const assigned_to = formData.get("assigned_to") as string;
-    if (!id || !assigned_to) throw new Error(t("exceptions:unauthorized"));
+    if (!id || !assigned_to) throw new Error(t("common:exceptions.unauthorized"));
 
     const inquiry = await inquiryService.findById(id);
     if (!inquiry || !inquiry.listing)
-      throw new Error(t("exceptions:data_not_found"));
+      throw new Error(t("common:exceptions.data_not_found"));
 
     const userId = await sessionService.getCurrentUserId();
-    if (!userId) throw new Error(t("exceptions:unauthorized"));
+    if (!userId) throw new Error(t("common:exceptions.unauthorized"));
 
     const isAdmin = await sessionService.isAdmin();
     const isCoordinator = await sessionService.isCoordinator();
 
     if (!isAdmin && !isCoordinator)
-      throw new Error(t("exceptions:unauthorized"));
+      throw new Error(t("common:exceptions.unauthorized"));
     const realEstateId = inquiry.listing.real_estate_id;
 
     const targetAgent = await profileService.getAgentRoleInRealEstate(
       assigned_to,
       realEstateId,
     );
-    if (!targetAgent) throw new Error(t("exceptions:unauthorized"));
+    if (!targetAgent) throw new Error(t("common:exceptions.unauthorized"));
 
     await inquiryService.update(id, { assigned_to });
 

@@ -32,7 +32,7 @@ export const createPropertyAction = withServerAction(
 
     const userId = await sessionService.getCurrentUserId();
 
-    if (!userId) throw new Error(t("exceptions:unauthorized"));
+    if (!userId) throw new Error(t("common:exceptions.unauthorized"));
 
     await propertyService.create(realEstateId, {
       ...input,
@@ -69,7 +69,7 @@ export const updatePropertyAction = withServerAction(
     });
 
     const currentProperty = await propertyService.getById(id);
-    if (!currentProperty) throw new Error(t("exceptions:data_not_found"));
+    if (!currentProperty) throw new Error(t("common:exceptions.data_not_found"));
 
     await propertyService.update(id, {
       ...input,
@@ -104,7 +104,7 @@ export const deletePropertyAction = withServerAction(async (id: string) => {
   const { propertyService } = await appModule(lang, { cookies: cookieStore });
 
   const currentProperty = await propertyService.getById(id);
-  if (!currentProperty) throw new Error(t("exceptions:data_not_found"));
+  if (!currentProperty) throw new Error(t("common:exceptions.data_not_found"));
 
   await propertyService.delete(id);
 

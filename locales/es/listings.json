@@ -1,57 +1,61 @@
 {
-  "listings": {
-    "title": "Publicar propiedad",
-    "subtitle": "Gestiona las publicaciones de tus propiedades",
-    "labels": {
-      "listing_type": "Tipo de listado",
-      "price_negotiable": "Precio negociable",
-      "expenses_amount": "Valor de administracion",
-      "expenses_included": "Gastos incluidos",
-      "featured": "Destacar propiedad",
-      "keywords": "Palabras clave",
-      "virtual_tour_url": "URL de tour virtual",
-      "video_url": "URL de video",
-      "available_from": "Disponible desde",
-      "minimum_contract_duration": "Duracion minima del contrato (meses)"
-    },
-    "placeholders": {
-      "select_listing_type": "Selecciona el tipo de listado",
-      "expenses_amount": "Valor de administracion",
-      "keywords": "Palabras clave",
-      "virtual_tour_url": "https://tours.virtuales.com/...",
-      "video_url": "https://videos.com/...",
-      "available_from": "Selecciona fecha",
-      "minimum_contract_duration": "12",
-      "search_properties": "Buscar propiedades"
-    },
-    "sections": {
-      "all_properties": "Todas las propiedades",
-      "filters": "Filtros",
-      "type_properties": "Tipo de propiedades",
-      "type_listings": "Tipo de Publicaciones",
-      "price_range": "Rango de precio",
-      "rooms": "Cantidad de habitaciones",
-      "bathrooms": "Cantidad de banos",
-      "amenities": "Amenidades incluidas",
-      "location": "Ubicacion"
-    },
-    "actions": {
-      "create": "Crear nueva publicacion",
-      "update": "Actualizar publicacion",
-      "save_property": "Guardar propiedad",
-      "update_property": "Actualizar propiedad",
-      "search": "Buscar propiedades",
-      "clear_amenities": "Limpiar amenidades",
-      "any": "Cualquiera"
-    },
-    "status": {
-      "no_results": "No se encontraron resultados",
-      "try_filters": "Intenta con otros filtros..."
-    },
-    "words": {
-      "without_image": "Sin imagen",
-      "featured": "Destacado",
-      "negotiable": "Negociable"
-    }
+  "title": "Publicar propiedad",
+  "subtitle": "Gestiona las publicaciones de tus propiedades",
+  "labels": {
+    "listing_type": "Tipo de listado",
+    "price_negotiable": "Precio negociable",
+    "expenses_amount": "Valor de administracion",
+    "expenses_included": "Gastos incluidos",
+    "featured": "Destacar propiedad",
+    "keywords": "Palabras clave",
+    "virtual_tour_url": "URL de tour virtual",
+    "video_url": "URL de video",
+    "available_from": "Disponible desde",
+    "minimum_contract_duration": "Duracion minima del contrato (meses)"
+  },
+  "placeholders": {
+    "select_listing_type": "Selecciona el tipo de listado",
+    "expenses_amount": "Valor de administracion",
+    "keywords": "Palabras clave",
+    "virtual_tour_url": "https://tours.virtuales.com/...",
+    "video_url": "https://videos.com/...",
+    "available_from": "Selecciona fecha",
+    "minimum_contract_duration": "12",
+    "search_properties": "Buscar propiedades"
+  },
+  "sections": {
+    "all_properties": "Todas las propiedades",
+    "filters": "Filtros",
+    "type_properties": "Tipo de propiedades",
+    "type_listings": "Tipo de Publicaciones",
+    "price_range": "Rango de precio",
+    "rooms": "Cantidad de habitaciones",
+    "bathrooms": "Cantidad de banos",
+    "amenities": "Amenidades incluidas",
+    "location": "Ubicacion",
+    "try_change_filters": "Intenta con otros filtros..."
+  },
+  "actions": {
+    "create": "Crear nueva publicacion",
+    "update": "Actualizar publicacion",
+    "save_property": "Guardar propiedad",
+    "update_property": "Actualizar propiedad",
+    "search": "Buscar propiedades",
+    "clear_amenities": "Limpiar amenidades",
+    "any": "Cualquiera"
+  },
+  "status": {
+    "no_results": "No se encontraron resultados",
+    "try_filters": "Intenta con otros filtros..."
+  },
+  "words": {
+    "without_image": "Sin imagen",
+    "featured": "Destacado",
+    "negotiable": "Negociable"
+  },
+  "exceptions": {
+    "create_fail": "Error al crear publicación",
+    "update_fail": "Error al actualizar publicación",
+    "properties_not_found": "Propiedades no encontradas"
   }
 }

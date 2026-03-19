@@ -34,7 +34,7 @@ export async function GET(request: NextRequest) {
     if (!profile) {
 
       return NextResponse.redirect(
-        `${origin}${routes.signin()}?error=${t("exceptions:auth_error")}`
+        `${origin}${routes.signin()}?error=${t("auth:exceptions.auth_error")}`
       )
     }
 
@@ -57,7 +57,7 @@ export async function GET(request: NextRequest) {
     if (!profile) {
 
       return NextResponse.redirect(
-        `${origin}${routes.otp()}?error=${t("exceptions:invalid_or_expired_link")}`
+        `${origin}${routes.otp()}?error=${t("auth:exceptions.invalid_or_expired_link")}`
       )
     }
 
@@ -76,6 +76,6 @@ export async function GET(request: NextRequest) {
   }
 
   return NextResponse.redirect(
-    `${origin}${routes.signin()}?error=${t("exceptions:missing_token")}`
+    `${origin}${routes.signin()}?error=${t("auth:exceptions.missing_token")}`
   )
 }

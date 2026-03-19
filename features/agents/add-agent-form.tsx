@@ -78,16 +78,16 @@ export const AddAgentForm = ({
     >
       <FieldGroup className="gap-4">
         <div className="flex flex-col items-center gap-2 text-center">
-          <h1 className="text-2xl font-bold">{t('titles:add_agent')}</h1>
+          <h1 className="text-2xl font-bold">{t('agents:titles.add_agent')}</h1>
           <p className="text-muted-foreground text-balance">
-            {t('subtitles:add_agent')}
+            {t('agents:subtitles.add_agent')}
           </p>
         </div>
 
         <Form.Autocomplete
           name="profile_id"
-          label={t('fields:email')}
-          placeholder={t('placeholders:email')}
+          label={t('agents:fields.email')}
+          placeholder={t('agents:placeholders.email')}
           onSearch={searchUsersByEmail}
         />
 
@@ -98,7 +98,7 @@ export const AddAgentForm = ({
             disabled={isLoading}
           >
             {isLoading && <Spinner data-icon="inline-start" className="mr-2 h-4 w-4" />}
-            {t('actions:add_agent')}
+            {t('actions.add-agent')}
           </Button>
         </Field>
 

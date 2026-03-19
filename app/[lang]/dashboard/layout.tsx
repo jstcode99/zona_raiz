@@ -36,7 +36,7 @@ export default async function DashboardLayout({
     return encodedRedirect(
       "error",
       routes.onboarding(),
-      t("exceptions:data_not_found"),
+      t("common:exceptions.data_not_found"),
     );
   }
 
@@ -47,7 +47,7 @@ export default async function DashboardLayout({
     return encodedRedirect(
       "error",
       routes.signin(),
-      t("exceptions:data_not_found"),
+      t("common:exceptions.data_not_found"),
     );
   }
 

@@ -1,25 +1,23 @@
 {
-  "profile": {
-    "title": "Perfil",
-    "subtitle": "Gestiona tu informacion personal",
-    "labels": {
-      "full_name": "Nombre completo",
-      "last_name": "Apellido",
-      "email": "Correo electronico",
-      "phone": "Telefono",
-      "role": "Rol",
-      "avatar": "Avatar"
-    },
-    "placeholders": {
-      "full_name": "Joe",
-      "last_name": "Doe"
-    },
-    "actions": {
-      "save_changes": "Guardar cambios"
-    },
-    "messages": {
-      "success": "Perfil actualizado exitosamente",
-      "error": "Error al actualizar el perfil"
-    }
+  "title": "Perfil",
+  "subtitle": "Gestiona tu informacion personal",
+  "labels": {
+    "full_name": "Nombre completo",
+    "last_name": "Apellido",
+    "email": "Correo electronico",
+    "phone": "Telefono",
+    "role": "Rol",
+    "avatar": "Avatar"
+  },
+  "placeholders": {
+    "full_name": "Joe",
+    "last_name": "Doe"
+  },
+  "actions": {
+    "save_changes": "Guardar cambios"
+  },
+  "messages": {
+    "success": "Perfil actualizado exitosamente",
+    "error": "Error al actualizar el perfil"
   }
 }

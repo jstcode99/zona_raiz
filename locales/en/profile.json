@@ -1,25 +1,23 @@
 {
-  "profile": {
-    "title": "Profile",
-    "subtitle": "Manage your personal information",
-    "labels": {
-      "full_name": "Full name",
-      "last_name": "Last name",
-      "email": "Email",
-      "phone": "Phone",
-      "role": "Role",
-      "avatar": "Avatar"
-    },
-    "placeholders": {
-      "full_name": "John",
-      "last_name": "Doe"
-    },
-    "actions": {
-      "save_changes": "Save changes"
-    },
-    "messages": {
-      "success": "Profile updated successfully",
-      "error": "Error updating profile"
-    }
+  "title": "Profile",
+  "subtitle": "Manage your personal information",
+  "labels": {
+    "full_name": "Full name",
+    "last_name": "Last name",
+    "email": "Email",
+    "phone": "Phone",
+    "role": "Role",
+    "avatar": "Avatar"
+  },
+  "placeholders": {
+    "full_name": "John",
+    "last_name": "Doe"
+  },
+  "actions": {
+    "save_changes": "Save changes"
+  },
+  "messages": {
+    "success": "Profile updated successfully",
+    "error": "Error updating profile"
   }
 }

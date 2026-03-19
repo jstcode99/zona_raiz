@@ -129,7 +129,7 @@ describe("Favorite Permissions (KRO-90)", () => {
       mocks.sessionService.getCurrentUserId.mockResolvedValue(null);
 
       await expect(toggleFavoriteAction("listing-456")).rejects.toThrow(
-        "exceptions:unauthorized",
+        "common:exceptions.unauthorized",
       );
 
       expect(mocks.favoriteService.toggle).not.toHaveBeenCalled();
@@ -159,7 +159,7 @@ describe("Favorite Permissions (KRO-90)", () => {
       mocks.sessionService.getCurrentUserId.mockResolvedValue(null);
 
       await expect(toggleFavoriteAction("listing-456")).rejects.toThrow(
-        "exceptions:unauthorized",
+        "common:exceptions.unauthorized",
       );
 
       expect(
@@ -202,7 +202,7 @@ describe("Favorite Permissions (KRO-90)", () => {
       mocks.sessionService.getCurrentUserId.mockResolvedValue(null);
 
       await expect(getUserFavoritesAction()).rejects.toThrow(
-        "exceptions:unauthorized",
+        "common:exceptions.unauthorized",
       );
 
       expect(mocks.favoriteService.findByProfileId).not.toHaveBeenCalled();

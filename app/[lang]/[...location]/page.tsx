@@ -34,9 +34,9 @@ export async function generateMetadata({
   else if (country) parts.push(country);
 
   const locationLabel =
-    parts.length > 0 ? parts.join(" · ") : t("sections:all_properties");
-  const title = `${locationLabel} | ${t("titles:app")}`;
-  const description = t("sections:search_meta_description", {
+    parts.length > 0 ? parts.join(" · ") : t("common:sections.all_properties");
+  const title = `${locationLabel} | ${t("common:titles.app")}`;
+  const description = t("properties:sections.search_meta_description", {
     location: locationLabel,
   });
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ?? "";
@@ -86,7 +86,7 @@ export default async function page({ params, searchParams }: SearchPageProps) {
     if (country) parts.push(country);
     if (state) parts.push(state);
     if (city) parts.push(city);
-    return parts.join(" > ") || t("sections:all_properties");
+    return parts.join(" > ") || t("common:sections.all_properties");
   };
 
   const locationPath = (location ?? []).join("/");

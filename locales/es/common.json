@@ -1,46 +1,53 @@
 {
-  "common": {
-    "labels": {
-      "without_image": "Sin imagen",
-      "no_results": "Sin resultados",
-      "name": "Nombre",
-      "description": "Descripcion",
-      "created_at": "Creado",
-      "updated_at": "Actualizado",
-      "status": "Estado",
-      "actions": "Acciones"
-    },
-    "actions": {
-      "cancel": "Cancelar",
-      "confirm": "Confirmar",
-      "delete": "Eliminar",
-      "edit": "Editar",
-      "save": "Guardar",
-      "close": "Cerrar",
-      "back": "Atras",
-      "next": "Siguiente",
-      "previous": "Anterior",
-      "search": "Buscar",
-      "filter": "Filtrar",
-      "sort": "Ordenar",
-      "create_property": "Crear propiedad"
-    },
-    "status": {
-      "loading": "Cargando...",
-      "error": "Error",
-      "success": "Exito",
-      "favorite_added": "Agregado a favoritos",
-      "favorite_removed": "Eliminado de favoritos",
-      "favorite_error": "Error con favorito",
-      "error_favorite": "Error al procesar favorito"
-    },
-    "words": {
-      "dashboard": "Dashboard",
-      "real_estate": "Inmobiliaria"
-    },
-    "sections": {
-      "favorites": "Favoritos",
-      "no_favorites": "Sin favoritos aun"
-    }
+  "labels": {
+    "without_image": "Sin imagen",
+    "no_results": "Sin resultados",
+    "name": "Nombre",
+    "description": "Descripcion",
+    "created_at": "Creado",
+    "updated_at": "Actualizado",
+    "status": "Estado",
+    "actions": "Acciones"
+  },
+  "actions": {
+    "cancel": "Cancelar",
+    "confirm": "Confirmar",
+    "delete": "Eliminar",
+    "edit": "Editar",
+    "save": "Guardar",
+    "close": "Cerrar",
+    "back": "Atras",
+    "next": "Siguiente",
+    "previous": "Anterior",
+    "search": "Buscar",
+    "filter": "Filtrar",
+    "sort": "Ordenar",
+    "create_property": "Crear propiedad"
+  },
+  "status": {
+    "loading": "Cargando...",
+    "error": "Error",
+    "success": "Exito",
+    "favorite_added": "Agregado a favoritos",
+    "favorite_removed": "Eliminado de favoritos",
+    "favorite_error": "Error con favorito",
+    "error_favorite": "Error al procesar favorito"
+  },
+  "words": {
+    "dashboard": "Dashboard",
+    "real_estate": "Inmobiliaria"
+  },
+  "sections": {
+    "favorites": "Favoritos",
+    "no_favorites": "Sin favoritos aun",
+    "all_properties": "Todas las propiedades",
+    "filters": "Filtros"
+  },
+  "exceptions": {
+    "data_not_found": "No se encontraron datos...",
+    "unauthorized": "No autorizado"
+  },
+  "titles": {
+    "app": "Arriendos y ventas de inmuebles"
   }
 }

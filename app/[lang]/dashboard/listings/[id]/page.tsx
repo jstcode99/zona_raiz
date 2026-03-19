@@ -24,7 +24,7 @@ export default async function page({ params }: props) {
   const listing = await listingService.getCachedById(id)
 
   if (!listing) {
-    encodedRedirect('error', routes.listings(), t("exceptions:data_not_found"))
+    encodedRedirect('error', routes.listings(), t("common:exceptions.data_not_found"))
     return null
   }
 

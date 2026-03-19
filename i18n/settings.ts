@@ -16,9 +16,10 @@ export const namespaces = [
   "profile",
   "agents",
   "inquiries",
+  "import",
   // Common namespaces
   "common",
   "components",
   "validations",
-  "exceptions"
+  "words"
 ]
