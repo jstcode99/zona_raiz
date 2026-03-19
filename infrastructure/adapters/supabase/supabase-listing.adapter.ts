@@ -408,7 +408,7 @@ export class SupabaseListingAdapter implements ListingPort {
           property_images(public_url)
         )
       `)
-      .eq("status", "published")
+      .eq("status", "active")
       .not("properties.city", "is", null);
 
     if (error) throw new Error(error.message);
@@ -445,7 +445,7 @@ export class SupabaseListingAdapter implements ListingPort {
     const { count: totalListings } = await this.supabase
       .from("listings")
       .select("*", { count: "exact", head: true })
-      .eq("status", "published");
+      .eq("status", "active");
 
     // Get total agents (distinct profiles in real_estate_agents)
     const { data: agents } = await this.supabase
@@ -458,7 +458,7 @@ export class SupabaseListingAdapter implements ListingPort {
     const { data: listingsWithCities } = await this.supabase
       .from("listings")
       .select("property:properties(city)")
-      .eq("status", "published")
+      .eq("status", "active")
       .not("properties.city", "is", null);
 
     const uniqueCities = new Set(
