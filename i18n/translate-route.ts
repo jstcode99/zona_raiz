@@ -19,7 +19,7 @@ export function translateRoute(
 
     if (!match) continue
 
-    let translated = target
+    let translated: string = target
 
     const params = source.match(/:[^/]+/g)
 

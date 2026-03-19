@@ -30,7 +30,6 @@ export function PropertyForm({
   realEstateId,
   defaultValues,
   id,
-  ...props
 }: PropertyFormProps) {
   const router = useRouter()
   const routes = useRoutes()
@@ -55,7 +54,7 @@ export function PropertyForm({
   } as const
 
   const form = useForm<PropertyInput>({
-    resolver: yupResolver(propertySchema),
+    resolver: yupResolver(propertySchema) as any,
     defaultValues: defaultValues || defaultPropertyValues,
     mode: "onTouched",
   });
@@ -83,12 +82,12 @@ export function PropertyForm({
   }, [title, currentSlug, isUpdateMode, setValue]);
 
   const mutation = useServerMutation<PropertyEntity>({
-    action: (formData: FormData) => {
+    action: ((formData: FormData) => {
       if (isUpdateMode && id) {
         return updatePropertyAction(id, formData);
       }
       return createPropertyAction(realEstateId, formData);
-    },
+    }) as any,
     setError,
     onSuccess: (result) => {
       if (result.success) {
@@ -129,11 +128,15 @@ export function PropertyForm({
     }
   }
 
+  const onSubmit = async (values: PropertyInput) => {
+    // This is handled by the WizardTabs onSubmit
+  }
+
   return (
     <Form
-      {...props}
       form={form}
       className={cn("py-6 px-6 mx-auto space-y-8", className)}
+      onSubmit={onSubmit}
     >
       <WizardTabs
         ref={wizardRef}

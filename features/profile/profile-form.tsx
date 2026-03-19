@@ -35,7 +35,6 @@ export function ProfileForm({
   })
 
   const {
-    handleSubmit,
     reset,
     formState: { isSubmitting, isDirty }
   } = form
@@ -45,7 +44,7 @@ export function ProfileForm({
     setError: form.setError,
     onSuccess: () => {
       toast.success(t('forms.profile.success') || 'Profile updated successfully')
-      reset(form.getValues()) // Reset dirty state
+      reset(form.getValues())
     },
     onError: (error) => {
       console.error("Profile update error:", error)
@@ -58,7 +57,7 @@ export function ProfileForm({
     }
   }, [defaultValues, reset])
 
-  const onSubmit = handleSubmit((values) => {
+  const onSubmit = async (values: ProfileInput) => {
     const formData = new FormData()
 
     Object.entries(values).forEach(([key, value]) => {
@@ -68,7 +67,7 @@ export function ProfileForm({
     })
 
     mutation.action(formData)
-  })
+  }
 
   const isLoading = isSubmitting || mutation.isPending
 

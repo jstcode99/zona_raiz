@@ -23,7 +23,7 @@ export default async function page({ params }: props) {
   const property = await propertyService.getCachedById(id)
 
   if (!property) {
-    encodedRedirect('error', routes.properties(), t("exceptions:data_not_found"))
+    return encodedRedirect('error', routes.properties(), t("exceptions:data_not_found"))
   }
 
   const images = await propertyImageService.getCachedByPropertyId(id)

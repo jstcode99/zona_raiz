@@ -1,12 +1,32 @@
 import { mapListingRowToEntity } from "@/application/mappers/listing.mapper";
 import { ListingEntity } from "@/domain/entities/listing.entity";
-import { ListingPort } from "@/domain/ports/listing.port";
+import { ProfileEntity } from "@/domain/entities/profile.entity";
+import { ListingPort, ListingCountFilters, ListingSearchFilters } from "@/domain/ports/listing.port";
+import { LandingCity, LandingStats } from "@/domain/types/landing.types";
 import { SupabaseClient } from "@supabase/supabase-js";
+
+interface ListingRow {
+  created_at: string;
+  status: string;
+}
+
+interface AgentProfile {
+  id: string;
+  full_name: string;
+  avatar_url: string | null;
+  phone: string | null;
+}
+
+interface ListingRowWithAgent extends ListingRow {
+  real_estate_agent?: {
+    profile?: AgentProfile;
+  };
+}
 
 export class SupabaseListingAdapter implements ListingPort {
   constructor(private readonly supabase: SupabaseClient) {}
 
-  async all(filters?: any): Promise<ListingEntity[]> {
+  async all(filters?: ListingSearchFilters): Promise<ListingEntity[]> {
     const sortField =
       filters?.sort_by?.toString().split("_")[0] || "created_at";
     const sortOrder = filters?.sort_by?.includes("desc") ? false : true;
@@ -165,7 +185,7 @@ export class SupabaseListingAdapter implements ListingPort {
     if (error) throw error;
   }
 
-  async count(filters?: any): Promise<number> {
+  async count(filters?: ListingCountFilters): Promise<number> {
     let query = this.supabase.from("listings").select(
       `
       *,
@@ -204,7 +224,7 @@ export class SupabaseListingAdapter implements ListingPort {
     return count || 0;
   }
 
-  async countWithViews(filters?: any): Promise<number> {
+  async countWithViews(filters?: ListingCountFilters): Promise<number> {
     let query = this.supabase
       .from("listings")
       .select(
@@ -291,7 +311,7 @@ export class SupabaseListingAdapter implements ListingPort {
 
   async countByStatusAndMonth(
     year: number,
-    filters?: any,
+    filters?: Omit<ListingCountFilters, "start_date" | "end_date">,
   ): Promise<Record<string, Record<string, number>>> {
     const startDate = `${year}-01-01`;
     const endDate = `${year}-12-31`;
@@ -334,7 +354,7 @@ export class SupabaseListingAdapter implements ListingPort {
       result[month] = { draft: 0, active: 0, paused: 0, archived: 0 };
     });
 
-    (data || []).forEach((item: any) => {
+    (data || []).forEach((item: ListingRow) => {
       const date = new Date(item.created_at);
       const monthIndex = date.getMonth();
       const status = item.status as string;
@@ -368,13 +388,20 @@ export class SupabaseListingAdapter implements ListingPort {
 
     if (error) throw new Error(error.message);
 
-    return (data || []).map((item) => {
+    return (data || []).map((item: ListingRowWithAgent) => {
       const entity = mapListingRowToEntity(item);
       if (entity && item.real_estate_agent?.profile) {
-        // @ts-ignore - adding agent profile from the join
-        entity.agent = item.real_estate_agent.profile as any;
+        entity.agent = item.real_estate_agent.profile as ProfileEntity;
       }
       return entity;
     }) as ListingEntity[];
+  }
+
+  async findCitiesWithListings(): Promise<LandingCity[]> {
+    throw new Error("Not implemented");
+  }
+
+  async getStats(): Promise<LandingStats> {
+    throw new Error("Not implemented");
   }
 }

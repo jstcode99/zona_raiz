@@ -17,10 +17,11 @@ export default async function DashboardLayout({
   params,
 }: {
   children: ReactNode;
-  params: { lang: Lang };
+  params: Promise<{ lang: string }>;
 }) {
   const cookieStore = await cookies();
-  const { lang } = await params;
+  const { lang: langParam } = await params;
+  const lang = langParam as Lang;
 
   const routes = createRouter(lang);
   const i18n = await initI18n(lang);

@@ -35,15 +35,16 @@ export default async function page({ params, searchParams }: props) {
   const { cookiesService, listingService } = await appModule(lang, { cookies: cookieStore })
 
   const realEstateId = await cookiesService.getRealEstateId()
- 
+  
   if (!realEstateId) {
     encodedRedirect('error', routes.onboarding(), t("exceptions:data_not_found"))
+    return null
   }
   
   const listing = listingService.getCachedAll({
     ...filters,
-    realEstateId
-  })
+    real_estate_id: realEstateId
+  } as Parameters<typeof listingService.getCachedAll>[0])
 
   return (
     <main className="flex-col items-center justify-center space-y-4 px-4 lg:px-6">

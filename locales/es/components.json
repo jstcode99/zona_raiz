@@ -5,5 +5,31 @@
       "delete_warning": "¿Eliminar esta imagen?",
       "alt": "Texto alternativo",
       "caption": "Descripción"
+    },
+    "import": {
+      "drag_drop": "Arrastra un archivo Excel o CSV aquí",
+      "drop_here": "Suelta el archivo aquí",
+      "file_types": "Acepta .xlsx, .xls, .csv (máx. 10MB)",
+      "invalid_file": "Tipo de archivo no válido o excede 10MB",
+      "uploading": "Procesando archivo...",
+      "upload_success": "¡Archivo procesado exitosamente!",
+      "cancel_upload": "Cancelar",
+      "try_again": "Intentar de nuevo",
+      "empty_file": "El archivo está vacío",
+      "parse_error": "No se pudo leer el archivo",
+      "read_error": "Error al leer el archivo",
+      "upload_failed": "Error al procesar el archivo",
+      "preview_title": "Vista previa de datos",
+      "valid_rows": "filas válidas",
+      "error_rows": "filas con errores",
+      "editing_mode": "Modo edición activado",
+      "exit_edit": "Salir de edición",
+      "cancel": "Cancelar",
+      "confirm": "Confirmar importación",
+      "confirm_success": "Importación confirmada",
+      "confirm_failed": "Error al confirmar la importación",
+      "has_validation_errors": "No se pueden importar filas con errores de validación",
+      "import_failed": "Error al importar los datos",
+      "truncated_preview": "Mostrando {{shown}} de {{total}} filas"
     }
   }

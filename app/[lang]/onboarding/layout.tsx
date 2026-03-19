@@ -11,10 +11,11 @@ export default async function PostLoginLayout({
   params
 }: {
   children: ReactNode,
-  params: { lang: Lang }
+  params: Promise<{ lang: string }>
 }) {
 
-  const { lang } = await params;
+  const { lang: langParam } = await params;
+  const lang = langParam as Lang;
   const cookieStore = await cookies()
 
   const i18n = await initI18n(lang)

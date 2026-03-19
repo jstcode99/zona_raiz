@@ -26,11 +26,11 @@ export default async function page({ params }: props) {
   const property = await propertyService.getCachedById(id)
 
   if (!realEstateId) {
-    encodedRedirect('error', routes.onboarding(), t("exceptions:data_not_found"))
+    return encodedRedirect('error', routes.onboarding(), t("exceptions:data_not_found"))
   }
 
   if (!property) {
-    encodedRedirect('error', routes.properties(), t("exceptions:data_not_found"))
+    return encodedRedirect('error', routes.properties(), t("exceptions:data_not_found"))
   }
 
   return (

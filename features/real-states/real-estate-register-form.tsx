@@ -29,12 +29,12 @@ export function RealEstateRegistrationForm() {
   const routes = useRoutes()
 
   const form = useForm<RealEstateInput>({
-    resolver: yupResolver(realEstateSchema),
+    resolver: yupResolver(realEstateSchema) as any,
     defaultValues: defaultRealEstateValues,
     mode: "onBlur",
   })
 
-  const { control, setError, handleSubmit, reset, formState: { isSubmitting } } = form
+  const { control, setError, reset, formState: { isSubmitting } } = form
 
   const mutation = useServerMutation({
     action: createRealEstateAction,
@@ -51,11 +51,11 @@ export function RealEstateRegistrationForm() {
 
   const isLoading = isSubmitting || mutation.isPending
 
-  const onSubmit = handleSubmit((values: RealEstateInput) => {
+  const onSubmit = async (values: RealEstateInput) => {
     const formData = new FormData()
     flatten(values, '', formData)
     mutation.action(formData)
-  })
+  }
 
 
   return (
