@@ -4,11 +4,21 @@ import { useTranslation } from "react-i18next";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { useRoutes } from "@/i18n/client-router";
-import { IconBed, IconBath } from "@tabler/icons-react";
+import { Form } from "@/components/ui/form";
 import { LandingCity } from "@/domain/types/landing.types";
+import { useForm } from "react-hook-form";
+import { useTransition } from "react";
 
 interface LandingHeroProps {
   cities?: LandingCity[];
+}
+
+interface SearchFormData {
+  city?: string;
+  property_type?: string;
+  min_bedrooms?: number;
+  min_bathrooms?: number;
+  max_price?: number;
 }
 
 const propertyTypes = [
@@ -26,28 +36,38 @@ export function LandingHero({ cities = [] }: LandingHeroProps) {
   const { t } = useTranslation("landing");
   const router = useRouter();
   const routes = useRoutes();
+  const [isPending, startTransition] = useTransition();
 
-  const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const form = e.currentTarget;
-    const formData = new FormData(form);
-    
+  const form = useForm<SearchFormData>({
+    defaultValues: {
+      city: "",
+      property_type: "",
+      min_bedrooms: undefined,
+      min_bathrooms: undefined,
+      max_price: undefined,
+    },
+  });
+
+  const onSubmit = (data: SearchFormData) => {
     const params = new URLSearchParams();
-    const city = formData.get("city") as string;
-    const type = formData.get("property_type") as string;
-    const beds = formData.get("min_bedrooms") as string;
-    const baths = formData.get("min_bathrooms") as string;
-    const price = formData.get("max_price") as string;
 
-    if (city) params.set("city", city);
-    if (type) params.set("type", type);
-    if (beds) params.set("min_bedrooms", beds);
-    if (baths) params.set("min_bathrooms", baths);
-    if (price) params.set("max_price", price);
+    if (data.city) params.set("city", data.city);
+    if (data.property_type) params.set("type", data.property_type);
+    if (data.min_bedrooms) params.set("min_bedrooms", String(data.min_bedrooms));
+    if (data.min_bathrooms) params.set("min_bathrooms", String(data.min_bathrooms));
+    if (data.max_price) params.set("max_price", String(data.max_price));
 
     const qs = params.toString();
-    router.push(`${routes.search()}${qs ? `?${qs}` : ""}`);
+    
+    startTransition(() => {
+      router.push(`${routes.search()}${qs ? `?${qs}` : ""}`);
+    });
   };
+
+  const cityOptions = cities.map((c) => ({
+    label: c.name,
+    value: c.name,
+  }));
 
   return (
     <section className="relative w-full min-h-screen pt-16 overflow-hidden">
@@ -103,88 +123,72 @@ export function LandingHero({ cities = [] }: LandingHeroProps) {
               </h2>
             </div>
 
-            <form onSubmit={handleSearch} className="p-6 pt-4 flex flex-col gap-3">
-              {/* Location */}
-              <div>
-                <label className="text-[11px] font-semibold text-neutral-500 uppercase tracking-wider mb-1.5 block">
-                  {t("hero.location")}
-                </label>
-                <input
-                  name="city"
-                  className="w-full border border-neutral-200 rounded-xl px-3 h-11 text-[13px] text-neutral-700 outline-none focus:border-orange-400 transition-colors"
-                  placeholder={t("hero.location_placeholder")}
-                  list="cities-list"
-                />
-                <datalist id="cities-list">
-                  {cities.map((c) => (
-                    <option key={c.slug} value={c.name} />
-                  ))}
-                </datalist>
-              </div>
+            <Form form={form} onSubmit={onSubmit} className="p-6 pt-4 flex flex-col gap-3">
+              {/* Location - Datalist input */}
+              <Form.Input
+                name="city"
+                label={t("hero.location")}
+                placeholder={t("hero.location_placeholder")}
+                list="cities-list"
+                className="border-neutral-200 rounded-xl px-3 h-11 text-[13px] text-neutral-700 outline-none focus:border-orange-400 transition-colors"
+              />
+              <datalist id="cities-list">
+                {cityOptions.map((c) => (
+                  <option key={c.value} value={c.value} />
+                ))}
+              </datalist>
 
               {/* Property Type */}
-              <div>
-                <label className="text-[11px] font-semibold text-neutral-500 uppercase tracking-wider mb-1.5 block">
-                  {t("hero.property_type")}
-                </label>
-                <select
-                  name="property_type"
-                  className="w-full border border-neutral-200 rounded-xl px-3 h-11 text-[13px] text-neutral-700 outline-none focus:border-orange-400 transition-colors bg-white"
-                >
-                  <option value="">{t("hero.property_placeholder")}</option>
-                  {propertyTypes.map((p) => (
-                    <option key={p.value} value={p.value}>
-                      {p.label}
-                    </option>
-                  ))}
-                </select>
-              </div>
+              <Form.Select
+                name="property_type"
+                label={t("hero.property_type")}
+                placeholder={t("hero.property_placeholder")}
+                options={propertyTypes.map((p) => ({
+                  label: p.label,
+                  value: p.value,
+                }))}
+              />
 
               {/* Beds & Baths */}
               <div className="flex items-center gap-2">
-                <div className="flex-1 relative">
-                  <IconBed className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-neutral-400" />
-                  <input
+                <div className="flex-1">
+                  <Form.Input
                     name="min_bedrooms"
                     type="number"
                     placeholder={t("hero.beds")}
                     min={0}
-                    className="w-full border border-neutral-200 rounded-xl pl-10 pr-3 h-11 text-[13px] text-neutral-700 outline-none focus:border-orange-400 transition-colors"
+                    className="border-neutral-200 rounded-xl px-3 h-11 text-[13px] text-neutral-700 outline-none focus:border-orange-400 transition-colors"
                   />
                 </div>
-                <IconBath className="text-neutral-300 shrink-0" />
                 <div className="flex-1">
-                  <input
+                  <Form.Input
                     name="min_bathrooms"
                     type="number"
                     placeholder={t("hero.baths")}
                     min={0}
-                    className="w-full border border-neutral-200 rounded-xl px-3 h-11 text-[13px] text-neutral-700 outline-none focus:border-orange-400 transition-colors"
+                    className="border-neutral-200 rounded-xl px-3 h-11 text-[13px] text-neutral-700 outline-none focus:border-orange-400 transition-colors"
                   />
                 </div>
               </div>
 
               {/* Max Price */}
-              <div>
-                <label className="text-[11px] font-semibold text-neutral-500 uppercase tracking-wider mb-1.5 block">
-                  {t("hero.max_price")}
-                </label>
-                <input
-                  name="max_price"
-                  type="number"
-                  placeholder="590.00 max"
-                  min={0}
-                  className="w-full border border-neutral-200 rounded-xl px-3 h-11 text-[13px] text-neutral-700 outline-none focus:border-orange-400 transition-colors"
-                />
-              </div>
+              <Form.Input
+                name="max_price"
+                type="number"
+                label={t("hero.max_price")}
+                placeholder="590.00 max"
+                min={0}
+                className="border-neutral-200 rounded-xl px-3 h-11 text-[13px] text-neutral-700 outline-none focus:border-orange-400 transition-colors"
+              />
 
               <Button
                 type="submit"
-                className="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold rounded-xl h-12 text-[14px] mt-1 transition-all hover:shadow-lg hover:shadow-orange-200"
+                disabled={isPending}
+                className="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold rounded-xl h-12 text-[14px] mt-1 transition-all hover:shadow-lg hover:shadow-orange-200 disabled:opacity-50"
               >
-                {t("hero.search_btn")}
+                {isPending ? "Buscando..." : t("hero.search_btn")}
               </Button>
-            </form>
+            </Form>
           </div>
         </div>
       </div>

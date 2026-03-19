@@ -12,13 +12,7 @@ interface LandingTrustProps {
 export function LandingTrust({ stats, agentAvatars = [] }: LandingTrustProps) {
   const { t } = useTranslation("landing")
 
-  const displayAvatars = agentAvatars.length > 0 
-    ? agentAvatars.slice(0, 3) 
-    : [
-        { id: "1", full_name: "Agente", avatar_url: "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=48&q=70" },
-        { id: "2", full_name: "Agente", avatar_url: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=48&q=70" },
-        { id: "3", full_name: "Agente", avatar_url: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=48&q=70" },
-      ]
+  const displayAvatars = agentAvatars.slice(0, 3)
 
   return (
     <section className="border-b border-neutral-100 py-12">
