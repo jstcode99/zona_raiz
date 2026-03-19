@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useRouter } from "next/navigation";
+import { useRoutes } from "@/i18n/client-router";
 import { Button } from "@/components/ui/button";
 import { LandingCity } from "@/domain/types/landing.types";
 
@@ -13,6 +14,7 @@ interface LandingCitiesProps {
 export function LandingCities({ cities }: LandingCitiesProps) {
   const { t } = useTranslation("landing");
   const router = useRouter();
+  const routes = useRoutes();
   const [hoveredCity, setHoveredCity] = useState<string | null>(null);
 
   return (
@@ -37,7 +39,7 @@ export function LandingCities({ cities }: LandingCitiesProps) {
           <Button
             variant="outline"
             className="rounded-full border-neutral-200 text-neutral-700 hover:bg-white text-[13px] font-semibold px-5 h-9 transition-all duration-200 hover:scale-105 cursor-pointer"
-            onClick={() => router.push("/colombia")}
+            onClick={() => router.push(routes.search())}
           >
             {t("cities.explore")} →
           </Button>
@@ -48,7 +50,7 @@ export function LandingCities({ cities }: LandingCitiesProps) {
             <div
               key={city.slug}
               className="flex flex-col items-center cursor-pointer group"
-              onClick={() => router.push(`/colombia?city=${city.slug}`)}
+              onClick={() => router.push(`${routes.search()}?city=${city.slug}`)}
               onMouseEnter={() => setHoveredCity(city.slug)}
               onMouseLeave={() => setHoveredCity(null)}
             >
