@@ -9,7 +9,7 @@ import { getLandingData } from "@/application/actions/landing.actions";
 import { cookies } from "next/headers";
 import { appModule } from "@/application/modules/app.module";
 import { Suspense } from "react";
-import { Skeleton } from "@/components/ui/skeleton";
+import { HeroSkeleton, TrustSectionSkeleton, ListingsSectionSkeleton, CitiesSectionSkeleton } from "@/components/ui/skeleton";
 
 interface HomePageProps {
   params: Promise<{ lang: Lang }>;
@@ -26,18 +26,18 @@ export default async function HomePage({ params }: HomePageProps) {
 
   return (
     <div className="bg-white min-h-screen flex flex-col">
-      <LandingNav lang={lang} isLoggedIn={isLoggedIn} />
+      <LandingNav isLoggedIn={isLoggedIn} />
       <main className="flex-1">
-        <Suspense fallback={<Skeleton className="h-screen" />}>
+        <Suspense fallback={<HeroSkeleton />}>
           <LandingHero cities={landingData.cities} />
         </Suspense>
-        <Suspense fallback={<Skeleton className="h-64" />}>
+        <Suspense fallback={<TrustSectionSkeleton />}>
           <LandingTrust stats={landingData.stats} agentAvatars={landingData.agents} />
         </Suspense>
-        <Suspense fallback={<Skeleton className="h-96" />}>
+        <Suspense fallback={<ListingsSectionSkeleton />}>
           <LandingListings listings={landingData.listings} />
         </Suspense>
-        <Suspense fallback={<Skeleton className="h-64" />}>
+        <Suspense fallback={<CitiesSectionSkeleton />}>
           <LandingCities cities={landingData.cities} />
         </Suspense>
       </main>
