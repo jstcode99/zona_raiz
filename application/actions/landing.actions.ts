@@ -27,8 +27,8 @@ export async function getLandingData(): Promise<LandingData> {
 
   const [listings, cities, stats] = await Promise.all([
     listingService.getCachedSimplePublished(8),
-    listingService.getCachedCitiesWithListings(),
-    listingService.getCachedStats(),
+    listingService.getCachedCitiesWithActiveListings(),
+    listingService.getCachedLandingStats(),
   ]);
 
   // Get top agents with avatars using agentService

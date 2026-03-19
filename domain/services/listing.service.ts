@@ -339,13 +339,13 @@ export class ListingService {
     )();
   }
 
-  findCitiesWithListings() {
-    return this.listingPort.findCitiesWithListings();
+  findCitiesWithActiveListings() {
+    return this.listingPort.findCitiesWithActiveListings();
   }
 
-  getCachedCitiesWithListings() {
+  getCachedCitiesWithActiveListings() {
     return unstable_cache(
-      async () => this.listingPort.findCitiesWithListings(),
+      async () => this.listingPort.findCitiesWithActiveListings(),
       [CACHE_TAGS.LISTING.CITIES],
       {
         revalidate: 300,
@@ -354,13 +354,13 @@ export class ListingService {
     )();
   }
 
-  getStats() {
-    return this.listingPort.getStats();
+  getLandingStats() {
+    return this.listingPort.getLandingStats();
   }
 
-  getCachedStats() {
+  getCachedLandingStats() {
     return unstable_cache(
-      async () => this.listingPort.getStats(),
+      async () => this.listingPort.getLandingStats(),
       [CACHE_TAGS.LISTING.STATS],
       {
         revalidate: 300,

@@ -397,7 +397,7 @@ export class SupabaseListingAdapter implements ListingPort {
     }) as ListingEntity[];
   }
 
-  async findCitiesWithListings(): Promise<LandingCity[]> {
+  async findCitiesWithActiveListings(): Promise<LandingCity[]> {
     // Query listings with their properties to get cities
     const { data, error } = await this.supabase
       .from("listings")
@@ -440,7 +440,7 @@ export class SupabaseListingAdapter implements ListingPort {
     }));
   }
 
-  async getStats(): Promise<LandingStats> {
+  async getLandingStats(): Promise<LandingStats> {
     // Get total listings (published)
     const { count: totalListings } = await this.supabase
       .from("listings")
