@@ -1,6 +1,7 @@
 import { mapRealEstateAgentRowToEntity } from "@/application/mappers/real-estate-agent.mapper";
 import { ProfileEntity } from "@/domain/entities/profile.entity";
 import { AgentPort } from "@/domain/ports/agent.port";
+import { LandingAgent } from "@/domain/types/landing.types";
 import { SupabaseClient } from "@supabase/supabase-js";
 
 export class SupabaseAgentAdapter implements AgentPort {
@@ -43,5 +44,28 @@ export class SupabaseAgentAdapter implements AgentPort {
     if (error) throw new Error(error.message)
 
     return data.map((p) => mapRealEstateAgentRowToEntity(p.profile))
+  }
+
+  async getTopAgents(limit: number): Promise<LandingAgent[]> {
+    const { data, error } = await this.supabase
+      .from("real_estate_agents")
+      .select(`
+        profile:profiles (
+          id,
+          full_name,
+          avatar_url
+        )
+      `)
+      .eq("role", "agent")
+      .not("profile.avatar_url", "is", null)
+      .limit(limit);
+
+    if (error) throw new Error(error.message);
+
+    return data.map((item: any) => ({
+      id: item.profile.id,
+      full_name: item.profile.full_name ?? "Agente",
+      avatar_url: item.profile.avatar_url,
+    }));
   }
 }
