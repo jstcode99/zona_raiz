@@ -9,7 +9,12 @@ import { getLandingData } from "@/application/actions/landing.actions";
 import { cookies } from "next/headers";
 import { appModule } from "@/application/modules/app.module";
 import { Suspense } from "react";
-import { HeroSkeleton, TrustSectionSkeleton, ListingsSectionSkeleton, CitiesSectionSkeleton } from "@/components/ui/skeleton";
+import {
+  HeroSkeleton,
+  TrustSectionSkeleton,
+  ListingsSectionSkeleton,
+  CitiesSectionSkeleton,
+} from "@/components/ui/skeleton";
 
 interface HomePageProps {
   params: Promise<{ lang: Lang }>;
@@ -32,7 +37,10 @@ export default async function HomePage({ params }: HomePageProps) {
           <LandingHero cities={landingData.cities} />
         </Suspense>
         <Suspense fallback={<TrustSectionSkeleton />}>
-          <LandingTrust stats={landingData.stats} agentAvatars={landingData.agents} />
+          <LandingTrust
+            stats={landingData.stats}
+            agentAvatars={landingData.agents}
+          />
         </Suspense>
         <Suspense fallback={<ListingsSectionSkeleton />}>
           <LandingListings listings={landingData.listings} />

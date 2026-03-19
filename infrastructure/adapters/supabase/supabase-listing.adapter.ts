@@ -398,10 +398,82 @@ export class SupabaseListingAdapter implements ListingPort {
   }
 
   async findCitiesWithListings(): Promise<LandingCity[]> {
-    throw new Error("Not implemented");
+    const { data, error } = await this.supabase
+      .from("properties")
+      .select(`
+        city,
+        property_images (count)
+      `)
+      .not("city", "is", null)
+      .eq("listing_status", "active");
+
+    if (error) throw new Error(error.message);
+
+    // Group by city and count listings
+    const cityMap = new Map<string, number>();
+    const cityImages = new Map<string, string | undefined>();
+
+    for (const row of data || []) {
+      const city = row.city;
+      if (!cityMap.has(city)) {
+        cityMap.set(city, 0);
+      }
+      cityMap.set(city, cityMap.get(city)! + 1);
+    }
+
+    // Get a sample image for each city
+    const cities = Array.from(cityMap.keys());
+    if (cities.length > 0) {
+      const { data: images } = await this.supabase
+        .from("property_images")
+        .select("public_url, properties(city)")
+        .in("properties.city", cities)
+        .not("public_url", "is", null)
+        .limit(cities.length);
+
+      const typedImages = images as Array<{ public_url: string; properties: { city: string } }> | null;
+      for (const img of typedImages || []) {
+        if (img.properties?.city) {
+          cityImages.set(img.properties.city, img.public_url);
+        }
+      }
+    }
+
+    return cities.map((city) => ({
+      name: city,
+      slug: city.toLowerCase().replace(/\s+/g, "-"),
+      count: cityMap.get(city) || 0,
+      image: cityImages.get(city),
+    }));
   }
 
   async getStats(): Promise<LandingStats> {
-    throw new Error("Not implemented");
+    // Get total listings (active)
+    const { count: totalListings } = await this.supabase
+      .from("listings")
+      .select("*", { count: "exact", head: true })
+      .eq("status", "published");
+
+    // Get total agents (distinct profiles in real_estate_agents)
+    const { data: agents } = await this.supabase
+      .from("real_estate_agents")
+      .select("profile_id");
+
+    const uniqueAgents = new Set(agents?.map((a) => a.profile_id) || []);
+
+    // Get total cities with listings
+    const { data: cities } = await this.supabase
+      .from("properties")
+      .select("city")
+      .not("city", "is", null)
+      .eq("listing_status", "active");
+
+    const uniqueCities = new Set(cities?.map((p) => p.city) || []);
+
+    return {
+      totalListings: totalListings || 0,
+      totalAgents: uniqueAgents.size,
+      totalCities: uniqueCities.size,
+    };
   }
 }
