@@ -80,6 +80,7 @@
     "tailwind-merge": "^3.4.0",
     "tailwindcss-animate": "^1.0.7",
     "use-places-autocomplete": "^4.0.1",
+    "vaul": "^1.1.2",
     "yup": "^1.7.1",
     "yup-password": "^0.4.0",
     "zustand": "^5.0.10"
