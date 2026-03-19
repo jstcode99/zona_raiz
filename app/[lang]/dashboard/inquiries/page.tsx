@@ -35,10 +35,11 @@ export default async function page({ params, searchParams }: props) {
 
   const { inquiryService, cookiesService } = await appModule(lang, { cookies: cookieStore })
 
-  const realEstateId = await cookiesService.getRealEstateId()
+  const realEstateId = (await cookiesService.getRealEstateId()) as string
 
   if (!realEstateId) {
     encodedRedirect('error', routes.inquiries(), t("exceptions:data_not_found"))
+    return
   }
 
   const inquiries = inquiryService.all(filters)
