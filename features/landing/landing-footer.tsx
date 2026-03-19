@@ -1,8 +1,11 @@
 "use client"
 
 import { useTranslation } from "react-i18next"
+import { useParams } from "next/navigation"
 import Link from "next/link"
+import { useRoutes } from "@/i18n/client-router"
 import { IconBrandTwitter, IconBrandInstagram, IconBrandLinkedin, IconBrandFacebook } from "@tabler/icons-react"
+import { Lang } from "@/i18n/settings"
 
 const socialLinks = [
   { icon: IconBrandTwitter, href: "https://twitter.com" },
@@ -11,22 +14,24 @@ const socialLinks = [
   { icon: IconBrandFacebook, href: "https://facebook.com" },
 ]
 
-const footerLinks = [
-  { key: "footer.about", href: "/about" },
-  { key: "footer.terms", href: "/terms" },
-  { key: "footer.privacy", href: "/privacy" },
-  { key: "footer.contact", href: "/contact" },
-]
-
 export function LandingFooter() {
   const { t } = useTranslation("landing")
+  const { lang } = useParams<{ lang: Lang }>()
+  const routes = useRoutes()
+
+  const footerLinks = [
+    { key: "footer.about", href: `/${lang}/about` },
+    { key: "footer.terms", href: `/${lang}/terms` },
+    { key: "footer.privacy", href: `/${lang}/privacy` },
+    { key: "footer.contact", href: `/${lang}/contact` },
+  ]
 
   return (
     <footer className="bg-neutral-900 text-white">
       <div className="max-w-6xl mx-auto px-6 py-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-10 mb-10">
           <div className="md:col-span-2">
-            <Link href="/" className="flex items-center gap-2.5 mb-4">
+            <Link href={routes.home()} className="flex items-center gap-2.5 mb-4">
               <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center">
                 <span className="text-neutral-900 text-xs font-bold">ZR</span>
               </div>
@@ -82,13 +87,13 @@ export function LandingFooter() {
             {t("footer.copyright")}
           </p>
           <div className="flex items-center gap-6">
-            <Link href="/" className="text-[12px] text-neutral-500 hover:text-white transition-colors">
+            <Link href={routes.home()} className="text-[12px] text-neutral-500 hover:text-white transition-colors">
               {t("nav.home")}
             </Link>
-            <Link href="/colombia" className="text-[12px] text-neutral-500 hover:text-white transition-colors">
+            <Link href={routes.search()} className="text-[12px] text-neutral-500 hover:text-white transition-colors">
               {t("nav.listing")}
             </Link>
-            <Link href="/agents" className="text-[12px] text-neutral-500 hover:text-white transition-colors">
+            <Link href={`/${lang}/agents`} className="text-[12px] text-neutral-500 hover:text-white transition-colors">
               {t("agents.title")}
             </Link>
           </div>

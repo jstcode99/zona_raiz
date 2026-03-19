@@ -33,7 +33,7 @@ export const updateProfileAction = withServerAction(
 
     const id = await sessionService.getCurrentUserId();
 
-    if (!id) throw new Error(t("exceptions:unauthorized"));
+    if (!id) throw new Error(t("common:exceptions.unauthorized"));
 
     await profileService.updateProfile(id, {
       full_name,
@@ -65,7 +65,7 @@ export const uploadAvatarAction = withServerAction(
 
     const id = await sessionService.getCurrentUserId();
 
-    if (!id) throw new Error(t("exceptions:unauthorized"));
+    if (!id) throw new Error(t("common:exceptions.unauthorized"));
 
     const url = await profileService.uploadAvatar(id, avatar);
     await profileService.updatePathAvatarProfile(id, url);

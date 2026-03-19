@@ -74,7 +74,7 @@ export function SearchPageClient({
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <Link href="/autenticacion/login" className="hover:text-primary">
-              {t("actions:sign_in")}
+              {t("auth:actions.sign_in")}
             </Link>
             <IconMapPin className="size-4" />
             <span className="capitalize">{breadcrumb}</span>
@@ -87,7 +87,7 @@ export function SearchPageClient({
           <aside className="w-full lg:w-80 shrink-0">
             <div className="sticky top-4 bg-card rounded-lg border p-4">
               <h2 className="font-semibold mb-4 capitalize">
-                {t("sections:filters")}
+                {t("common:sections.filters")}
               </h2>
               <ListingSearchFilters
                 initialFilters={filters}
@@ -119,7 +119,7 @@ export function SearchPageClient({
                   onValueChange={handleSortChange}
                 >
                   <SelectTrigger className="w-50">
-                    <SelectValue placeholder={t("placeholders:order_by")} />
+                    <SelectValue placeholder={t("properties:placeholders.order_by")} />
                   </SelectTrigger>
                   <SelectContent>
                     {[

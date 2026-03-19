@@ -31,10 +31,10 @@ export const createListingAction = withServerAction(
     });
 
     const property = await propertyService.getById(validated.property_id);
-    if (!property) throw new Error(t("exceptions:data_not_found"));
+    if (!property) throw new Error(t("common:exceptions.data_not_found"));
 
     const agent_id = await sessionService.getCurrentUserId();
-    if (!agent_id) throw new Error(t("exceptions:unauthorized"));
+    if (!agent_id) throw new Error(t("common:exceptions.unauthorized"));
 
     const listing = await listingService.create({
       ...validated,
@@ -48,7 +48,7 @@ export const createListingAction = withServerAction(
         : undefined,
     });
 
-    if (!listing) throw new Error(t("exceptions:create_fail"));
+    if (!listing) throw new Error(t("listings:exceptions.create_fail"));
 
     revalidatePath(routes.dashboard());
     revalidatePath(routes.listings());
@@ -91,7 +91,7 @@ export const updateListingAction = withServerAction(
 
     const currentListing = await listingService.findById(id);
 
-    if (!currentListing) throw new Error(t("exceptions:data_not_found"));
+    if (!currentListing) throw new Error(t("common:exceptions.data_not_found"));
 
     const property = await propertyService.getById(currentListing.property_id);
     const realEstateId = property?.real_estate_id;
@@ -113,7 +113,7 @@ export const updateListingAction = withServerAction(
 
     const listing = await listingService.update(id, dataToUpdate);
 
-    if (!listing) throw new Error(t("exceptions:update_fail"));
+    if (!listing) throw new Error(t("listings:exceptions.update_fail"));
 
     revalidatePath(routes.dashboard());
     revalidatePath(routes.listings());
@@ -145,7 +145,7 @@ export const deleteListingAction = withServerAction(async (id: string) => {
   });
 
   const currentListing = await listingService.findById(id);
-  if (!currentListing) throw new Error(t("exceptions:data_not_found"));
+  if (!currentListing) throw new Error(t("common:exceptions.data_not_found"));
 
   const property = await propertyService.getById(currentListing.property_id);
   const realEstateId = property?.real_estate_id;

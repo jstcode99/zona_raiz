@@ -25,11 +25,11 @@ export default async function page({ params }: props) {
   const property = await propertyService.getCachedById(id)
 
   if (!realEstateId) {
-    encodedRedirect('error', routes.onboarding(), t("exceptions:data_not_found"))
+    encodedRedirect('error', routes.onboarding(), t("common:exceptions.data_not_found"))
   }
 
   if (!property) {
-    encodedRedirect('error', routes.properties(), t("exceptions:data_not_found"))
+    encodedRedirect('error', routes.properties(), t("common:exceptions.data_not_found"))
   }
 
   const fetchImages = propertyImageService.getCachedByPropertyId(id)
@@ -41,10 +41,10 @@ export default async function page({ params }: props) {
         {/* Header */}
         <header className="mb-8">
           <h2 className="text-4xl font-bold mb-2">
-            {t("titles:property_gallery")}
+            {t("properties:titles.property_gallery")}
           </h2>
           <p className="opacity-70">
-            {t("subtitles:property_gallery")}
+            {t("properties:subtitles.property_gallery")}
           </p>
         </header>
 

@@ -1,15 +1,15 @@
 {
-  "landing": {
-    "nav": {
-    "brand": "ZonaRaíz",
+  "nav": {
+    "brand": "ZonaRaiz",
     "home": "Home",
     "listing": "Listings",
     "property": "Properties",
     "pages": "Pages",
-    "pages.about": "About Us",
-    "pages.contact": "Contact",
-    "pages.faq": "FAQ",
+    "about": "About Us",
+    "contact": "Contact",
+    "faq": "FAQ",
     "login": "Login / Sign Up",
+    "dashboard": "Dashboard",
     "cta": "Publish Property"
   },
   "hero": {
@@ -20,7 +20,7 @@
     "search_title": "Find Your Perfect",
     "search_subtitle": "Ideal Property!",
     "location": "Location",
-    "location_placeholder": "Bogotá, Colombia",
+    "location_placeholder": "Bogota, Colombia",
     "property_type": "Property Type",
     "property_placeholder": "Type of property",
     "beds": "4 Beds",
@@ -59,14 +59,13 @@
     "btn": "Subscribe"
   },
   "footer": {
-    "brand": "ZonaRaíz",
+    "brand": "ZonaRaiz",
     "tagline": "Your leading real estate advisor.",
     "about": "About Us",
     "terms": "Terms of Service",
     "privacy": "Privacy Policy",
     "contact": "Contact",
     "follow_us": "Follow Us",
-    "copyright": "© 2026 ZonaRaíz. All rights reserved."
-    }
+    "copyright": "2026 ZonaRaiz. All rights reserved."
   }
 }

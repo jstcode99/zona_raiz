@@ -154,7 +154,7 @@ export default async function page({ params }: props) {
               <Card className="h-full">
                 <CardHeader>
                   <CardTitle className="text-base">
-                    {t('sections:agents')}
+                    {t('dashboard:sections.agents')}
                   </CardTitle>
                   <CardAction>
                     <AddAgentModal realEstateId={realEstateId} />
@@ -184,7 +184,7 @@ export default async function page({ params }: props) {
             <Card>
               <CardContent>
                 <div className="p-4 border-b">
-                  <h1 className="text-lg font-semibold">{t('sections:last_properties_publisheds')}</h1>
+                  <h1 className="text-lg font-semibold">{t('dashboard:sections.last_properties_publisheds')}</h1>
                 </div>
                 <Suspense fallback={<Spinner />}>
                   <SimpleListingTable listings={listings} columns={SimpleListingColumns} />

@@ -2,6 +2,7 @@
 
 import { useTranslation } from "react-i18next"
 import Link from "next/link"
+import { useRoutes } from "@/i18n/client-router"
 import { LandingStats, LandingAgent } from "@/domain/types/landing.types"
 
 interface LandingTrustProps { 
@@ -11,6 +12,7 @@ interface LandingTrustProps {
 
 export function LandingTrust({ stats, agentAvatars = [] }: LandingTrustProps) {
   const { t } = useTranslation("landing")
+  const routes = useRoutes()
 
   const displayAvatars = agentAvatars.slice(0, 3)
 
@@ -49,7 +51,7 @@ export function LandingTrust({ stats, agentAvatars = [] }: LandingTrustProps) {
               {t("trust.description")}
             </p>
             <Link
-              href="/colombia"
+              href={routes.search()}
               className="inline-flex items-center justify-center w-full bg-neutral-900 text-white hover:bg-neutral-800 rounded-full px-6 h-9 text-[13px] font-semibold transition-all duration-200 hover:scale-105"
             >
               {t("trust.cta")}

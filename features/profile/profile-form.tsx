@@ -26,7 +26,7 @@ export function ProfileForm({
   defaultValues,
   ...props
 }: ProfileFormProps) {
-  const { t } = useTranslation('common')
+  const { t } = useTranslation('profile')
 
   const form = useForm<ProfileInput>({
     resolver: yupResolver(profileSchema),
@@ -43,7 +43,7 @@ export function ProfileForm({
     action: updateProfileAction,
     setError: form.setError,
     onSuccess: () => {
-      toast.success(t('forms.profile.success') || 'Profile updated successfully')
+      toast.success(t('messages.success'))
       reset(form.getValues())
     },
     onError: (error) => {
@@ -88,14 +88,14 @@ export function ProfileForm({
       <Form.Set className="space-y-4">
         <Form.Input
           name="full_name"
-          label={t('forms.profile.fields.full_name.label') || 'Full Name'}
+          label={t('labels.full_name')}
           autoComplete="name"
           disabled={isLoading}
         />
 
         <Form.Phone
           name="phone"
-          label={t('forms.profile.fields.phone.label') || 'Phone'}
+          label={t('labels.phone')}
         />
 
         <Field className="pt-4">
@@ -105,7 +105,7 @@ export function ProfileForm({
             disabled={isLoading || !isDirty}
           >
             {isLoading && <Spinner data-icon="inline-start" className="mr-2 h-4 w-4" />}
-            {t('words.save') || 'Save'}
+            {t('actions.save_changes')}
           </Button>
         </Field>
       </Form.Set>

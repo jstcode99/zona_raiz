@@ -1,19 +1,26 @@
 {
-  "agents": {
-    "title": "Agents",
-    "subtitle": "Manage your real estate agents",
-    "labels": {
-      "agent-id": "Agent ID",
-      "email": "Email",
-      "phone": "Phone",
-      "full-name": "Full name",
-      "role": "Role"
-    },
-    "placeholders": {
-      "agent-email": "agent@email.com"
-    },
-    "actions": {
-      "add-agent": "Add agent"
-    }
+  "title": "Agents",
+  "subtitle": "Manage your real estate agents",
+  "labels": {
+    "agent-id": "Agent ID",
+    "email": "Email",
+    "phone": "Phone",
+    "full-name": "Full name",
+    "role": "Role"
+  },
+  "placeholders": {
+    "agent-email": "agent@email.com"
+  },
+  "actions": {
+    "add-agent": "Add agent"
+  },
+  "titles": {
+    "add_agent": "Add agent"
+  },
+  "subtitles": {
+    "add_agent": "Invita agentes registrados en la plataforma"
+  },
+  "fields": {
+    "email": "Correo electrónico"
   }
 }

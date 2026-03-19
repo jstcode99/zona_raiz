@@ -24,10 +24,10 @@ export const toggleFavoriteAction = withServerAction(
     );
 
     const userId = await sessionService.getCurrentUserId();
-    if (!userId) throw new Error(t("exceptions:unauthorized"));
+    if (!userId) throw new Error(t("common:exceptions.unauthorized"));
 
     const listing = await listingService.findById(listingId);
-    if (!listing) throw new Error(t("exceptions:data_not_found"));
+    if (!listing) throw new Error(t("common:exceptions.data_not_found"));
 
     await favoriteService.toggle(userId, listingId);
 
@@ -62,7 +62,7 @@ export async function getUserFavoritesAction() {
   });
 
   const userId = await sessionService.getCurrentUserId();
-  if (!userId) throw new Error(t("exceptions:unauthorized"));
+  if (!userId) throw new Error(t("common:exceptions.unauthorized"));
 
   const favorites = await favoriteService.findByProfileId(userId);
   return { favorites, listingIds: favorites.map((f) => f.listing_id) };

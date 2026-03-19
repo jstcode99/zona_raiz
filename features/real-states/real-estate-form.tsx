@@ -23,7 +23,7 @@ export function RealEstateForm({
   defaultValues,
   id,
 }: RealEstateFormProps) {
-  const { t } = useTranslation('common')
+  const { t } = useTranslation('real-estates')
   const isUpdateMode = Boolean(id)
 
   const form = useForm<RealEstateInput>({
@@ -42,12 +42,12 @@ export function RealEstateForm({
     action: isUpdateMode ? updateRealEstateAction : createRealEstateAction,
     setError: form.setError,
     onSuccess: () => {
-      toast.success(t(`forms.real-estate.${isUpdateMode ? 'updated' : 'created'}`))
+      toast.success(t(`messages.${isUpdateMode ? 'updated' : 'created'}`))
       if (!isUpdateMode) reset()
     },
     onError: (error) => {
       console.error("Real estate error:", error)
-      toast.error(t("forms.real-estate.error"))
+      toast.error(t("messages.error"))
     },
   })
 
@@ -81,23 +81,23 @@ export function RealEstateForm({
       className={cn("p-4 mx-auto space-y-4", className)}
       onSubmit={onSubmit}
     >
-      <Form.Set legend={t("forms.real-estate.basic-info")}>
+      <Form.Set legend={t("sections.basic_info")}>
         <Form.Input
           name="name"
-          label={t("forms.real-estate.fields.name.label")}
-          placeholder={t("forms.real-estate.fields.name.placeholder")}
+          label={t("labels.name")}
+          placeholder={t("placeholders.name")}
           disabled={isLoading}
         />
         <Form.Textarea
           name="description"
-          label={t("forms.real-estate.fields.description.label")}
-          placeholder={t("forms.real-estate.fields.description.placeholder")}
+          label={t("labels.description")}
+          placeholder={t("placeholders.description")}
           disabled={isLoading}
         />
         <Form.Phone
           name="whatsapp"
-          label={t("forms.real-estate.fields.whatsapp.label")}
-          placeholder={t("forms.real-estate.fields.whatsapp.placeholder")}
+          label={t("labels.whatsapp")}
+          placeholder={t("placeholders.whatsapp")}
         />
         <Form.CountryStateCity
           countryName="country"
@@ -105,18 +105,18 @@ export function RealEstateForm({
           cityName="city"
           countries={countries}
           control={control}
-          label={t("forms.real-estate.fields.address.label")}
+          label={t("labels.address")}
         />
         <Form.Input
           name="postal_code"
-          label={t("forms.real-estate.fields.postal_code.label")}
-          placeholder={t("forms.real-estate.fields.postal_code.placeholder")}
+          label={t("labels.postal_code")}
+          placeholder={t("placeholders.postal_code")}
           disabled={isLoading}
         />
         <Form.Input
           name="street"
-          label={t("forms.real-estate.fields.street.label")}
-          placeholder={t("forms.real-estate.fields.street.placeholder")}
+          label={t("labels.street")}
+          placeholder={t("placeholders.street")}
           disabled={isLoading}
         />
       </Form.Set>
@@ -127,7 +127,7 @@ export function RealEstateForm({
         disabled={isLoading || !isDirty}
       >
         {isLoading && <Spinner className="mr-2 h-4 w-4 animate-spin" />}
-        {id ? t("forms.real-estate.update") : t("forms.real-estate.create")}
+        {id ? t("actions.update") : t("actions.create")}
       </Button>
     </Form>
   )

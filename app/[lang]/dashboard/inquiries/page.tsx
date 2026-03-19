@@ -38,7 +38,7 @@ export default async function page({ params, searchParams }: props) {
   const realEstateId = (await cookiesService.getRealEstateId()) as string
 
   if (!realEstateId) {
-    encodedRedirect('error', routes.inquiries(), t("exceptions:data_not_found"))
+    encodedRedirect('error', routes.inquiries(), t("common:exceptions.data_not_found"))
     return
   }
 

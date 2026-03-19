@@ -55,7 +55,7 @@ export function PropertyFiltersForm({
   onFiltersChange,
   debounceMs = 300,
 }: PropertyFiltersFormProps) {
-  const { t } = useTranslation()
+  const { t } = useTranslation("properties")
 
   const router = useRouter()
   const pathname = usePathname()
@@ -127,8 +127,8 @@ export function PropertyFiltersForm({
       <div className="flex gap-2 items-center">
         <Form.Input
           name="search"
-          label={t('words:search')}
-          placeholder={t('words:search')}
+          label={t('words.search')}
+          placeholder={t('words.search')}
         />
         <Button type="button" size="sm" onClick={handleReset} className="px-2 mt-8">
           <IconClearAll className="size-4 mr-1" />
@@ -138,7 +138,7 @@ export function PropertyFiltersForm({
       <Form.Set
         legend={
           <span className="flex items-center gap-1 text-xs font-medium text-muted-foreground capitalize">
-            <IconMapPin className="size-3" /> {t('sections:location')}
+            <IconMapPin className="size-3" /> {t('sections.location')}
           </span>
         }
       >
@@ -150,18 +150,18 @@ export function PropertyFiltersForm({
               cityName="city"
               countries={countries}
               control={control}
-              label={t('words:location')}
+              label={t('words.location')}
             />
           </div>
           <Form.Input
             name="street"
-            label={t('fields:street')}
-            placeholder={t('placeholders:street')}
+            label={t('labels.street')}
+            placeholder={t('placeholders.street')}
           />
           <Form.Input
             name="neighborhood"
-            label={t('fields:neighborhood')}
-            placeholder={t('placeholders:neighborhood')}
+            label={t('labels.neighborhood')}
+            placeholder={t('placeholders.neighborhood')}
           />
         </div>
       </Form.Set>
@@ -169,28 +169,28 @@ export function PropertyFiltersForm({
       <Form.Set
         legend={
           <span className="flex items-center gap-1 text-xs font-medium text-muted-foreground">
-            <IconHome className="size-3" /> {t('sections:features')}
+            <IconHome className="size-3" /> {t('sections.features')}
           </span>
         }
       >
         <div className="grid grid-cols-3 gap-2">
           <Form.Select
             name="type"
-            label={t('fields:property_type')}
-            placeholder={t('fields:property_type')}
+            label={t('labels.property_type')}
+            placeholder={t('placeholders.select_property_type')}
             options={propertyTypeOptions}
           />
           <Form.Input
             name="minBedrooms"
             type="number"
-            label={t('fields:bedrooms')}
-            placeholder={t('placeholders:bedrooms')}
+            label={t('labels.bedrooms')}
+            placeholder={t('placeholders.bedrooms')}
           />
           <Form.Input
             name="min_bathrooms"
             type="number"
-            label={t('fields:bathrooms')}
-            placeholder={t('placeholders:bathrooms')}
+            label={t('labels.bathrooms')}
+            placeholder={t('placeholders.bathrooms')}
           />
         </div>
       </Form.Set>

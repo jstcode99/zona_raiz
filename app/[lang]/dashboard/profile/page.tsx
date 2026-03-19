@@ -21,7 +21,7 @@ export default async function page({ params }: props) {
   const profile = await sessionService.getCachedCurrentUser();
 
   if (!profile) {
-    return encodedRedirect('error', routes.signin(), t("exceptions:data_not_found"))
+    return encodedRedirect('error', routes.signin(), t("common:exceptions.data_not_found"))
   }
 
   return (

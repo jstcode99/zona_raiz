@@ -35,7 +35,7 @@ interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
 }
 
 export function AppSidebar({ ...props }: AppSidebarProps) {
-  const { t } = useTranslation("dashboard");
+  const { t } = useTranslation("common");
   const favorites = props.favorites || [];
 
   return (
@@ -51,7 +51,7 @@ export function AppSidebar({ ...props }: AppSidebarProps) {
                 <span className="text-base font-semibold">Zona Raiz</span>
               </h1>
               <p className="text-xs text-muted-foreground group-data-[collapsible=icon]:hidden">
-                {t("words:dashboard")}
+                {t("words.dashboard")}
               </p>
             </div>
           </div>

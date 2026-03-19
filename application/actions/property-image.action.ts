@@ -42,7 +42,7 @@ export const createPropertyImageAction = withServerAction(
     const height = dimensions.height ?? 0;
 
     if (width < 400 || height < 300)
-      throw new Error(t("exceptions:max_size_pixels"));
+      throw new Error(t("properties:exceptions.max_size_pixels"));
 
     const propertyImage = await propertyImageService.create(propertyId, {
       filename: file.name,

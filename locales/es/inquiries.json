@@ -1,17 +1,15 @@
 {
-  "inquiries": {
-    "title": "Consultas",
-    "subtitle": "Gestiona las consultas de tus propiedades",
-    "labels": {
-      "inquiry": "Consulta",
-      "new-inquiries": "Nuevas consultas"
-    },
-    "status": {
-      "pending": "Pendiente",
-      "contacted": "Contactado",
-      "qualified": "Calificado",
-      "converted": "Convertido",
-      "lost": "Perdido"
-    }
+  "title": "Consultas",
+  "subtitle": "Gestiona las consultas de tus propiedades",
+  "labels": {
+    "inquiry": "Consulta",
+    "new-inquiries": "Nuevas consultas"
+  },
+  "status": {
+    "pending": "Pendiente",
+    "contacted": "Contactado",
+    "qualified": "Calificado",
+    "converted": "Convertido",
+    "lost": "Perdido"
   }
 }
