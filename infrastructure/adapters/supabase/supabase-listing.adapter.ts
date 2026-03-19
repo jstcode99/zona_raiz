@@ -398,57 +398,50 @@ export class SupabaseListingAdapter implements ListingPort {
   }
 
   async findCitiesWithListings(): Promise<LandingCity[]> {
+    // Query listings with their properties to get cities
     const { data, error } = await this.supabase
-      .from("properties")
+      .from("listings")
       .select(`
-        city,
-        property_images (count)
+        status,
+        property:properties!inner(
+          city,
+          property_images(public_url)
+        )
       `)
-      .not("city", "is", null)
-      .eq("listing_status", "active");
+      .eq("status", "published")
+      .not("properties.city", "is", null);
 
     if (error) throw new Error(error.message);
 
-    // Group by city and count listings
-    const cityMap = new Map<string, number>();
-    const cityImages = new Map<string, string | undefined>();
+    // Group by city and count listings, collect images
+    const cityMap = new Map<string, { count: number; image?: string }>();
 
     for (const row of data || []) {
-      const city = row.city;
-      if (!cityMap.has(city)) {
-        cityMap.set(city, 0);
+      const prop = row.property as unknown as { city: string; property_images?: Array<{ public_url: string }> } | null;
+      if (!prop?.city) continue;
+
+      const city = prop.city;
+      const existing = cityMap.get(city) || { count: 0 };
+      existing.count++;
+
+      // Get first available image
+      if (!existing.image && prop.property_images?.length) {
+        existing.image = prop.property_images[0].public_url;
       }
-      cityMap.set(city, cityMap.get(city)! + 1);
+
+      cityMap.set(city, existing);
     }
 
-    // Get a sample image for each city
-    const cities = Array.from(cityMap.keys());
-    if (cities.length > 0) {
-      const { data: images } = await this.supabase
-        .from("property_images")
-        .select("public_url, properties(city)")
-        .in("properties.city", cities)
-        .not("public_url", "is", null)
-        .limit(cities.length);
-
-      const typedImages = images as Array<{ public_url: string; properties: { city: string } }> | null;
-      for (const img of typedImages || []) {
-        if (img.properties?.city) {
-          cityImages.set(img.properties.city, img.public_url);
-        }
-      }
-    }
-
-    return cities.map((city) => ({
+    return Array.from(cityMap.entries()).map(([city, data]) => ({
       name: city,
       slug: city.toLowerCase().replace(/\s+/g, "-"),
-      count: cityMap.get(city) || 0,
-      image: cityImages.get(city),
+      count: data.count,
+      image: data.image,
     }));
   }
 
   async getStats(): Promise<LandingStats> {
-    // Get total listings (active)
+    // Get total listings (published)
     const { count: totalListings } = await this.supabase
       .from("listings")
       .select("*", { count: "exact", head: true })
@@ -461,14 +454,18 @@ export class SupabaseListingAdapter implements ListingPort {
 
     const uniqueAgents = new Set(agents?.map((a) => a.profile_id) || []);
 
-    // Get total cities with listings
-    const { data: cities } = await this.supabase
-      .from("properties")
-      .select("city")
-      .not("city", "is", null)
-      .eq("listing_status", "active");
+    // Get total cities with published listings
+    const { data: listingsWithCities } = await this.supabase
+      .from("listings")
+      .select("property:properties(city)")
+      .eq("status", "published")
+      .not("properties.city", "is", null);
 
-    const uniqueCities = new Set(cities?.map((p) => p.city) || []);
+    const uniqueCities = new Set(
+      (listingsWithCities || [])
+        .map((l) => (l.property as unknown as { city: string } | null)?.city)
+        .filter(Boolean) as string[]
+    );
 
     return {
       totalListings: totalListings || 0,
