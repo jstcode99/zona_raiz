@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
-import { DataTable } from "@/app/components/ui/data-table"
+import { DataTable } from "@/components/ui/data-table"
 
 interface ImportPreviewProps {
   data: {
@@ -34,10 +34,10 @@ export function ImportPreview({
     setIsConfirming(true)
     try {
       // Convert rows to objects using headers
-      const result: Record<string, unknown>[] = editedData.map(row => {
+      const result: Record<string, unknown>[] = editedData.map((row, rowIndex) => {
         const obj: Record<string, unknown> = {}
-        data.headers.forEach((header, index) => {
-          obj[header] = row[index] !== undefined && row[index] !== null ? row[index] : ''
+        data.headers.forEach((header, colIndex) => {
+          obj[header] = row[colIndex] !== undefined && row[colIndex] !== null ? row[colIndex] : ''
         })
         return obj
       })
@@ -50,38 +50,31 @@ export function ImportPreview({
     }
   }
 
-  const columns = data.headers.map((header, index) => ({
-    accessorKey: `col${index}`,
+  // Create columns for DataTable
+  const columns = data.headers.map((header, colIndex) => ({
+    accessorKey: `col${colIndex}`,
     header: header,
-    cell: ({ row }: { row: { original: any[] } }) => {
-      const value = row.original[index]
-      return (
-        <div
-          contentEditable={editable}
-          onBlur={(e) => {
-            if (editable) {
-              handleCellChange(row.index, index, e.currentTarget.textContent)
-            }
-          }}
-          className={editable ? "border border-gray-300 rounded p-1" : ""}
-        >
-          {value !== null && value !== undefined ? value : ''}
-        </div>
-      )
-    },
   }))
+
+  // Prepare data for DataTable with required id field
+  const prepareDataForTable = (data: any[][]) => {
+    return data.map((row, rowIndex) => ({
+      id: `row-${rowIndex}`,
+      ...row.reduce((acc, cell, colIndex) => {
+        acc[`col${colIndex}`] = cell
+        return acc
+      }, {} as Record<string, any>)
+    }))
+  }
 
   return (
     <div className="space-y-4">
       <div className="overflow-x-auto">
         <DataTable
-          columns={columns}
-          data={editedData.map((row, index) => ({ 
-            original: row,
-            index 
-          }))}
+          columns={columns as any}
+          data={prepareDataForTable(editedData)}
           pagination={true}
-          pageSizeOptions={[10, 25, 50]}
+          pageSizeOptions={[10, 25, 50] as unknown as number}
         />
       </div>
       

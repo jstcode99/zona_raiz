@@ -53,12 +53,14 @@ export function LandingHero({ cities = [] }: LandingHeroProps) {
 
     if (data.city) params.set("city", data.city);
     if (data.property_type) params.set("type", data.property_type);
-    if (data.min_bedrooms) params.set("min_bedrooms", String(data.min_bedrooms));
-    if (data.min_bathrooms) params.set("min_bathrooms", String(data.min_bathrooms));
+    if (data.min_bedrooms)
+      params.set("min_bedrooms", String(data.min_bedrooms));
+    if (data.min_bathrooms)
+      params.set("min_bathrooms", String(data.min_bathrooms));
     if (data.max_price) params.set("max_price", String(data.max_price));
 
     const qs = params.toString();
-    
+
     startTransition(() => {
       router.push(`${routes.search()}${qs ? `?${qs}` : ""}`);
     });
@@ -123,7 +125,11 @@ export function LandingHero({ cities = [] }: LandingHeroProps) {
               </h2>
             </div>
 
-            <Form form={form} onSubmit={onSubmit} className="p-6 pt-4 flex flex-col gap-3">
+            <Form
+              form={form}
+              onSubmit={onSubmit}
+              className="p-6 pt-4 flex flex-col gap-3"
+            >
               {/* Location - Datalist input */}
               <Form.Input
                 name="city"
