@@ -92,8 +92,8 @@ export function ListingsByStatusChart({ data, onMonthsChange, ...props }: Listin
   return (
     <Card className="w-full" {...props}>
       <CardHeader>
-        <CardTitle className="text-base">{t('sections:listings_by_status')}</CardTitle>
-        <CardDescription>{t('sections:listings_by_status_description')}</CardDescription>
+        <CardTitle className="text-base">{t('sections.listings_by_status')}</CardTitle>
+        <CardDescription>{t('sections.listings_by_status_description')}</CardDescription>
       </CardHeader>
       <CardContent className="mt-0 space-y-4 lg:min-h-94">
         <Popover open={open} onOpenChange={setOpen}>
@@ -105,16 +105,16 @@ export function ListingsByStatusChart({ data, onMonthsChange, ...props }: Listin
               className="w-full justify-between text-xs h-8"
             >
               {selectedMonths.length === 0
-                ? t('actions:all_months')
-                : `${selectedMonths.length} ${t('words:months')} ${t('words:selected')}`}
+                ? t('actions.all_months')
+                : `${selectedMonths.length} ${t('words.months')} ${t('words.selected')}`}
               <ChevronsUpDown className="ml-2 h-3 w-3 shrink-0 opacity-50" />
             </Button>
           </PopoverTrigger>
           <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
             <Command>
-              <CommandInput placeholder={t('words:search')} className="h-8" />
+              <CommandInput placeholder={t('words.search')} className="h-8" />
               <CommandList>
-                <CommandEmpty>{t('exeptions:not_found_months')}</CommandEmpty>
+                <CommandEmpty>{t('exceptions.not_found_months')}</CommandEmpty>
                 <CommandGroup>
                   {MONTHS.map((month) => (
                     <CommandItem
@@ -161,7 +161,7 @@ export function ListingsByStatusChart({ data, onMonthsChange, ...props }: Listin
           </div>
         ) : (
           <div className="flex h-64 items-center justify-center text-muted-foreground text-xs">
-            {t('exceptions:not_found_data')}
+            {t('exceptions.not_found_data')}
           </div>
         )}
 

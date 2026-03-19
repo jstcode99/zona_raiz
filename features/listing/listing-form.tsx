@@ -27,7 +27,7 @@ export function ListingForm({
   property_id,
   defaultValues = defaultPropertyValues,
 }: ListingFormProps) {
-  const { t } = useTranslation('common');
+  const { t } = useTranslation('listings');
 
   const isUpdateMode = !!id
 

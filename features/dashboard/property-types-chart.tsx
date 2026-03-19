@@ -81,7 +81,7 @@ export function PropertyTypesChart({ data, onTypesChange, ...props }: PropertyTy
   return (
     <Card className="w-full" {...props}>
       <CardHeader>
-        <CardTitle className="text-base">{t('sections:properties_by_type')}</CardTitle>
+        <CardTitle className="text-base">{t('sections.properties_by_type')}</CardTitle>
       </CardHeader>
       <CardContent className="mt-0 space-y-4 lg:min-h-94">
         <Popover open={open} onOpenChange={setOpen}>
@@ -93,16 +93,16 @@ export function PropertyTypesChart({ data, onTypesChange, ...props }: PropertyTy
               className="w-full justify-between text-xs h-8"
             >
               {selectedTypes.length === 0
-                ? t('actions:select_type')
-                : `${selectedTypes.length} ${t('words:types')}(s) ${t('words:selected')}(s)`}
+                ? t('actions.select_type')
+                : `${selectedTypes.length} ${t('words.types')}(s) ${t('words.selected')}(s)`}
               <ChevronsUpDown className="ml-2 h-3 w-3 shrink-0 opacity-50" />
             </Button>
           </PopoverTrigger>
           <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
             <Command>
-              <CommandInput placeholder={t('words:search')} className="h-8" />
+              <CommandInput placeholder={t('words.search')} className="h-8" />
               <CommandList>
-                <CommandEmpty>{t('exeptions:not_found_types')}</CommandEmpty>
+                <CommandEmpty>{t('exceptions.not_found_types')}</CommandEmpty>
                 <CommandGroup>
                   {PROPERTY_TYPE_OPTIONS.map((option) => (
                     <CommandItem
@@ -167,7 +167,7 @@ export function PropertyTypesChart({ data, onTypesChange, ...props }: PropertyTy
           </div>
         ) : (
           <div className="flex h-25 items-center justify-center text-muted-foreground text-xs">
-            {t('exceptions:not_found_data')}
+            {t('exceptions.not_found_data')}
           </div>
         )}
       </CardContent>

@@ -3,14 +3,16 @@
     "title": "Real Estate",
     "subtitle": "Manage your real estate",
     "sections": {
-      "basic-info": "Basic Real Estate information"
+      "basic_info": "Basic Real Estate information"
     },
     "labels": {
       "name": "Name",
       "logo": "Logo",
-      "whatsapp-contact": "WhatsApp contact",
+      "whatsapp": "WhatsApp contact",
       "phone": "Phone",
       "address": "Address",
+      "street": "Street",
+      "postal_code": "Postal code",
       "city": "City",
       "state": "State / Province",
       "country": "Country",
@@ -19,13 +21,45 @@
     "placeholders": {
       "name": "Real estate name",
       "logo": "Upload logo",
-      "description": "General description"
+      "description": "General description",
+      "whatsapp": "+57 300 123 4567",
+      "street": "Street",
+      "postal_code": "Postal code"
     },
     "actions": {
       "create": "Register real estate",
       "update": "Update real estate",
-      "save-changes": "Save changes",
-      "add-agent": "Add agent"
+      "save_changes": "Save changes",
+      "add_agent": "Add agent"
+    },
+    "messages": {
+      "created": "Real estate registered successfully",
+      "updated": "Real estate updated successfully",
+      "error": "Error saving real estate"
+    },
+    "titles": {
+      "onboarding": "You have no real estate",
+      "selection": "Select your real estate"
+    },
+    "subtitles": {
+      "onboarding": "Register your first real estate to get started",
+      "selection": "Choose which real estate to work with"
+    },
+    "words": {
+      "no_address": "No address",
+      "skip": "Skip for now",
+      "back_home": "Back to home"
+    },
+    "roles": {
+      "owner": "Owner",
+      "admin": "Admin",
+      "agent": "Agent"
+    },
+    "pages": {
+      "selection": {
+        "title": "Select your real estate",
+        "subtitle": "You have {{count}} real estate(s)"
+      }
     }
   }
 }

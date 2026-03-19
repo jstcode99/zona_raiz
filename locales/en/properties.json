@@ -3,17 +3,17 @@
     "title": "Create property",
     "subtitle": "Manage your real estate properties",
     "sections": {
-      "basic-info": "Basic information",
+      "basic_info": "Basic information",
       "location": "Location",
       "features": "Property details"
     },
     "labels": {
       "title": "Title",
       "slug": "Slug",
-      "meta-title": "Meta title",
-      "meta-description": "Meta description",
+      "meta_title": "Meta title",
+      "meta_description": "Meta description",
       "description": "Description",
-      "property-type": "Property type",
+      "property_type": "Property type",
       "status": "Status",
       "price": "Price",
       "currency": "Currency",
@@ -22,50 +22,60 @@
       "state": "State / Province",
       "country": "Country",
       "street": "Street",
-      "postal-code": "Postal code",
+      "postal_code": "Postal code",
       "floors": "Floors",
-      "year-built": "Year built",
+      "year_built": "Year built",
       "latitude": "Latitude",
       "longitude": "Longitude",
-      "google-maps-url": "Google Maps URL",
+      "google_maps_url": "Google Maps URL",
       "bedrooms": "Bedrooms",
       "bathrooms": "Bathrooms",
-      "total-area": "Total area (m²)",
-      "built-area": "Built area (m²)",
-      "lot-area": "Lot area (m²)",
-      "parking-spots": "Parking spots",
+      "total_area": "Total area (m²)",
+      "built_area": "Built area (m²)",
+      "lot_area": "Lot area (m²)",
+      "parking_spots": "Parking spots",
       "amenities": "Amenities",
-      "whatsapp-contact": "WhatsApp contact"
+      "whatsapp_contact": "WhatsApp contact"
     },
     "placeholders": {
       "title": "Modern apartment downtown",
       "slug": "modern-apartment-downtown",
-      "meta-title": "Buy modern apartment downtown",
-      "meta-description": "Discover this incredible apartment...",
+      "meta_title": "Buy modern apartment downtown",
+      "meta_description": "Discover this incredible apartment...",
       "description": "Describe the main features of the property",
-      "select-property-type": "Select property type",
-      "select-status": "Select status",
+      "select_property_type": "Select property type",
+      "select_status": "Select status",
       "price": "100000",
-      "select-currency": "Select currency",
+      "select_currency": "Select currency",
       "neighborhood": "Downtown",
       "city": "New York",
       "state": "NY",
       "country": "USA",
-      "street": "Street ",
-      "postal-code": "Postal code",
+      "street": "Street",
+      "postal_code": "Postal code",
       "latitude": "40.7128",
       "longitude": "-74.0060",
-      "google-maps-url": "https://maps.google.com/...",
+      "google_maps_url": "https://maps.google.com/...",
       "bedrooms": "3",
       "bathrooms": "2",
-      "total-area": "120",
-      "parking-spots": "0"
+      "total_area": "120",
+      "parking_spots": "0",
+      "amenities": "Pool, Garage, Garden"
     },
     "actions": {
       "create": "Create property",
       "update": "Update property",
       "save": "Save changes",
-      "add-images": "Add images"
+      "add_images": "Add images"
+    },
+    "messages": {
+      "created": "Property created successfully",
+      "updated": "Property updated successfully",
+      "error": "Error saving property"
+    },
+    "words": {
+      "search": "Search...",
+      "location": "Location"
     }
   }
 }

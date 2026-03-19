@@ -3,28 +3,28 @@ import { propertyTypeOptions } from "@/domain/entities/property.entity";
 import { useTranslation } from "react-i18next";
 
 export function PropertyCeoForm() {
-    const { t } = useTranslation('common');
+    const { t } = useTranslation('properties');
     return (
-        <Form.Set legend={t("forms.property.basic-info")}>
+        <Form.Set legend={t("sections.basic_info")}>
             <Form.Input
                 name="title"
-                label={t("forms.property.fields.title.label")}
-                placeholder={t("forms.property.fields.title.placeholder")}
+                label={t("labels.title")}
+                placeholder={t("placeholders.title")}
             />
             <Form.Input
                 name="slug"
-                label={t("forms.property.fields.slug.label")}
-                placeholder={t("forms.property.fields.slug.placeholder")}
+                label={t("labels.slug")}
+                placeholder={t("placeholders.slug")}
             />
             <Form.Select
                 name="property_type"
-                label={t("forms.property.fields.property_type.label")}
+                label={t("labels.property_type")}
                 options={propertyTypeOptions}
             />
             <Form.Textarea
                 name="description"
-                label={t("forms.property.fields.description.label")}
-                placeholder={t("forms.property.fields.description.placeholder")}
+                label={t("labels.description")}
+                placeholder={t("placeholders.description")}
                 rows={4}
             />
         </Form.Set>

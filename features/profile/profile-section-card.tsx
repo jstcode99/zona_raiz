@@ -14,14 +14,14 @@ export default function ProfileSectionCard({
 }: ComponentProps<"div"> & {
     defaultValues: ProfileEntity
 }) {
-    const { t } = useTranslation('common')
+    const { t } = useTranslation('profile')
 
     return (
         <Card className='z-1 w-full border-none sm:max-w-md' {...props}>
             <CardHeader className='gap-2'>
-                <CardTitle className='text-xl'>{t('forms.profile.title')}</CardTitle>
+                <CardTitle className='text-xl'>{t('title')}</CardTitle>
                 <CardDescription className='text-base'>
-                    {t('forms.profile.subtitle')}
+                    {t('subtitle')}
                 </CardDescription>
             </CardHeader>
             <CardContent>
