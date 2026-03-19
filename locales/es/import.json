@@ -1,0 +1,53 @@
+{
+  "import": {
+    "title": "Importar Datos",
+    "subtitle": "Sube y previsualiza tus datos antes de importar",
+    "actions": {
+      "cancel": "Cancelar",
+      "confirm": "Confirmar Importación",
+      "confirming": "Confirmando...",
+      "upload": "Subir Archivo",
+      "uploading": "Subiendo...",
+      "retry": "Reintentar",
+      "close": "Cerrar"
+    },
+    "labels": {
+      "file": "Archivo",
+      "headers": "Encabezados",
+      "rows": "Filas",
+      "preview": "Vista Previa",
+      "status": "Estado",
+      "progress": "Progreso"
+    },
+    "placeholders": {
+      "drag-drop": "Arrastra y suelta tu archivo aquí",
+      "or-click": "o haz clic para buscar",
+      "supported-formats": "Formatos soportados: XLS, XLSX, CSV",
+      "max-size": "Tamaño máximo: 10MB"
+    },
+    "status": {
+      "pending": "Pendiente",
+      "uploading": "Subiendo",
+      "processing": "Procesando",
+      "ready": "Listo",
+      "error": "Error",
+      "success": "Éxito"
+    },
+    "exceptions": {
+      "file-too-large": "El archivo es demasiado grande. El tamaño máximo es 10MB",
+      "invalid-format": "Formato de archivo no válido. Soportados: XLS, XLSX, CSV",
+      "upload-failed": "Error al subir el archivo. Por favor, inténtalo de nuevo",
+      "parse-failed": "Error al procesar el archivo. Por favor, verifica el formato",
+      "confirm-failed": "Error al confirmar la importación. Por favor, inténtalo de nuevo",
+      "no-data": "No hay datos para importar",
+      "network-error": "Error de red. Por favor, verifica tu conexión"
+    },
+    "messages": {
+      "upload-success": "Archivo subido exitosamente",
+      "import-success": "Datos importados exitosamente",
+      "import-cancelled": "Importación cancelada",
+      "processing-file": "Procesando archivo...",
+      "validating-data": "Validando datos..."
+    }
+  }
+}
