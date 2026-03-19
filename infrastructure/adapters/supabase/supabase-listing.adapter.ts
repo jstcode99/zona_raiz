@@ -1,6 +1,6 @@
 import { mapListingRowToEntity } from "@/application/mappers/listing.mapper";
 import { ListingEntity } from "@/domain/entities/listing.entity";
-import { ListingPort } from "@/domain/ports/listing.port";
+import { ListingPort, CityWithCount, PlatformStats } from "@/domain/ports/listing.port";
 import { SupabaseClient } from "@supabase/supabase-js";
 
 export class SupabaseListingAdapter implements ListingPort {
@@ -376,5 +376,61 @@ export class SupabaseListingAdapter implements ListingPort {
       }
       return entity;
     }) as ListingEntity[];
+  }
+
+  async findCitiesWithListings(): Promise<CityWithCount[]> {
+    const { data, error } = await this.supabase
+      .from("listings")
+      .select(`
+        count:id,
+        property:properties!inner(city, city_slug, cover_image)
+      `)
+      .eq("status", "active")
+      .not("property.city", "is", null);
+
+    if (error) throw new Error(error.message);
+
+    const cityMap = new Map<string, CityWithCount>();
+
+    (data || []).forEach((item: any) => {
+      const cityName = item.property?.city;
+      const citySlug = item.property?.city_slug || cityName?.toLowerCase().replace(/\s+/g, "-");
+      const coverImage = item.property?.cover_image;
+
+      if (cityName) {
+        const existing = cityMap.get(cityName);
+        if (existing) {
+          existing.count++;
+        } else {
+          cityMap.set(cityName, {
+            name: cityName,
+            slug: citySlug || cityName.toLowerCase().replace(/\s+/g, "-"),
+            count: 1,
+            image: coverImage,
+          });
+        }
+      }
+    });
+
+    return Array.from(cityMap.values()).sort((a, b) => b.count - a.count);
+  }
+
+  async getStats(): Promise<PlatformStats> {
+    const [listingsCount, agentsCount, citiesData] = await Promise.all([
+      this.supabase
+        .from("listings")
+        .select("*", { count: "exact", head: true })
+        .eq("status", "active"),
+      this.supabase
+        .from("real_estate_agents")
+        .select("*", { count: "exact", head: true }),
+      this.findCitiesWithListings(),
+    ]);
+
+    return {
+      totalListings: listingsCount.count || 0,
+      totalAgents: agentsCount.count || 0,
+      totalCities: citiesData.length,
+    };
   }
 }

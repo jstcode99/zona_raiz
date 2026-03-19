@@ -1,5 +1,18 @@
 import { ListingEntity } from "../entities/listing.entity";
 
+export interface CityWithCount {
+  name: string;
+  slug: string;
+  count: number;
+  image?: string;
+}
+
+export interface PlatformStats {
+  totalListings: number;
+  totalAgents: number;
+  totalCities: number;
+}
+
 export interface ListingPort {
   all(filter?: any): Promise<ListingEntity[]>;
   create(data: Partial<ListingEntity>): Promise<ListingEntity>;
@@ -17,4 +30,6 @@ export interface ListingPort {
     filters?: any,
   ): Promise<Record<string, Record<string, number>>>;
   findSimplePublished(limit?: number): Promise<ListingEntity[]>;
+  findCitiesWithListings(): Promise<CityWithCount[]>;
+  getStats(): Promise<PlatformStats>;
 }

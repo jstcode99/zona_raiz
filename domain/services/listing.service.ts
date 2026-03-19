@@ -1,4 +1,4 @@
-import { ListingPort } from "@/domain/ports/listing.port";
+import { ListingPort, CityWithCount, PlatformStats } from "@/domain/ports/listing.port";
 import { ListingEntity } from "@/domain/entities/listing.entity";
 import { unstable_cache } from "next/cache";
 import { Lang } from "@/i18n/settings";
@@ -364,6 +364,36 @@ export class ListingService {
       {
         revalidate: 300,
         tags: ["listings", "listing-count"],
+      },
+    )();
+  }
+
+  findCitiesWithListings(): Promise<CityWithCount[]> {
+    return this.listingPort.findCitiesWithListings();
+  }
+
+  getCachedCitiesWithListings() {
+    return unstable_cache(
+      async () => this.listingPort.findCitiesWithListings(),
+      ["listing:cities"],
+      {
+        revalidate: 300,
+        tags: ["listings", "listing:cities"],
+      },
+    )();
+  }
+
+  getStats(): Promise<PlatformStats> {
+    return this.listingPort.getStats();
+  }
+
+  getCachedStats() {
+    return unstable_cache(
+      async () => this.listingPort.getStats(),
+      ["listing:stats"],
+      {
+        revalidate: 300,
+        tags: ["listings", "listing:stats"],
       },
     )();
   }
