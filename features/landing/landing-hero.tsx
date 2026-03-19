@@ -32,13 +32,13 @@ export function LandingHero({ lang, cities = [] }: LandingHeroProps) {
   const { t } = useTranslation("landing")
   const router = useRouter()
 
-  const form = useForm({
+  const form = useForm<LandingSearchFormInput, any, LandingSearchFormInput>({
     resolver: yupResolver(landingSearchSchema) as any,
     defaultValues: defaultLandingSearchValues,
     mode: "onBlur",
   })
 
-  const { setError, formState: { errors } } = form as any
+  const { setError, formState: { errors } } = form
 
   const mutation = useServerMutation({
     action: searchListingsAction,
@@ -48,7 +48,7 @@ export function LandingHero({ lang, cities = [] }: LandingHeroProps) {
     }
   })
 
-  const onSubmit = (values: any) => {
+  const onSubmit = (values: LandingSearchFormInput) => {
     const formData = new FormData()
 
     if (values.city) formData.set("city", values.city)
