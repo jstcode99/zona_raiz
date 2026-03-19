@@ -1,12 +1,12 @@
 {
   "common": {
     "labels": {
-      "without-image": "Sin imagen",
-      "no-results": "Sin resultados",
+      "without_image": "Sin imagen",
+      "no_results": "Sin resultados",
       "name": "Nombre",
-      "description": "Descripción",
-      "created-at": "Creado",
-      "updated-at": "Actualizado",
+      "description": "Descripcion",
+      "created_at": "Creado",
+      "updated_at": "Actualizado",
       "status": "Estado",
       "actions": "Acciones"
     },
@@ -17,17 +17,30 @@
       "edit": "Editar",
       "save": "Guardar",
       "close": "Cerrar",
-      "back": "Volver",
+      "back": "Atras",
       "next": "Siguiente",
       "previous": "Anterior",
       "search": "Buscar",
       "filter": "Filtrar",
-      "sort": "Ordenar"
+      "sort": "Ordenar",
+      "create_property": "Crear propiedad"
     },
     "status": {
       "loading": "Cargando...",
       "error": "Error",
-      "success": "Éxito"
+      "success": "Exito",
+      "favorite_added": "Agregado a favoritos",
+      "favorite_removed": "Eliminado de favoritos",
+      "favorite_error": "Error con favorito",
+      "error_favorite": "Error al procesar favorito"
+    },
+    "words": {
+      "dashboard": "Dashboard",
+      "real_estate": "Inmobiliaria"
+    },
+    "sections": {
+      "favorites": "Favoritos",
+      "no_favorites": "Sin favoritos aun"
     }
   }
 }

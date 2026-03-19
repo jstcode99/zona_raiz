@@ -18,7 +18,7 @@ export function FavoriteToggleButton({
   isFavInitial = false,
   size = "default",
 }: FavoriteToggleButtonProps) {
-  const { t } = useTranslation("status");
+  const { t } = useTranslation("common");
 
   const [isFav, setIsFav] = useState(isFavInitial);
   const [isPending, startTransition] = useTransition();
@@ -33,15 +33,15 @@ export function FavoriteToggleButton({
         const result = await toggleFavoriteAction(listingId);
         if (result.success) {
           toast.success(
-            previousFav ? t("favorite_removed") : t("favorite_added"),
+            previousFav ? t("status.favorite_removed") : t("status.favorite_added"),
           );
         } else {
           setIsFav(previousFav);
-          toast.error(result.error?.message || t("favorite_error"));
+          toast.error(result.error?.message || t("status.favorite_error"));
         }
       } catch (error) {
         setIsFav(previousFav);
-        toast.error(t("error_favorite"));
+        toast.error(t("status.error_favorite"));
         console.error("Error toggling favorite:", error);
       }
     });

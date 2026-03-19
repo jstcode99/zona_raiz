@@ -47,7 +47,7 @@ export const FeaturedListingCard = ({ listing }: FeaturedListingCardProps) => {
                     />
                 ) : (
                     <div className="w-full h-full bg-muted flex items-center justify-center">
-                        <span className="text-muted-foreground">{t('words:without_image')}</span>
+                        <span className="text-muted-foreground">{t('words.without_image')}</span>
                     </div>
                 )}
 
@@ -57,7 +57,7 @@ export const FeaturedListingCard = ({ listing }: FeaturedListingCardProps) => {
                     </Badge>
                     {listing.featured && (
                         <Badge className="bg-amber-500 hover:bg-amber-600 capitalize">
-                            {t('words:featured')}
+                            {t('words.featured')}
                         </Badge>
                     )}
                 </div>
@@ -66,7 +66,7 @@ export const FeaturedListingCard = ({ listing }: FeaturedListingCardProps) => {
             <div className="p-4">
                 <div className="text-lg font-bold text-primary">
                     {listing.currency} {listing.price.toLocaleString('es-ES')}
-                    {listing.price_negotiable && <span className="text-xs font-normal text-muted-foreground ml-1">{t('words:negotiable')}</span>}
+                    {listing.price_negotiable && <span className="text-xs font-normal text-muted-foreground ml-1">{t('words.negotiable')}</span>}
                 </div>
 
                 <h3 className="font-semibold text-foreground line-clamp-1 mt-1 capitalize">{property.title}</h3>
@@ -128,7 +128,7 @@ export function FeaturedListingsSlider({ listings, ...props }: FeaturedListingsS
         <Card className="relative" {...props}>
             <CardHeader>
                 <CardTitle className="text-base">
-                    {t('sections:features_listings')}
+                    {t('sections.features_listings')}
                 </CardTitle>
                 <CardAction className='flex gap-2'>
                     <Button onClick={() => scroll('left')}>

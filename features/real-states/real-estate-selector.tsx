@@ -13,7 +13,7 @@ interface Props {
 }
 
 export function RealEstateSelector({ realEstates }: Props) {
-  const { t } = useTranslation('common')
+  const { t } = useTranslation('real-estates')
   const [selectingId, startSelecting] = useTransition()
 
   const handleSelect = (id: string) => {
@@ -37,9 +37,9 @@ export function RealEstateSelector({ realEstates }: Props) {
         <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
           <Building2 className="h-6 w-6 text-primary" />
         </div>
-        <CardTitle className="text-2xl">{t("pages.post-login-selection.title")}</CardTitle>
+        <CardTitle className="text-2xl">{t("pages.selection.title")}</CardTitle>
         <CardDescription>
-          {t("pages.post-login-selection.subtitle", { count: realEstates.length })}
+          {t("pages.selection.subtitle", { count: realEstates.length })}
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -66,7 +66,7 @@ export function RealEstateSelector({ realEstates }: Props) {
               <div>
                 <p className="font-semibold">{real_estate.name}</p>
                 <p className="text-sm text-muted-foreground line-clamp-1">
-                  {real_estate.country || t("words.no-address")}
+                  {real_estate.country || t("words.no_address")}
                 </p>
               </div>
             </div>

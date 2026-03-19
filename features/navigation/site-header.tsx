@@ -9,7 +9,7 @@ import { useTranslation } from "react-i18next"
 import { Breadcrumbs } from "./breadcrumbs"
 
 export function SiteHeader() {
-  const { t } = useTranslation("dashboard")
+  const { t } = useTranslation("common")
   const routes = useRoutes()
 
   return (
@@ -24,7 +24,7 @@ export function SiteHeader() {
         <div className="ml-auto flex items-center gap-2">
           <Button variant="ghost" asChild size="sm" className="hidden sm:flex">
             <Link href={routes.currentRealEstate()} className="capitalize">
-              { t('words:real_estate') }
+              { t('words.real_estate') }
             </Link>
           </Button>
         </div>

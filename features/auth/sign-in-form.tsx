@@ -83,17 +83,17 @@ export function SignInForm({
     >
       <FieldGroup className="gap-3">
         <div className="flex flex-col items-center gap-2 text-center">
-          <h1 className="text-2xl font-bold">{t('auth:title')}</h1>
+          <h1 className="text-2xl font-bold">{t('titles.sign_in')}</h1>
           <p className="text-muted-foreground text-balance">
-            {t('auth:subtitle')}
+            {t('subtitles.sign_in')}
           </p>
         </div>
 
         <Form.Input
           name="email"
           type="email"
-          label={t('auth:labels.email')}
-          placeholder={t('auth:placeholders.email')}
+          label={t('labels.email')}
+          placeholder={t('placeholders.email')}
           autoComplete="email"
           disabled={isLoading}
         />
@@ -101,8 +101,8 @@ export function SignInForm({
         <Form.Input
           name="password"
           type="password"
-          label={t('auth:labels.password')}
-          placeholder={t('auth:placeholders.password')}
+          label={t('labels.password')}
+          placeholder={t('placeholders.password')}
           autoComplete="current-password"
           disabled={isLoading}
         />
@@ -110,7 +110,7 @@ export function SignInForm({
           href={routes.otp()}
           className="ml-auto text-right text-sm underline-offset-2 hover:underline"
         >
-          {t('auth:actions.otp')}
+          {t('actions.otp')}
         </Link>
         <Field>
           <Button
@@ -119,7 +119,7 @@ export function SignInForm({
             disabled={isLoading}
           >
             {isLoading && <Spinner data-icon="inline-start" className="mr-2 h-4 w-4" />}
-            {t('auth:actions.sign-in')}
+            {t('actions.sign_in')}
           </Button>
         </Field>
         <Field className="py-4">
@@ -131,7 +131,7 @@ export function SignInForm({
             href={routes.signup()}
             className="ml-1 text-sm font-medium text-primary hover:underline"
           >
-            {t('auth:actions.sign-up')}
+            {t('actions.sign_up')}
           </Link>
         </FieldDescription>
       </FieldGroup>

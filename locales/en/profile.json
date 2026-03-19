@@ -3,19 +3,23 @@
     "title": "Profile",
     "subtitle": "Manage your personal information",
     "labels": {
-      "full-name": "Full name",
-      "last-name": "Last name",
+      "full_name": "Full name",
+      "last_name": "Last name",
       "email": "Email",
       "phone": "Phone",
       "role": "Role",
       "avatar": "Avatar"
     },
     "placeholders": {
-      "full-name": "John",
-      "last-name": "Doe"
+      "full_name": "John",
+      "last_name": "Doe"
     },
     "actions": {
-      "save-changes": "Save changes"
+      "save_changes": "Save changes"
+    },
+    "messages": {
+      "success": "Profile updated successfully",
+      "error": "Error updating profile"
     }
   }
 }

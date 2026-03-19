@@ -1,36 +1,48 @@
 {
   "dashboard": {
     "title": "Dashboard",
-    "subtitle": "Overview of your real estate business",
+    "subtitle": "Resumen de tu negocio inmobiliario",
     "sections": {
-      "total-revenue": "Total revenue",
-      "new-customers": "New customers",
-      "active-properties": "Active properties",
-      "visits": "Visits",
-      "agents": "Agents",
-      "features-listings": "Featured listings",
-      "total-listings": "Total listings",
-      "new-users": "New users",
-      "real-estates": "Real estates"
+      "active_properties": "Propiedades activas",
+      "visits": "Visitas",
+      "total_listings": "Total publicaciones",
+      "new_users": "Nuevos usuarios",
+      "real_estates": "Inmobiliarias",
+      "features_listings": "Publicaciones destacadas",
+      "properties_by_type": "Propiedades por tipo",
+      "listings_by_status": "Publicaciones por estado",
+      "listings_by_status_description": "Total de publicaciones por mes del año actual"
     },
     "trends": {
-      "trending-up": "Trending up this month",
-      "down-this-period": "Down this period",
-      "needs-attention": "Needs attention",
-      "exceeds-targets": "Exceeds targets",
-      "properties-over-last-month": "Properties over last month",
-      "visits-last-six-months": "Visits in the last six months",
-      "listings-over-last-month": "Listings over last month",
-      "new-users-over-last-month": "New users over last month",
-      "real-estates-over-last-month": "Real estates over last month"
-    },
-    "charts": {
-      "properties-by-type": "Properties by type",
-      "listings-by-status": "Listings by status",
-      "listings-by-status-description": "Total listings by month of current year"
+      "trending_up": "Tendencia al alza este mes",
+      "exceeds_targets": "Supera los objetivos",
+      "needs_attention": "Necesita atención",
+      "down_this_period": "Baja este período",
+      "properties_over_last_month": "Propiedades respecto al mes anterior",
+      "visits_over_last_month": "Visitas respecto al mes anterior",
+      "listings_over_last_month": "Publicaciones respecto al mes anterior",
+      "new_users_over_last_month": "Nuevos usuarios respecto al mes anterior",
+      "real_estates_over_last_month": "Inmobiliarias respecto al mes anterior"
     },
     "actions": {
-      "view-all": "View all"
+      "view_all": "Ver todo",
+      "select_months": "Seleccionar meses",
+      "select_type": "Seleccionar tipo",
+      "all_months": "Todos los meses"
+    },
+    "words": {
+      "without_image": "Sin imagen",
+      "featured": "Destacado",
+      "negotiable": "Negociable",
+      "months": "meses",
+      "selected": "seleccionados",
+      "types": "tipo",
+      "search": "Buscar..."
+    },
+    "exceptions": {
+      "not_found_data": "No se encontraron datos",
+      "not_found_months": "No se encontraron meses",
+      "not_found_types": "No se encontraron tipos"
     }
   }
 }

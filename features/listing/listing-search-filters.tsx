@@ -66,7 +66,7 @@ export function ListingSearchFilters({
   onFiltersChange,
   debounceMs = 300,
 }: ListingSearchFiltersProps) {
-  const { t } = useTranslation(["placeholders", "words", "sections"])
+  const { t } = useTranslation("listings")
   const isExternalUpdate = useRef(false)
 
 
@@ -127,7 +127,7 @@ export function ListingSearchFilters({
       <div className="flex gap-2 items-end">
         <Form.Input
           name="q"
-          placeholder={`${t('placeholders:search_properties')}...`}
+          placeholder={`${t('placeholders.search_properties')}...`}
           className="flex-1 py-2"
         />
         <Button type="button" size="sm" onClick={handleReset} variant="outline">
@@ -135,7 +135,7 @@ export function ListingSearchFilters({
         </Button>
       </div>
 
-      <Form.Set legend={<span className="flex items-center gap-1 text-sm font-medium"><IconTag className="size-4" />{t('sections:type_listings')}</span>}>
+      <Form.Set legend={<span className="flex items-center gap-1 text-sm font-medium"><IconTag className="size-4" />{t('sections.type_listings')}</span>}>
         <ToggleGroup
           type="single"
           value={values.listing_type || ""}
@@ -151,7 +151,7 @@ export function ListingSearchFilters({
         </ToggleGroup>
       </Form.Set>
 
-      <Form.Set legend={<span className="flex items-center gap-1 text-sm font-medium"><IconMapPin className="size-4" />{t('sections:location')}</span>}>
+      <Form.Set legend={<span className="flex items-center gap-1 text-sm font-medium"><IconMapPin className="size-4" />{t('sections.location')}</span>}>
         <div className="space-y-3">
           <Form.CountryStateCity
             countryName="country"
@@ -164,7 +164,7 @@ export function ListingSearchFilters({
         </div>
       </Form.Set>
 
-      <Form.Set legend={<span className="flex items-center gap-1 text-sm font-medium"><IconCurrencyDollar className="size-4" />{t('sections:price_range')}</span>}>
+      <Form.Set legend={<span className="flex items-center gap-1 text-sm font-medium"><IconCurrencyDollar className="size-4" />{t('sections.price_range')}</span>}>
         <div className="space-y-2">
           <Slider
             value={[values.min_price || 0, values.max_price || 100000000]}
@@ -179,7 +179,7 @@ export function ListingSearchFilters({
         </div>
       </Form.Set>
 
-      <Form.Set legend={<span className="flex items-center gap-1 text-sm font-medium"><IconHome className="size-4" />{t('sections:type_properties')}</span>}>
+      <Form.Set legend={<span className="flex items-center gap-1 text-sm font-medium"><IconHome className="size-4" />{t('sections.type_properties')}</span>}>
         <ToggleGroup
           type="multiple"
           value={values.type ? [values.type] : []}
@@ -196,7 +196,7 @@ export function ListingSearchFilters({
         </ToggleGroup>
       </Form.Set>
 
-      <Form.Set legend={<span className="flex items-center gap-1 text-sm font-medium"><IconBed className="size-4" />{t('sections:rooms')}</span>}>
+      <Form.Set legend={<span className="flex items-center gap-1 text-sm font-medium"><IconBed className="size-4" />{t('sections.rooms')}</span>}>
         <ToggleGroup
           type="single"
           value={String(values.min_bedrooms || "")}
@@ -212,7 +212,7 @@ export function ListingSearchFilters({
         </ToggleGroup>
       </Form.Set>
 
-      <Form.Set legend={<span className="flex items-center gap-1 text-sm font-medium"><IconBath className="size-4" />{t('sections:bathrooms')}</span>}>
+      <Form.Set legend={<span className="flex items-center gap-1 text-sm font-medium"><IconBath className="size-4" />{t('sections.bathrooms')}</span>}>
         <ToggleGroup
           type="single"
           value={String(values.min_bathrooms || "")}
@@ -228,7 +228,7 @@ export function ListingSearchFilters({
         </ToggleGroup>
       </Form.Set>
 
-      <Form.Set legend={<span className="flex items-center gap-1 text-sm font-medium"><IconCheckbox className="size-4" />{t('sections:amenities')}</span>}>
+      <Form.Set legend={<span className="flex items-center gap-1 text-sm font-medium"><IconCheckbox className="size-4" />{t('sections.amenities')}</span>}>
         <div className="space-y-2 max-h-48 overflow-y-auto">
           {amenitiesOptions.map((amenity) => (
             <div key={amenity.value} className="flex items-center gap-2">
@@ -253,7 +253,7 @@ export function ListingSearchFilters({
 
       {values.amenities && values.amenities.length > 0 && (
         <Button variant="outline" size="sm" onClick={() => setValue("amenities", [])} className="w-full">
-          {t('actions:clear_amenities')}
+          {t('actions.clear_amenities')}
         </Button>
       )}
     </Form>

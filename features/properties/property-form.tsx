@@ -34,7 +34,7 @@ export function PropertyForm({
   const router = useRouter()
   const routes = useRoutes()
 
-  const { t } = useTranslation('common');
+  const { t } = useTranslation('properties');
   const isUpdateMode = Boolean(id);
 
   const stepFields = {
@@ -92,7 +92,7 @@ export function PropertyForm({
     onSuccess: (result) => {
       if (result.success) {
         const property = result.data
-        toast.success(t(`forms.property.${isUpdateMode ? "updated" : "created"}`))
+        toast.success(t(`messages.${isUpdateMode ? "updated" : "created"}`))
         if (!isUpdateMode) reset()
         wizardRef.current?.complete()
         router.push(`${routes.property(property.id)}/images`)
@@ -100,7 +100,7 @@ export function PropertyForm({
     },
     onError: (error) => {
       console.error("Property error:", error)
-      toast.error(t("forms.property.error"))
+      toast.error(t("messages.error"))
     },
   })
 

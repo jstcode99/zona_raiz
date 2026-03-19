@@ -3,46 +3,55 @@
     "title": "Publish property",
     "subtitle": "Manage your property listings",
     "labels": {
-      "listing-type": "Listing type",
-      "price-negotiable": "Negotiable price",
-      "expenses-amount": "Maintenance fees",
-      "expenses-included": "Fees included",
+      "listing_type": "Listing type",
+      "price_negotiable": "Negotiable price",
+      "expenses_amount": "Maintenance fees",
+      "expenses_included": "Fees included",
       "featured": "Feature property",
       "keywords": "Keywords",
-      "virtual-tour-url": "Virtual tour URL",
-      "video-url": "Video URL",
-      "available-from": "Available from",
-      "minimum-contract-duration": "Minimum contract duration (months)"
+      "virtual_tour_url": "Virtual tour URL",
+      "video_url": "Video URL",
+      "available_from": "Available from",
+      "minimum_contract_duration": "Minimum contract duration (months)"
     },
     "placeholders": {
-      "select-listing-type": "Select listing type",
-      "expenses-amount": "Maintenance fees",
+      "select_listing_type": "Select listing type",
+      "expenses_amount": "Maintenance fees",
       "keywords": "Keywords",
-      "virtual-tour-url": "https://virtualtours.com/...",
-      "video-url": "https://videos.com/...",
-      "available-from": "Select date",
-      "minimum-contract-duration": "12"
+      "virtual_tour_url": "https://virtualtours.com/...",
+      "video_url": "https://videos.com/...",
+      "available_from": "Select date",
+      "minimum_contract_duration": "12",
+      "search_properties": "Search properties"
     },
     "sections": {
-      "all-properties": "All properties",
+      "all_properties": "All properties",
       "filters": "Filters",
-      "type-properties": "Property types",
-      "type-listings": "Listing types",
-      "price-range": "Price range",
+      "type_properties": "Property types",
+      "type_listings": "Listing types",
+      "price_range": "Price range",
       "rooms": "Number of rooms",
       "bathrooms": "Number of bathrooms",
-      "amenities": "Included amenities"
+      "amenities": "Included amenities",
+      "location": "Location"
     },
     "actions": {
       "create": "Create new listing",
       "update": "Update listing",
-      "save-property": "Save property",
-      "update-property": "Update property",
-      "search": "Search properties"
+      "save_property": "Save property",
+      "update_property": "Update property",
+      "search": "Search properties",
+      "clear_amenities": "Clear amenities",
+      "any": "Any"
     },
     "status": {
-      "no-results": "No results found",
-      "try-filters": "Try with different filters..."
+      "no_results": "No results found",
+      "try_filters": "Try with different filters..."
+    },
+    "words": {
+      "without_image": "No image",
+      "featured": "Featured",
+      "negotiable": "Negotiable"
     }
   }
 }

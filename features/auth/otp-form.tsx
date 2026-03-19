@@ -44,7 +44,7 @@ export function OTPForm({
   const mutation = useServerMutation({
     action: sentOtpAction,
     onSuccess: () => {
-      toast.success(t('forms.otp.success'))
+      toast.success(t('messages.success.otp_sent'))
       reset()
     },
     onError: (error) => {
@@ -75,15 +75,15 @@ export function OTPForm({
     >
       <FieldGroup className="gap-4">
         <div className="flex flex-col items-center gap-2 text-center">
-          <h1 className="text-2xl font-bold">{t('forms.otp.title')}</h1>
+          <h1 className="text-2xl font-bold">{t('titles.otp')}</h1>
           <p className="text-muted-foreground text-sm">
-            {t('forms.otp.subtitle')}
+            {t('subtitles.otp')}
           </p>
         </div>
 
         <Field data-invalid={!!errors.email}>
           <FieldLabel htmlFor="form-email">
-            {t('forms.sign-in.fields.email.label')}
+            {t('labels.email')}
           </FieldLabel>
           <Input
             id="form-email"
@@ -101,7 +101,7 @@ export function OTPForm({
           href={routes.signin()}
           className="ml-auto text-right text-sm underline-offset-2 hover:underline"
         >
-          {t('forms.otp.alternatives.basic')}
+          {t('actions.otp_basic')}
         </Link>
 
         <Field>
@@ -111,7 +111,7 @@ export function OTPForm({
             disabled={isLoading}
           >
             {isLoading && <Spinner data-icon="inline-start" className="mr-2 h-4 w-4" />}
-            {t('forms.otp.submit')}
+            {t('actions.request_code')}
           </Button>
         </Field>
       </FieldGroup>

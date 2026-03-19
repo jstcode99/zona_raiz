@@ -1,72 +1,73 @@
 {
   "landing": {
     "nav": {
-    "brand": "ZonaRaíz",
-    "home": "Home",
-    "listing": "Listings",
-    "property": "Properties",
-    "pages": "Pages",
-    "pages.about": "About Us",
-    "pages.contact": "Contact",
-    "pages.faq": "FAQ",
-    "login": "Login / Sign Up",
-    "cta": "Publish Property"
-  },
-  "hero": {
-    "title_1": "Buy",
-    "title_2": "Rent",
-    "title_3": "Sell Property",
-    "explore": "Explore Properties",
-    "search_title": "Find Your Perfect",
-    "search_subtitle": "Ideal Property!",
-    "location": "Location",
-    "location_placeholder": "Bogotá, Colombia",
-    "property_type": "Property Type",
-    "property_placeholder": "Type of property",
-    "beds": "4 Beds",
-    "baths": "2 Baths",
-    "max_price": "Max Price",
-    "search_btn": "Search"
-  },
-  "trust": {
-    "count": "1250+",
-    "companies": "Companies",
-    "trust_us": "Trust us.",
-    "more": "+Thousand more",
-    "description": "Your leading real estate advisor. We transform dreams into homes. Trust us to perfectly find your home.",
-    "cta": "Learn more",
-    "logos_label": "Thousands of owners"
-  },
-  "listings": {
-    "title": "Popular Listings",
-    "subtitle": "Explore the best properties for rent, buy, and mortgage.",
-    "explore": "Explore all"
-  },
-  "cities": {
-    "title": "Popular Cities",
-    "subtitle": "Find properties in the best cities of Colombia.",
-    "explore": "Explore all",
-    "listings": "Listings"
-  },
-  "agents": {
-    "title": "Our Agents",
-    "cta": "View Agents"
-  },
-  "cta": {
-    "title": "Stay Updated with the Latest Properties",
-    "subtitle": "Never miss a property. Subscribe and receive alerts.",
-    "placeholder": "Enter your email...",
-    "btn": "Subscribe"
-  },
-  "footer": {
-    "brand": "ZonaRaíz",
-    "tagline": "Your leading real estate advisor.",
-    "about": "About Us",
-    "terms": "Terms of Service",
-    "privacy": "Privacy Policy",
-    "contact": "Contact",
-    "follow_us": "Follow Us",
-    "copyright": "© 2026 ZonaRaíz. All rights reserved."
+      "brand": "ZonaRaiz",
+      "home": "Home",
+      "listing": "Listings",
+      "property": "Properties",
+      "pages": "Pages",
+      "about": "About Us",
+      "contact": "Contact",
+      "faq": "FAQ",
+      "login": "Login / Sign Up",
+      "dashboard": "Dashboard",
+      "cta": "Publish Property"
+    },
+    "hero": {
+      "title_1": "Buy",
+      "title_2": "Rent",
+      "title_3": "Sell Property",
+      "explore": "Explore Properties",
+      "search_title": "Find Your Perfect",
+      "search_subtitle": "Ideal Property!",
+      "location": "Location",
+      "location_placeholder": "Bogota, Colombia",
+      "property_type": "Property Type",
+      "property_placeholder": "Type of property",
+      "beds": "4 Beds",
+      "baths": "2 Baths",
+      "max_price": "Max Price",
+      "search_btn": "Search"
+    },
+    "trust": {
+      "count": "1250+",
+      "companies": "Companies",
+      "trust_us": "Trust us.",
+      "more": "+Thousand more",
+      "description": "Your leading real estate advisor. We transform dreams into homes. Trust us to perfectly find your home.",
+      "cta": "Learn more",
+      "logos_label": "Thousands of owners"
+    },
+    "listings": {
+      "title": "Popular Listings",
+      "subtitle": "Explore the best properties for rent, buy, and mortgage.",
+      "explore": "Explore all"
+    },
+    "cities": {
+      "title": "Popular Cities",
+      "subtitle": "Find properties in the best cities of Colombia.",
+      "explore": "Explore all",
+      "listings": "Listings"
+    },
+    "agents": {
+      "title": "Our Agents",
+      "cta": "View Agents"
+    },
+    "cta": {
+      "title": "Stay Updated with the Latest Properties",
+      "subtitle": "Never miss a property. Subscribe and receive alerts.",
+      "placeholder": "Enter your email...",
+      "btn": "Subscribe"
+    },
+    "footer": {
+      "brand": "ZonaRaiz",
+      "tagline": "Your leading real estate advisor.",
+      "about": "About Us",
+      "terms": "Terms of Service",
+      "privacy": "Privacy Policy",
+      "contact": "Contact",
+      "follow_us": "Follow Us",
+      "copyright": "2026 ZonaRaiz. All rights reserved."
     }
   }
 }

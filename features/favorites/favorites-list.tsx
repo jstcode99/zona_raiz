@@ -20,7 +20,7 @@ interface FavoritesListProps {
 }
 
 export function FavoritesList({ favorites }: FavoritesListProps) {
-  const { t } = useTranslation("listings");
+  const { t } = useTranslation("common");
   const routes = useRoutes();
 
   if (favorites.length === 0) {
@@ -28,7 +28,7 @@ export function FavoritesList({ favorites }: FavoritesListProps) {
       <div className="px-2 py-4 text-center">
         <Heart className="w-8 h-8 mx-auto text-muted-foreground/30 mb-2" />
         <p className="text-xs text-muted-foreground">
-          {t("sections:no_favorites")}
+          {t("sections.no_favorites")}
         </p>
       </div>
     );
@@ -37,7 +37,7 @@ export function FavoritesList({ favorites }: FavoritesListProps) {
   return (
     <div className="space-y-2 px-2 py-2">
       <p className="text-xs font-semibold text-muted-foreground px-2 mb-2">
-        {t("sections:favorites")} ({favorites.length})
+        {t("sections.favorites")} ({favorites.length})
       </p>
       <div className="space-y-1 max-h-48 overflow-y-auto">
         {favorites.slice(0, 5).map((favorite) => {
