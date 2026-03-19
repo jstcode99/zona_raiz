@@ -41,7 +41,7 @@ export function InquiryFiltersForm({
   onFiltersChange,
   debounceMs = 300,
 }: InquiryFiltersFormProps) {
-  const { t } = useTranslation()
+  const { t } = useTranslation("inquiries")
 
   const router = useRouter()
   const pathname = usePathname()

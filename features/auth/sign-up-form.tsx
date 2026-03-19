@@ -26,7 +26,7 @@ export function SignUpForm({
   className,
   ...props
 }: ComponentProps<"form">) {
-  const { t } = useTranslation()
+  const { t } = useTranslation("auth")
   const router = useRouter()
   const routes = useRoutes()
 

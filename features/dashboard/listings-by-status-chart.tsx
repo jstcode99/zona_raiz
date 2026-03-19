@@ -52,7 +52,7 @@ interface ListingsByStatusChartProps extends React.ComponentProps<"div"> {
 }
 
 export function ListingsByStatusChart({ data, onMonthsChange, ...props }: ListingsByStatusChartProps) {
-  const { t } = useTranslation()
+  const { t } = useTranslation("dashboard")
 
   const [selectedMonths, setSelectedMonths] = useState<string[]>([])
   const [open, setOpen] = useState(false)
