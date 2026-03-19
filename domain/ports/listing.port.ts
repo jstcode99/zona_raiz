@@ -1,4 +1,5 @@
 import { ListingEntity } from "../entities/listing.entity";
+import { LandingCity, LandingStats } from "@/domain/types/landing.types";
 
 export interface ListingCountFilters {
   agent_id?: string;
@@ -53,6 +54,6 @@ export interface ListingPort {
     filters?: Omit<ListingCountFilters, "start_date" | "end_date">,
   ): Promise<Record<string, Record<string, number>>>;
   findSimplePublished(limit?: number): Promise<ListingEntity[]>;
-  findCitiesWithListings(): Promise<unknown[]>;
-  getStats(): Promise<unknown>;
+  findCitiesWithListings(): Promise<LandingCity[]>;
+  getStats(): Promise<LandingStats>;
 }

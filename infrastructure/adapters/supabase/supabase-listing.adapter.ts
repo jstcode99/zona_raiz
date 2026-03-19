@@ -2,6 +2,7 @@ import { mapListingRowToEntity } from "@/application/mappers/listing.mapper";
 import { ListingEntity } from "@/domain/entities/listing.entity";
 import { ProfileEntity } from "@/domain/entities/profile.entity";
 import { ListingPort, ListingCountFilters, ListingSearchFilters } from "@/domain/ports/listing.port";
+import { LandingCity, LandingStats } from "@/domain/types/landing.types";
 import { SupabaseClient } from "@supabase/supabase-js";
 
 interface ListingRow {
@@ -396,11 +397,11 @@ export class SupabaseListingAdapter implements ListingPort {
     }) as ListingEntity[];
   }
 
-  async findCitiesWithListings(): Promise<unknown[]> {
+  async findCitiesWithListings(): Promise<LandingCity[]> {
     throw new Error("Not implemented");
   }
 
-  async getStats(): Promise<unknown> {
+  async getStats(): Promise<LandingStats> {
     throw new Error("Not implemented");
   }
 }

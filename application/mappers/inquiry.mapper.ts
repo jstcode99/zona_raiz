@@ -22,7 +22,8 @@ export function mapInquiryRowToEntity(row: any): InquiryEntity {
     listing: row.listing?.property ? {
       id: row.listing.id,
       title: row.listing.property.title,
-      slug: row.listing.property.slug
+      slug: row.listing.property.slug,
+      real_estate_id: row.listing.real_estate_id
     } : undefined,
     assigned_to_profile: row.assigned_to_profile?.profile ? {
       id: row.assigned_to_profile.profile.id,
