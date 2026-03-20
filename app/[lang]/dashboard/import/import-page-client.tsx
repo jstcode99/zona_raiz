@@ -9,7 +9,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ImportDialog } from "@/features/import/import-dialog";
 import { ImportProgress } from "@/features/import/import-progress";
 import { ImportHistory } from "@/features/import/import-history";
-import { ImportJobEntity } from "@/domain/entities/import-job.entity";
 import { Download, Plus } from "lucide-react";
 import { getImportJobsAction } from "@/application/actions/import";
 

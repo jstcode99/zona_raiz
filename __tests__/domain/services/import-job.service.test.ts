@@ -7,6 +7,22 @@ import {
   ImportTableName,
 } from "../../../domain/entities/import-job.entity";
 
+// Mock i18next
+vi.mock("i18next", () => ({
+  default: {
+    t: (key: string, options?: Record<string, unknown>) => {
+      const messages: Record<string, string> = {
+        "exceptions.max_rows_exceeded": `El archivo excede el límite de ${options?.max} filas`,
+        "exceptions.no_real_estate_access": "No tienes acceso a esta inmobiliaria",
+        "exceptions.job_not_found": "Job no encontrado",
+        "exceptions.job_not_pending": "El job no está en estado pendiente",
+        "exceptions.unknown_table": `Tabla desconocida: ${options?.table}`,
+      };
+      return messages[key] || key;
+    },
+  },
+}));
+
 describe("ImportJobService", () => {
   let service: ImportJobService;
   let mockPort: ImportJobPort;
