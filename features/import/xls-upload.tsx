@@ -1,10 +1,9 @@
 "use client";
 
-import { useCallback, useState } from "react"
+import { useCallback } from "react"
 import { useDropzone, FileRejection } from "react-dropzone"
 import { Button } from "@/components/ui/button"
 import { useTranslation } from "react-i18next"
-import { toast } from "sonner"
 import { UploadCloud } from "lucide-react"
 import { useServerMutation } from "@/shared/hooks/use-server-mutation.hook"
 import { uploadAndParseImportAction } from "@/application/actions/import.actions"
@@ -62,7 +61,7 @@ export function XlsUpload({
     formData.append('file', file);
     
     uploadAction(formData);
-  }, [onDataLoaded, onError, uploadAction, maxSize, t]);
+  }, [onError, uploadAction, maxSize, t]);
 
   const { getRootProps, getInputProps, isDragActive, isDragReject } =
     useDropzone({

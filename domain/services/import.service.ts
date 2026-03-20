@@ -18,10 +18,13 @@ export class ImportService implements ImportPort {
 
   /**
    * Parse an uploaded file and return the data
-   * @param fileId - ID of the uploaded file
+   * @param _fileId - ID of the uploaded file (reserved for future use)
    * @returns Parsed import data
    */
-  async parseFile(fileId: string): Promise<ImportData> {
+  async parseFile(
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    _fileId: string
+  ): Promise<ImportData> {
     // TODO: Implement actual file parsing using xlsx library
     // For now, return mock data
     return {
