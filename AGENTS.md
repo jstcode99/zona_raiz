@@ -1,139 +1,79 @@
-# AGENTS.md
+# zona_raiz — Claude Code Context
 
-Este archivo es leído por opencode antes de cualquier ejecución.
-Define la arquitectura, patrones y reglas del proyecto.
-
----
+Plataforma inmobiliaria multi-tenant con Next.js 16 + Supabase + Clean Architecture.
 
 ## Stack
 
-- Next.js 16+ App Router (SSR por defecto)
-- TypeScript estricto
-- Supabase (auth + database + storage)
-- Redis (caché de sesiones y rate limiting)
-- Tailwind CSS + shadcn/ui
-- Yup (validación)
-- pnpm
-- i18n con rutas dinámicas `[lang]`
-
-## Arquitectura (Clean / Hexagonal)
-
-Capas en orden de dependencia (exterior → interior):
-
-```
-Presentación  →  app/, features/
-Aplicación    →  application/actions/, application/mappers/, application/validation/
-Infraestructura → infrastructure/adapters/, infrastructure/db/
-Dominio       →  domain/entities/, domain/ports/, domain/services/
-```
-
-La dependencia va siempre hacia adentro. Nunca importes infraestructura desde dominio.
-
-## Estructura de carpetas clave
-
-```
-zona_raiz/
-├── app/[lang]/              # Rutas App Router con i18n
-│   ├── auth/                # Sign in, sign up, OTP, callback
-│   ├── dashboard/           # Propiedades, listings, usuarios, inquiries
-│   └── onboarding/
-├── application/
-│   ├── actions/             # Server Actions por entidad
-│   ├── mappers/             # Entidad ↔ DTO
-│   ├── modules/             # Inversión de dependencias
-│   └── validation/          # Schemas Yup
-├── domain/
-│   ├── entities/            # Entidades de negocio puras
-│   ├── ports/               # Interfaces abstractas
-│   ├── services/            # Lógica de dominio
-│   └── errors/
-├── features/                # Componentes UI por dominio
-│   ├── agents/, auth/, dashboard/, properties/, listings/
-│   ├── real-states/, users/, inquiries/, profile/
-│   └── navigation/, onboarding/, image-manager/
-├── infrastructure/
-│   ├── adapters/supabase/   # Implementaciones de puertos
-│   ├── db/                  # supabase.server.ts, supabase.proxy.ts
-│   ├── config/              # routes.ts, constants.ts, cache.ts
-│   └── cookies/
-├── i18n/                    # Cliente, server, router, provider
-├── locales/en/, locales/es/ # Traducciones JSON
-├── shared/hooks/, shared/utils/
-└── supabase/migrations/
-```
-
-## Convenciones obligatorias
-
-### Supabase
-- Server Components y Server Actions → `infrastructure/db/supabase.server.ts`
-- Client Components → `app/lib/supabase.client.ts`
-- Admin operations → `infrastructure/db/supabase.server-admin.ts`
-- Nunca inicialices un cliente Supabase directamente fuera de estos archivos
-
-### Server Actions
-- Viven en `application/actions/<entidad>.actions.ts`
-- Usan schemas Yup de `application/validation/`
-- Devuelven `ActionResult` via `shared/hooks/to-action-result.ts`
-- Se invocan desde el cliente con `useServerMutation` de `shared/hooks/`
-
-### Puertos y Adaptadores
-- Define el puerto en `domain/ports/<entidad>.port.ts`
-- Implementa el adaptador en `infrastructure/adapters/supabase/<entidad>.adapter.ts`
-- Registra en `application/modules/app.module.ts`
-
-### Componentes UI
-- Componentes base (shadcn) → `app/components/ui/`
-- Componentes por feature → `features/<dominio>/`
-- No pongas lógica de negocio en componentes — usa Server Actions
-
-### i18n
-- Todas las rutas llevan prefijo `[lang]`
-- Traducciones en `locales/[en|es]/`
-- Usa `i18n/server.ts` en Server Components, `i18n/client.ts` en Client Components
-
-### TypeScript
-- Estricto — sin `any`
-- Entidades en `domain/entities/`, tipos compartidos en `shared/`
+- **Next.js 16** App Router, React 19, TypeScript estricto
+- **Supabase** — auth, PostgreSQL con RLS multi-tenant, Storage
+- **Clean/Hexagonal Architecture** — domain → ports → adapters
+- **Tailwind CSS** + shadcn/ui + Radix UI
+- **Yup** (validación), **react-hook-form**, **Vitest** (tests)
+- **i18n** con rutas dinámicas `[lang]` (es/en)
+- **pnpm**
 
 ## Agentes disponibles
 
-- `@orchestrator` — coordina el ciclo completo
-- `@planner` — genera tasks y crea issues en Linear
-- `@backend-developer` — Server Actions, adaptadores, puertos
-- `@frontend-developer` — componentes en features/, rutas en app/
-- `@code-reviewer` — solo lectura, revisa arquitectura y seguridad
-- `@test-writer` — tests E2E con Playwright
-- `@pr-manager` — merge y cierre de issues
+- `@task-orchestrator` — enruta solicitudes al agente correcto
+- `@builder` — implementa features e issues de Linear end-to-end
+- `@implementation-tester` — valida con Vitest, type check y patrones del proyecto
+- `@linear-planning-agent` — crea y gestiona issues en Linear (nunca GitHub Issues)
 
-## Ciclo de trabajo
+## Skills del proyecto
 
-```
-@orchestrator → @planner → [aprobación usuario]
-→ @backend-developer + @frontend-developer (paralelo)
-→ @code-reviewer → @test-writer → [QA pass]
-→ @pr-manager
-```
+Leer la skill relevante **antes** de escribir cualquier código.
 
-## Gestión de Issues
+<available_skills>
 
-### ⚠️ SOLO Linear
+<skill>
+<name>arquitectura</name>
+<description>
+Arquitectura real del proyecto zona_raiz — Clean/Hexagonal con Next.js 16 App Router.
+Usar SIEMPRE al crear features nuevas, módulos, rutas, componentes, o cuando el usuario
+pregunte dónde va un archivo o cómo organizar código nuevo.
+</description>
+<location>.claude/skills/arquitectura/SKILL.md</location>
+</skill>
 
-**NUNCA usar:**
-- GitHub Issues
-- Otros tableros (Trello, Asana, Jira, etc.)
+<skill>
+<name>code-conventions</name>
+<description>
+Convenciones de código reales del proyecto zona_raiz — TypeScript, Server Actions,
+React, formularios, hooks, cache, i18n. Usar SIEMPRE al escribir o revisar cualquier
+archivo TypeScript/React del proyecto, o cuando el usuario pregunte cómo implementar algo.
+</description>
+<location>.claude/skills/code-conventions/SKILL.md</location>
+</skill>
 
-**SIEMPRE usar Linear** para todas las issues del proyecto.
+<skill>
+<name>workflows</name>
+<description>
+Flujos de trabajo del proyecto zona_raiz: desarrollo local, migraciones Supabase,
+cache tags, testing con Vitest, deploy. Usar al preguntar sobre comandos, migraciones,
+cache, tests, o cualquier tarea del ciclo de desarrollo.
+</description>
+<location>.claude/skills/workflows/SKILL.md</location>
+</skill>
 
-### Reglas
-- Crear issues SOLO en Linear
-- Actualizar estados en Linear
-- Reportar IDs de Linear
-- Si existe issue en otro sistema, migrarla a Linear primero
+<skill>
+<name>integraciones</name>
+<description>
+Integraciones con servicios externos en zona_raiz: Supabase Auth, Storage (buckets reales),
+RLS multi-tenant, Google Maps, hCaptcha, Google OAuth. Usar al trabajar con autenticación,
+subida de archivos, políticas RLS, mapas, o cualquier servicio externo del proyecto.
+</description>
+<location>.claude/skills/integraciones/SKILL.md</location>
+</skill>
 
-## Carga lazy de reglas
+</available_skills>
 
-CRITICAL: Carga estos archivos solo cuando sean relevantes:
-- Implementar backend → @.opencode/skills/backend-developer/SKILL.md
-- Implementar frontend → @.opencode/skills/frontend-developer/SKILL.md
-- Crear issues Linear → @.opencode/skills/linear-planning/SKILL.md
-- Commits y ramas → @.opencode/rules/git.md
+## Reglas para todos los agentes
+
+- Leer la skill relevante ANTES de escribir código
+- Nunca instanciar clientes Supabase fuera de `infrastructure/db/`
+- Nunca instanciar adapters o servicios fuera de `appModule()`
+- Usar `CACHE_TAGS` de constants.ts — nunca strings crudos para revalidateTag
+- Sin `any` en TypeScript (excepto mappers con rows de Supabase sin tipo)
+- Usar `@/` para todos los imports — nunca rutas relativas
+- Issues solo en Linear — nunca GitHub Issues
+- Traducciones siempre en `locales/es/` y `locales/en/` al mismo tiempo
