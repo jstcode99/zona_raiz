@@ -13,6 +13,14 @@ vi.mock("@/shared/utils/lang", () => ({
   getLangServerSide: vi.fn(() => Promise.resolve("es")),
 }));
 
+vi.mock("@/i18n/server", () => ({
+  initI18n: vi.fn(() =>
+    Promise.resolve({
+      getFixedT: () => (key: string) => key,
+    }),
+  ),
+}));
+
 // 2. Define mock objects
 const mocks = {
   sessionService: {
@@ -66,7 +74,7 @@ describe("uploadAndParseImportAction", () => {
       formData.append("file", file);
       formData.append("tableName", "properties");
 
-      await expect(uploadAndParseImportAction(formData)).rejects.toThrow("Usuario no autenticado");
+      await expect(uploadAndParseImportAction(formData)).rejects.toThrow("exceptions.unauthorized");
     });
 
     it("should throw error if real estate not found", async () => {
@@ -79,7 +87,7 @@ describe("uploadAndParseImportAction", () => {
       formData.append("tableName", "properties");
 
       await expect(uploadAndParseImportAction(formData)).rejects.toThrow(
-        "No se encontró la inmobiliaria",
+        "exceptions.real-estate-not-found",
       );
     });
   });

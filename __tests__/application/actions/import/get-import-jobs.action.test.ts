@@ -9,6 +9,14 @@ vi.mock("@/shared/utils/lang", () => ({
   getLangServerSide: vi.fn(() => Promise.resolve("es")),
 }));
 
+vi.mock("@/i18n/server", () => ({
+  initI18n: vi.fn(() =>
+    Promise.resolve({
+      getFixedT: () => (key: string) => key,
+    }),
+  ),
+}));
+
 vi.mock("@/shared/hooks/to-action-result", () => ({
   toActionResult: vi.fn((error) => ({ success: false, error: error.message })),
 }));
@@ -55,7 +63,7 @@ describe("getImportJobsAction", () => {
       const result = await getImportJobsAction();
 
       expect(result.success).toBe(false);
-      expect(result.error).toBe("Usuario no autenticado");
+      expect(result.error).toBe("import:exceptions.unauthorized");
     });
   });
 

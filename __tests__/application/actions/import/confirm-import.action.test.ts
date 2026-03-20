@@ -86,7 +86,7 @@ describe("confirmImportAction", () => {
       formData.append("rows", JSON.stringify([["Casa", "Bogotá"]]));
       formData.append("tableName", "properties");
 
-      await expect(confirmImportAction(formData)).rejects.toThrow("Usuario no autenticado");
+      await expect(confirmImportAction(formData)).rejects.toThrow("exceptions.unauthorized");
     });
 
     it("should throw error if real estate not found", async () => {
@@ -98,7 +98,7 @@ describe("confirmImportAction", () => {
       formData.append("rows", JSON.stringify([["Casa", "Bogotá"]]));
       formData.append("tableName", "properties");
 
-      await expect(confirmImportAction(formData)).rejects.toThrow("No se encontró la inmobiliaria");
+      await expect(confirmImportAction(formData)).rejects.toThrow("exceptions.real-estate-not-found");
     });
   });
 

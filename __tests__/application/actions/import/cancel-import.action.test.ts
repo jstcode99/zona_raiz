@@ -68,7 +68,7 @@ describe("cancelImportAction", () => {
     it("should throw error if user is not authenticated", async () => {
       mocks.sessionService.getCurrentUserId.mockResolvedValue(null);
 
-      await expect(cancelImportAction("job-123")).rejects.toThrow("Usuario no autenticado");
+      await expect(cancelImportAction("job-123")).rejects.toThrow("import:exceptions.unauthorized");
     });
   });
 
