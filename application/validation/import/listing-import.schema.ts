@@ -1,10 +1,14 @@
 // application/validation/import/listing-import.schema.ts
 
 import * as yup from "yup";
+import i18next from "i18next";
 import { ListingType, ListingStatus } from "@/domain/entities/listing.enums";
 
 const validListingTypes = Object.values(ListingType);
 const validListingStatuses = Object.values(ListingStatus);
+
+const t = (key: string, options?: Record<string, unknown>) =>
+  i18next.t(key, { ns: "validations", ...options });
 
 /**
  * Schema de validación para importación de listings
@@ -13,22 +17,22 @@ export const listingImportSchema = yup.object({
   // Campos requeridos
   listing_type: yup
     .string()
-    .required("El tipo de listing es requerido")
-    .test("valid-type", "Tipo de listing inválido (use 'sale' o 'rent')", (value) => {
+    .required(t("required", { attribute: "listing_type" }))
+    .test("valid-type", t("import.validations.invalid_listing_type"), (value) => {
       if (!value) return false;
       return validListingTypes.includes(value as ListingType);
     }),
 
   price: yup
     .number()
-    .required("El precio es requerido")
-    .min(0, "El precio no puede ser negativo"),
+    .required(t("required", { attribute: "price" }))
+    .min(0, t("min.numeric", { attribute: "price", min: 0 })),
 
   whatsapp_contact: yup
     .string()
-    .required("El WhatsApp es requerido")
-    .min(8, "El WhatsApp debe tener al menos 8 dígitos")
-    .max(20, "El WhatsApp no puede exceder 20 caracteres"),
+    .required(t("required", { attribute: "whatsapp_contact" }))
+    .min(8, t("import.validations.whatsapp_min"))
+    .max(20, t("max.string", { attribute: "whatsapp_contact", max: 20 })),
 
   // Campos opcionales de property (si se crea automáticamente)
   property_id: yup.string().optional(),
@@ -43,7 +47,7 @@ export const listingImportSchema = yup.object({
     .string()
     .optional()
     .default("COP")
-    .oneOf(["COP", "USD", "EUR"], "Moneda inválida"),
+    .oneOf(["COP", "USD", "EUR"], t("import.validations.invalid_currency")),
 
   price_negotiable: yup
     .boolean()
@@ -54,7 +58,7 @@ export const listingImportSchema = yup.object({
     .string()
     .optional()
     .default("draft")
-    .test("valid-status", "Estado inválido", (value) => {
+    .test("valid-status", t("import.validations.invalid_status"), (value) => {
       if (!value) return true;
       return validListingStatuses.includes(value as ListingStatus);
     }),
@@ -62,17 +66,17 @@ export const listingImportSchema = yup.object({
   meta_title: yup
     .string()
     .optional()
-    .max(100, "El meta título no puede exceder 100 caracteres"),
+    .max(100, t("max.string", { attribute: "meta_title", max: 100 })),
 
   meta_description: yup
     .string()
     .optional()
-    .max(500, "La meta descripción no puede exceder 500 caracteres"),
+    .max(500, t("max.string", { attribute: "meta_description", max: 500 })),
 
   keywords: yup
     .string()
     .optional()
-    .test("valid-keywords", "Formato inválido de keywords", (value) => {
+    .test("valid-keywords", t("import.validations.invalid_keywords_format"), (value) => {
       if (!value) return true;
       const items = value.split(/[,|]/).map((s) => s.trim());
       return items.every((item) => item.length > 0 && item.length <= 50);
@@ -81,7 +85,7 @@ export const listingImportSchema = yup.object({
   expenses_amount: yup
     .number()
     .optional()
-    .min(0, "Las expensas no pueden ser negativas"),
+    .min(0, t("min.numeric", { attribute: "expenses_amount", min: 0 })),
 
   expenses_included: yup
     .boolean()
@@ -91,24 +95,24 @@ export const listingImportSchema = yup.object({
   virtual_tour_url: yup
     .string()
     .optional()
-    .url("URL del tour virtual inválida"),
+    .url(t("url", { attribute: "virtual_tour_url" })),
 
   video_url: yup
     .string()
     .optional()
-    .url("URL del video inválida"),
+    .url(t("url", { attribute: "video_url" })),
 
   available_from: yup
     .string()
     .optional()
-    .matches(/^\d{4}-\d{2}-\d{2}$/, "Formato de fecha inválido (use YYYY-MM-DD)"),
+    .matches(/^\d{4}-\d{2}-\d{2}$/, t("import.validations.invalid_date_format")),
 
   minimum_contract_duration: yup
     .number()
     .optional()
-    .integer("La duración debe ser un entero")
-    .min(1, "La duración mínima es 1 mes")
-    .max(120, "La duración máxima es 120 meses"),
+    .integer(t("integer", { attribute: "minimum_contract_duration" }))
+    .min(1, t("import.validations.min_contract_duration"))
+    .max(120, t("import.validations.max_contract_duration")),
 });
 
 export type ListingImportInput = yup.InferType<typeof listingImportSchema>;

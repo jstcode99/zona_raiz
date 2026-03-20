@@ -1,17 +1,26 @@
 // domain/services/import-job.service.ts
 
 import * as yup from "yup";
+import i18next from "i18next";
 import { ImportJobPort } from "@/domain/ports/import-job.port";
 import type { ImportJobEntity, ImportError, ImportResultSummary } from "@/domain/entities/import-job.entity";
 import { ImportJobStatus, ImportTableName } from "@/domain/entities/import-job.entity";
 import { DEFAULT_BATCH_SIZE, MAX_ROWS_PER_FILE } from "@/domain/entities/import-job.entity";
 import { Lang } from "@/i18n/settings";
+import {
+  propertyImportSchema,
+  listingImportSchema,
+  realEstateImportSchema,
+} from "@/application/validation/import";
 
 export interface ValidationResult {
   isValid: boolean;
   errors: ImportError[];
   validatedData: Record<string, unknown>[];
 }
+
+const t = (key: string, options?: Record<string, unknown>) =>
+  i18next.t(key, { ns: "import", ...options });
 
 export class ImportJobService {
   constructor(
@@ -33,7 +42,7 @@ export class ImportJobService {
   }): Promise<ImportJobEntity> {
     // Validar límite de filas
     if (params.totalRows > MAX_ROWS_PER_FILE) {
-      throw new Error(`El archivo excede el límite de ${MAX_ROWS_PER_FILE} filas`);
+      throw new Error(t("exceptions.max_rows_exceeded", { max: MAX_ROWS_PER_FILE }));
     }
 
     // Verificar acceso a la inmobiliaria
@@ -43,7 +52,7 @@ export class ImportJobService {
     );
 
     if (!hasAccess) {
-      throw new Error("No tienes acceso a esta inmobiliaria");
+      throw new Error(t("exceptions.no_real_estate_access"));
     }
 
     const batchSize = params.batchSize ?? DEFAULT_BATCH_SIZE;
@@ -132,11 +141,11 @@ export class ImportJobService {
     const job = await this.port.getJobById(jobId);
 
     if (!job) {
-      throw new Error("Job no encontrado");
+      throw new Error(t("exceptions.job_not_found"));
     }
 
     if (job.status !== ImportJobStatus.PENDING) {
-      throw new Error("El job no está en estado pendiente");
+      throw new Error(t("exceptions.job_not_pending"));
     }
 
     // Marcar como procesando
@@ -209,79 +218,15 @@ export class ImportJobService {
    * Obtiene el schema de validación según la tabla
    */
   private getValidationSchema(tableName: ImportTableName): yup.ObjectSchema<yup.AnyObject> {
-    // Los schemas reales se importan desde application/validation/import/
-    // Aquí devolvemos schemas básicos para la validación inicial
     switch (tableName) {
       case ImportTableName.PROPERTIES:
-        return this.getPropertySchema();
+        return propertyImportSchema as yup.ObjectSchema<yup.AnyObject>;
       case ImportTableName.LISTINGS:
-        return this.getListingSchema();
+        return listingImportSchema as yup.ObjectSchema<yup.AnyObject>;
       case ImportTableName.REAL_ESTATES:
-        return this.getRealEstateSchema();
+        return realEstateImportSchema as yup.ObjectSchema<yup.AnyObject>;
       default:
-        throw new Error(`Tabla desconocida: ${tableName}`);
+        throw new Error(t("exceptions.unknown_table", { table: tableName }));
     }
-  }
-
-  private getPropertySchema(): yup.ObjectSchema<yup.AnyObject> {
-    return yup.object({
-      title: yup.string().required("El título es requerido").min(3).max(200),
-      slug: yup.string().optional().max(200),
-      description: yup.string().optional().max(5000),
-      property_type: yup.string().required("El tipo de propiedad es requerido"),
-      street: yup.string().optional().max(200),
-      city: yup.string().required("La ciudad es requerida").max(100),
-      state: yup.string().required("El estado/departamento es requerido").max(100),
-      country: yup.string().optional().max(100),
-      postal_code: yup.string().optional().max(20),
-      neighborhood: yup.string().optional().max(100),
-      latitude: yup.number().optional().min(-90).max(90),
-      longitude: yup.number().optional().min(-180).max(180),
-      bedrooms: yup.number().optional().integer().min(0).max(100),
-      bathrooms: yup.number().optional().integer().min(0).max(100),
-      total_area: yup.number().optional().min(0),
-      built_area: yup.number().optional().min(0),
-      lot_area: yup.number().optional().min(0),
-      floors: yup.number().optional().integer().min(0).max(200),
-      year_built: yup.number().optional().integer().min(1800).max(new Date().getFullYear() + 5),
-      parking_spots: yup.number().optional().integer().min(0).max(100),
-      amenities: yup.string().optional(),
-    }) as yup.ObjectSchema<yup.AnyObject>;
-  }
-
-  private getListingSchema(): yup.ObjectSchema<yup.AnyObject> {
-    return yup.object({
-      property_id: yup.string().optional(),
-      listing_type: yup.string().required("El tipo de listing es requerido"),
-      price: yup.number().required("El precio es requerido").min(0),
-      currency: yup.string().optional().default("COP"),
-      price_negotiable: yup.boolean().optional().default(false),
-      status: yup.string().optional().default("draft"),
-      meta_title: yup.string().optional().max(100),
-      meta_description: yup.string().optional().max(500),
-      keywords: yup.string().optional(),
-      whatsapp_contact: yup.string().required("El WhatsApp es requerido"),
-      expenses_amount: yup.number().optional().min(0),
-      expenses_included: yup.boolean().optional().default(false),
-      virtual_tour_url: yup.string().optional().url(),
-      video_url: yup.string().optional().url(),
-      available_from: yup.string().optional(),
-      minimum_contract_duration: yup.number().optional().integer().min(1).max(120),
-    }) as yup.ObjectSchema<yup.AnyObject>;
-  }
-
-  private getRealEstateSchema(): yup.ObjectSchema<yup.AnyObject> {
-    return yup.object({
-      name: yup.string().required("El nombre es requerido").min(2).max(200),
-      description: yup.string().optional().max(5000),
-      whatsapp: yup.string().required("El WhatsApp es requerido"),
-      email: yup.string().optional().email(),
-      phone: yup.string().optional(),
-      street: yup.string().optional().max(200),
-      city: yup.string().required("La ciudad es requerida").max(100),
-      state: yup.string().required("El estado/departamento es requerido").max(100),
-      country: yup.string().optional().max(100),
-      postal_code: yup.string().optional().max(20),
-    });
   }
 }

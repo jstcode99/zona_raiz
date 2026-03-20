@@ -1,6 +1,10 @@
 // application/validation/import/real-estate-import.schema.ts
 
 import * as yup from "yup";
+import i18next from "i18next";
+
+const t = (key: string, options?: Record<string, unknown>) =>
+  i18next.t(key, { ns: "validations", ...options });
 
 /**
  * Schema de validación para importación de real estates (inmobiliarias)
@@ -9,57 +13,57 @@ export const realEstateImportSchema = yup.object({
   // Campos requeridos
   name: yup
     .string()
-    .required("El nombre es requerido")
-    .min(2, "El nombre debe tener al menos 2 caracteres")
-    .max(200, "El nombre no puede exceder 200 caracteres"),
+    .required(t("required", { attribute: "name" }))
+    .min(2, t("min.string", { attribute: "name", min: 2 }))
+    .max(200, t("max.string", { attribute: "name", max: 200 })),
 
   whatsapp: yup
     .string()
-    .required("El WhatsApp es requerido")
-    .min(8, "El WhatsApp debe tener al menos 8 dígitos")
-    .max(20, "El WhatsApp no puede exceder 20 caracteres"),
+    .required(t("required", { attribute: "whatsapp" }))
+    .min(8, t("import.validations.whatsapp_min"))
+    .max(20, t("max.string", { attribute: "whatsapp", max: 20 })),
 
   city: yup
     .string()
-    .required("La ciudad es requerida")
-    .max(100, "La ciudad no puede exceder 100 caracteres"),
+    .required(t("required", { attribute: "city" }))
+    .max(100, t("max.string", { attribute: "city", max: 100 })),
 
   state: yup
     .string()
-    .required("El estado/departamento es requerido")
-    .max(100, "El estado no puede exceder 100 caracteres"),
+    .required(t("required", { attribute: "state" }))
+    .max(100, t("max.string", { attribute: "state", max: 100 })),
 
   // Campos opcionales
   description: yup
     .string()
     .optional()
-    .max(5000, "La descripción no puede exceder 5000 caracteres"),
+    .max(5000, t("max.string", { attribute: "description", max: 5000 })),
 
   email: yup
     .string()
     .optional()
-    .email("Email inválido"),
+    .email(t("email", { attribute: "email" })),
 
   phone: yup
     .string()
     .optional()
-    .max(20, "El teléfono no puede exceder 20 caracteres"),
+    .max(20, t("max.string", { attribute: "phone", max: 20 })),
 
   country: yup
     .string()
     .optional()
     .default("Colombia")
-    .max(100, "El país no puede exceder 100 caracteres"),
+    .max(100, t("max.string", { attribute: "country", max: 100 })),
 
   street: yup
     .string()
     .optional()
-    .max(200, "La calle no puede exceder 200 caracteres"),
+    .max(200, t("max.string", { attribute: "street", max: 200 })),
 
   postal_code: yup
     .string()
     .optional()
-    .max(20, "El código postal no puede exceder 20 caracteres"),
+    .max(20, t("max.string", { attribute: "postal_code", max: 20 })),
 });
 
 export type RealEstateImportInput = yup.InferType<typeof realEstateImportSchema>;
