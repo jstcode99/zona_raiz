@@ -1,0 +1,204 @@
+---
+name: workflows
+description: >
+  Flujos de trabajo del proyecto zona_raiz: desarrollo local, migraciones Supabase,
+  cache tags, testing con Vitest, deploy. Usar al preguntar sobre comandos, migraciones,
+  cache, tests, o cualquier tarea del ciclo de desarrollo.
+---
+
+# Flujos de Trabajo — zona_raiz
+
+## Comandos del proyecto
+
+```bash
+# Desarrollo
+pnpm dev                        # Next.js dev server
+pnpm build                      # build de producción
+pnpm lint                       # ESLint
+
+# Testing
+pnpm test                       # Vitest watch mode
+pnpm test:run                   # una ejecución (CI)
+pnpm test:watch                 # watch explícito
+pnpm test:coverage              # con cobertura
+
+# Supabase local
+pnpm supabase:start             # levanta Docker + Supabase local
+pnpm supabase:stop              # detiene Supabase
+pnpm supabase:status            # estado de servicios
+pnpm supabase:reset             # reset completo de BD local
+pnpm supabase:migration:new     # crear migración nueva
+
+# Supabase producción
+pnpm supabase:db:push           # aplica migraciones en producción
+pnpm supabase:gen:types         # genera tipos → types/supabase.ts
+
+# TypeScript
+pnpm tsc --noEmit               # type check sin compilar
+```
+
+## Migraciones de base de datos
+
+```bash
+# 1. Crear migración
+pnpm supabase:migration:new nombre-descriptivo
+# → supabase/migrations/<timestamp>_nombre-descriptivo.sql
+
+# 2. Escribir el SQL
+
+# 3. Aplicar en local
+pnpm supabase:reset
+
+# 4. Regenerar tipos
+pnpm supabase:gen:types
+# → tipos/supabase.ts
+
+# 5. Aplicar en producción
+pnpm supabase:db:push
+```
+
+### Template de migración
+
+```sql
+-- Tabla con RLS multi-tenant
+CREATE TABLE IF NOT EXISTS public.mi_tabla (
+  id            uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  real_estate_id uuid NOT NULL REFERENCES public.real_estates(id) ON DELETE CASCADE,
+  name          text NOT NULL,
+  created_at    timestamptz DEFAULT now(),
+  updated_at    timestamptz DEFAULT now()
+);
+
+ALTER TABLE public.mi_tabla ENABLE ROW LEVEL SECURITY;
+
+-- Solo ve sus propios datos
+CREATE POLICY "tenant_isolation_mi_tabla"
+  ON public.mi_tabla FOR ALL
+  USING (
+    real_estate_id IN (
+      SELECT real_estate_id FROM public.real_estate_agents
+      WHERE profile_id = auth.uid()
+    )
+  );
+
+-- Índices
+CREATE INDEX IF NOT EXISTS idx_mi_tabla_real_estate ON public.mi_tabla(real_estate_id);
+CREATE INDEX IF NOT EXISTS idx_mi_tabla_created_at ON public.mi_tabla(created_at DESC);
+```
+
+## Cache — CACHE_TAGS
+
+Todos los tags están en `infrastructure/config/constants.ts`. Usar **siempre** las constantes, nunca strings crudos:
+
+```typescript
+// En Server Actions — invalidar al mutar
+revalidateTag(CACHE_TAGS.PROPERTY.ALL, { expire: 0 });
+revalidateTag(CACHE_TAGS.PROPERTY.DETAIL(id), { expire: 0 });
+revalidateTag(CACHE_TAGS.PROPERTY.PRINCIPAL, { expire: 0 });
+
+// En Services — leer con cache
+unstable_cache(fn, [cacheKey], { revalidate: 300, tags: ["tag1", "tag2"] })
+```
+
+Tags actuales: `LISTING`, `PROPERTY`, `USER`, `REAL_ESTATE`, `AGENT`, `INQUIRY`, `DASHBOARD`.
+
+**Al añadir una entidad nueva**, agregar sus tags en `constants.ts`:
+```typescript
+MY_ENTITY: {
+  PRINCIPAL: "my-entities",
+  ALL: "my-entity:all",
+  DETAIL: (id: string) => `my-entity:${id}`,
+  COUNT: "my-entity-count",
+},
+```
+
+## Testing
+
+### Stack
+- **Vitest 2** + **Testing Library** para unit/integration
+- **Playwright** para E2E
+
+### Patrón — servicios de dominio (prioridad)
+
+```typescript
+// __tests__/domain/services/my-entity.service.test.ts
+import { describe, it, expect, vi, beforeEach } from "vitest";
+import { MyEntityService } from "../../../domain/services/my-entity.service";
+import { MyEntityPort } from "../../../domain/ports/my-entity.port";
+
+describe("MyEntityService", () => {
+  let service: MyEntityService;
+  let mockRepo: MyEntityPort;
+
+  beforeEach(() => {
+    mockRepo = {
+      findById: vi.fn(),
+      create: vi.fn(),
+      delete: vi.fn(),
+      // ...todos los métodos del port
+    };
+    service = new MyEntityService(mockRepo);
+  });
+
+  it("crea entidad correctamente", async () => {
+    vi.mocked(mockRepo.create).mockResolvedValue({ id: "1", name: "Test" });
+    const result = await service.create({ name: "Test" });
+    expect(result.name).toBe("Test");
+    expect(mockRepo.create).toHaveBeenCalledWith({ name: "Test" });
+  });
+});
+```
+
+### Patrón — componentes React
+
+```typescript
+// __tests__/features/my-feature/my-component.test.tsx
+import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+
+it("muestra error si campo vacío", async () => {
+  render(<MyForm />);
+  await userEvent.click(screen.getByRole("button", { name: /guardar/i }));
+  expect(screen.getByText(/requerido/i)).toBeInTheDocument();
+});
+```
+
+Setup en `__tests__/setup/components.tsx` — revisar para wrappers de providers.
+
+### Qué NO testear directamente
+- Adapters de Supabase (testear el servicio con mock del port)
+- Server Actions directamente
+- Componentes de página de Next.js
+
+## Gestión de issues
+
+**Solo Linear** — nunca GitHub Issues ni otros tableros.
+Ver skill `linear-planning` (`.opencode/skills/linear-planning/`) para el flujo completo.
+
+## Variables de entorno
+
+```bash
+# Supabase
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_ANON_KEY=
+SUPABASE_SERVICE_ROLE_KEY=    # solo server-side
+
+# Google Maps
+NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=
+
+# hCaptcha
+NEXT_PUBLIC_HCAPTCHA_SITE_KEY=
+
+# Google OAuth
+NEXT_PUBLIC_GOOGLE_CLIENT_ID=
+```
+
+## Checklist antes de hacer commit
+
+- [ ] `pnpm tsc --noEmit` sin errores
+- [ ] `pnpm test:run` pasa
+- [ ] `pnpm lint` sin warnings nuevos
+- [ ] Si hubo cambios de schema: migración creada y tipos regenerados
+- [ ] Cache tags invalidados en los actions correspondientes
+- [ ] Sin `any` nuevo en TypeScript (excepto mappers)
+- [ ] Traducciones añadidas en `locales/es/` y `locales/en/`
