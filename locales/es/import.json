@@ -9,7 +9,46 @@
       "upload": "Subir Archivo",
       "uploading": "Subiendo...",
       "retry": "Reintentar",
-      "close": "Cerrar"
+      "close": "Cerrar",
+      "new-import": "Nueva Importación",
+      "download-template": "Descargar Plantilla"
+    },
+    "fields": {
+      "file": "Archivo",
+      "headers": "Encabezados",
+      "rows": "Filas",
+      "preview": "Vista Previa",
+      "status": "Estado",
+      "progress": "Progreso",
+      "table": "Tabla de Destino",
+      "filename": "Nombre de Archivo",
+      "date": "Fecha"
+    },
+    "placeholders": {
+      "drag-drop": "Arrastra y suelta tu archivo aquí",
+      "or-click": "o haz clic para buscar",
+      "supported-formats": "Formatos soportados: XLS, XLSX, CSV",
+      "max-size": "Tamaño máximo: 10MB",
+      "select-table": "Selecciona una tabla"
+    },
+    "descriptions": {
+      "table-help": "Selecciona la tabla donde se importarán los datos"
+    },
+    "status": {
+      "pending": "Pendiente",
+      "uploading": "Subiendo",
+      "processing": "Procesando",
+      "completed": "Completado",
+      "failed": "Fallido",
+      "cancelled": "Cancelado",
+      "ready": "Listo",
+      "error": "Error",
+      "success": "Éxito"
+    },
+    "tables": {
+      "properties": "Propiedades",
+      "listings": "Listados",
+      "real-estates": "Inmobiliarias"
     },
     "labels": {
       "file": "Archivo",
@@ -17,21 +56,16 @@
       "rows": "Filas",
       "preview": "Vista Previa",
       "status": "Estado",
-      "progress": "Progreso"
-    },
-    "placeholders": {
-      "drag-drop": "Arrastra y suelta tu archivo aquí",
-      "or-click": "o haz clic para buscar",
-      "supported-formats": "Formatos soportados: XLS, XLSX, CSV",
-      "max-size": "Tamaño máximo: 10MB"
-    },
-    "status": {
-      "pending": "Pendiente",
-      "uploading": "Subiendo",
-      "processing": "Procesando",
-      "ready": "Listo",
-      "error": "Error",
-      "success": "Éxito"
+      "progress": "Progreso",
+      "total": "Total",
+      "imported": "Importadas",
+      "failed": "Fallidas",
+      "errors": "errores",
+      "history": "Historial de Importaciones",
+      "current-job": "Importación en Progreso",
+      "unnamed": "Sin nombre",
+      "recent-errors": "Errores recientes:",
+      "row": "Fila"
     },
     "exceptions": {
       "file-too-large": "El archivo es demasiado grande. El tamaño máximo es 10MB",
@@ -40,7 +74,8 @@
       "parse-failed": "Error al procesar el archivo. Por favor, verifica el formato",
       "confirm-failed": "Error al confirmar la importación. Por favor, inténtalo de nuevo",
       "no-data": "No hay datos para importar",
-      "network-error": "Error de red. Por favor, verifica tu conexión"
+      "network-error": "Error de red. Por favor, verifica tu conexión",
+      "import-failed": "La importación ha fallado"
     },
     "messages": {
       "upload-success": "Archivo subido exitosamente",
@@ -48,7 +83,9 @@
       "import-cancelled": "Importación cancelada",
       "processing-file": "Procesando archivo...",
       "validating-data": "Validando datos...",
-      "no-data": "No hay datos para importar"
+      "no-data": "No hay datos para importar",
+      "loading": "Cargando...",
+      "no-imports": "No hay importaciones anteriores"
     }
   }
 }
