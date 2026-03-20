@@ -75,7 +75,15 @@
       "confirm-failed": "Failed to confirm import. Please try again",
       "no-data": "No data to import",
       "network-error": "Network error. Please check your connection",
-      "import-failed": "Import failed"
+      "import-failed": "Import failed",
+      "max-rows-exceeded": "File exceeds the limit of {{max}} rows",
+      "no-real-estate-access": "You don't have access to this real estate",
+      "job-not-found": "Job not found",
+      "job-not-pending": "Job is not in pending state",
+      "unknown-table": "Unknown table: {{table}}",
+      "unauthorized": "User not authenticated",
+      "real-estate-not-found": "Real estate not found",
+      "all-rows-invalid": "All records have validation errors. Please check the data and try again."
     },
     "messages": {
       "upload-success": "File uploaded successfully",

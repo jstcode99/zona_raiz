@@ -75,7 +75,15 @@
       "confirm-failed": "Error al confirmar la importación. Por favor, inténtalo de nuevo",
       "no-data": "No hay datos para importar",
       "network-error": "Error de red. Por favor, verifica tu conexión",
-      "import-failed": "La importación ha fallado"
+      "import-failed": "La importación ha fallado",
+      "max-rows-exceeded": "El archivo excede el límite de {{max}} filas",
+      "no-real-estate-access": "No tienes acceso a esta inmobiliaria",
+      "job-not-found": "Job no encontrado",
+      "job-not-pending": "El job no está en estado pendiente",
+      "unknown-table": "Tabla desconocida: {{table}}",
+      "unauthorized": "Usuario no autenticado",
+      "real-estate-not-found": "No se encontró la inmobiliaria",
+      "all-rows-invalid": "Todos los registros tienen errores de validación. Revise los datos e intente nuevamente."
     },
     "messages": {
       "upload-success": "Archivo subido exitosamente",

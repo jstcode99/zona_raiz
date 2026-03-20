@@ -151,5 +151,27 @@
     },
     "attributes": {
       "emission_factor_id": "El factor emision {{attribute}} no encontrado"
+    },
+    "import": {
+      "validations": {
+        "invalid_property_type": "Invalid property type",
+        "invalid_listing_type": "Invalid listing type (use 'sale' or 'rent')",
+        "invalid_currency": "Invalid currency. Use COP, USD or EUR",
+        "invalid_status": "Invalid status",
+        "invalid_date_format": "Invalid date format (use YYYY-MM-DD)",
+        "invalid_keywords_format": "Invalid keywords format (use comma or pipe as separator)",
+        "invalid_amenities_format": "Invalid amenities format (use comma or pipe as separator)",
+        "latitude_range": "Latitude must be between -90 and 90",
+        "longitude_range": "Longitude must be between -180 and 180",
+        "max_rooms": "Maximum 100 rooms",
+        "max_floors": "Maximum 200 floors",
+        "max_parking": "Maximum 100 parking spaces",
+        "integer_parking": "Parking spaces must be an integer",
+        "year_min": "Year must be greater than 1800",
+        "year_future": "Year cannot be in the future",
+        "whatsapp_min": "WhatsApp must have at least 8 digits",
+        "min_contract_duration": "Minimum duration is 1 month",
+        "max_contract_duration": "Maximum duration is 120 months"
+      }
     }
   }
