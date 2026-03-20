@@ -12,5 +12,10 @@
     "skill": {
       "*": "allow"
     }
+  },
+  "tools": {
+    "linear_*": false,
+    "supabase_*": false,
+    "context7_*": false
   }
 }

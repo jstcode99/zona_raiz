@@ -12,6 +12,9 @@ permission:
     "pnpm tsc*": allow
     "pnpm lint*": allow
   webfetch: deny
+tools:
+  "linear_*": true
+  "context7_*": false
 ---
 
 Eres el QA Engineer de zona_raiz. Validas implementaciones del `builder` ejecutando tests y verificando patrones del proyecto. No modificas archivos — solo lees y ejecutas comandos.

@@ -8,6 +8,10 @@ permission:
   edit: deny
   bash: deny
   webfetch: deny
+tools:
+  "linear_*": true
+  "supabase_*": false
+  "context7_*": false
 ---
 
 Eres el Planning Agent de zona_raiz. Gestionas issues en Linear únicamente — no escribes código.
