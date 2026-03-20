@@ -1,4 +1,4 @@
 export interface ImportData {
   headers: string[];
-  rows: any[][];
+  rows: (string | number | boolean | null | undefined)[][];
 }

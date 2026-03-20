@@ -14,7 +14,7 @@ import { XlsUpload } from "./xls-upload"
 import { ImportPreview } from "./import-preview"
 import { useState } from "react"
 import { useTranslation } from "react-i18next"
-import type { ImportData, ImportRow, ImportRecord } from "./import.types"
+import type { ImportData, ImportRecord } from "./import.types"
 
 interface ImportDialogProps {
   open: boolean
@@ -23,12 +23,10 @@ interface ImportDialogProps {
 
 export function ImportDialog({ open, onOpenChange }: ImportDialogProps) {
   const { t } = useTranslation("import")
-  const [importData, setImportData] = useState<ImportData | null>(null)
   const [previewData, setPreviewData] = useState<ImportData | null>(null)
   const [step, setStep] = useState<'upload' | 'preview' | 'confirm'>('upload')
 
   const handleDataLoaded = (data: ImportData) => {
-    setImportData(data)
     setPreviewData(data)
     setStep('preview')
   }
@@ -47,7 +45,6 @@ export function ImportDialog({ open, onOpenChange }: ImportDialogProps) {
       onOpenChange(false)
       // Reset state
       setStep('upload')
-      setImportData(null)
       setPreviewData(null)
     }, 1500)
   }
@@ -62,7 +59,6 @@ export function ImportDialog({ open, onOpenChange }: ImportDialogProps) {
         onOpenChange(false)
         // Reset state
         setStep('upload')
-        setImportData(null)
         setPreviewData(null)
       }, 1500)
     }
@@ -70,7 +66,6 @@ export function ImportDialog({ open, onOpenChange }: ImportDialogProps) {
 
   const handlePreviewCancel = () => {
     setStep('upload')
-    setImportData(null)
     setPreviewData(null)
   }
 

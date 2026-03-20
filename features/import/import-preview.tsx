@@ -17,32 +17,25 @@ interface ImportPreviewProps {
   editable?: boolean
 }
 
-// Tipo para las filas de la tabla de预览
+// Tipo para las filas de la tabla de preview
 type TableRow = { id: string } & Record<string, string | number | boolean | null | undefined>
 
-export function ImportPreview({ 
-  data, 
-  onConfirm, 
-  onCancel, 
-  editable = false 
+export function ImportPreview({
+  data,
+  onConfirm,
+  onCancel,
 }: ImportPreviewProps) {
   const { t } = useTranslation("import")
-  
-  // Handle null data gracefully
-  if (!data) {
-    return (
-      <div className="text-center py-8 text-muted-foreground">
-        {t("messages.no-data")}
-      </div>
-    )
-  }
 
-  const [editedData, setEditedData] = useState<ImportRow[]>(data.rows)
+  // Always initialize hooks at the top level — never conditionally
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [editedData, setEditedData] = useState<ImportRow[]>(data?.rows ?? [])
 
   const { action: confirmAction, isPending: isConfirming } = useServerMutation({
     action: confirmImportAction,
     onSuccess: () => {
       toast.success(t("messages.import-success"))
+      if (!data) return
       // Convert rows to objects using headers
       const result: Record<string, unknown>[] = editedData.map((row) => {
         const obj: Record<string, unknown> = {}
@@ -58,20 +51,21 @@ export function ImportPreview({
     },
   })
 
-  const handleCellChange = (rowIndex: number, colIndex: number, value: string | number | boolean | null | undefined) => {
-    setEditedData(prev => {
-      const newData = [...prev]
-      if (!newData[rowIndex]) newData[rowIndex] = []
-      newData[rowIndex][colIndex] = value
-      return newData
-    })
-  }
-
   const handleConfirm = () => {
+    if (!data) return
     const formData = new FormData()
     formData.append('headers', JSON.stringify(data.headers))
     formData.append('rows', JSON.stringify(editedData))
     confirmAction(formData)
+  }
+
+  // Handle null data gracefully — after all hooks
+  if (!data) {
+    return (
+      <div className="text-center py-8 text-muted-foreground">
+        {t("messages.no-data")}
+      </div>
+    )
   }
 
   // Create columns for DataTable
@@ -100,16 +94,16 @@ export function ImportPreview({
           pageSize={25}
         />
       </div>
-      
+
       <div className="flex justify-end space-x-3">
-        <Button 
+        <Button
           variant="outline"
           onClick={onCancel}
           disabled={isConfirming}
         >
           {t("actions.cancel")}
         </Button>
-        <Button 
+        <Button
           onClick={handleConfirm}
           disabled={isConfirming || editedData.length === 0}
           className={isConfirming ? "opacity-70" : ""}

@@ -9,7 +9,46 @@
       "upload": "Upload File",
       "uploading": "Uploading...",
       "retry": "Retry",
-      "close": "Close"
+      "close": "Close",
+      "new-import": "New Import",
+      "download-template": "Download Template"
+    },
+    "fields": {
+      "file": "File",
+      "headers": "Headers",
+      "rows": "Rows",
+      "preview": "Preview",
+      "status": "Status",
+      "progress": "Progress",
+      "table": "Destination Table",
+      "filename": "File Name",
+      "date": "Date"
+    },
+    "placeholders": {
+      "drag-drop": "Drag and drop your file here",
+      "or-click": "or click to browse",
+      "supported-formats": "Supported formats: XLS, XLSX, CSV",
+      "max-size": "Maximum size: 10MB",
+      "select-table": "Select a table"
+    },
+    "descriptions": {
+      "table-help": "Select the table where data will be imported"
+    },
+    "status": {
+      "pending": "Pending",
+      "uploading": "Uploading",
+      "processing": "Processing",
+      "completed": "Completed",
+      "failed": "Failed",
+      "cancelled": "Cancelled",
+      "ready": "Ready",
+      "error": "Error",
+      "success": "Success"
+    },
+    "tables": {
+      "properties": "Properties",
+      "listings": "Listings",
+      "real-estates": "Real Estates"
     },
     "labels": {
       "file": "File",
@@ -17,21 +56,16 @@
       "rows": "Rows",
       "preview": "Preview",
       "status": "Status",
-      "progress": "Progress"
-    },
-    "placeholders": {
-      "drag-drop": "Drag and drop your file here",
-      "or-click": "or click to browse",
-      "supported-formats": "Supported formats: XLS, XLSX, CSV",
-      "max-size": "Maximum size: 10MB"
-    },
-    "status": {
-      "pending": "Pending",
-      "uploading": "Uploading",
-      "processing": "Processing",
-      "ready": "Ready",
-      "error": "Error",
-      "success": "Success"
+      "progress": "Progress",
+      "total": "Total",
+      "imported": "Imported",
+      "failed": "Failed",
+      "errors": "errors",
+      "history": "Import History",
+      "current-job": "Import in Progress",
+      "unnamed": "Unnamed",
+      "recent-errors": "Recent errors:",
+      "row": "Row"
     },
     "exceptions": {
       "file-too-large": "File is too large. Maximum size is 10MB",
@@ -40,7 +74,16 @@
       "parse-failed": "Failed to parse file. Please check the format",
       "confirm-failed": "Failed to confirm import. Please try again",
       "no-data": "No data to import",
-      "network-error": "Network error. Please check your connection"
+      "network-error": "Network error. Please check your connection",
+      "import-failed": "Import failed",
+      "max-rows-exceeded": "File exceeds the limit of {{max}} rows",
+      "no-real-estate-access": "You don't have access to this real estate",
+      "job-not-found": "Job not found",
+      "job-not-pending": "Job is not in pending state",
+      "unknown-table": "Unknown table: {{table}}",
+      "unauthorized": "User not authenticated",
+      "real-estate-not-found": "Real estate not found",
+      "all-rows-invalid": "All records have validation errors. Please check the data and try again."
     },
     "messages": {
       "upload-success": "File uploaded successfully",
@@ -48,7 +91,9 @@
       "import-cancelled": "Import cancelled",
       "processing-file": "Processing file...",
       "validating-data": "Validating data...",
-      "no-data": "No data to import"
+      "no-data": "No data to import",
+      "loading": "Loading...",
+      "no-imports": "No previous imports"
     }
   }
 }

@@ -81,6 +81,15 @@ export const CACHE_TAGS = {
   DASHBOARD: {
     METRICS: "dashboard-metrics",
   },
+
+  // Import Jobs
+  IMPORT_JOB: {
+    PRINCIPAL: "import-jobs",
+    ALL: "import-job:all",
+    DETAIL: (id: string) => `import-job:${id}`,
+    BY_REAL_ESTATE: (realEstateId: string) => `import-job:real-estate:${realEstateId}`,
+    COUNT: "import-job-count",
+  },
 } as const
 
 // ==========================================

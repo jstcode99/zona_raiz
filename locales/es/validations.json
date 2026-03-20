@@ -151,5 +151,27 @@
     },
     "attributes": {
       "emission_factor_id": "El factor emision {{attribute}} no encontrado"
+    },
+    "import": {
+      "validations": {
+        "invalid_property_type": "Tipo de propiedad inválido",
+        "invalid_listing_type": "Tipo de listing inválido (use 'sale' o 'rent')",
+        "invalid_currency": "Moneda inválida. Use COP, USD o EUR",
+        "invalid_status": "Estado inválido",
+        "invalid_date_format": "Formato de fecha inválido (use YYYY-MM-DD)",
+        "invalid_keywords_format": "Formato inválido de keywords (use coma o pipe como separador)",
+        "invalid_amenities_format": "Formato inválido de amenities (use coma o pipe como separador)",
+        "latitude_range": "La latitud debe estar entre -90 y 90",
+        "longitude_range": "La longitud debe estar entre -180 y 180",
+        "max_rooms": "Máximo 100 habitaciones",
+        "max_floors": "Máximo 200 pisos",
+        "max_parking": "Máximo 100 espacios",
+        "integer_parking": "Los espacios de estacionamiento deben ser un entero",
+        "year_min": "El año debe ser mayor a 1800",
+        "year_future": "El año no puede ser futuro",
+        "whatsapp_min": "El WhatsApp debe tener al menos 8 dígitos",
+        "min_contract_duration": "La duración mínima es 1 mes",
+        "max_contract_duration": "La duración máxima es 120 meses"
+      }
     }
   }
