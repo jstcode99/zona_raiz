@@ -11,7 +11,8 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ListingEntity, listingTypeLabels } from '@/domain/entities/listing.entity';
+import { ListingEntity } from '@/domain/entities/listing.entity';
+import { useListingOptions } from '@/features/listing/hooks/use-listing-options';
 import {
     Card,
     CardHeader,
@@ -27,7 +28,8 @@ interface FeaturedListingCardProps {
 }
 
 export const FeaturedListingCard = ({ listing }: FeaturedListingCardProps) => {
-    const { t } = useTranslation("dashboard");
+    const { t, i18n } = useTranslation("dashboard");
+    const { getListingTypeLabel } = useListingOptions();
     const property = listing.property;
     const images = property.property_images || [];
     const mainImage = images.length > 0 ? images[0].public_url : null;
@@ -53,7 +55,7 @@ export const FeaturedListingCard = ({ listing }: FeaturedListingCardProps) => {
 
                 <div className="absolute top-3 left-3 flex gap-2">
                     <Badge variant="secondary" className="bg-white/90 backdrop-blur-sm">
-                        {listingTypeLabels[listing.listing_type]}
+                        {getListingTypeLabel(listing.listing_type)}
                     </Badge>
                     {listing.featured && (
                         <Badge className="bg-amber-500 hover:bg-amber-600 capitalize">
@@ -65,7 +67,7 @@ export const FeaturedListingCard = ({ listing }: FeaturedListingCardProps) => {
 
             <div className="p-4">
                 <div className="text-lg font-bold text-primary">
-                    {listing.currency} {listing.price.toLocaleString('es-ES')}
+                    {listing.currency} {listing.price.toLocaleString(i18n.language)}
                     {listing.price_negotiable && <span className="text-xs font-normal text-muted-foreground ml-1">{t('words.negotiable')}</span>}
                 </div>
 
@@ -92,7 +94,7 @@ export const FeaturedListingCard = ({ listing }: FeaturedListingCardProps) => {
                     {property.total_area && (
                         <div className="flex items-center gap-1 text-sm text-muted-foreground">
                             <Maximize2 className="size-4" />
-                            <span>{property.total_area} m²</span>
+                            <span>{property.total_area} {t('words.area_unit')}</span>
                         </div>
                     )}
                 </div>

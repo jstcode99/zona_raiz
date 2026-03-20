@@ -6,6 +6,8 @@ export type SignUpData = {
   type_register?: boolean
 }
 
+export type OAuthProvider = "google" | "apple" | "facebook" | "github" | "twitter"
+
 export interface AuthPort {
   signIn(email: string, password: string): Promise<{ userId: string }>
   signUp(data: SignUpData): Promise<void>
@@ -13,4 +15,5 @@ export interface AuthPort {
   exchangeCodeForSession(token: string): Promise<{ userId: string }>
   verifyOtp(token: string, type: string): Promise<{ userId: string }>
   signOut(): Promise<void>
+  signInWithOAuth(provider: OAuthProvider, redirectTo: string): Promise<string>
 }

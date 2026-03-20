@@ -1,9 +1,6 @@
 "use client";
 
-import {
-  ListingEntity,
-  listingTypeLabels,
-} from "@/domain/entities/listing.entity";
+import { ListingEntity } from "@/domain/entities/listing.entity";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { MapPin, Bed, Bath, Maximize } from "lucide-react";
@@ -12,6 +9,7 @@ import Link from "next/link";
 import { useRoutes } from "@/i18n/client-router";
 import { useTranslation } from "react-i18next";
 import { FavoriteToggleButton } from "@/features/favorites/favorite-toggle-button";
+import { useListingOptions } from "./hooks/use-listing-options";
 
 interface ListingCardProps {
   listing: ListingEntity;
@@ -23,6 +21,7 @@ export function ListingCard({
   isFavInitial = false,
 }: ListingCardProps) {
   const { t } = useTranslation("listings");
+  const { getListingTypeLabel } = useListingOptions();
 
   const property = listing.property;
   const images = property.property_images || [];
@@ -47,7 +46,7 @@ export function ListingCard({
 
           <div className="absolute top-3 left-3 flex gap-2">
             <Badge variant="secondary" className="bg-white/90 backdrop-blur-sm">
-              {listingTypeLabels[listing.listing_type]}
+              {getListingTypeLabel(listing.listing_type)}
             </Badge>
             {listing.featured && (
               <Badge className="bg-amber-500 hover:bg-amber-600">

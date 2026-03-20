@@ -1,12 +1,17 @@
+"use client";
+
 import { useCallback, useState } from "react"
-import { useDropzone } from "react-dropzone"
+import { useDropzone, FileRejection } from "react-dropzone"
 import { Button } from "@/components/ui/button"
 import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
 import { UploadCloud } from "lucide-react"
+import { useServerMutation } from "@/shared/hooks/use-server-mutation.hook"
+import { uploadAndParseImportAction } from "@/application/actions/import.actions"
+import type { ImportData } from "./import.types"
 
 interface XlsUploadProps {
-  onDataLoaded: (data: any) => void;
+  onDataLoaded: (data: ImportData) => void;
   onError: (error: string) => void;
   acceptedTypes?: string[];
   maxSize?: number;
@@ -19,12 +24,30 @@ export function XlsUpload({
   maxSize = 10 * 1024 * 1024 // 10MB
 }: XlsUploadProps) {
   const { t } = useTranslation("import");
-  const [isUploading, setIsUploading] = useState(false);
 
-  const onDrop = useCallback((acceptedFiles: File[], fileRejections: any[]) => {
+  const { action: uploadAction, isPending: isUploading } = useServerMutation({
+    action: uploadAndParseImportAction,
+    onSuccess: () => {
+      // Mock data for now since the server action doesn't return parsed data
+      const mockData = {
+        headers: ['Name', 'Email', 'Phone', 'Company'],
+        rows: [
+          ['John Doe', 'john@example.com', '123-456-7890', 'Acme Corp'],
+          ['Jane Smith', 'jane@example.com', '098-765-4321', 'Beta Inc'],
+          ['Bob Johnson', 'bob@example.com', '555-123-4567', 'Test LLC']
+        ]
+      };
+      onDataLoaded(mockData);
+    },
+    onError: (error) => {
+      onError(error.message || t('exceptions.upload-failed'));
+    },
+  });
+
+  const onDrop = useCallback((acceptedFiles: File[], fileRejections: FileRejection[]) => {
     if (fileRejections.length > 0) {
       const file = fileRejections[0];
-      if (file.size > maxSize) {
+      if (file.file.size > maxSize) {
         onError(t('exceptions.file-too-large', { size: `${maxSize / (1024*1024)}MB` }));
       } else {
         onError(t('exceptions.invalid-format'));
@@ -34,32 +57,12 @@ export function XlsUpload({
 
     if (acceptedFiles.length === 0) return;
 
-    setIsUploading(true);
-    // Simulate upload delay
-    setTimeout(() => {
-      try {
-        const file = acceptedFiles[0];
-        
-        // Por ahora simulamos datos de prueba
-        // En producción, aquí iría la llamada al servidor para subir y parsear el archivo
-        const mockData = {
-          headers: ['Name', 'Email', 'Phone', 'Company'],
-          rows: [
-            ['John Doe', 'john@example.com', '123-456-7890', 'Acme Corp'],
-            ['Jane Smith', 'jane@example.com', '098-765-4321', 'Beta Inc'],
-            ['Bob Johnson', 'bob@example.com', '555-123-4567', 'Test LLC']
-          ]
-        };
-        
-        onDataLoaded(mockData);
-      } catch (error) {
-        console.error('Upload error:', error);
-        onError(t('exceptions.upload-failed'));
-      } finally {
-        setIsUploading(false);
-      }
-    }, 1000); // Simulate network delay
-  }, [onDataLoaded, onError, acceptedTypes, maxSize, t]);
+    const file = acceptedFiles[0];
+    const formData = new FormData();
+    formData.append('file', file);
+    
+    uploadAction(formData);
+  }, [onDataLoaded, onError, uploadAction, maxSize, t]);
 
   const { getRootProps, getInputProps, isDragActive, isDragReject } =
     useDropzone({

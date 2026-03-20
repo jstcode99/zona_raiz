@@ -71,9 +71,24 @@ export const ROUTES = {
     en: "/dashboard/properties",
   },
 
+  newProperty: {
+    es: "/panel/propiedades/nuevo",
+    en: "/dashboard/properties/new",
+  },
+
   property: {
     es: "/panel/propiedades/:id",
     en: "/dashboard/properties/:id",
+  },
+
+  propertyImages: {
+    es: "/panel/propiedades/:id/imagenes",
+    en: "/dashboard/properties/:id/images",
+  },
+
+  propertyListing: {
+    es: "/panel/propiedades/:id/publicar",
+    en: "/dashboard/properties/:id/listing",
   },
 
   listing: {

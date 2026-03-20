@@ -52,13 +52,14 @@ export function LandingNav({ isLoggedIn }: LandingNavProps) {
 
         <div className="hidden md:flex items-center gap-8">
           {navLinks.map(({ key, hrefKey }) => (
-            <button
+            <Button
               key={key}
+              variant="ghost"
               onClick={() => handleNavClick(hrefKey)}
               className="text-[13px] font-medium text-neutral-700 hover:text-neutral-900 transition-all duration-200 cursor-pointer hover:-translate-y-0.5"
             >
               {t(key)}
-            </button>
+            </Button>
           ))}
         </div>
 
@@ -90,9 +91,9 @@ export function LandingNav({ isLoggedIn }: LandingNavProps) {
 
         <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
           <SheetTrigger asChild>
-            <button className="md:hidden p-2 hover:bg-neutral-100 rounded-lg transition-colors cursor-pointer">
+            <Button variant="ghost" size="icon" className="md:hidden cursor-pointer">
               <IconMenu2 className="size-5" />
-            </button>
+            </Button>
           </SheetTrigger>
           <SheetContent side="right" className="w-[280px] p-0">
             <div className="flex flex-col h-full">
@@ -109,16 +110,17 @@ export function LandingNav({ isLoggedIn }: LandingNavProps) {
 
               <div className="flex-1 overflow-y-auto py-4">
                 {navLinks.map(({ key, hrefKey }) => (
-                  <button
+                  <Button
                     key={key}
+                    variant="ghost"
+                    className="w-full justify-start px-6 py-3 text-[14px] font-medium text-neutral-700 hover:bg-neutral-50 transition-colors cursor-pointer"
                     onClick={() => {
                       handleNavClick(hrefKey)
                       setMobileOpen(false)
                     }}
-                    className="w-full text-left px-6 py-3 text-[14px] font-medium text-neutral-700 hover:bg-neutral-50 transition-colors cursor-pointer"
                   >
                     {t(key)}
-                  </button>
+                  </Button>
                 ))}
               </div>
 

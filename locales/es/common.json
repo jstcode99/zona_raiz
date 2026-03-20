@@ -49,5 +49,20 @@
   },
   "titles": {
     "app": "Arriendos y ventas de inmuebles"
+  },
+  "columns": {
+    "headers": {
+      "full_name": "Nombre",
+      "email": "Email",
+      "role": "Rol",
+      "created_at": "Creado"
+    },
+    "words": {
+      "edit": "Editar",
+      "delete": "Eliminar",
+      "confirm": "¿Estás seguro?",
+      "deleted": "Eliminado",
+      "error": "Error"
+    }
   }
 }

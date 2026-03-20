@@ -14,6 +14,7 @@ import { XlsUpload } from "./xls-upload"
 import { ImportPreview } from "./import-preview"
 import { useState } from "react"
 import { useTranslation } from "react-i18next"
+import type { ImportData, ImportRow, ImportRecord } from "./import.types"
 
 interface ImportDialogProps {
   open: boolean
@@ -22,11 +23,11 @@ interface ImportDialogProps {
 
 export function ImportDialog({ open, onOpenChange }: ImportDialogProps) {
   const { t } = useTranslation("import")
-  const [importData, setImportData] = useState<any>(null)
-  const [previewData, setPreviewData] = useState<any>(null)
+  const [importData, setImportData] = useState<ImportData | null>(null)
+  const [previewData, setPreviewData] = useState<ImportData | null>(null)
   const [step, setStep] = useState<'upload' | 'preview' | 'confirm'>('upload')
 
-  const handleDataLoaded = (data: any) => {
+  const handleDataLoaded = (data: ImportData) => {
     setImportData(data)
     setPreviewData(data)
     setStep('preview')
@@ -37,7 +38,7 @@ export function ImportDialog({ open, onOpenChange }: ImportDialogProps) {
     console.error('Import error:', error)
   }
 
-  const handlePreviewConfirm = (data: any[]) => {
+  const handlePreviewConfirm = (data: ImportRecord[]) => {
     // TODO: Send data to parent or process further
     console.log('Confirmed data:', data)
     setStep('confirm')
@@ -52,8 +53,18 @@ export function ImportDialog({ open, onOpenChange }: ImportDialogProps) {
   }
 
   const handleConfirmClick = () => {
+    // The actual confirmation is handled by ImportPreview component
+    // This just triggers the visual confirm state in the dialog
     if (previewData) {
-      handlePreviewConfirm(previewData.rows || [])
+      setStep('confirm')
+      // After a brief delay, close dialog
+      setTimeout(() => {
+        onOpenChange(false)
+        // Reset state
+        setStep('upload')
+        setImportData(null)
+        setPreviewData(null)
+      }, 1500)
     }
   }
 
@@ -119,27 +130,25 @@ export function ImportDialog({ open, onOpenChange }: ImportDialogProps) {
           )}
           {step === 'preview' && (
             <>
-              <button 
+              <Button 
+                variant="outline"
                 onClick={handlePreviewCancel}
-                className="btn-ghost"
               >
                 {t("actions.cancel")}
-              </button>
-              <button 
+              </Button>
+              <Button 
                 onClick={handleConfirmClick}
-                className="btn-primary"
               >
                 {t("actions.confirm")}
-              </button>
+              </Button>
             </>
           )}
           {step === 'confirm' && (
-            <button 
+            <Button 
               onClick={() => onOpenChange(false)}
-              className="btn-primary"
             >
               {t("actions.close")}
-            </button>
+            </Button>
           )}
         </DialogFooter>
       </DialogContent>

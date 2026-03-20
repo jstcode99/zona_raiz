@@ -17,6 +17,8 @@ import {
   IconBuilding,
 } from "@tabler/icons-react"
 import Link from "next/link"
+import { useTranslation } from "react-i18next"
+import { useRoutes } from "@/i18n/client-router"
 
 
 export type RealEstateRow = BaseRow & {
@@ -49,7 +51,10 @@ export const RealEstateColumns: ColumnDef<RealEstateRow>[] = [
 
   {
     accessorKey: "name",
-    header: "Nombre",
+    header: () => {
+      const { t } = useTranslation("real-estates")
+      return t("real-estates:columns.headers.name")
+    },
     cell: ({ row }) => (
       <div className="flex flex-col">
         <span className="font-medium">{row.original.name}</span>
@@ -62,7 +67,10 @@ export const RealEstateColumns: ColumnDef<RealEstateRow>[] = [
 
   {
     id: "location",
-    header: "Ubicación",
+    header: () => {
+      const { t } = useTranslation("real-estates")
+      return t("real-estates:columns.headers.location")
+    },
     cell: ({ row }) => {
       const r = row.original
       if (!r.city && !r.country) return "—"
@@ -82,13 +90,19 @@ export const RealEstateColumns: ColumnDef<RealEstateRow>[] = [
 
   {
     accessorKey: "address",
-    header: "Dirección",
+    header: () => {
+      const { t } = useTranslation("real-estates")
+      return t("real-estates:columns.headers.address")
+    },
     cell: ({ row }) => row.original.city || "—",
   },
 
   {
     id: "contact",
-    header: "Contacto",
+    header: () => {
+      const { t } = useTranslation("real-estates")
+      return t("real-estates:columns.headers.contact")
+    },
     cell: ({ row }) => {
       const r = row.original
 
@@ -110,7 +124,10 @@ export const RealEstateColumns: ColumnDef<RealEstateRow>[] = [
   },
   {
     accessorKey: "created_at",
-    header: "Creado",
+    header: () => {
+      const { t } = useTranslation("real-estates")
+      return t("real-estates:columns.headers.created_at")
+    },
     cell: ({ row }) =>
       new Date(row.original.created_at).toLocaleDateString(),
   },
@@ -118,6 +135,8 @@ export const RealEstateColumns: ColumnDef<RealEstateRow>[] = [
   {
     id: "actions",
     cell: ({ row }) => {
+      const { t } = useTranslation("real-estates")
+      const routes = useRoutes()
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -127,13 +146,13 @@ export const RealEstateColumns: ColumnDef<RealEstateRow>[] = [
               size="icon"
             >
               <IconDotsVertical />
-              <span className="sr-only">Open menu</span>
+              <span className="sr-only">{t("real-estates:columns.actions.open_menu")}</span>
             </Button>
           </DropdownMenuTrigger>
 
           <DropdownMenuContent align="end" className="w-36">
-            <Link href={`/dashboard/real-estates/${row.original.id}`}>
-              <DropdownMenuItem>Editar</DropdownMenuItem>
+            <Link href={routes.realEstate(row.original.id)}>
+              <DropdownMenuItem>{t("real-estates:columns.actions.edit")}</DropdownMenuItem>
             </Link>
           </DropdownMenuContent>
         </DropdownMenu>

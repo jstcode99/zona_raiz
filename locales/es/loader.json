@@ -1,0 +1,7 @@
+{
+  "title": "Procesando tu solicitud",
+  "description": "Por favor espera mientras procesamos tu solicitud. No actualices la página.",
+  "actions": {
+    "cancel": "Cancelar"
+  }
+}

@@ -1,17 +1,24 @@
+"use client";
+
 import { useState } from "react"
 import { useTranslation } from "react-i18next"
 import { Button } from "@/components/ui/button"
 import { DataTable } from "@/components/ui/data-table"
+import { useServerMutation } from "@/shared/hooks/use-server-mutation.hook"
+import { confirmImportAction } from "@/application/actions/import.actions"
+import { toast } from "sonner"
+import type { ColumnDef } from "@tanstack/react-table"
+import type { ImportData, ImportRow, ImportRecord } from "./import.types"
 
 interface ImportPreviewProps {
-  data: {
-    headers: string[]
-    rows: any[][]
-  }
-  onConfirm: (data: Record<string, unknown>[]) => void
+  data: ImportData | null
+  onConfirm: (data: ImportRecord[]) => void
   onCancel: () => void
   editable?: boolean
 }
+
+// Tipo para las filas de la tabla de预览
+type TableRow = { id: string } & Record<string, string | number | boolean | null | undefined>
 
 export function ImportPreview({ 
   data, 
@@ -20,10 +27,38 @@ export function ImportPreview({
   editable = false 
 }: ImportPreviewProps) {
   const { t } = useTranslation("import")
-  const [editedData, setEditedData] = useState<any[][]>(data.rows)
-  const [isConfirming, setIsConfirming] = useState(false)
+  
+  // Handle null data gracefully
+  if (!data) {
+    return (
+      <div className="text-center py-8 text-muted-foreground">
+        {t("messages.no-data")}
+      </div>
+    )
+  }
 
-  const handleCellChange = (rowIndex: number, colIndex: number, value: any) => {
+  const [editedData, setEditedData] = useState<ImportRow[]>(data.rows)
+
+  const { action: confirmAction, isPending: isConfirming } = useServerMutation({
+    action: confirmImportAction,
+    onSuccess: () => {
+      toast.success(t("messages.import-success"))
+      // Convert rows to objects using headers
+      const result: Record<string, unknown>[] = editedData.map((row) => {
+        const obj: Record<string, unknown> = {}
+        data.headers.forEach((header, colIndex) => {
+          obj[header] = row[colIndex] !== undefined && row[colIndex] !== null ? row[colIndex] : ''
+        })
+        return obj
+      })
+      onConfirm(result)
+    },
+    onError: (error) => {
+      toast.error(error.message || t("exceptions.import-failed"))
+    },
+  })
+
+  const handleCellChange = (rowIndex: number, colIndex: number, value: string | number | boolean | null | undefined) => {
     setEditedData(prev => {
       const newData = [...prev]
       if (!newData[rowIndex]) newData[rowIndex] = []
@@ -32,40 +67,27 @@ export function ImportPreview({
     })
   }
 
-  const handleConfirm = async () => {
-    setIsConfirming(true)
-    try {
-      // Convert rows to objects using headers
-      const result: Record<string, unknown>[] = editedData.map((row, rowIndex) => {
-        const obj: Record<string, unknown> = {}
-        data.headers.forEach((header, colIndex) => {
-          obj[header] = row[colIndex] !== undefined && row[colIndex] !== null ? row[colIndex] : ''
-        })
-        return obj
-      })
-      
-      onConfirm(result)
-    } catch (error) {
-      console.error('Error confirming import:', error)
-    } finally {
-      setIsConfirming(false)
-    }
+  const handleConfirm = () => {
+    const formData = new FormData()
+    formData.append('headers', JSON.stringify(data.headers))
+    formData.append('rows', JSON.stringify(editedData))
+    confirmAction(formData)
   }
 
   // Create columns for DataTable
-  const columns = data.headers.map((header, colIndex) => ({
+  const columns: ColumnDef<TableRow, unknown>[] = data.headers.map((header, colIndex) => ({
     accessorKey: `col${colIndex}`,
     header: header,
   }))
 
   // Prepare data for DataTable with required id field
-  const prepareDataForTable = (data: any[][]) => {
-    return data.map((row, rowIndex) => ({
+  const prepareDataForTable = (rows: ImportRow[]): TableRow[] => {
+    return rows.map((row, rowIndex) => ({
       id: `row-${rowIndex}`,
-      ...row.reduce((acc, cell, colIndex) => {
+      ...row.reduce<Record<string, string | number | boolean | null | undefined>>((acc, cell, colIndex) => {
         acc[`col${colIndex}`] = cell
         return acc
-      }, {} as Record<string, any>)
+      }, {})
     }))
   }
 
@@ -73,7 +95,7 @@ export function ImportPreview({
     <div className="space-y-4">
       <div className="overflow-x-auto">
         <DataTable
-          columns={columns as any}
+          columns={columns}
           data={prepareDataForTable(editedData)}
           pageSize={25}
         />

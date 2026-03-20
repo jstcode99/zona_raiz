@@ -49,5 +49,20 @@
   },
   "titles": {
     "app": "Real estate rentals and sales"
+  },
+  "columns": {
+    "headers": {
+      "full_name": "Name",
+      "email": "Email",
+      "role": "Role",
+      "created_at": "Created"
+    },
+    "words": {
+      "edit": "Edit",
+      "delete": "Delete",
+      "confirm": "Are you sure?",
+      "deleted": "Deleted",
+      "error": "Error"
+    }
   }
 }

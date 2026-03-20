@@ -29,7 +29,7 @@ export function PropertyImagesManager({
           </div>
         }
       >
-        <PropertyImageList initialImages={images} />
+        <PropertyImageList initialImages={images} propertyId={propertyId} />
       </Suspense>
     </div>
   )

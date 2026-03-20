@@ -23,13 +23,15 @@
     "description": "General description",
     "whatsapp": "+57 300 123 4567",
     "street": "Street",
-    "postal_code": "Postal code"
+    "postal_code": "Postal code",
+    "search": "Search real estate..."
   },
   "actions": {
     "create": "Register real estate",
     "update": "Update real estate",
     "save_changes": "Save changes",
-    "add_agent": "Add agent"
+    "add_agent": "Add agent",
+    "clear_filters": "Clear"
   },
   "messages": {
     "created": "Real estate registered successfully",
@@ -47,7 +49,9 @@
   "words": {
     "no_address": "No address",
     "skip": "Skip for now",
-    "back_home": "Back to home"
+    "back_home": "Back to home",
+    "search": "Search...",
+    "clear_filters": "Clear"
   },
   "roles": {
     "owner": "Owner",
@@ -58,6 +62,23 @@
     "selection": {
       "title": "Select your real estate",
       "subtitle": "You have {{count}} real estate(s)"
+    }
+  },
+  "agentsCard": {
+    "title": "Linked agents",
+    "invite_agent": "Invite agent"
+  },
+  "columns": {
+    "headers": {
+      "name": "Name",
+      "location": "Location",
+      "address": "Address",
+      "contact": "Contact",
+      "created_at": "Created"
+    },
+    "actions": {
+      "open_menu": "Open menu",
+      "edit": "Edit"
     }
   }
 }

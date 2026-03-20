@@ -17,7 +17,7 @@ import {
 import { Lang } from "@/i18n/settings";
 import { getTranslation } from "@/i18n/server";
 import SimpleListingTable from "@/features/listing/simple-listing-table";
-import { SimpleListingColumns } from "@/features/listing/simple-listing-columns";
+import { getSimpleListingColumns } from "@/features/listing/simple-listing-columns";
 import { Spinner } from "@/components/ui/spinner";
 import { createRouter } from "@/i18n/router";
 import { appModule } from "@/application/modules/app.module";
@@ -187,7 +187,7 @@ export default async function page({ params }: props) {
                   <h1 className="text-lg font-semibold">{t('dashboard:sections.last_properties_publisheds')}</h1>
                 </div>
                 <Suspense fallback={<Spinner />}>
-                  <SimpleListingTable listings={listings} columns={SimpleListingColumns} />
+                  <SimpleListingTable listings={listings} columnsFactory={getSimpleListingColumns} />
                 </Suspense>
               </CardContent>
             </Card>

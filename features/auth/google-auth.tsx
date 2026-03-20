@@ -2,40 +2,49 @@
 
 import { Button } from "@/components/ui/button"
 import { Spinner } from "@/components/ui/spinner"
-import { SupabaseBrowserClient } from "@/lib/supabase.client"
 import { IconBrandGoogle } from "@tabler/icons-react"
-import { useState } from "react"
 import { useTranslation } from "react-i18next"
+import { useServerMutation } from "@/shared/hooks/use-server-mutation.hook"
+import { signInWithGoogleAction } from "@/application/actions/auth.actions"
+import { toast } from "sonner"
 
 interface GoogleAuthProps {
   disabled?: boolean
 }
 
+function getCookie(name: string): string | null {
+  if (typeof document === "undefined") return null
+  const value = `; ${document.cookie}`
+  const parts = value.split(`; ${name}=`)
+  if (parts.length === 2) return parts.pop()?.split(";").shift() || null
+  return null
+}
+
 export default function GoogleAuth({ disabled }: GoogleAuthProps) {
   const { t } = useTranslation("auth")
-  const [isLoading, setIsLoading] = useState(false)
 
-  const handleGoogleSignIn = async () => {
-    try {
-      setIsLoading(true)
-      const supabase = await SupabaseBrowserClient()
-      
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: "google",
-        options: {
-          redirectTo: `${window.location.origin}/auth/callback`,
-          queryParams: {
-            access_type: "offline",
-            prompt: "consent",
-          },
-        },
-      })
+  const { action: handleGoogleSignIn, isPending } = useServerMutation({
+    action: signInWithGoogleAction,
+    onSuccess: () => {
+      // Read redirect URL from cookie set by server action
+      const redirectUrl = getCookie("oauth_redirect_url")
+      if (redirectUrl) {
+        // Clear the cookie after use
+        document.cookie = "oauth_redirect_url=; Max-Age=0"
+        window.location.href = redirectUrl
+      } else {
+        toast.error(t("errors.googleSignIn"))
+      }
+    },
+    onError: (error) => {
+      toast.error(error.message || t("errors.googleSignIn"))
+    },
+  })
 
-      if (error) throw error
-    } catch (error) {
-      console.error("Google sign in error:", error)
-      // El error se maneja via URL params en el callback
-    }
+  const onClick = () => {
+    const formData = new FormData()
+    formData.set("redirectTo", `${window.location.origin}/auth/callback`)
+    handleGoogleSignIn(formData)
   }
 
   return (
@@ -43,10 +52,10 @@ export default function GoogleAuth({ disabled }: GoogleAuthProps) {
       type="button"
       variant="outline"
       className="w-full"
-      onClick={handleGoogleSignIn}
-      disabled={disabled || isLoading}
+      onClick={onClick}
+      disabled={disabled || isPending}
     >
-      {isLoading ? (
+      {isPending ? (
         <Spinner className="mr-2 h-4 w-4" />
       ) : (
         <IconBrandGoogle className="mr-2 h-4 w-4" />

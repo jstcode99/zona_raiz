@@ -1,3 +1,5 @@
+"use client";
+
 import {
     MapPin,
     Bed,
@@ -6,15 +8,17 @@ import {
 } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { useTranslation } from 'react-i18next';
 
 import { PropertyEntity, propertyTypeLabels } from '@/domain/entities/property.entity';
 
 interface PropertyCardProps {
     property: PropertyEntity;
-    images: string[];
+    images?: string[];
 }
 
 export const PropertyCard = ({ property, images = [] }: PropertyCardProps) => {
+    const { t } = useTranslation("properties");
     return (
         <Card
             className="overflow-hidden cursor-pointer pt-0 card-hover active:scale-[0.99] transition-all"
@@ -61,7 +65,7 @@ export const PropertyCard = ({ property, images = [] }: PropertyCardProps) => {
                     {property.total_area && (
                         <div className="flex items-center gap-1 text-sm text-muted-foreground">
                             <Maximize2 className="w-4 h-4" />
-                            <span>{property.total_area} m²</span>
+                            <span>{property.total_area} {t("properties:detail.labels.area_unit")}</span>
                         </div>
                     )}
                 </div>

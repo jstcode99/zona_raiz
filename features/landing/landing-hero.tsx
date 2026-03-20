@@ -6,19 +6,18 @@ import { Button } from "@/components/ui/button";
 import { useRoutes } from "@/i18n/client-router";
 import { Form } from "@/components/ui/form";
 import { LandingCity } from "@/domain/types/landing.types";
-import { useForm } from "react-hook-form";
-import { useTransition } from "react";
+import { Resolver, useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import {
+  landingSearchSchema,
+  LandingSearchFormInput,
+} from "@/application/validation/landing-search.schema";
+import { useServerMutation } from "@/shared/hooks/use-server-mutation.hook";
+import { searchListingsAction } from "@/application/actions/landing.actions";
+import { toast } from "sonner";
 
 interface LandingHeroProps {
   cities?: LandingCity[];
-}
-
-interface SearchFormData {
-  city?: string;
-  property_type?: string;
-  min_bedrooms?: number;
-  min_bathrooms?: number;
-  max_price?: number;
 }
 
 const propertyTypes = [
@@ -36,34 +35,43 @@ export function LandingHero({ cities = [] }: LandingHeroProps) {
   const { t } = useTranslation("landing");
   const router = useRouter();
   const routes = useRoutes();
-  const [isPending, startTransition] = useTransition();
 
-  const form = useForm<SearchFormData>({
+  const { action, isPending } = useServerMutation({
+    action: searchListingsAction,
+    onSuccess: () => {
+      toast.success(t("hero.searching"));
+    },
+    onError: (error) => {
+      toast.error(error.message);
+    },
+  });
+
+  const form = useForm<LandingSearchFormInput>({
+    resolver: yupResolver(landingSearchSchema) as Resolver<LandingSearchFormInput>,
     defaultValues: {
       city: "",
       property_type: "",
+      type: "",
       min_bedrooms: undefined,
       min_bathrooms: undefined,
       max_price: undefined,
     },
+    mode: "onChange",
   });
 
-  const onSubmit = (data: SearchFormData) => {
-    const params = new URLSearchParams();
-
-    if (data.city) params.set("city", data.city);
-    if (data.property_type) params.set("type", data.property_type);
+  const onSubmit = (data: LandingSearchFormInput) => {
+    const formData = new FormData();
+    
+    if (data.city) formData.set("city", data.city);
+    if (data.property_type) formData.set("type", data.property_type);
+    else if (data.type) formData.set("type", data.type);
     if (data.min_bedrooms)
-      params.set("min_bedrooms", String(data.min_bedrooms));
+      formData.set("min_bedrooms", String(data.min_bedrooms));
     if (data.min_bathrooms)
-      params.set("min_bathrooms", String(data.min_bathrooms));
-    if (data.max_price) params.set("max_price", String(data.max_price));
+      formData.set("min_bathrooms", String(data.min_bathrooms));
+    if (data.max_price) formData.set("max_price", String(data.max_price));
 
-    const qs = params.toString();
-
-    startTransition(() => {
-      router.push(`${routes.search()}${qs ? `?${qs}` : ""}`);
-    });
+    action(formData);
   };
 
   const cityOptions = cities.map((c) => ({

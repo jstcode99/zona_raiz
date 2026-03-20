@@ -9,6 +9,11 @@ import { appModule } from "../modules/app.module";
 import { createRouter } from "@/i18n/router";
 import { initI18n } from "@/i18n/server";
 import { CACHE_TAGS } from "@/infrastructure/config/constants";
+import * as yup from "yup";
+
+const getAgentsSchema = yup.object({
+  real_estate_id: yup.string().required(),
+});
 
 export const addAgentAction = withServerAction(async (formData: FormData) => {
   const lang = await getLangServerSide();
@@ -58,6 +63,30 @@ export const removeAgentAction = withServerAction(
     revalidateTag(CACHE_TAGS.AGENT.PRINCIPAL, { expire: 0 });
     revalidateTag(CACHE_TAGS.AGENT.BY_REAL_ESTATE(real_estate_id), {
       expire: 0,
+    });
+  },
+);
+
+export const getAgentsByRealEstateAction = withServerAction(
+  async (formData: FormData) => {
+    const lang = await getLangServerSide();
+    const cookieStore = await cookies();
+
+    const { agentService } = await appModule(lang, { cookies: cookieStore });
+
+    const { real_estate_id } = await getAgentsSchema.validate(
+      Object.fromEntries(formData),
+      { abortEarly: false, stripUnknown: true },
+    );
+
+    const agents = await agentService.listAgents(real_estate_id);
+
+    // Guardar agentes en cookie para que el cliente los lea
+    cookieStore.set("agents_data", JSON.stringify(agents), {
+      httpOnly: false,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 60, // 1 minuto
     });
   },
 );

@@ -1,7 +1,8 @@
 "use client"
 
 import { useEffect, useRef } from "react"
-import { useForm, useWatch } from "react-hook-form"
+import { Resolver, useForm, useWatch } from "react-hook-form"
+import { yupResolver } from "@hookform/resolvers/yup"
 import { Form } from "@/components/ui/form"
 import { propertyTypeOptions, amenitiesOptions } from "@/domain/entities/property.entity"
 import { ListingType } from "@/domain/entities/listing.enums"
@@ -13,51 +14,22 @@ import { Button } from "@/components/ui/button"
 import { Slider } from "@/components/ui/slider"
 import { Checkbox } from "@/components/ui/checkbox"
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
-import { listingTypeOptions } from "@/domain/entities/listing.entity"
+import { useListingOptions } from "./hooks/use-listing-options"
 import countries from '@/lib/countries.json'
 import { useTranslation } from "react-i18next"
+import {
+  listingSearchFiltersSchema,
+  ListingSearchFiltersInput,
+  defaultListingSearchFiltersValues,
+  defaultFilters,
+} from "@/application/validation/listing-search-full.schema"
 
-export interface ListingSearchFilters {
-  q?: string
-  listing_type?: ListingType
-  type?: string
-  country?: string
-  state?: string
-  city?: string
-  neighborhood?: string
-  street?: string
-  min_price?: number
-  max_price?: number
-  min_bedrooms?: number
-  min_bathrooms?: number
-  amenities?: string[]
-  sort_by?: string
-  page?: number
-  limit?: number
-}
-
-export const defaultFilters: ListingSearchFilters = {
-  q: "",
-  listing_type: undefined,
-  type: undefined,
-  country: "",
-  state: "",
-  city: "",
-  neighborhood: "",
-  street: "",
-  min_price: 0,
-  max_price: 100000000,
-  min_bedrooms: undefined,
-  min_bathrooms: undefined,
-  amenities: [],
-  sort_by: "created_at_desc",
-  page: 1,
-  limit: 12,
-}
+export { defaultFilters }
+export type { ListingSearchFiltersInput }
 
 interface ListingSearchFiltersProps {
-  initialFilters?: ListingSearchFilters
-  onFiltersChange: (filters: ListingSearchFilters) => void
+  initialFilters?: ListingSearchFiltersInput
+  onFiltersChange: (filters: ListingSearchFiltersInput) => void
   debounceMs?: number
 }
 
@@ -66,12 +38,15 @@ export function ListingSearchFilters({
   onFiltersChange,
   debounceMs = 300,
 }: ListingSearchFiltersProps) {
-  const { t } = useTranslation("listings")
+  const { t, i18n } = useTranslation("listings")
+  const { listingTypeOptions } = useListingOptions()
   const isExternalUpdate = useRef(false)
 
 
-  const form = useForm<ListingSearchFilters>({
-    defaultValues: initialFilters ?? defaultFilters,
+  const form = useForm<ListingSearchFiltersInput>({
+    resolver: yupResolver(listingSearchFiltersSchema) as Resolver<ListingSearchFiltersInput>,
+    defaultValues: initialFilters ?? defaultListingSearchFiltersValues,
+    mode: "onChange",
   })
 
   const { control, setValue, reset, watch } = form
@@ -86,7 +61,7 @@ export function ListingSearchFilters({
     }
 
     const timeout = setTimeout(() => {
-      onFiltersChange(values as ListingSearchFilters)
+      onFiltersChange(values as ListingSearchFiltersInput)
     }, debounceMs)
 
     return () => clearTimeout(timeout)
@@ -101,12 +76,12 @@ export function ListingSearchFilters({
   }, [initialFilters, reset])
 
   const handleReset = () => {
-    reset(defaultFilters)
-    onFiltersChange(defaultFilters)
+    reset(defaultListingSearchFiltersValues)
+    onFiltersChange(defaultListingSearchFiltersValues)
   }
 
   const bedroomOptions = [
-    { label: "Cualquiera", value: "" },
+    { label: t("actions.any"), value: "" },
     { label: "1+", value: "1" },
     { label: "2+", value: "2" },
     { label: "3+", value: "3" },
@@ -115,7 +90,7 @@ export function ListingSearchFilters({
   ]
 
   const bathroomOptions = [
-    { label: "Cualquiera", value: "" },
+    { label: t("actions.any"), value: "" },
     { label: "1+", value: "1" },
     { label: "2+", value: "2" },
     { label: "3+", value: "3" },
@@ -160,7 +135,7 @@ export function ListingSearchFilters({
             countries={countries}
             control={control}
           />
-          <Form.Input name="neighborhood" placeholder="Barrio" />
+          <Form.Input name="neighborhood" placeholder={t("placeholders.neighborhood")} />
         </div>
       </Form.Set>
 
@@ -173,8 +148,8 @@ export function ListingSearchFilters({
             step={1000000}
           />
           <div className="flex justify-between text-xs text-muted-foreground">
-            <span>${(priceRange[0] || 0).toLocaleString("es-ES")}</span>
-            <span>${(priceRange[1] || 100000000).toLocaleString("es-ES")}</span>
+            <span>${(priceRange[0] || 0).toLocaleString(i18n.language)}</span>
+            <span>${(priceRange[1] || 100000000).toLocaleString(i18n.language)}</span>
           </div>
         </div>
       </Form.Set>

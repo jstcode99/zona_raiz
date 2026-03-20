@@ -47,7 +47,8 @@
       "import-success": "Data imported successfully",
       "import-cancelled": "Import cancelled",
       "processing-file": "Processing file...",
-      "validating-data": "Validating data..."
+      "validating-data": "Validating data...",
+      "no-data": "No data to import"
     }
   }
 }

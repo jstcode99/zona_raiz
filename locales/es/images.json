@@ -1,0 +1,21 @@
+{
+  "messages": {
+    "order_updated": "Orden actualizado",
+    "primary_updated": "Imagen principal actualizada",
+    "deleted": "Imagen eliminada"
+  },
+  "actions": {
+    "upload_count": "Subir {{count}} imágenes",
+    "set_primary": "Establecer como principal",
+    "delete": "Eliminar"
+  },
+  "labels": {
+    "drag_drop": "Arrastra imágenes aquí o haz clic para seleccionar",
+    "max_files": "Máximo de archivos permitidos",
+    "supported_formats": "Formatos soportados: JPG, PNG, WEBP"
+  },
+  "placeholders": {
+    "alt_text": "Texto alternativo",
+    "caption": "Descripción de la imagen"
+  }
+}

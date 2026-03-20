@@ -12,6 +12,35 @@ import { getLangServerSide } from "@/shared/utils/lang";
 import { createRouter } from "@/i18n/router";
 import { cookies } from "next/headers";
 import { appModule } from "@/application/modules/app.module";
+import * as yup from "yup";
+
+const googleAuthSchema = yup.object({
+  redirectTo: yup.string().required(),
+});
+
+export const signInWithGoogleAction = withServerAction(
+  async (formData: FormData) => {
+    const lang = await getLangServerSide();
+    const cookieStore = await cookies();
+    const { authService } = await appModule(lang, { cookies: cookieStore });
+
+    const raw = Object.fromEntries(formData);
+    const input = await googleAuthSchema.validate(raw, {
+      abortEarly: false,
+      stripUnknown: true,
+    });
+
+    const redirectUrl = await authService.signInWithOAuth("google", input.redirectTo);
+
+    // Guardar redirect URL en cookie para que el cliente la lea
+    cookieStore.set("oauth_redirect_url", redirectUrl, {
+      httpOnly: false,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 60, // 1 minuto
+    });
+  },
+);
 
 function formDataToObject(fd: FormData) {
   return Object.fromEntries(fd);

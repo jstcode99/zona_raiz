@@ -1,7 +1,7 @@
 "use server"
 
 import { cookies } from "next/headers"
-import { ListingSearchFilters as ListingSearchFiltersType } from "@/features/listing/listing-search-filters"
+import { ListingSearchFiltersInput as ListingSearchFiltersType } from "@/application/validation/listing-search-full.schema"
 import { ListingEntity } from "@/domain/entities/listing.entity"
 import { pickDefined } from "@/lib/utils"
 import { ListingSearchFilters } from "@/domain/ports/listing.port"

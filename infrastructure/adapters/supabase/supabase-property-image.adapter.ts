@@ -151,4 +151,49 @@ export class SupabasePropertyImageAdapter implements PropertyImagePort {
 
         if (dbError) throw new Error(dbError.message)
     }
+
+    async updateDisplayOrder(updates: Array<{ id: string; display_order: number }>): Promise<void> {
+        const now = new Date().toISOString();
+
+        // Update all images in batch
+        const promises = updates.map(({ id, display_order }) =>
+            this.supabase
+                .from("property_images")
+                .update({ display_order, updated_at: now })
+                .eq("id", id)
+        );
+
+        const results = await Promise.all(promises);
+
+        // Check for errors
+        const errors = results.filter((r) => r.error);
+        if (errors.length > 0) {
+            throw new Error(errors[0].error?.message || "Failed to update display order");
+        }
+    }
+
+    async setPrimary(propertyId: string, imageId: string): Promise<void> {
+        const now = new Date().toISOString();
+
+        // First, unset all primaries for this property
+        const { error: unsetError } = await this.supabase
+            .from("property_images")
+            .update({ is_primary: false, updated_at: now })
+            .eq("property_id", propertyId)
+            .eq("is_primary", true);
+
+        if (unsetError) {
+            throw new Error(unsetError.message);
+        }
+
+        // Then, set the new primary
+        const { error: setError } = await this.supabase
+            .from("property_images")
+            .update({ is_primary: true, updated_at: now })
+            .eq("id", imageId);
+
+        if (setError) {
+            throw new Error(setError.message);
+        }
+    }
 }

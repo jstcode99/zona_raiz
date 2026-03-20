@@ -11,6 +11,12 @@ import { cookies } from "next/headers";
 import { createRouter } from "@/i18n/router";
 import { initI18n } from "@/i18n/server";
 import { appModule } from "@/application/modules/app.module";
+import { ProfileEntity } from "@/domain/entities/profile.entity";
+import * as yup from "yup";
+
+const searchProfilesSchema = yup.object({
+  email: yup.string().email().required(),
+});
 
 export const updateProfileAction = withServerAction(
   async (formData: FormData) => {
@@ -71,5 +77,31 @@ export const uploadAvatarAction = withServerAction(
     await profileService.updatePathAvatarProfile(id, url);
 
     revalidatePath(routes.profile());
+  },
+);
+
+export const searchProfilesByEmailAction = withServerAction(
+  async (formData: FormData) => {
+    const lang = await getLangServerSide();
+    const cookieStore = await cookies();
+
+    const { profileService } = await appModule(lang, {
+      cookies: cookieStore,
+    });
+
+    const { email } = await searchProfilesSchema.validate(
+      Object.fromEntries(formData),
+      { abortEarly: false, stripUnknown: true },
+    );
+
+    const profiles = await profileService.searchProfilesByEmail(email);
+
+    // Guardar resultados en cookie para que el cliente los lea
+    cookieStore.set("search_profiles_data", JSON.stringify(profiles), {
+      httpOnly: false,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 60, // 1 minuto
+    });
   },
 );

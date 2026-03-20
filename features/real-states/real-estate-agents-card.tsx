@@ -1,4 +1,7 @@
+"use client";
+
 import { EllipsisVerticalIcon } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
@@ -19,20 +22,22 @@ type Props = {
 }
 
 export const RealEstateAgentsCard = ({ agents, className }: Props) => {
+    const { t } = useTranslation("real-estates")
+
     return (
         <Card className={className}>
             <CardHeader className='flex items-center justify-between'>
-                <span className='text-lg font-semibold'>Agentes vinculados</span>
+                <span className='text-lg font-semibold'>{t("real-estates:agentsCard.title")}</span>
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                         <Button variant='ghost' size='icon' className='text-muted-foreground size-6 rounded-full'>
                             <EllipsisVerticalIcon />
-                            <span className='sr-only'>Invitar agente</span>
+                            <span className='sr-only'>{t("real-estates:agentsCard.invite_agent")}</span>
                         </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align='end'>
                         <DropdownMenuGroup>
-                            <DropdownMenuItem>Invitar agente</DropdownMenuItem>
+                            <DropdownMenuItem>{t("real-estates:agentsCard.invite_agent")}</DropdownMenuItem>
                         </DropdownMenuGroup>
                     </DropdownMenuContent>
                 </DropdownMenu>

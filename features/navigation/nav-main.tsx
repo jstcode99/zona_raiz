@@ -15,6 +15,7 @@ import Link from "next/link";
 import { cn } from '@/lib/utils';
 import { useIsCurrentRoute } from "@/hooks/use-is-current-route";
 import { useTranslation } from "react-i18next";
+import { useRoutes } from "@/i18n/client-router";
 
 interface Items {
   title: string
@@ -62,13 +63,14 @@ export function NavMain({
   items: Items[]
 }) {
   const { t } = useTranslation("common")
+  const routes = useRoutes()
 
   return (
     <SidebarGroup>
       <SidebarGroupContent className="flex flex-col gap-2">
         <SidebarMenu>
           <SidebarMenuItem className="flex items-center gap-2">
-            <Link href={'/dashboard/properties/new'}>
+            <Link href={routes.newProperty()}>
               <SidebarMenuButton
                 tooltip="Quick Create"
                 className="bg-primary cursor-pointer text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground active:bg-primary/90 active:text-primary-foreground min-w-8 duration-200 ease-linear"

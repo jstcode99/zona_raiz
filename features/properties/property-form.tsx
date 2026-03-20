@@ -1,7 +1,7 @@
 "use client";
 
 import { ComponentProps, useEffect, useRef } from "react";
-import { useForm, useWatch } from "react-hook-form";
+import { Resolver, useForm, useWatch } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
@@ -15,7 +15,6 @@ import { PropertyLocationForm } from "./property-location-form";
 import { PropertyFeaturesForm } from "./property-features-form";
 import { defaultPropertyValues, PropertyInput, propertySchema } from "@/application/validation/property.schema";
 import { createPropertyAction, updatePropertyAction } from "@/application/actions/property.action";
-import { PropertyEntity } from "@/domain/entities/property.entity";
 import { useRouter } from "next/navigation";
 import { useRoutes } from "@/i18n/client-router";
 
@@ -54,7 +53,7 @@ export function PropertyForm({
   } as const
 
   const form = useForm<PropertyInput>({
-    resolver: yupResolver(propertySchema) as any,
+    resolver: yupResolver(propertySchema) as Resolver<PropertyInput>,
     defaultValues: defaultValues || defaultPropertyValues,
     mode: "onBlur",
   });
@@ -81,25 +80,24 @@ export function PropertyForm({
     }
   }, [title, currentSlug, isUpdateMode, setValue]);
 
-  const mutation = useServerMutation<PropertyEntity>({
-    action: ((formData: FormData) => {
+  const mutation = useServerMutation({
+    action: (formData: FormData) => {
       if (isUpdateMode && id) {
         return updatePropertyAction(id, formData);
       }
       return createPropertyAction(realEstateId, formData);
-    }) as any,
+    },
     setError,
     onSuccess: (result) => {
       if (result.success) {
-        const property = result.data
         toast.success(t(`messages.${isUpdateMode ? "updated" : "created"}`))
         if (!isUpdateMode) reset()
         wizardRef.current?.complete()
-        router.push(`${routes.property(property.id)}/images`)
+        router.push(routes.dashboard())
       }
     },
     onError: (error) => {
-      console.error("Property error:", error)
+      console.error("property error:", error)
       toast.error(t("messages.error"))
     },
   })

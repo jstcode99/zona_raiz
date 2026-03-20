@@ -138,3 +138,221 @@ export const deletePropertyImageAction = withServerAction(
     revalidateTag(CACHE_TAGS.PROPERTY.COUNT, { expire: 0 });
   },
 );
+
+/**
+ * UPDATE IMAGE BY FORM DATA (for useServerMutation)
+ */
+export const updatePropertyImageFormAction = withServerAction(
+  async (formData: FormData) => {
+    const lang = await getLangServerSide();
+    const cookieStore = await cookies();
+    const routes = createRouter(lang);
+    const i18n = await initI18n(lang);
+    const t = i18n.getFixedT(lang);
+
+    const { propertyImageService } = await appModule(lang, {
+      cookies: cookieStore,
+    });
+
+    const id = formData.get("id") as string;
+    if (!id) throw new Error(t("validations:required", { attribute: "ID" }));
+
+    // Remove id from formData for validation
+    const raw = Object.fromEntries(formData);
+    delete raw.id;
+
+    const validated = await propertyImageUpdateSchema.validate(raw, {
+      abortEarly: false,
+      stripUnknown: true,
+    });
+
+    const payload = pickDefined(validated);
+
+    await propertyImageService.update(id, payload);
+
+    revalidatePath(routes.properties());
+    revalidatePath(routes.property(id));
+
+    // Invalidar tags generales (sin propertyId específico)
+    revalidateTag(CACHE_TAGS.PROPERTY.PRINCIPAL, { expire: 0 });
+    revalidateTag(CACHE_TAGS.PROPERTY.COUNT, { expire: 0 });
+  },
+);
+
+/**
+ * DELETE IMAGE BY FORM DATA (for useServerMutation)
+ */
+export const deletePropertyImageFormAction = withServerAction(
+  async (formData: FormData) => {
+    const lang = await getLangServerSide();
+    const cookieStore = await cookies();
+    const routes = createRouter(lang);
+    const i18n = await initI18n(lang);
+    const t = i18n.getFixedT(lang);
+
+    const { propertyImageService } = await appModule(lang, {
+      cookies: cookieStore,
+    });
+
+    const id = formData.get("id") as string;
+    if (!id) throw new Error(t("validations:required", { attribute: "ID" }));
+
+    await propertyImageService.delete(id);
+
+    revalidatePath(routes.dashboard());
+    revalidatePath(routes.properties());
+    revalidatePath(routes.property(id));
+
+    // Invalidar tags generales
+    revalidateTag(CACHE_TAGS.PROPERTY.PRINCIPAL, { expire: 0 });
+    revalidateTag(CACHE_TAGS.PROPERTY.COUNT, { expire: 0 });
+  },
+);
+
+/**
+ * REORDER IMAGES - Batch update display order
+ * Recibe array de { id, display_order } y actualiza todos en batch
+ */
+export const reorderPropertyImagesAction = withServerAction(
+  async (updates: Array<{ id: string; display_order: number }>, propertyId: string) => {
+    const lang = await getLangServerSide();
+    const cookieStore = await cookies();
+    const routes = createRouter(lang);
+    const i18n = await initI18n(lang);
+    const t = i18n.getFixedT(lang);
+
+    const { propertyImageService } = await appModule(lang, {
+      cookies: cookieStore,
+    });
+
+    if (!updates || updates.length === 0) {
+      throw new Error(t("validations:required", { attribute: "updates" }));
+    }
+
+    await propertyImageService.updateDisplayOrder(updates);
+
+    revalidatePath(routes.properties());
+    revalidatePath(routes.property(propertyId));
+
+    // Invalidar tags específicos
+    revalidateTag(CACHE_TAGS.PROPERTY.PRINCIPAL, { expire: 0 });
+    revalidateTag(CACHE_TAGS.PROPERTY.DETAIL(propertyId), { expire: 0 });
+    revalidateTag(CACHE_TAGS.PROPERTY.COUNT, { expire: 0 });
+  },
+);
+
+/**
+ * REORDER IMAGES FORM ACTION - Wrapper para useServerMutation
+ * Recibe FormData con updates (JSON stringify) y propertyId
+ */
+export const reorderPropertyImagesFormAction = withServerAction(
+  async (formData: FormData) => {
+    const lang = await getLangServerSide();
+    const cookieStore = await cookies();
+    const routes = createRouter(lang);
+    const i18n = await initI18n(lang);
+    const t = i18n.getFixedT(lang);
+
+    const { propertyImageService } = await appModule(lang, {
+      cookies: cookieStore,
+    });
+
+    const updatesJson = formData.get("updates") as string;
+    const propertyId = formData.get("propertyId") as string;
+
+    if (!updatesJson) {
+      throw new Error(t("validations:required", { attribute: "updates" }));
+    }
+
+    if (!propertyId) {
+      throw new Error(t("validations:required", { attribute: "propertyId" }));
+    }
+
+    const updates = JSON.parse(updatesJson) as Array<{ id: string; display_order: number }>;
+
+    await propertyImageService.updateDisplayOrder(updates);
+
+    revalidatePath(routes.properties());
+    revalidatePath(routes.property(propertyId));
+
+    // Invalidar tags específicos
+    revalidateTag(CACHE_TAGS.PROPERTY.PRINCIPAL, { expire: 0 });
+    revalidateTag(CACHE_TAGS.PROPERTY.DETAIL(propertyId), { expire: 0 });
+    revalidateTag(CACHE_TAGS.PROPERTY.COUNT, { expire: 0 });
+  },
+);
+
+/**
+ * SET PRIMARY IMAGE - Establece una imagen como primaria
+ * Desmarca todas las demás imágenes del mismo property
+ */
+export const setPropertyImagePrimaryAction = withServerAction(
+  async (propertyId: string, imageId: string) => {
+    const lang = await getLangServerSide();
+    const cookieStore = await cookies();
+    const routes = createRouter(lang);
+    const i18n = await initI18n(lang);
+    const t = i18n.getFixedT(lang);
+
+    const { propertyImageService } = await appModule(lang, {
+      cookies: cookieStore,
+    });
+
+    if (!propertyId) {
+      throw new Error(t("validations:required", { attribute: "propertyId" }));
+    }
+
+    if (!imageId) {
+      throw new Error(t("validations:required", { attribute: "imageId" }));
+    }
+
+    await propertyImageService.setPrimary(propertyId, imageId);
+
+    revalidatePath(routes.properties());
+    revalidatePath(routes.property(propertyId));
+
+    // Invalidar tags específicos
+    revalidateTag(CACHE_TAGS.PROPERTY.PRINCIPAL, { expire: 0 });
+    revalidateTag(CACHE_TAGS.PROPERTY.DETAIL(propertyId), { expire: 0 });
+    revalidateTag(CACHE_TAGS.PROPERTY.COUNT, { expire: 0 });
+  },
+);
+
+/**
+ * SET PRIMARY IMAGE FORM ACTION - Wrapper para useServerMutation
+ * Recibe FormData con propertyId e imageId
+ */
+export const setPropertyImagePrimaryFormAction = withServerAction(
+  async (formData: FormData) => {
+    const lang = await getLangServerSide();
+    const cookieStore = await cookies();
+    const routes = createRouter(lang);
+    const i18n = await initI18n(lang);
+    const t = i18n.getFixedT(lang);
+
+    const { propertyImageService } = await appModule(lang, {
+      cookies: cookieStore,
+    });
+
+    const propertyId = formData.get("propertyId") as string;
+    const imageId = formData.get("imageId") as string;
+
+    if (!propertyId) {
+      throw new Error(t("validations:required", { attribute: "propertyId" }));
+    }
+
+    if (!imageId) {
+      throw new Error(t("validations:required", { attribute: "imageId" }));
+    }
+
+    await propertyImageService.setPrimary(propertyId, imageId);
+
+    revalidatePath(routes.properties());
+    revalidatePath(routes.property(propertyId));
+
+    // Invalidar tags específicos
+    revalidateTag(CACHE_TAGS.PROPERTY.PRINCIPAL, { expire: 0 });
+    revalidateTag(CACHE_TAGS.PROPERTY.DETAIL(propertyId), { expire: 0 });
+    revalidateTag(CACHE_TAGS.PROPERTY.COUNT, { expire: 0 });
+  },
+);

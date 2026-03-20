@@ -7,14 +7,15 @@ import { SimpleListingRow } from "./simple-listing-columns"
 
 interface Props {
     listings: Promise<SimpleListingRow[]>
-    columns: ColumnDef<SimpleListingRow>[]
+    columnsFactory: () => ColumnDef<SimpleListingRow>[]
 }
 
 export default function SimpleListingTable({
     listings,
-    columns
+    columnsFactory
 }: Props) {
     const allListings = use(listings)
+    const columns = columnsFactory()
 
     return (
         <DataTable<SimpleListingRow>

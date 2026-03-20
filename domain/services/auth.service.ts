@@ -1,5 +1,5 @@
 import { ProfileEntity } from "../entities/profile.entity"
-import { AuthPort, SignUpData } from "../ports/auth.port"
+import { AuthPort, SignUpData, OAuthProvider } from "../ports/auth.port"
 import { ProfilePort } from "../ports/profile.port"
 import { Lang } from "@/i18n/settings"
 
@@ -41,5 +41,9 @@ export class AuthService {
     const { userId } = await this.auth.verifyOtp(token, type)
     const profile = await this.profiles.getProfileByUserId(userId)
     return profile
+  }
+
+  async signInWithOAuth(provider: OAuthProvider, redirectTo: string): Promise<string> {
+    return this.auth.signInWithOAuth(provider, redirectTo)
   }
 }

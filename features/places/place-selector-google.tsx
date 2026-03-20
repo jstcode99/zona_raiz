@@ -6,6 +6,7 @@ import usePlacesAutocomplete, { getGeocode, getLatLng } from "use-places-autocom
 import { Command, CommandInput, CommandList, CommandEmpty, CommandItem } from "@/components/ui/command";
 import { useTranslation } from "react-i18next"
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 
 export type PlaceData = {
   address: string;
@@ -30,7 +31,7 @@ export const PlaceSelectorGoogle: React.FC<PlaceSelectorProps> = ({ onSelect, de
 
   const { isLoaded } = useLoadScript({
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "",
-    libraries: ["places"] as any,
+    libraries: ["places"] as ["places"],
   });
 
   const [selectedPlace, setSelectedPlace] = useState<PlaceData | null>(defaultPlace || null);
@@ -184,13 +185,13 @@ export const PlaceSelectorGoogle: React.FC<PlaceSelectorProps> = ({ onSelect, de
       )}
 
       {/* Confirmar */}
-      <button
-        className="bg-blue-600 text-white px-4 py-2 rounded-md"
+      <Button
+        className="bg-blue-600 text-white hover:bg-blue-700"
         disabled={!selectedPlace}
         onClick={() => selectedPlace && onSelect(selectedPlace)}
       >
         {t("words.confirm")}
-      </button>
+      </Button>
     </div>
   );
 };

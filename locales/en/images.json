@@ -1,0 +1,21 @@
+{
+  "messages": {
+    "order_updated": "Order updated",
+    "primary_updated": "Primary image updated",
+    "deleted": "Image deleted"
+  },
+  "actions": {
+    "upload_count": "Upload {{count}} images",
+    "set_primary": "Set as primary",
+    "delete": "Delete"
+  },
+  "labels": {
+    "drag_drop": "Drag images here or click to select",
+    "max_files": "Maximum allowed files",
+    "supported_formats": "Supported formats: JPG, PNG, WEBP"
+  },
+  "placeholders": {
+    "alt_text": "Alternative text",
+    "caption": "Image description"
+  }
+}

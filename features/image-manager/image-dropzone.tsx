@@ -1,22 +1,25 @@
-"use client"
+"use client";
 
-import { useCallback } from "react"
-import { useDropzone } from "react-dropzone"
-import { useTranslation } from "react-i18next"
-import { UploadCloud } from "lucide-react"
+import { useCallback } from "react";
+import { useDropzone } from "react-dropzone";
+import { useTranslation } from "react-i18next";
+import { UploadCloud } from "lucide-react";
 
 interface Props {
-  onFilesSelect: (files: File[]) => void
-  disabled?: boolean
+  onFilesSelect: (files: File[]) => void;
+  disabled?: boolean;
 }
 
 export function ImageDropzone({ onFilesSelect, disabled }: Props) {
-  const { t } = useTranslation('components')
+  const { t } = useTranslation("components");
 
-  const onDrop = useCallback((acceptedFiles: File[]) => {
-    if (!acceptedFiles?.length) return
-    onFilesSelect(acceptedFiles)
-  }, [onFilesSelect])
+  const onDrop = useCallback(
+    (acceptedFiles: File[]) => {
+      if (!acceptedFiles?.length) return;
+      onFilesSelect(acceptedFiles);
+    },
+    [onFilesSelect],
+  );
 
   const { getRootProps, getInputProps, isDragActive, isDragReject } =
     useDropzone({
@@ -29,7 +32,7 @@ export function ImageDropzone({ onFilesSelect, disabled }: Props) {
       multiple: true,
       disabled,
       onDrop,
-    })
+    });
 
   return (
     <div
@@ -46,8 +49,8 @@ export function ImageDropzone({ onFilesSelect, disabled }: Props) {
       <UploadCloud className="mx-auto mb-2" />
 
       {isDragActive
-        ? t("components.property-images.drop-here")
-        : t("components.property-images.drag-drop")}
+        ? t("property_images.drop_here")
+        : t("property_images.drag_drop")}
     </div>
-  )
+  );
 }

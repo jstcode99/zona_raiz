@@ -9,15 +9,20 @@ import {
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
-import { PropertyEntity } from '@/domain/entities/property.entity';
+import { useTranslation } from 'react-i18next';
+import { PropertyDetailDTO } from '@/application/mappers/property.mapper';
 
 interface PropertyDetailProps {
-    property: PropertyEntity;
-    images: string[];
+    data: PropertyDetailDTO | null | undefined;
 }
 
-export const PropertyDetail = ({ property, images }: PropertyDetailProps) => {
+export const PropertyDetail = ({ data }: PropertyDetailProps) => {
+    const { t } = useTranslation("properties");
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+    if (!data) return null;
+
+    const { property, imageUrls, formattedState } = data;
 
     return (
         <div className="bg-background">
@@ -26,14 +31,14 @@ export const PropertyDetail = ({ property, images }: PropertyDetailProps) => {
                 {/* Image Gallery */}
                 <div className="relative h-72">
                     <img
-                        src={images[currentImageIndex]}
+                        src={imageUrls[currentImageIndex]}
                         alt={property.title}
                         className="w-full h-full object-cover rounded-xl"
                     />
 
                     {/* Image indicators */}
                     <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-1.5">
-                        {images.map((_, idx) => (
+                        {imageUrls.map((_, idx) => (
                             <button
                                 key={idx}
                                 onClick={() => setCurrentImageIndex(idx)}
@@ -53,7 +58,7 @@ export const PropertyDetail = ({ property, images }: PropertyDetailProps) => {
                         <h2 className="text-2xl font-bold text-foreground uppercase">{property.title}</h2>
                         <div className="flex items-center gap-1 mt-2 text-muted-foreground">
                             <MapPin className="w-4 h-4" />
-                            <span className='uppercase'>{property.country} | {property.state.replaceAll('_', ' ')} - {property.city}</span>
+                            <span className='uppercase'>{property.country} | {formattedState} - {property.city}</span>
                         </div>
                     </div>
 
@@ -63,28 +68,28 @@ export const PropertyDetail = ({ property, images }: PropertyDetailProps) => {
                             <div className="text-center p-3 rounded-xl bg-secondary">
                                 <Bed className="w-5 h-5 mx-auto mb-1 text-muted-foreground" />
                                 <p className="font-semibold">{property.bedrooms}</p>
-                                <p className="text-xs text-muted-foreground">Dorm.</p>
+                                <p className="text-xs text-muted-foreground">{t("properties:detail.labels.bedrooms")}</p>
                             </div>
                         )}
                         {property.bathrooms !== null && property.bathrooms > 0 && (
                             <div className="text-center p-3 rounded-xl bg-secondary">
                                 <Bath className="w-5 h-5 mx-auto mb-1 text-muted-foreground" />
                                 <p className="font-semibold">{property.bathrooms}</p>
-                                <p className="text-xs text-muted-foreground">Baños</p>
+                                <p className="text-xs text-muted-foreground">{t("properties:detail.labels.bathrooms")}</p>
                             </div>
                         )}
                         {property.total_area && (
                             <div className="text-center p-3 rounded-xl bg-secondary">
                                 <Maximize2 className="w-5 h-5 mx-auto mb-1 text-muted-foreground" />
                                 <p className="font-semibold">{property.total_area}</p>
-                                <p className="text-xs text-muted-foreground">m² tot.</p>
+                                <p className="text-xs text-muted-foreground">{t("properties:detail.labels.total_area")}</p>
                             </div>
                         )}
                         {property.parking_spots !== null && property.parking_spots > 0 && (
                             <div className="text-center p-3 rounded-xl bg-secondary">
                                 <div className="w-5 h-5 mx-auto mb-1 text-muted-foreground flex items-center justify-center font-bold text-sm">P</div>
                                 <p className="font-semibold">{property.parking_spots}</p>
-                                <p className="text-xs text-muted-foreground">Coch.</p>
+                                <p className="text-xs text-muted-foreground">{t("properties:detail.labels.parking")}</p>
                             </div>
                         )}
                     </div>
@@ -92,7 +97,7 @@ export const PropertyDetail = ({ property, images }: PropertyDetailProps) => {
                     {/* Description */}
                     {property.description && (
                         <div>
-                            <h3 className="font-semibold mb-2">Descripción</h3>
+                            <h3 className="font-semibold mb-2">{t("properties:detail.labels.description")}</h3>
                             <p className="text-muted-foreground text-sm leading-relaxed">
                                 {property.description}
                             </p>
@@ -102,7 +107,7 @@ export const PropertyDetail = ({ property, images }: PropertyDetailProps) => {
                     {/* Amenities */}
                     {property.amenities.length > 0 && (
                         <div>
-                            <h3 className="font-semibold mb-3">Amenities</h3>
+                            <h3 className="font-semibold mb-3">{t("properties:detail.labels.amenities")}</h3>
                             <div className="flex flex-wrap gap-2">
                                 {property.amenities.map((amenity) => (
                                     <Badge key={amenity.label} variant="secondary" className="px-3 py-1.5">

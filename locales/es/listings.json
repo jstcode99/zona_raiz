@@ -11,7 +11,16 @@
     "virtual_tour_url": "URL de tour virtual",
     "video_url": "URL de video",
     "available_from": "Disponible desde",
-    "minimum_contract_duration": "Duracion minima del contrato (meses)"
+    "minimum_contract_duration": "Duracion minima del contrato (meses)",
+    "country_state_city": "País / Estado / Ciudad",
+    "street": "Calle",
+    "neighborhood": "Barrio",
+    "property_type": "Tipo de propiedad",
+    "bedrooms": "Hab. mín.",
+    "bathrooms": "Baños mín.",
+    "price": "Precio",
+    "whatsapp_contact": "WhatsApp",
+    "status": "Estado de publicación"
   },
   "placeholders": {
     "select_listing_type": "Selecciona el tipo de listado",
@@ -21,19 +30,30 @@
     "video_url": "https://videos.com/...",
     "available_from": "Selecciona fecha",
     "minimum_contract_duration": "12",
-    "search_properties": "Buscar propiedades"
+    "search_properties": "Buscar propiedades",
+    "street": "Calle",
+    "neighborhood": "Barrio",
+    "select_property_type": "Selecciona tipo",
+    "min_bedrooms": "Hab.",
+    "min_bathrooms": "Baños",
+    "listing_type": "Tipo de publicación",
+    "status": "Estado",
+    "add_keyword": "Agregar keyword"
   },
   "sections": {
     "all_properties": "Todas las propiedades",
     "filters": "Filtros",
     "type_properties": "Tipo de propiedades",
     "type_listings": "Tipo de Publicaciones",
+    "basic-info": "Basic info",
     "price_range": "Rango de precio",
     "rooms": "Cantidad de habitaciones",
     "bathrooms": "Cantidad de banos",
     "amenities": "Amenidades incluidas",
-    "location": "Ubicacion",
-    "try_change_filters": "Intenta con otros filtros..."
+    "location": "Ubicación",
+    "try_change_filters": "Intenta con otros filtros...",
+    "features": "Características",
+    "publication_data": "Datos de publicación"
   },
   "actions": {
     "create": "Crear nueva publicacion",
@@ -42,6 +62,7 @@
     "update_property": "Actualizar propiedad",
     "search": "Buscar propiedades",
     "clear_amenities": "Limpiar amenidades",
+    "clear_filters": "Limpiar",
     "any": "Cualquiera"
   },
   "status": {
@@ -51,11 +72,102 @@
   "words": {
     "without_image": "Sin imagen",
     "featured": "Destacado",
-    "negotiable": "Negociable"
+    "negotiable": "Negociable",
+    "expenses": "Expensas",
+    "included": "incluidas",
+    "until": "Hasta",
+    "created": "Creado",
+    "published": "Pub",
+    "available": "Disponible",
+    "search": "Buscar...",
+    "clear_filters": "Limpiar"
+  },
+  "columns": {
+    "headers": {
+      "property": "Propiedad",
+      "pricing": "Publicación",
+      "status": "Estado",
+      "metrics": "Métricas",
+      "dates": "Fechas",
+      "agent": "Agente"
+    },
+    "labels": {
+      "no_agent": "Sin agente",
+      "no_name": "Sin nombre"
+    },
+    "actions": {
+      "open_menu": "Abrir menú",
+      "edit_listing": "Editar listing",
+      "view_public": "Ver público",
+      "delete": "Eliminar"
+    }
   },
   "exceptions": {
     "create_fail": "Error al crear publicación",
     "update_fail": "Error al actualizar publicación",
     "properties_not_found": "Propiedades no encontradas"
+  },
+  "detail": {
+    "breadcrumb": {
+      "properties": "Propiedades",
+      "rent": "Renta",
+      "sale": "Venta"
+    },
+    "details": {
+      "title": "Detalles del anuncio"
+    },
+    "labels": {
+      "operation_type": "Tipo de operación",
+      "price": "Precio",
+      "negotiable": "negociable",
+      "expenses": "Expensas",
+      "expenses_included": "incluidas",
+      "virtual_tour": "Tour virtual",
+      "video": "Video",
+      "description": "Descripción",
+      "views": "vistas",
+      "inquiries": "consultas",
+      "real_estate": "Inmobiliaria",
+      "features": "Características"
+    },
+    "actions": {
+      "view_tour": "Ver tour 360°",
+      "view_video": "Ver video",
+      "whatsapp": "WhatsApp",
+      "share": "Compartir"
+    },
+    "words": {
+      "price_negotiable": "Precio negociable"
+    }
+  },
+  "listing_types": {
+    "rent": "Renta",
+    "sale": "Venta"
+  },
+  "status_labels": {
+    "active": "Activa",
+    "draft": "Borrador",
+    "paused": "Pausada",
+    "archived": "Archivada"
+  },
+  "keywords": {
+    "pool": "Piscina",
+    "gym": "Gimnasio",
+    "parking": "Estacionamiento",
+    "elevator": "Ascensor",
+    "security": "Seguridad",
+    "garden": "Jardín",
+    "balcony": "Balcón",
+    "air_conditioning": "Aire acondicionado",
+    "heating": "Calefacción",
+    "apartment": "Apartamento",
+    "house": "Casa",
+    "condo": "Condominio",
+    "townhouse": "Townhouse",
+    "land": "Terreno",
+    "commercial": "Comercial",
+    "office": "Oficina",
+    "warehouse": "Bodega",
+    "other": "Otro"
   }
 }

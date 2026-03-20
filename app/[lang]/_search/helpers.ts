@@ -1,4 +1,4 @@
-import { ListingSearchFilters as ListingSearchFiltersType } from "@/features/listing/listing-search-filters"
+import { ListingSearchFiltersInput as ListingSearchFiltersType } from "@/application/validation/listing-search-full.schema"
 import { Lang } from "@/i18n/settings"
 export const parseLocation = (location?: string[]): {
     country: string

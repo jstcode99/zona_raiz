@@ -1,7 +1,8 @@
 "use client"
 // features/listing/listing-form-filters.tsx
 import { useEffect, useRef } from "react"
-import { useForm, useWatch } from "react-hook-form"
+import { Resolver, useForm, useWatch } from "react-hook-form"
+import { yupResolver } from "@hookform/resolvers/yup"
 import { Form } from "@/components/ui/form"
 import { propertyTypeOptions } from "@/domain/entities/property.entity"
 import { IconMapPin, IconHome, IconClearAll } from "@tabler/icons-react"
@@ -11,8 +12,13 @@ import { PropertyType } from "@/domain/entities/property.enums"
 import { objectToSearchParams, toNumber } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { PropertySearchFormInput } from "@/application/validation/property-search.schema"
-import { defaultListingValues, ListingSearchFormInput } from "@/application/validation/listing-search.schema"
-import { listingStatusOptions, listingTypeOptions } from "@/domain/entities/listing.entity"
+import {
+  defaultListingValues,
+  listingSearchSchema,
+  ListingSearchFormInput,
+} from "@/application/validation/listing-search.schema"
+import { useTranslation } from "react-i18next"
+import { useListingOptions } from "./hooks/use-listing-options"
 
 interface ListingFiltersFormProps {
   onFiltersChange?: (filters: ListingSearchFormInput) => void
@@ -66,6 +72,8 @@ export function ListingFiltersForm({
   onFiltersChange,
   debounceMs = 300,
 }: ListingFiltersFormProps) {
+  const { t } = useTranslation("listings")
+  const { listingTypeOptions, listingStatusOptions } = useListingOptions()
 
   const router = useRouter()
   const pathname = usePathname()
@@ -75,7 +83,9 @@ export function ListingFiltersForm({
   const isSyncingFromUrl = useRef(false)
 
   const form = useForm<ListingSearchFormInput>({
+    resolver: yupResolver(listingSearchSchema) as Resolver<ListingSearchFormInput>,
     defaultValues: parseSearchParams(searchParams),
+    mode: "onChange",
   })
 
   const { control } = form
@@ -137,19 +147,19 @@ export function ListingFiltersForm({
       <div className="flex gap-2 items-center">
         <Form.Input
           name="search"
-          label="Buscar propiedades"
-          placeholder="Buscar propiedades..."
+          label={t("words.search")}
+          placeholder={t("placeholders.search_properties")}
         />
         <Button type="button" size="sm" onClick={handleReset} className="px-2 mt-8">
           <IconClearAll className="size-4 mr-1" />
-          Limpiar
+          {t("actions.clear_filters")}
         </Button>
       </div>
 
       <Form.Set
         legend={
           <span className="flex items-center gap-1 text-xs font-medium text-muted-foreground">
-            <IconMapPin className="size-3" /> Ubicación
+            <IconMapPin className="size-3" /> {t("sections.location")}
           </span>
         }
       >
@@ -161,18 +171,18 @@ export function ListingFiltersForm({
               cityName="city"
               countries={countries}
               control={control}
-              label={"Ubicación Pais/ Estado / Ciudad"}
+              label={t("labels.country_state_city")}
             />
           </div>
           <Form.Input
             name="street"
-            label="Calle"
-            placeholder="Calle"
+            label={t("labels.street")}
+            placeholder={t("placeholders.street")}
           />
           <Form.Input
             name="neighborhood"
-            label="Barrio"
-            placeholder="Barrio"
+            label={t("labels.neighborhood")}
+            placeholder={t("placeholders.neighborhood")}
           />
         </div>
       </Form.Set>
@@ -180,28 +190,28 @@ export function ListingFiltersForm({
       <Form.Set
         legend={
           <span className="flex items-center gap-1 text-xs font-medium text-muted-foreground">
-            <IconHome className="size-3" /> Características
+            <IconHome className="size-3" /> {t("sections.features")}
           </span>
         }
       >
         <div className="grid grid-cols-3 gap-2">
           <Form.Select
             name="type"
-            label="Tipo"
-            placeholder="Tipo"
+            label={t("labels.property_type")}
+            placeholder={t("placeholders.select_property_type")}
             options={propertyTypeOptions}
           />
           <Form.Input
             name="minBedrooms"
             type="number"
-            label="Hab. mín."
-            placeholder="Hab. mín."
+            label={t("labels.bedrooms")}
+            placeholder={t("placeholders.min_bedrooms")}
           />
           <Form.Input
             name="min_bathrooms"
             type="number"
-            label="Baños mín."
-            placeholder="Baños mín."
+            label={t("labels.bathrooms")}
+            placeholder={t("placeholders.min_bathrooms")}
           />
         </div>
       </Form.Set>
@@ -209,26 +219,26 @@ export function ListingFiltersForm({
       <Form.Set
         legend={
           <span className="flex items-center gap-1 text-xs font-medium text-muted-foreground">
-            <IconMapPin className="size-3" /> Datos de publicación
+            <IconMapPin className="size-3" /> {t("sections.publication_data")}
           </span>
         }
       >
         <div className="grid grid-cols-2 gap-2">
           <Form.Input
             name="price"
-            label="Precio"
-            placeholder="Precio"
+            label={t("labels.price")}
+            placeholder={t("placeholders.price")}
           />
           <Form.Select
             name="listing_type"
-            label="Tipo de publicación"
-            placeholder="Tipo de publicación"
+            label={t("labels.listing_type")}
+            placeholder={t("placeholders.listing_type")}
             options={listingTypeOptions}
           />
           <Form.Select
             name="status"
-            label="Estado de publicación"
-            placeholder="Estado de publicación"
+            label={t("labels.status")}
+            placeholder={t("placeholders.status")}
             options={listingStatusOptions}
           />
         </div>

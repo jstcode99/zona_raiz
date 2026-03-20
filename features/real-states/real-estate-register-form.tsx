@@ -1,6 +1,6 @@
 "use client"
 
-import { useForm } from "react-hook-form"
+import { Resolver, useForm } from "react-hook-form"
 import { yupResolver } from "@hookform/resolvers/yup"
 import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
@@ -29,7 +29,7 @@ export function RealEstateRegistrationForm() {
   const routes = useRoutes()
 
   const form = useForm<RealEstateInput>({
-    resolver: yupResolver(realEstateSchema) as any,
+    resolver: yupResolver(realEstateSchema) as Resolver<RealEstateInput>,
     defaultValues: defaultRealEstateValues,
     mode: "onBlur",
   })

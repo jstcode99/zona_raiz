@@ -38,7 +38,8 @@
     "months": "months",
     "selected": "selected",
     "types": "type",
-    "search": "Search..."
+    "search": "Search...",
+    "area_unit": "m²"
   },
   "exceptions": {
     "not_found_data": "No data found",

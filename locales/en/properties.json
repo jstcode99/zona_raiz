@@ -61,13 +61,16 @@
     "total_area": "120",
     "parking_spots": "0",
     "amenities": "Pool, Garage, Garden",
-    "order_by": "Order by"
+    "order_by": "Order by",
+    "min_bedrooms": "Beds",
+    "min_bathrooms": "Baths"
   },
   "actions": {
     "create": "Create property",
     "update": "Update property",
     "save": "Save changes",
-    "add_images": "Add images"
+    "add_images": "Add images",
+    "clear_filters": "Clear"
   },
   "messages": {
     "created": "Property created successfully",
@@ -86,5 +89,48 @@
   },
   "subtitles": {
     "property_gallery": "Property gallery"
+  },
+  "detail": {
+    "labels": {
+      "bedrooms": "Bed.",
+      "bathrooms": "Baths",
+      "total_area": "m² tot.",
+      "parking": "Park.",
+      "description": "Description",
+      "amenities": "Amenities",
+      "area_unit": "m²"
+    }
+  },
+  "columns": {
+    "headers": {
+      "property": "Property",
+      "location": "Location",
+      "coordinates": "Coordinates",
+      "features": "Features",
+      "lot_info": "Land",
+      "amenities": "Amenities",
+      "created_at": "Record"
+    },
+    "labels": {
+      "no_location": "No location",
+      "lat": "Lat:",
+      "lng": "Lng:",
+      "bedrooms": "bed.",
+      "bathrooms": "baths",
+      "total_area": "m² tot.",
+      "parking_spots": "spots",
+      "floors": "floors",
+      "lot_area": "m² land",
+      "year": "Year"
+    },
+    "actions": {
+      "open_menu": "Open menu",
+      "edit_property": "Edit property",
+      "edit_images": "Edit images",
+      "publish_property": "Publish property",
+      "view_map": "View on map",
+      "delete": "Delete",
+      "edit": "Edit:"
+    }
   }
 }

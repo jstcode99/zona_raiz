@@ -1,25 +1,33 @@
-"use client"
+"use client";
 
-import { useEffect } from "react"
-import { useForm } from "react-hook-form"
-import { yupResolver } from "@hookform/resolvers/yup"
-import { toast } from "sonner"
-import { CreateListingInput, createListingSchema, defaultPropertyValues } from "@/application/validation/listing.validation"
-import { keywordsOptions, ListingEntity, listingStatusOptions, listingTypeOptions } from "@/domain/entities/listing.entity"
-import { Form } from "@/components/ui/form"
-import { currencyOptions } from "@/domain/entities/currency.enums"
-import { useServerMutation } from "@/shared/hooks/use-server-mutation.hook"
-import { createListingAction, updateListingAction } from "@/application/actions/listing.actions"
-import { flatten } from "@/lib/utils"
-import { Phone, Sparkles } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { useTranslation } from "react-i18next"
-
+import { useEffect } from "react";
+import { Resolver, useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { toast } from "sonner";
+import type { ActionResult } from "@/shared/hooks/use-server-mutation.hook";
+import {
+  CreateListingInput,
+  createListingSchema,
+  defaultPropertyValues,
+} from "@/application/validation/listing.validation";
+import { ListingEntity } from "@/domain/entities/listing.entity";
+import { Form } from "@/components/ui/form";
+import { currencyOptions } from "@/domain/entities/currency.enums";
+import { useServerMutation } from "@/shared/hooks/use-server-mutation.hook";
+import {
+  createListingAction,
+  updateListingAction,
+} from "@/application/actions/listing.actions";
+import { flatten } from "@/lib/utils";
+import { Phone, Sparkles } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { useTranslation } from "react-i18next";
+import { useListingOptions } from "./hooks/use-listing-options";
 
 interface ListingFormProps {
-  id?: string
-  property_id?: string
-  defaultValues?: Partial<CreateListingInput>
+  id?: string;
+  property_id?: string;
+  defaultValues?: Partial<CreateListingInput>;
 }
 
 export function ListingForm({
@@ -27,58 +35,60 @@ export function ListingForm({
   property_id,
   defaultValues = defaultPropertyValues,
 }: ListingFormProps) {
-  const { t } = useTranslation('listings');
+  const { t } = useTranslation("listings");
+  const { listingTypeOptions, listingStatusOptions, keywordsOptions } =
+    useListingOptions();
 
-  const isUpdateMode = !!id
+  const isUpdateMode = !!id;
 
   const form = useForm<CreateListingInput>({
-    resolver: yupResolver(createListingSchema) as any,
+    resolver: yupResolver(createListingSchema) as Resolver<CreateListingInput>,
     defaultValues: defaultValues,
     mode: "onBlur",
-  })
+  });
 
-  const { reset, setError, watch } = form
+  const { reset, setError, watch } = form;
 
-  const type = watch("listing_type")
+  const type = watch("listing_type");
 
-  const mutation = useServerMutation<ListingEntity>({
+  const mutation = useServerMutation({
     action: ((formData: FormData) => {
       if (isUpdateMode && id) {
         return updateListingAction(id, formData);
       }
       return createListingAction(formData);
-    }) as any,
+    }) as unknown as (formData: FormData) => Promise<ActionResult>,
     setError,
     onSuccess: (result) => {
       if (result.success) {
-        toast.success(t(`forms.listing.${isUpdateMode ? "updated" : "created"}`))
-        if (!isUpdateMode) reset()
+        toast.success(t(`labels${isUpdateMode} ? "updated" : "created"}`));
+        if (!isUpdateMode) reset();
       }
     },
     onError: (error) => {
-      console.error("listing error:", error)
-      toast.error(t("forms.listing.error"))
+      console.error("listing error:", error);
+      toast.error(t("labels"));
     },
-  })
+  });
 
   useEffect(() => {
     if (isUpdateMode && defaultValues) {
-      reset(defaultValues)
+      reset(defaultValues);
     }
     if (property_id) {
       reset((prev) => ({
         ...prev,
         property_id,
-      }))
+      }));
     }
-  }, [id, defaultValues, reset])
+  }, [id, defaultValues, reset]);
 
   useEffect(() => {
     const subscription = form.watch(() => {
-      if (mutation.isError) mutation.reset()
-    })
-    return () => subscription.unsubscribe()
-  }, [form, mutation])
+      if (mutation.isError) mutation.reset();
+    });
+    return () => subscription.unsubscribe();
+  }, [form, mutation]);
 
   async function handleSubmit(values: CreateListingInput) {
     try {
@@ -90,8 +100,8 @@ export function ListingForm({
       }
       mutation.action(data);
     } catch (error) {
-      console.error(error)
-      toast.error(t("forms.listing.error"))
+      console.error(error);
+      toast.error(t("labels"));
     }
   }
 
@@ -101,99 +111,89 @@ export function ListingForm({
       onSubmit={handleSubmit}
       className="space-y-3 max-w-5xl mx-auto"
     >
-      <Form.Set legend={t("forms.real-estate.basic-info")} className="my-3">
+      <Form.Set legend={t("sections.basic-info")} className="my-3">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
           <Form.Select
             name="listing_type"
-            label={t("forms.listing.fields.listing_type.label")}
+            label={t("labels.listing_type")}
             options={listingTypeOptions}
           />
 
           <Form.Select
             name="status"
-            label={t("forms.listing.fields.status.label")}
+            label={t("labels.status")}
             options={listingStatusOptions}
           />
         </div>
         <div className="grid md:grid-cols-3 gap-6">
-          <Form.Input
-            name="price"
-            label={t("forms.listing.fields.price.label")}
-            type="currency"
-          />
+          <Form.Input name="price" label={t("labels.price")} type="currency" />
 
           <Form.Select
             name="currency"
-            label={t("forms.listing.fields.currency.label")}
+            label={t("labels.currency")}
             options={currencyOptions}
           />
 
           <Form.Input
             name="expenses_amount"
-            label={t("forms.listing.fields.expenses_amount.label")}
+            label={t("labels.expenses_amount")}
             type="currency"
           />
         </div>
       </Form.Set>
-      <Form.Set legend={t("forms.real-estate.basic-info")} className="my-3">
+      <Form.Set legend={t("basic-info")} className="my-3">
         <div className="flex flex-col sm:flex-row gap-4 sm:gap-6">
           <Form.Checkbox
             name="price_negotiable"
-            label={t("forms.listing.fields.price_negotiable.label")}
+            label={t("labels.price_negotiable")}
           />
           <Form.Checkbox
             name="expenses_included"
-            label={t("forms.listing.fields.expenses_included.label")}
+            label={t("labels.expenses_included")}
           />
           <Form.Checkbox
             name="featured"
             label={
               <span className="flex items-center gap-2">
                 <Sparkles className="w-4 h-4 text-yellow-500" />
-                {t("forms.listing.fields.featured.label")}
+                {t("labels.featured")}
               </span>
             }
           />
         </div>
       </Form.Set>
-      <Form.Set legend={t("forms.real-estate.basic-info")} className="my-3">
-        <Form.Input
-          name="meta_title"
-          label={t("forms.listing.fields.meta_title.label")}
-        />
+      <Form.Set legend={t("sections.basic-info")} className="my-3">
+        <Form.Input name="meta_title" label={t("labels.meta_title")} />
 
         <Form.Textarea
           name="meta_description"
-          label={t("forms.listing.fields.meta_description.label")}
+          label={t("labels.meta_description")}
           rows={4}
         />
 
         <Form.Combobox
           name="keywords"
-          label={t("forms.listing.fields.keywords.label")}
+          label={t("labels.keywords")}
           multiple
           options={keywordsOptions}
-          placeholder="Agregar keyword"
+          placeholder={t("placeholders.add_keyword")}
         />
       </Form.Set>
-      <Form.Set legend={t("forms.real-estate.basic-info")} className="my-3">
+      <Form.Set legend={t("basic-info")} className="my-3">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
           <Form.Url
             name="virtual_tour_url"
-            label={t("forms.listing.fields.virtual_tour_url.label")}
+            label={t("labels.virtual_tour_url")}
           />
 
-          <Form.Url
-            name="video_url"
-            label={t("forms.listing.fields.video_url.label")}
-          />
+          <Form.Url name="video_url" label={t("labels.video_url")} />
         </div>
       </Form.Set>
-      <Form.Set legend={t("forms.real-estate.basic-info")} className="my-3">
+      <Form.Set legend={t("sections.basic-info")} className="my-3">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
           <Form.Date
             name="available_from"
-            label={t("forms.listing.fields.available_from.label")}
+            label={t("labels.available_from")}
             fromYear={1950}
             toYear={2050}
           />
@@ -201,7 +201,7 @@ export function ListingForm({
           <Form.Input
             className={type === "rent" ? "" : "pointer-events-none opacity-50"}
             name="minimum_contract_duration"
-            label={t("forms.listing.fields.minimum_contract_duration.label")}
+            label={t("labels.minimum_contract_duration")}
             type="number"
           />
 
@@ -210,23 +210,19 @@ export function ListingForm({
             label={
               <span className="flex items-center gap-2">
                 <Phone className="w-4 h-4" />
-                {t("forms.listing.fields.whatsapp_contact.label")}
+                {t("labels.whatsapp_contact")}
               </span>
             }
           />
         </div>
       </Form.Set>
-      <Button
-        type="submit"
-        className="w-full"
-        disabled={mutation.isPending}
-      >
+      <Button type="submit" className="w-full" disabled={mutation.isPending}>
         {mutation.isPending
-          ? t("words.saving")
+          ? t("commons:words.create")
           : isUpdateMode
-            ? t("forms.listing.update")
-            : t("forms.listing.create")}
+            ? t("actions.update")
+            : t("actions.create")}
       </Button>
     </Form>
-  )
+  );
 }

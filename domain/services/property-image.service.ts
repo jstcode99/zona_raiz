@@ -62,4 +62,13 @@ export class PropertyImageService {
   deleteFile(public_url: string) {
     return this.propertyImagePort.deleteFile(public_url);
   }
+
+  // Batch mutations
+  updateDisplayOrder(updates: Array<{ id: string; display_order: number }>) {
+    return this.propertyImagePort.updateDisplayOrder(updates);
+  }
+
+  setPrimary(propertyId: string, imageId: string) {
+    return this.propertyImagePort.setPrimary(propertyId, imageId);
+  }
 }

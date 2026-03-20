@@ -61,13 +61,16 @@
     "total_area": "120",
     "parking_spots": "0",
     "amenities": "Piscina, Garaje, Jardín",
-    "order_by": "Ordenar por"
+    "order_by": "Ordenar por",
+    "min_bedrooms": "Hab.",
+    "min_bathrooms": "Baños"
   },
   "actions": {
     "create": "Crear propiedad",
     "update": "Actualizar propiedad",
     "save": "Guardar cambios",
-    "add_images": "Agregar imágenes"
+    "add_images": "Agregar imágenes",
+    "clear_filters": "Limpiar"
   },
   "messages": {
     "created": "Propiedad creada exitosamente",
@@ -86,5 +89,48 @@
   },
   "subtitles": {
     "property_gallery": "Galería de la propiedad"
+  },
+  "detail": {
+    "labels": {
+      "bedrooms": "Dorm.",
+      "bathrooms": "Baños",
+      "total_area": "m² tot.",
+      "parking": "Coch.",
+      "description": "Descripción",
+      "amenities": "Amenities",
+      "area_unit": "m²"
+    }
+  },
+  "columns": {
+    "headers": {
+      "property": "Propiedad",
+      "location": "Ubicación",
+      "coordinates": "Coordenadas",
+      "features": "Características",
+      "lot_info": "Terreno",
+      "amenities": "Amenidades",
+      "created_at": "Registro"
+    },
+    "labels": {
+      "no_location": "Sin ubicación",
+      "lat": "Lat:",
+      "lng": "Lng:",
+      "bedrooms": "hab.",
+      "bathrooms": "baños",
+      "total_area": "m² tot.",
+      "parking_spots": "est.",
+      "floors": "pisos",
+      "lot_area": "m² terreno",
+      "year": "Año"
+    },
+    "actions": {
+      "open_menu": "Abrir menú",
+      "edit_property": "Editar propiedad",
+      "edit_images": "Editar imágenes",
+      "publish_property": "Publicar propiedad",
+      "view_map": "Ver en mapa",
+      "delete": "Eliminar",
+      "edit": "Edit:"
+    }
   }
 }

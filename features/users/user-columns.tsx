@@ -17,6 +17,7 @@ import { EUserRole } from "@/domain/entities/profile.entity"
 import { UserEntity } from "@/domain/entities/user.entity"
 import { deleteUserAction } from "@/application/actions/user.actions"
 import { useServerMutation } from "@/shared/hooks/use-server-mutation.hook"
+import { useRoutes } from "@/i18n/client-router"
 
 export interface UserRow extends UserEntity {}
 
@@ -28,14 +29,15 @@ function roleVariant(role: EUserRole) {
 
 function UserRowActions({ userId }: { userId: string }) {
   const { t } = useTranslation('common')
+  const routes = useRoutes()
 
   const mutation = useServerMutation({
     action: deleteUserAction,
     onSuccess: () => {
-      toast.success(t("words.deleted") || "Deleted")
+      toast.success(t("common:columns.words.deleted"))
     },
     onError: (error) => {
-      toast.error(error.message || (t("words.error") as string) || "Error")
+      toast.error(error.message || t("common:columns.words.error"))
     },
   })
 
@@ -54,15 +56,15 @@ function UserRowActions({ userId }: { userId: string }) {
       </DropdownMenuTrigger>
 
       <DropdownMenuContent align="end" className="w-36">
-        <Link href={``}>
-          <DropdownMenuItem>{t("words.edit") || "Edit"}</DropdownMenuItem>
+        <Link href={routes.user(userId)}>
+          <DropdownMenuItem>{t("common:columns.words.edit")}</DropdownMenuItem>
         </Link>
 
         <DropdownMenuItem
           onClick={() => {
             const confirmed =
               typeof window !== "undefined"
-                ? window.confirm(t("words.confirm") || "Confirm?")
+                ? window.confirm(t("common:columns.words.confirm"))
                 : true
 
             if (!confirmed) return
@@ -72,7 +74,7 @@ function UserRowActions({ userId }: { userId: string }) {
             mutation.action(data)
           }}
         >
-          {t("words.delete") || "Delete"}
+          {t("common:columns.words.delete")}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
@@ -82,24 +84,36 @@ function UserRowActions({ userId }: { userId: string }) {
 export const UserColumns: ColumnDef<UserRow>[] = [
   {
     accessorKey: "full_name",
-    header: "Nombre",
+    header: () => {
+      const { t } = useTranslation("common")
+      return t("common:columns.headers.full_name")
+    },
     cell: ({ row }) => <span className="font-medium">{row.original.full_name ?? "—"}</span>,
   },
   {
     accessorKey: "email",
-    header: "Email",
+    header: () => {
+      const { t } = useTranslation("common")
+      return t("common:columns.headers.email")
+    },
     cell: ({ row }) => <span className="text-sm">{row.original.email}</span>,
   },
   {
     accessorKey: "role",
-    header: "Rol",
+    header: () => {
+      const { t } = useTranslation("common")
+      return t("common:columns.headers.role")
+    },
     cell: ({ row }) => (
       <Badge variant={roleVariant(row.original.role)}>{row.original.role}</Badge>
     ),
   },
   {
     accessorKey: "created_at",
-    header: "Creado",
+    header: () => {
+      const { t } = useTranslation("common")
+      return t("common:columns.headers.created_at")
+    },
     cell: ({ row }) => (
       <span className="text-xs text-muted-foreground">
         {row.original.created_at ? new Date(row.original.created_at).toLocaleDateString() : "—"}

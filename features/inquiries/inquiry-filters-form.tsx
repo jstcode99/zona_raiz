@@ -1,14 +1,19 @@
 "use client"
 
 import { useEffect, useRef } from "react"
-import { useForm, useWatch } from "react-hook-form"
+import { Resolver, useForm, useWatch } from "react-hook-form"
+import { yupResolver } from "@hookform/resolvers/yup"
 import { Form } from "@/components/ui/form"
 import { inquiryStatusOptions, inquirySourceOptions } from "@/domain/entities/inquiry.entity"
 import { IconClearAll, IconSearch } from "@tabler/icons-react"
 import { useRouter, usePathname, useSearchParams } from "next/navigation"
 import { objectToSearchParams } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
-import { InquirySearchFormInput } from "@/application/validation/inquiry-search.schema"
+import {
+  inquirySearchSchema,
+  InquirySearchFormInput,
+  defaultInquirySearchValues,
+} from "@/application/validation/inquiry-search.schema"
 import { useTranslation } from "react-i18next"
 
 interface InquiryFiltersFormProps {
@@ -51,7 +56,9 @@ export function InquiryFiltersForm({
   const isSyncingFromUrl = useRef(false)
 
   const form = useForm<InquirySearchFormInput>({
-    defaultValues: parseSearchParams(searchParams),
+    resolver: yupResolver(inquirySearchSchema) as Resolver<InquirySearchFormInput>,
+    defaultValues: parseSearchParams(searchParams) ?? defaultInquirySearchValues,
+    mode: "onChange",
   })
 
   const { control } = form

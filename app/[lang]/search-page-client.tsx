@@ -1,8 +1,6 @@
 "use client";
-import {
-  ListingSearchFilters,
-  ListingSearchFilters as ListingSearchFiltersType,
-} from "@/features/listing/listing-search-filters";
+import { ListingSearchFiltersInput as ListingSearchFiltersType } from "@/application/validation/listing-search-full.schema";
+import { ListingSearchFilters } from "@/features/listing/listing-search-filters";
 import { ListingGrid } from "@/features/listing/listing-grid";
 import { ListingEntity } from "@/domain/entities/listing.entity";
 import { Button } from "@/components/ui/button";

@@ -1,23 +1,25 @@
-"use client"
+"use client";
 
-import { useEffect, useState, useTransition } from "react"
-import { ImageDropzone } from "./image-dropzone"
-import { ImagePreviewCard } from "./image-preview-card"
-import { ImageProgress } from "./image-progress"
-import { Button } from "@/components/ui/button"
-import { createPropertyImageAction } from "@/application/actions/property-image.action"
+import { useEffect, useState, useTransition } from "react";
+import { ImageDropzone } from "./image-dropzone";
+import { ImagePreviewCard } from "./image-preview-card";
+import { ImageProgress } from "./image-progress";
+import { Button } from "@/components/ui/button";
+import { createPropertyImageAction } from "@/application/actions/property-image.action";
+import { useTranslation } from "react-i18next";
 
-type LocalFile = {
-  id: string
-  file: File
-  preview: string
-  isPrimary: boolean
-  order: number
+export interface LocalFile {
+  id: string;
+  file: File;
+  preview: string;
+  isPrimary: boolean;
+  order: number;
 }
 
 export function UploadMultipleInput({ propertyId }: { propertyId: string }) {
-  const [files, setFiles] = useState<LocalFile[]>([])
-  const [pending, startTransition] = useTransition()
+  const [files, setFiles] = useState<LocalFile[]>([]);
+  const [pending, startTransition] = useTransition();
+  const { t } = useTranslation("images");
 
   function addFiles(incoming: File[]) {
     const mapped = incoming.map((file, index) => ({
@@ -26,64 +28,62 @@ export function UploadMultipleInput({ propertyId }: { propertyId: string }) {
       preview: URL.createObjectURL(file),
       isPrimary: files.length === 0 && index === 0,
       order: files.length + index,
-    }))
+    }));
 
-    setFiles(prev => [...prev, ...mapped])
+    setFiles((prev) => [...prev, ...mapped]);
   }
 
   function removeFile(id: string) {
-    setFiles(prev => {
-      const target = prev.find(f => f.id === id)
-      if (target) URL.revokeObjectURL(target.preview)
+    setFiles((prev) => {
+      const target = prev.find((f) => f.id === id);
+      if (target) URL.revokeObjectURL(target.preview);
 
-      const next = prev.filter(f => f.id !== id)
+      const next = prev.filter((f) => f.id !== id);
 
       // si eliminas el primary → asigna otro
-      if (!next.some(f => f.isPrimary) && next.length > 0) {
-        next[0].isPrimary = true
+      if (!next.some((f) => f.isPrimary) && next.length > 0) {
+        next[0].isPrimary = true;
       }
 
-      return next.map((f, i) => ({ ...f, order: i }))
-    })
+      return next.map((f, i) => ({ ...f, order: i }));
+    });
   }
 
-
-
   function setPrimary(id: string) {
-    setFiles(prev =>
-      prev.map(file => ({
+    setFiles((prev) =>
+      prev.map((file) => ({
         ...file,
         isPrimary: file.id === id,
-      }))
-    )
+      })),
+    );
   }
 
   function submit() {
-    if (!files.length) return
+    if (!files.length) return;
 
     startTransition(async () => {
       await Promise.all(
-        files.map(item => {
-          const formData = new FormData()
-          formData.append("file", item.file)
-          formData.append("display_order", String(item.order))
-          formData.append("is_primary", String(item.isPrimary))
-          formData.append("alt_text", item.file.name)
-          formData.append("caption", item.file.name)
+        files.map((item) => {
+          const formData = new FormData();
+          formData.append("file", item.file);
+          formData.append("display_order", String(item.order));
+          formData.append("is_primary", String(item.isPrimary));
+          formData.append("alt_text", item.file.name);
+          formData.append("caption", item.file.name);
 
-          return createPropertyImageAction(propertyId, formData)
-        })
-      )
+          return createPropertyImageAction(propertyId, formData);
+        }),
+      );
 
-      setFiles([])
-    })
+      setFiles([]);
+    });
   }
 
   useEffect(() => {
     return () => {
-      files.forEach(f => URL.revokeObjectURL(f.preview))
-    }
-  }, [files])
+      files.forEach((f) => URL.revokeObjectURL(f.preview));
+    };
+  }, [files]);
 
   return (
     <div className="space-y-4">
@@ -92,7 +92,7 @@ export function UploadMultipleInput({ propertyId }: { propertyId: string }) {
       {files.length > 0 && (
         <>
           <div className="grid md:grid-cols-3 gap-4">
-            {files.map(item => (
+            {files.map((item) => (
               <ImagePreviewCard
                 key={item.id}
                 imageUrl={item.preview}
@@ -106,10 +106,10 @@ export function UploadMultipleInput({ propertyId }: { propertyId: string }) {
           {pending && <ImageProgress value={60} />}
 
           <Button onClick={submit} disabled={pending} className="w-full">
-            Subir {files.length} imágenes
+            {t("actions.upload_count", { count: files.length })}
           </Button>
         </>
       )}
     </div>
-  )
+  );
 }

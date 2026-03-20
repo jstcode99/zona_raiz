@@ -17,6 +17,7 @@ export const namespaces = [
   "agents",
   "inquiries",
   "import",
+  "images",
   // Common namespaces
   "common",
   "components",

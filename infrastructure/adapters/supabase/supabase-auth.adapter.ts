@@ -1,6 +1,7 @@
 import { SupabaseClient } from "@supabase/supabase-js"
-import { AuthPort, SignUpData } from "@/domain/ports/auth.port"
+import { AuthPort, SignUpData, OAuthProvider } from "@/domain/ports/auth.port"
 import { EUserRole } from "@/domain/entities/profile.entity"
+import { SupabaseAdminClient } from "@/infrastructure/db/supabase.server-admin"
 
 export class SupabaseAuthAdapter implements AuthPort {
   constructor(private readonly supabase: SupabaseClient) { }
@@ -88,6 +89,26 @@ export class SupabaseAuthAdapter implements AuthPort {
     if (!user) throw new Error("User not found")
 
     return { userId: user.id }
+  }
+
+  async signInWithOAuth(provider: OAuthProvider, redirectTo: string): Promise<string> {
+    const supabaseAdmin = await SupabaseAdminClient()
+
+    const { data, error } = await supabaseAdmin.auth.signInWithOAuth({
+      provider,
+      options: {
+        redirectTo,
+        queryParams: {
+          access_type: "offline",
+          prompt: "consent",
+        },
+      },
+    })
+
+    if (error) throw error
+    if (!data.url) throw new Error("OAuth failed to generate redirect URL")
+
+    return data.url
   }
 
 }

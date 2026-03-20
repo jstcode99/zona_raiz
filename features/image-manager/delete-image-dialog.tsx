@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import {
   AlertDialog,
@@ -6,35 +6,35 @@ import {
   AlertDialogCancel,
   AlertDialogContent,
   AlertDialogHeader,
-  AlertDialogTitle
-} from "@/components/ui/alert-dialog"
-import { useTranslation } from "react-i18next"
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { useTranslation } from "react-i18next";
 
 interface Props {
-  open: boolean
-  onClose: () => void
-  onConfirm: () => void
+  open: boolean;
+  onClose: () => void;
+  onConfirm: () => void;
 }
 
 export function DeleteImageDialog({ open, onClose, onConfirm }: Props) {
-  const { t } = useTranslation('components')
+  const { t } = useTranslation("components");
 
   return (
     <AlertDialog open={open} onOpenChange={onClose}>
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>
-            {t("components.property-images.delete-warning")}
+            {t("property_images.delete_warning")}
           </AlertDialogTitle>
         </AlertDialogHeader>
 
         <div className="flex justify-end gap-2">
-          <AlertDialogCancel>{t("words.cancel")}</AlertDialogCancel>
+          <AlertDialogCancel>{t("words:cancel")}</AlertDialogCancel>
           <AlertDialogAction onClick={onConfirm}>
-            {t("words.delete")}
+            {t("words:delete")}
           </AlertDialogAction>
         </div>
       </AlertDialogContent>
     </AlertDialog>
-  )
+  );
 }

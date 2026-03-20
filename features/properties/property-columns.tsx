@@ -31,6 +31,7 @@ import { Badge } from "@/components/ui/badge"
 import { PropertyType } from "@/domain/entities/property.enums"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { useTranslation } from "react-i18next"
+import { useRoutes } from "@/i18n/client-router"
 
 export type PropertyRow = BaseRow & {
   created_at: string
@@ -49,16 +50,68 @@ export const propertyTypeIcons: Record<PropertyType, React.ReactNode> = {
   [PropertyType.Other]: <IconHome className="size-4" />,
 }
 
+function PropertyRowActions({ propertyId, latitude, longitude }: { propertyId: string; latitude: number | null; longitude: number | null }) {
+  const { t } = useTranslation("properties")
+  const routes = useRoutes()
+  const hasCoords = latitude && longitude
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button
+          variant="ghost"
+          className="data-[state=open]:bg-muted text-muted-foreground flex size-8"
+          size="icon"
+        >
+          <IconDotsVertical className="size-4" />
+          <span className="sr-only">{t("properties:columns.actions.open_menu")}</span>
+        </Button>
+      </DropdownMenuTrigger>
+
+      <DropdownMenuContent align="end" className="w-40">
+        <Link href={routes.property(propertyId)} passHref>
+          <DropdownMenuItem>{t("properties:columns.actions.edit_property")}</DropdownMenuItem>
+        </Link>
+        <Link href={routes.propertyImages(propertyId)} passHref>
+          <DropdownMenuItem>{t("properties:columns.actions.edit_images")}</DropdownMenuItem>
+        </Link>
+        <Link href={routes.propertyListing(propertyId)} passHref>
+          <DropdownMenuItem>{t("properties:columns.actions.publish_property")}</DropdownMenuItem>
+        </Link>
+        {hasCoords ? (
+          <DropdownMenuItem asChild>
+            <a
+              href={`https://www.google.com/maps?q=${latitude},${longitude}`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {t("properties:columns.actions.view_map")}
+            </a>
+          </DropdownMenuItem>
+        ) : null}
+        <DropdownMenuSeparator />
+
+        <DropdownMenuItem variant="destructive">
+          {t("properties:columns.actions.delete")}
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  )
+}
+
 export const PropertyColumns: ColumnDef<PropertyRow>[] = [
   {
     accessorKey: "title",
-    header: 'Propiedad',
+    header: ({ column }) => {
+      const { t } = useTranslation("properties")
+      return t("properties:columns.headers.property")
+    },
     cell: ({ row }) => {
-
+      const routes = useRoutes()
       const type = row.original.property_type
       const thumbnail = row.original.property_images && row.original.property_images[0]?.public_url
       return (
-        <Link href={`/dashboard/properties/${row.original.id}`} passHref>
+        <Link href={routes.property(row.original.id)} passHref>
           <div className="flex items-start gap-3">
             <Avatar className="size-12">
               <AvatarImage
@@ -85,7 +138,10 @@ export const PropertyColumns: ColumnDef<PropertyRow>[] = [
   },
   {
     id: "location",
-    header: "Ubicación",
+    header: ({ column }) => {
+      const { t } = useTranslation("properties")
+      return t("properties:columns.headers.location")
+    },
     cell: ({ row }) => {
       const { city, state, neighborhood, postal_code } = row.original
       return (
@@ -106,32 +162,40 @@ export const PropertyColumns: ColumnDef<PropertyRow>[] = [
   },
   {
     id: "coords",
-    header: "Coordenadas",
+    header: ({ column }) => {
+      const { t } = useTranslation("properties")
+      return t("properties:columns.headers.coordinates")
+    },
     cell: ({ row }) => {
+      const { t } = useTranslation("properties")
       const { latitude, longitude } = row.original
       if (!latitude || !longitude) return (
-        <span className="text-xs text-muted-foreground italic">Sin ubicación</span>
+        <span className="text-xs text-muted-foreground italic">{t("properties:columns.labels.no_location")}</span>
       )
       return (
         <div className="flex flex-col text-xs text-muted-foreground font-mono">
-          <span>Lat: {latitude.toFixed(6)}</span>
-          <span>Lng: {longitude.toFixed(6)}</span>
+          <span>{t("properties:columns.labels.lat")} {latitude.toFixed(6)}</span>
+          <span>{t("properties:columns.labels.lng")} {longitude.toFixed(6)}</span>
         </div>
       )
     },
   },
   {
     id: "features",
-    header: "Características",
+    header: ({ column }) => {
+      const { t } = useTranslation("properties")
+      return t("properties:columns.headers.features")
+    },
     cell: ({ row }) => {
+      const { t } = useTranslation("properties")
       const { bedrooms, bathrooms, built_area, total_area, floors, parking_spots } = row.original
 
       const features = []
-      if (bedrooms !== null) features.push({ icon: IconBed, value: `${bedrooms} hab.` })
-      if (bathrooms !== null) features.push({ icon: IconBath, value: `${bathrooms} baños` })
+      if (bedrooms !== null) features.push({ icon: IconBed, value: `${bedrooms} ${t("properties:columns.labels.bedrooms")}` })
+      if (bathrooms !== null) features.push({ icon: IconBath, value: `${bathrooms} ${t("properties:columns.labels.bathrooms")}` })
       if (built_area !== null) features.push({ icon: IconRuler, value: `${built_area}m²` })
-      else if (total_area !== null) features.push({ icon: IconRuler, value: `${total_area}m² tot.` })
-      if (parking_spots !== null) features.push({ icon: IconCar, value: `${parking_spots} est.` })
+      else if (total_area !== null) features.push({ icon: IconRuler, value: `${total_area} ${t("properties:columns.labels.total_area")}` })
+      if (parking_spots !== null) features.push({ icon: IconCar, value: `${parking_spots} ${t("properties:columns.labels.parking_spots")}` })
 
       if (features.length === 0) return <span className="text-xs text-muted-foreground">—</span>
 
@@ -147,7 +211,7 @@ export const PropertyColumns: ColumnDef<PropertyRow>[] = [
             </div>
           ))}
           {floors !== null && floors > 1 && (
-            <span className="text-xs text-muted-foreground">• {floors} pisos</span>
+            <span className="text-xs text-muted-foreground">• {floors} {t("properties:columns.labels.floors")}</span>
           )}
         </div>
       )
@@ -155,8 +219,12 @@ export const PropertyColumns: ColumnDef<PropertyRow>[] = [
   },
   {
     id: "lot_info",
-    header: "Terreno",
+    header: ({ column }) => {
+      const { t } = useTranslation("properties")
+      return t("properties:columns.headers.lot_info")
+    },
     cell: ({ row }) => {
+      const { t } = useTranslation("properties")
       const { lot_area, year_built } = row.original
       if (!lot_area && !year_built) return <span className="text-xs text-muted-foreground">—</span>
 
@@ -164,12 +232,12 @@ export const PropertyColumns: ColumnDef<PropertyRow>[] = [
         <div className="flex flex-col text-xs">
           {lot_area !== null && (
             <span className="text-muted-foreground">
-              {lot_area}m² terreno
+              {lot_area} {t("properties:columns.labels.lot_area")}
             </span>
           )}
           {year_built !== null && (
             <span className="text-muted-foreground">
-              Año {year_built}
+              {t("properties:columns.labels.year")} {year_built}
             </span>
           )}
         </div>
@@ -178,7 +246,10 @@ export const PropertyColumns: ColumnDef<PropertyRow>[] = [
   },
   {
     id: "amenities",
-    header: "Amenidades",
+    header: ({ column }) => {
+      const { t } = useTranslation("properties")
+      return t("properties:columns.headers.amenities")
+    },
     cell: ({ row }) => {
       const amenities = row.original.amenities || []
       if (amenities.length === 0) return <span className="text-xs text-muted-foreground">—</span>
@@ -204,18 +275,22 @@ export const PropertyColumns: ColumnDef<PropertyRow>[] = [
   },
   {
     accessorKey: "created_at",
-    header: "Registro",
+    header: ({ column }) => {
+      const { t } = useTranslation("properties")
+      return t("properties:columns.headers.created_at")
+    },
     cell: ({ row }) => {
+      const { t } = useTranslation("properties")
       const date = new Date(row.original.created_at)
       const updated = new Date(row.original.updated_at)
       const isUpdated = updated.getTime() !== date.getTime()
 
       return (
         <div className="flex flex-col text-xs">
-          <span>{date.toLocaleDateString("es-ES")}</span>
+          <span>{date.toLocaleDateString()}</span>
           {isUpdated && (
             <span className="text-muted-foreground">
-              Edit: {updated.toLocaleDateString("es-ES")}
+              {t("properties:columns.actions.edit")} {updated.toLocaleDateString()}
             </span>
           )}
         </div>
@@ -227,49 +302,9 @@ export const PropertyColumns: ColumnDef<PropertyRow>[] = [
     header: "",
     cell: ({ row }) => {
       const { latitude, longitude, id } = row.original
-      const hasCoords = latitude && longitude
 
       return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button
-              variant="ghost"
-              className="data-[state=open]:bg-muted text-muted-foreground flex size-8"
-              size="icon"
-            >
-              <IconDotsVertical className="size-4" />
-              <span className="sr-only">Abrir menú</span>
-            </Button>
-          </DropdownMenuTrigger>
-
-          <DropdownMenuContent align="end" className="w-40">
-            <Link href={`/dashboard/properties/${id}`} passHref>
-              <DropdownMenuItem>Editar propiedad</DropdownMenuItem>
-            </Link>
-            <Link href={`/dashboard/properties/${id}/images`} passHref>
-              <DropdownMenuItem>Editar imagenes</DropdownMenuItem>
-            </Link>
-            <Link href={`/dashboard/properties/${id}/listing`} passHref>
-              <DropdownMenuItem>Publicar propiedad</DropdownMenuItem>
-            </Link>
-            {hasCoords ? (
-              <DropdownMenuItem asChild>
-                <a
-                  href={`https://www.google.com/maps?q=${latitude},${longitude}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  Ver en mapa
-                </a>
-              </DropdownMenuItem>
-            ) : null}
-            <DropdownMenuSeparator />
-
-            <DropdownMenuItem variant="destructive">
-              Eliminar
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <PropertyRowActions propertyId={id} latitude={latitude} longitude={longitude} />
       )
     },
   },

@@ -11,5 +11,23 @@
     "qualified": "Calificado",
     "converted": "Convertido",
     "lost": "Perdido"
+  },
+  "columns": {
+    "headers": {
+      "name": "Nombre",
+      "email": "Email",
+      "phone": "Teléfono",
+      "source": "Fuente",
+      "listing": "Publicación",
+      "assigned_to": "Asignado a",
+      "status": "Estado",
+      "created_at": "Creado"
+    },
+    "labels": {
+      "no_property": "Sin propiedad",
+      "no_title": "Sin título",
+      "unassigned": "No asignado",
+      "agent": "Agente"
+    }
   }
 }

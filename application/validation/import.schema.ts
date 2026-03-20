@@ -23,7 +23,19 @@ export const importFileSchema = yup.object({
     })
 });
 
+export const importDataSchema = yup.object({
+  headers: yup.array().of(yup.string()).required(),
+  rows: yup.array().of(yup.array().of(yup.string())).required(),
+});
+
+export const confirmImportSchema = yup.object({
+  headers: yup.array().of(yup.string()).required(),
+  rows: yup.array().of(yup.array().of(yup.string())).required(),
+});
+
 export type ImportFileInput = yup.InferType<typeof importFileSchema>;
+export type ImportDataInput = yup.InferType<typeof importDataSchema>;
+export type ConfirmImportInput = yup.InferType<typeof confirmImportSchema>;
 
 export const defaultImportFileValues: ImportFileInput = {
   file: null as unknown as File

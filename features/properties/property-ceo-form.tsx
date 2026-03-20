@@ -1,3 +1,5 @@
+"use client";
+
 import { Form } from "@/components/ui/form";
 import { propertyTypeOptions } from "@/domain/entities/property.entity";
 import { useTranslation } from "react-i18next";

@@ -7,7 +7,7 @@ import {
   FieldGroup,
 } from "@/components/ui/field"
 import { cn } from "@/lib/utils"
-import { useForm } from "react-hook-form"
+import { Resolver, useForm } from "react-hook-form"
 import { yupResolver } from '@hookform/resolvers/yup'
 import { ComponentProps, useEffect } from "react"
 import { useTranslation } from "react-i18next"
@@ -31,7 +31,7 @@ export function SignUpForm({
   const routes = useRoutes()
 
   const form = useForm<SignUpFormInput>({
-    resolver: yupResolver(signUpSchema) as any,
+    resolver: yupResolver(signUpSchema) as Resolver<SignUpFormInput>,
     defaultValues: defaultSignUpValues,
     mode: "onBlur",
   })

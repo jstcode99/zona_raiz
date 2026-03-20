@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { ProfileEntity } from "@/domain/entities/profile.entity"
 import {
   Avatar,
@@ -19,6 +19,7 @@ import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
 import { useServerMutation } from "@/shared/hooks/use-server-mutation.hook"
 import { assignInquiryAction } from "@/application/actions/inquiry.actions"
+import { getAgentsByRealEstateAction } from "@/application/actions/agent.actions"
 
 interface AgentSelectorClientProps {
   realEstateId: string
@@ -26,10 +27,39 @@ interface AgentSelectorClientProps {
   children: React.ReactNode
 }
 
+function parseAgentsCookie(): ProfileEntity[] {
+  if (typeof document === "undefined") return []
+  const match = document.cookie.match(/agents_data=([^;]+)/)
+  if (!match) return []
+  try {
+    return JSON.parse(decodeURIComponent(match[1]))
+  } catch {
+    return []
+  }
+}
+
+function clearAgentsCookie() {
+  document.cookie = "agents_data=; Max-Age=0"
+}
+
 export function AgentSelectorClient({ realEstateId, inquiryId, children }: AgentSelectorClientProps) {
   const { t } = useTranslation("agents")
   const [agents, setAgents] = useState<ProfileEntity[]>([])
-  const [loading, setLoading] = useState(true)
+  const [isLoadingAgents, setIsLoadingAgents] = useState(false)
+
+  const agentsMutation = useServerMutation({
+    action: getAgentsByRealEstateAction,
+    onSuccess: () => {
+      const agentsData = parseAgentsCookie()
+      setAgents(agentsData)
+      setIsLoadingAgents(false)
+      clearAgentsCookie()
+    },
+    onError: (error) => {
+      toast.error(error.message || "Error cargando agentes")
+      setIsLoadingAgents(false)
+    },
+  })
 
   const assignMutation = useServerMutation({
     action: assignInquiryAction,
@@ -41,18 +71,12 @@ export function AgentSelectorClient({ realEstateId, inquiryId, children }: Agent
     },
   })
 
-  useEffect(() => {
-    fetch(`/api/agents?real_estate_id=${realEstateId}`)
-      .then(res => res.json())
-      .then(data => {
-        setAgents(data)
-        setLoading(false)
-      })
-      .catch(err => {
-        console.error(err)
-        setLoading(false)
-      })
-  }, [realEstateId])
+  const loadAgents = () => {
+    setIsLoadingAgents(true)
+    const formData = new FormData()
+    formData.set("real_estate_id", realEstateId)
+    agentsMutation.action(formData)
+  }
 
   const handleSelect = (agentId: string) => {
     const data = new FormData()
@@ -63,14 +87,14 @@ export function AgentSelectorClient({ realEstateId, inquiryId, children }: Agent
 
   return (
     <Dialog>
-      <DialogTrigger asChild>
+      <DialogTrigger asChild onClick={loadAgents}>
         {children}
       </DialogTrigger>
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
           <DialogTitle>Seleccionar Agente</DialogTitle>
         </DialogHeader>
-        {loading ? (
+        {agentsMutation.isPending || isLoadingAgents ? (
           <div className="flex items-center justify-center h-72">
             <p>Cargando agentes...</p>
           </div>

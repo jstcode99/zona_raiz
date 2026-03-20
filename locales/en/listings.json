@@ -11,7 +11,16 @@
     "virtual_tour_url": "Virtual tour URL",
     "video_url": "Video URL",
     "available_from": "Available from",
-    "minimum_contract_duration": "Minimum contract duration (months)"
+    "minimum_contract_duration": "Minimum contract duration (months)",
+    "country_state_city": "Country / State / City",
+    "street": "Street",
+    "neighborhood": "Neighborhood",
+    "property_type": "Property type",
+    "bedrooms": "Min. beds",
+    "bathrooms": "Min. baths",
+    "price": "Price",
+    "whatsapp_contact": "WhatsApp",
+    "status": "Publication status"
   },
   "placeholders": {
     "select_listing_type": "Select listing type",
@@ -21,7 +30,14 @@
     "video_url": "https://videos.com/...",
     "available_from": "Select date",
     "minimum_contract_duration": "12",
-    "search_properties": "Search properties"
+    "search_properties": "Search properties",
+    "street": "Street",
+    "neighborhood": "Neighborhood",
+    "select_property_type": "Select type",
+    "min_bedrooms": "Beds",
+    "min_bathrooms": "Baths",
+    "listing_type": "Listing type",
+    "status": "Status"
   },
   "sections": {
     "all_properties": "All properties",
@@ -30,10 +46,27 @@
     "type_listings": "Listing types",
     "price_range": "Price range",
     "rooms": "Number of rooms",
+    "basic-info": "Basic info",
     "bathrooms": "Number of bathrooms",
     "amenities": "Included amenities",
     "location": "Location",
-    "try_change_filters": "Try another search..."
+    "try_change_filters": "Try another search...",
+    "features": "Features",
+    "publication_data": "Publication data"
+  },
+  "words": {
+    "search": "Search...",
+    "clear_filters": "Clear",
+    "without_image": "No image",
+    "featured": "Featured",
+    "negotiable": "Negotiable",
+    "expenses": "Fees",
+    "included": "included",
+    "until": "Until",
+    "created": "Created",
+    "published": "Pub",
+    "available": "Available",
+    "add_keyword": "Add keyword"
   },
   "actions": {
     "create": "Create new listing",
@@ -42,20 +75,99 @@
     "update_property": "Update property",
     "search": "Search properties",
     "clear_amenities": "Clear amenities",
+    "clear_filters": "Clear",
     "any": "Any"
   },
   "status": {
     "no_results": "No results found",
     "try_filters": "Try with different filters..."
   },
-  "words": {
-    "without_image": "No image",
-    "featured": "Featured",
-    "negotiable": "Negotiable"
+  "columns": {
+    "headers": {
+      "property": "Property",
+      "pricing": "Listing",
+      "status": "Status",
+      "metrics": "Metrics",
+      "dates": "Dates",
+      "agent": "Agent"
+    },
+    "labels": {
+      "no_agent": "No agent",
+      "no_name": "No name"
+    },
+    "actions": {
+      "open_menu": "Open menu",
+      "edit_listing": "Edit listing",
+      "view_public": "View public",
+      "delete": "Delete"
+    }
   },
   "exceptions": {
     "create_fail": "Failed to create listing",
     "update_fail": "Failed to update listing",
     "properties_not_found": "Properties not found"
+  },
+  "detail": {
+    "breadcrumb": {
+      "properties": "Properties",
+      "rent": "Rent",
+      "sale": "Sale"
+    },
+    "details": {
+      "title": "Listing details"
+    },
+    "labels": {
+      "operation_type": "Operation type",
+      "price": "Price",
+      "negotiable": "negotiable",
+      "expenses": "Maintenance fees",
+      "expenses_included": "included",
+      "virtual_tour": "Virtual tour",
+      "video": "Video",
+      "description": "Description",
+      "views": "views",
+      "inquiries": "inquiries",
+      "real_estate": "Real Estate",
+      "features": "Features"
+    },
+    "actions": {
+      "view_tour": "View 360° tour",
+      "view_video": "View video",
+      "whatsapp": "WhatsApp",
+      "share": "Share"
+    },
+    "words": {
+      "price_negotiable": "Negotiable price"
+    }
+  },
+  "listing_types": {
+    "rent": "Rent",
+    "sale": "Sale"
+  },
+  "status_labels": {
+    "active": "Active",
+    "draft": "Draft",
+    "paused": "Paused",
+    "archived": "Archived"
+  },
+  "keywords": {
+    "pool": "Pool",
+    "gym": "Gym",
+    "parking": "Parking",
+    "elevator": "Elevator",
+    "security": "Security",
+    "garden": "Garden",
+    "balcony": "Balcony",
+    "air_conditioning": "Air conditioning",
+    "heating": "Heating",
+    "apartment": "Apartment",
+    "house": "House",
+    "condo": "Condo",
+    "townhouse": "Townhouse",
+    "land": "Land",
+    "commercial": "Commercial",
+    "office": "Office",
+    "warehouse": "Warehouse",
+    "other": "Other"
   }
 }

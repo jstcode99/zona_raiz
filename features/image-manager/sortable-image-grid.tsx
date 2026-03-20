@@ -5,7 +5,8 @@ import {
   closestCenter,
   PointerSensor,
   useSensor,
-  useSensors
+  useSensors,
+  DragEndEvent
 } from "@dnd-kit/core"
 
 import {
@@ -16,10 +17,11 @@ import {
 
 import { SortableImageItem } from "./sortable-image-item"
 import { ImageProgress } from "./image-progress"
+import { SortableImage } from "@/application/mappers/property-image.mapper"
 
 interface Props {
-  images: any[]
-  onReorder: (images: any[]) => void
+  images: SortableImage[]
+  onReorder: (images: SortableImage[]) => void
   onDelete: (id: string) => void
   onPrimary: (id: string) => void
   onMetaChange: (id: string, data: { alt_text?: string; caption?: string }) => void
@@ -36,7 +38,7 @@ export function SortableImageGrid({
 }: Props) {
   const sensors = useSensors(useSensor(PointerSensor))
 
-  function handleDragEnd(event: any) {
+  function handleDragEnd(event: DragEndEvent) {
     const { active, over } = event
     if (!over || active.id === over.id) return
 

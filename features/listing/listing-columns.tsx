@@ -22,8 +22,10 @@ import {
 } from "@tabler/icons-react"
 import Link from "next/link"
 import { Badge } from "@/components/ui/badge"
-import { ListingEntity, listingStatusLabels, listingTypeLabels } from "@/domain/entities/listing.entity"
+import { ListingEntity } from "@/domain/entities/listing.entity"
 import { useRoutes } from "@/i18n/client-router"
+import { useTranslation } from "react-i18next"
+import { useListingOptions } from "./hooks/use-listing-options"
 
 export type ListingRow = BaseRow & {
   created_at: string
@@ -33,6 +35,8 @@ export type ListingRow = BaseRow & {
 
 export const getListingColumns = (): ColumnDef<ListingRow>[] => {
   const routes = useRoutes()
+  const { t, i18n } = useTranslation("listings")
+  const { getListingTypeLabel, getListingStatusLabel } = useListingOptions()
 
   return [
     // =========================
@@ -40,12 +44,12 @@ export const getListingColumns = (): ColumnDef<ListingRow>[] => {
     // =========================
     {
       id: "property",
-      header: "Propiedad",
+      header: () => t("columns.headers.property"),
       cell: ({ row }) => {
         const property = row.original.property
 
         return (
-          <Link href={`/dashboard/properties/${property.id}`}>
+          <Link href={routes.property(property.id)}>
             <div className="flex items-start gap-3">
               <div className="flex size-10 items-center justify-center rounded-lg bg-muted">
                 <IconHome className="size-4" />
@@ -69,7 +73,7 @@ export const getListingColumns = (): ColumnDef<ListingRow>[] => {
     // =========================
     {
       id: "pricing",
-      header: "Publicación",
+      header: () => t("columns.headers.pricing"),
       cell: ({ row }) => {
         const {
           listing_type,
@@ -84,23 +88,23 @@ export const getListingColumns = (): ColumnDef<ListingRow>[] => {
           <div className="flex flex-col gap-1 text-xs">
             <div className="flex items-center gap-2">
               <Badge variant="secondary">
-                {listingTypeLabels[listing_type]}
+                {getListingTypeLabel(listing_type)}
               </Badge>
 
               {price_negotiable && (
-                <Badge variant="outline">Negociable</Badge>
+                <Badge variant="outline">{t("words.negotiable")}</Badge>
               )}
             </div>
 
             <div className="flex items-center gap-1 font-medium text-sm">
               <IconCurrencyDollar className="size-3.5" />
-              {currency} {price.toLocaleString()}
+              {currency} {price.toLocaleString(i18n.language)}
             </div>
 
             {expenses_amount && (
               <span className="text-muted-foreground">
-                Expensas: {currency} {expenses_amount.toLocaleString()}{" "}
-                {expenses_included ? "(incluidas)" : ""}
+                {t("words.expenses")}: {currency} {expenses_amount.toLocaleString(i18n.language)}{" "}
+                {expenses_included ? `(${t("words.included")})` : ""}
               </span>
             )}
           </div>
@@ -113,26 +117,26 @@ export const getListingColumns = (): ColumnDef<ListingRow>[] => {
     // =========================
     {
       accessorKey: "status",
-      header: "Estado",
+      header: () => t("columns.headers.status"),
       cell: ({ row }) => {
         const { status, featured, featured_until } = row.original
 
         return (
           <div className="flex flex-col gap-1">
             <Badge>
-              {listingStatusLabels[status]}
+              {getListingStatusLabel(status)}
             </Badge>
 
             {featured && (
               <Badge variant="outline" className="flex items-center gap-1 text-xs">
                 <IconStar className="size-3" />
-                Destacada
+                {t("words.featured")}
               </Badge>
             )}
 
             {featured && featured_until && (
               <span className="text-[11px] text-muted-foreground">
-                Hasta {new Date(featured_until).toLocaleDateString("es-ES")}
+                {t("words.until")} {new Date(featured_until).toLocaleDateString(i18n.language)}
               </span>
             )}
           </div>
@@ -145,7 +149,7 @@ export const getListingColumns = (): ColumnDef<ListingRow>[] => {
     // =========================
     {
       id: "metrics",
-      header: "Métricas",
+      header: () => t("columns.headers.metrics"),
       cell: ({ row }) => {
         const {
           views_count,
@@ -179,7 +183,7 @@ export const getListingColumns = (): ColumnDef<ListingRow>[] => {
     // =========================
     {
       id: "dates",
-      header: "Fechas",
+      header: () => t("columns.headers.dates"),
       cell: ({ row }) => {
         const {
           created_at,
@@ -190,18 +194,18 @@ export const getListingColumns = (): ColumnDef<ListingRow>[] => {
         return (
           <div className="flex flex-col text-xs">
             <span>
-              Creado: {new Date(created_at).toLocaleDateString("es-ES")}
+              {t("words.created")}: {new Date(created_at).toLocaleDateString(i18n.language)}
             </span>
 
             {published_at && (
               <span className="text-muted-foreground">
-                Pub: {new Date(published_at).toLocaleDateString("es-ES")}
+                {t("words.published")}: {new Date(published_at).toLocaleDateString(i18n.language)}
               </span>
             )}
 
             {available_from && (
               <span className="text-muted-foreground">
-                Disponible: {new Date(available_from).toLocaleDateString("es-ES")}
+                {t("words.available")}: {new Date(available_from).toLocaleDateString(i18n.language)}
               </span>
             )}
           </div>
@@ -227,23 +231,23 @@ export const getListingColumns = (): ColumnDef<ListingRow>[] => {
                 size="icon"
               >
                 <IconDotsVertical className="size-4" />
-                <span className="sr-only">Abrir menú</span>
+                <span className="sr-only">{t("columns.actions.open_menu")}</span>
               </Button>
             </DropdownMenuTrigger>
 
             <DropdownMenuContent align="end" className="w-44">
               <Link href={routes.listing(id)}>
-                <DropdownMenuItem>Editar listing</DropdownMenuItem>
+                <DropdownMenuItem>{t("columns.actions.edit_listing")}</DropdownMenuItem>
               </Link>
 
               <DropdownMenuItem>
-                Ver público
+                {t("columns.actions.view_public")}
               </DropdownMenuItem>
 
               <DropdownMenuSeparator />
 
               <DropdownMenuItem variant="destructive">
-                Eliminar
+                {t("columns.actions.delete")}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

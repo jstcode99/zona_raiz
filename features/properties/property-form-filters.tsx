@@ -1,7 +1,8 @@
 "use client"
 
 import { useEffect, useRef } from "react"
-import { useForm, useWatch } from "react-hook-form"
+import { Resolver, useForm, useWatch } from "react-hook-form"
+import { yupResolver } from "@hookform/resolvers/yup"
 import { Form } from "@/components/ui/form"
 import { propertyTypeOptions } from "@/domain/entities/property.entity"
 import { IconMapPin, IconHome, IconClearAll } from "@tabler/icons-react"
@@ -10,7 +11,11 @@ import countries from '@/lib/countries.json'
 import { PropertyType } from "@/domain/entities/property.enums"
 import { objectToSearchParams, toNumber } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
-import { PropertySearchFormInput, defaultPropertySearchValues } from "@/application/validation/property-search.schema"
+import {
+  propertySearchSchema,
+  PropertySearchFormInput,
+  defaultPropertySearchValues,
+} from "@/application/validation/property-search.schema"
 import { useTranslation } from "react-i18next"
 
 interface PropertyFiltersFormProps {
@@ -65,7 +70,9 @@ export function PropertyFiltersForm({
   const isSyncingFromUrl = useRef(false)
 
   const form = useForm<PropertySearchFormInput>({
+    resolver: yupResolver(propertySearchSchema) as Resolver<PropertySearchFormInput>,
     defaultValues: parseSearchParams(searchParams),
+    mode: "onChange",
   })
 
   const { control } = form
@@ -132,6 +139,7 @@ export function PropertyFiltersForm({
         />
         <Button type="button" size="sm" onClick={handleReset} className="px-2 mt-8">
           <IconClearAll className="size-4 mr-1" />
+          {t("actions.clear_filters")}
         </Button>
       </div>
 

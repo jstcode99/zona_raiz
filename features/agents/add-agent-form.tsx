@@ -8,21 +8,41 @@ import {
 import { Form } from "@/components/ui/form"
 import { useForm } from "react-hook-form"
 import { yupResolver } from '@hookform/resolvers/yup'
-import { useEffect } from "react"
+import { useEffect, useState, useCallback, useRef } from "react"
 import { useTranslation } from "react-i18next"
 import { Spinner } from "@/components/ui/spinner"
 import { useServerMutation } from "@/shared/hooks/use-server-mutation.hook"
 import { flatten } from "@/lib/utils"
 import { addAgentAction } from "@/application/actions/agent.actions"
+import { searchProfilesByEmailAction } from "@/application/actions/profile.actions"
 import { agentToggleFormInput, agentToggleSchema } from "@/application/validation/agent.validation"
+import { ProfileEntity } from "@/domain/entities/profile.entity"
 
 interface Props {
   realEstateId: string
 }
+
+function parseSearchProfilesCookie(): ProfileEntity[] {
+  if (typeof document === "undefined") return []
+  const match = document.cookie.match(/search_profiles_data=([^;]+)/)
+  if (!match) return []
+  try {
+    return JSON.parse(decodeURIComponent(match[1]))
+  } catch {
+    return []
+  }
+}
+
+function clearSearchProfilesCookie() {
+  document.cookie = "search_profiles_data=; Max-Age=0"
+}
+
 export const AddAgentForm = ({
   realEstateId
 }: Props) => {
   const { t } = useTranslation("agents")
+  const [searchOptions, setSearchOptions] = useState<{ label: string; value: string }[]>([])
+  const pendingQueryRef = useRef<string | null>(null)
 
   const form = useForm<agentToggleFormInput>({
     resolver: yupResolver(agentToggleSchema),
@@ -30,16 +50,35 @@ export const AddAgentForm = ({
       real_estate_id: realEstateId,
       profile_id: ''
     },
-    mode: "onBlur", // Validación al perder foco
+    mode: "onBlur",
   })
 
   const { setError, reset, handleSubmit, formState: { isSubmitting } } = form
+
+  const searchMutation = useServerMutation({
+    action: searchProfilesByEmailAction,
+    onSuccess: () => {
+      const profiles = parseSearchProfilesCookie()
+      const options = profiles.map(p => ({
+        label: p.email,
+        value: p.id,
+      }))
+      setSearchOptions(options)
+      clearSearchProfilesCookie()
+      pendingQueryRef.current = null
+    },
+    onError: (error) => {
+      console.error("Search error:", error)
+      setSearchOptions([])
+      pendingQueryRef.current = null
+    },
+  })
 
   const mutation = useServerMutation({
     action: addAgentAction,
     setError,
     onSuccess: () => {
-      reset() // Refrescar para actualizar estado de auth
+      reset()
     },
     onError: (error) => {
       console.error("Sign in error:", error)
@@ -62,11 +101,39 @@ export const AddAgentForm = ({
     mutation.action(data)
   }
 
-  const searchUsersByEmail = async (email: string) => {
-    if (!email || email.length < 2) return []
-    const res = await fetch(`/api/search-users?email=${encodeURIComponent(email)}`)
-    return await res.json()
-  } 
+  const searchUsersByEmail = useCallback(async (email: string): Promise<{ label: string; value: string }[]> => {
+    if (!email || email.length < 2) {
+      setSearchOptions([])
+      return []
+    }
+    // Store pending query
+    pendingQueryRef.current = email
+    setSearchOptions([]) // Clear while loading
+    
+    const formData = new FormData()
+    formData.set("email", email)
+    searchMutation.action(formData)
+    
+    // Return empty array - results will be set via useEffect when mutation completes
+    return []
+  }, [searchMutation])
+
+  // Sync search results from cookie when searchMutation completes
+  useEffect(() => {
+    if (searchMutation.isSuccess) {
+      const profiles = parseSearchProfilesCookie()
+      // Only update if this matches our pending query
+      if (pendingQueryRef.current) {
+        const options = profiles.map(p => ({
+          label: p.email,
+          value: p.id,
+        }))
+        setSearchOptions(options)
+      }
+      clearSearchProfilesCookie()
+      pendingQueryRef.current = null
+    }
+  }, [searchMutation.isSuccess])
 
   const isLoading = isSubmitting || mutation.isPending
 
@@ -89,6 +156,7 @@ export const AddAgentForm = ({
           label={t('agents:fields.email')}
           placeholder={t('agents:placeholders.email')}
           onSearch={searchUsersByEmail}
+          options={searchOptions}
         />
 
         <Field>
