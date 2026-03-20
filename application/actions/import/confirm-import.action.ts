@@ -7,6 +7,7 @@ import { getLangServerSide } from "@/shared/utils/lang";
 import { cookies } from "next/headers";
 import { revalidatePath, revalidateTag } from "next/cache";
 import { createRouter } from "@/i18n/router";
+import { initI18n } from "@/i18n/server";
 import { appModule } from "@/application/modules/app.module";
 import { CACHE_TAGS } from "@/infrastructure/config/constants";
 import { ImportTableName } from "@/domain/entities/import-job.entity";
@@ -29,6 +30,8 @@ export const confirmImportAction = withServerAction(async (formData: FormData) =
   const lang = await getLangServerSide();
   const cookieStore = await cookies();
   const routes = createRouter(lang);
+  const i18n = await initI18n(lang);
+  const t = i18n.getFixedT(lang);
 
   const { importJobService, sessionService, cookiesService } = await appModule(
     lang,
@@ -38,12 +41,12 @@ export const confirmImportAction = withServerAction(async (formData: FormData) =
   // 1. Obtener usuario y real estate
   const userId = await sessionService.getCurrentUserId();
   if (!userId) {
-    throw new Error("Usuario no autenticado");
+    throw new Error(t("import:exceptions.unauthorized"));
   }
 
   const realEstateId = await cookiesService.getRealEstateId();
   if (!realEstateId) {
-    throw new Error("No se encontró la inmobiliaria");
+    throw new Error(t("import:exceptions.real-estate-not-found"));
   }
 
   // 2. Parsear formData
@@ -110,9 +113,7 @@ export const confirmImportAction = withServerAction(async (formData: FormData) =
   }
 
   if (errors.length > 0 && validatedData.length === 0) {
-    throw new Error(
-      `Todos los registros tienen errores de validación. Revise los datos e intente nuevamente.`
-    );
+    throw new Error(t("import:exceptions.all-rows-invalid"));
   }
 
   // 6. Crear job y procesar

@@ -8,6 +8,7 @@ import { cookies } from "next/headers";
 import { appModule } from "@/application/modules/app.module";
 import { importFileSchema } from "@/application/validation/import.schema";
 import { ImportTableName } from "@/domain/entities/import-job.entity";
+import { initI18n } from "@/i18n/server";
 
 export interface UploadAndParseInput {
   file: File;
@@ -28,6 +29,9 @@ export const uploadAndParseImportAction = withServerAction(
     // 2. Obtener servicios
     const lang = await getLangServerSide();
     const cookieStore = await cookies();
+    const i18n = await initI18n(lang);
+    const t = i18n.getFixedT(lang);
+    
     const { importAdapter, importJobService, sessionService, cookiesService } =
       await appModule(lang, {
         cookies: cookieStore,
@@ -36,12 +40,12 @@ export const uploadAndParseImportAction = withServerAction(
     // 3. Obtener usuario y real estate actual
     const userId = await sessionService.getCurrentUserId();
     if (!userId) {
-      throw new Error("Usuario no autenticado");
+      throw new Error(t("import:exceptions.unauthorized"));
     }
 
     const realEstateId = await cookiesService.getRealEstateId();
     if (!realEstateId) {
-      throw new Error("No se encontró la inmobiliaria");
+      throw new Error(t("import:exceptions.real-estate-not-found"));
     }
 
     // 4. Subir archivo

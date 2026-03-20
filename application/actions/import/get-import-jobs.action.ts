@@ -8,11 +8,14 @@ import { appModule } from "@/application/modules/app.module";
 import { toActionResult } from "@/shared/hooks/to-action-result";
 import { ActionResult } from "@/shared/hooks/use-server-mutation.hook";
 import { ImportJobEntity } from "@/domain/entities/import-job.entity";
+import { initI18n } from "@/i18n/server";
 
 export async function getImportJobsAction(): Promise<ActionResult<ImportJobEntity[]>> {
   try {
     const lang = await getLangServerSide();
     const cookieStore = await cookies();
+    const i18n = await initI18n(lang);
+    const t = i18n.getFixedT(lang);
 
     const { importJobService, sessionService } = await appModule(lang, {
       cookies: cookieStore,
@@ -20,7 +23,7 @@ export async function getImportJobsAction(): Promise<ActionResult<ImportJobEntit
 
     const userId = await sessionService.getCurrentUserId();
     if (!userId) {
-      throw new Error("Usuario no autenticado");
+      throw new Error(t("import:exceptions.unauthorized"));
     }
 
     const jobs = await importJobService.getUserJobs(userId, 10);
