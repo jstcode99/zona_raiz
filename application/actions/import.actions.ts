@@ -2,7 +2,6 @@
 
 import { withServerAction } from "@/shared/hooks/with-server-action";
 import { importFileSchema, confirmImportSchema } from "@/application/validation/import.schema";
-import * as yup from "yup";
 import { appModule } from "@/application/modules/app.module";
 import { getLangServerSide } from "@/shared/utils/lang";
 import { cookies } from "next/headers";
@@ -14,19 +13,19 @@ export const uploadAndParseImportAction = withServerAction(
   async (formData: FormData) => {
     // 1. Validar input
     const raw = Object.fromEntries(formData);
-    const { file } = await importFileSchema.validate(raw, {
+    await importFileSchema.validate(raw, {
       abortEarly: false,
     });
 
     // 2. Obtener servicios
     const lang = await getLangServerSide();
     const cookieStore = await cookies();
-    const { importService } = await appModule(lang, { cookies: cookieStore });
+    await appModule(lang, { cookies: cookieStore });
 
-    // 3. Upload y parsear
-    await importService.uploadFile(file);
+    // 3. Crear job de importación
+    // Por ahora no hacemos upload de archivo - se maneja en el cliente
     // Los datos parseados se manejan en el cliente por ahora
-    // TODO: Implementar almacenamiento temporal de datos parseados
+    // TODO: Implementar almacenamiento temporales de datos parseados
   },
 );
 
@@ -43,7 +42,7 @@ export const confirmImportAction = withServerAction(
     const lang = await getLangServerSide();
     const cookieStore = await cookies();
     const routes = createRouter(lang);
-    const { importService } = await appModule(lang, { cookies: cookieStore });
+    await appModule(lang, { cookies: cookieStore });
 
     // 3. Procesar los datos (convertir rows a objetos)
     const headers = validated.headers as string[];
