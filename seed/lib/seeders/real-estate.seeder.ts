@@ -63,10 +63,10 @@ export async function seedRealEstates(
     logger.success("Tablas truncadas correctamente");
   }
 
-  // Insertar Real Estates
+  // Insertar Real Estates con IDs pre-generados
   logger.info(`Insertando ${realEstates.length} inmobiliarias...`);
   const realEstateInserts = realEstates.map((re) => ({
-    // id se autogenera con gen_random_uuid() en la BD
+    id: re.id, // ID pre-generado por Faker para mantener consistencia
     name: re.name,
     description: re.description,
     whatsapp: re.whatsapp,
@@ -80,7 +80,7 @@ export async function seedRealEstates(
 
   const { error: reError } = await supabase
     .from("real_estates")
-    .insert(realEstateInserts);
+    .upsert(realEstateInserts, { onConflict: "id" });
 
   if (reError) {
     logger.error("Error insertando inmobiliarias:", reError.message);
@@ -94,10 +94,8 @@ export async function seedRealEstates(
   const agents: SeedAgent[] = [];
 
   realEstates.forEach((re, index) => {
-    // Encontrar el coordinator para esta inmobiliaria
-    const coordinator = coordinatorProfiles.find(
-      (p) => p.id === coordinatorProfiles[index * 3]?.id,
-    );
+    // El coordinador para esta inmobiliaria está en el índice corresponding
+    const coordinator = coordinatorProfiles[index];
 
     if (coordinator) {
       agents.push({
@@ -108,8 +106,9 @@ export async function seedRealEstates(
     }
 
     // Agregar agentes (3 por inmobiliaria)
-    for (let i = 0; i < 3; i++) {
-      const agentIndex = index * 3 + i;
+    const agentsPerRealEstate = 3;
+    for (let i = 0; i < agentsPerRealEstate; i++) {
+      const agentIndex = index * agentsPerRealEstate + i;
       const agentProfile = agentProfiles[agentIndex];
 
       if (agentProfile && agentProfile.id !== coordinator?.id) {
@@ -126,9 +125,8 @@ export async function seedRealEstates(
   logger.info(`Insertando ${agents.length} relaciones agente-inmobiliaria...`);
 
   const agentInserts = agents.map((agent) => ({
-    // id se autogenera con gen_random_uuid() en la BD
-    real_estate_id: agent.realEstateId,
     profile_id: agent.profileId,
+    real_estate_id: agent.realEstateId,
     role: agent.role,
   }));
 
