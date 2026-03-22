@@ -9,6 +9,9 @@ import { generateFavorites } from "../lib/seeders/favorite.seeder";
 import { generateInquiries } from "../lib/seeders/inquiry.seeder";
 import { formatNumber, formatBytes, generateSlug, generateUUID } from "../lib/logger";
 
+// UUID v4 validation regex pattern
+const UUID_V4_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
 describe("Seed Data Integrity - Real Estates", () => {
   it("should have at least 2 real estates", () => {
     expect(REAL_ESTATES.length).toBeGreaterThanOrEqual(2);
@@ -17,6 +20,12 @@ describe("Seed Data Integrity - Real Estates", () => {
   it("should have unique IDs for all real estates", () => {
     const ids = new Set(REAL_ESTATES.map((re) => re.id));
     expect(ids.size).toBe(REAL_ESTATES.length);
+  });
+
+  it("should have valid UUID v4 format for all real estate IDs", () => {
+    REAL_ESTATES.forEach((re) => {
+      expect(re.id).toMatch(UUID_V4_PATTERN);
+    });
   });
 
   it("should have valid required fields for all real estates", () => {
@@ -53,6 +62,12 @@ describe("Seed Data Integrity - Properties", () => {
   it("should have unique IDs for all properties", () => {
     const ids = new Set(PROPERTIES.map((p) => p.id));
     expect(ids.size).toBe(PROPERTIES.length);
+  });
+
+  it("should have valid UUID v4 format for all property IDs", () => {
+    PROPERTIES.forEach((p) => {
+      expect(p.id).toMatch(UUID_V4_PATTERN);
+    });
   });
 
   it("should have valid required fields for all properties", () => {
@@ -151,6 +166,12 @@ describe("Seed Data Integrity - Listings", () => {
     expect(ids.size).toBe(LISTINGS.length);
   });
 
+  it("should have valid UUID v4 format for all listing IDs", () => {
+    LISTINGS.forEach((l) => {
+      expect(l.id).toMatch(UUID_V4_PATTERN);
+    });
+  });
+
   it("should have valid required fields for all listings", () => {
     LISTINGS.forEach((l) => {
       expect(l.id).toBeTruthy();
@@ -233,6 +254,12 @@ describe("Seed Data Integrity - Property Images", () => {
   it("should have unique IDs for all images", () => {
     const ids = new Set(PROPERTY_IMAGES.map((img) => img.id));
     expect(ids.size).toBe(PROPERTY_IMAGES.length);
+  });
+
+  it("should have valid UUID v4 format for all property image IDs", () => {
+    PROPERTY_IMAGES.forEach((img) => {
+      expect(img.id).toMatch(UUID_V4_PATTERN);
+    });
   });
 
   it("should have exactly one primary image per property that has images", () => {
@@ -622,5 +649,51 @@ describe("Seed Acceptance Criteria", () => {
   it("should have listings distributed across multiple properties", () => {
     const uniquePropertyIds = new Set(LISTINGS.map((l) => l.propertyId));
     expect(uniquePropertyIds.size).toBeGreaterThanOrEqual(5);
+  });
+});
+
+describe("Global ID Integrity", () => {
+  it("should have all IDs globally unique across all entities", () => {
+    const allIds = [
+      ...REAL_ESTATES.map((re) => re.id),
+      ...PROPERTIES.map((p) => p.id),
+      ...LISTINGS.map((l) => l.id),
+      ...PROPERTY_IMAGES.map((img) => img.id),
+    ];
+
+    const uniqueIds = new Set(allIds);
+    expect(uniqueIds.size).toBe(allIds.length);
+  });
+
+  it("should have all IDs in valid UUID v4 format across all entities", () => {
+    const allEntities = [
+      ...REAL_ESTATES.map((re) => ({ type: "real_estate", id: re.id })),
+      ...PROPERTIES.map((p) => ({ type: "property", id: p.id })),
+      ...LISTINGS.map((l) => ({ type: "listing", id: l.id })),
+      ...PROPERTY_IMAGES.map((img) => ({ type: "property_image", id: img.id })),
+    ];
+
+    allEntities.forEach(({ type, id }) => {
+      expect(id).toMatch(UUID_V4_PATTERN);
+    });
+  });
+
+  it("should have realEstateId references pointing to existing real estates", () => {
+    const reIds = new Set(REAL_ESTATES.map((re) => re.id));
+    PROPERTIES.forEach((p) => {
+      expect(reIds.has(p.realEstateId)).toBe(true);
+    });
+  });
+
+  it("should have propertyId references pointing to existing properties", () => {
+    const propIds = new Set(PROPERTIES.map((p) => p.id));
+
+    LISTINGS.forEach((l) => {
+      expect(propIds.has(l.propertyId)).toBe(true);
+    });
+
+    PROPERTY_IMAGES.forEach((img) => {
+      expect(propIds.has(img.propertyId)).toBe(true);
+    });
   });
 });
