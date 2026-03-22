@@ -2,7 +2,7 @@
 // Seed Data - zona_raiz
 // ==========================================
 
-import type { SeedRealEstate, SeedProperty, SeedListing, SeedPropertyImage, SeedInquiry } from "./types";
+import type { SeedRealEstate, SeedProperty, SeedListing, SeedPropertyImage } from "./types";
 
 // Helper para generar URLs de imágenes de prueba usando picsum.photos
 function picsumUrl(seed: number, width = 800, height = 600): string {
@@ -698,97 +698,4 @@ export const PROPERTY_IMAGES: SeedPropertyImage[] = [
   { id: "pi-00000000-0000-0000-0000-000000000016", propertyId: PROPERTIES[9].id, publicUrl: picsumUrl(903, 1200, 800), filename: "pm-03.jpg", fileSize: 334000, mimeType: "image/jpeg", width: 1200, height: 800, displayOrder: 2, isPrimary: false, altText: "Cocina gourmet" },
 ];
 
-// ==========================================
-// INQUIRIES (Consultas)
-// ==========================================
 
-export const INQUIRIES: Omit<SeedInquiry, "listingId">[] = [
-  {
-    id: "in-00000000-0000-0000-0000-000000000001",
-    name: "María González",
-    email: "maria.gonzalez@email.com",
-    phone: "+5491145678901",
-    message: "Me interesa este departamento. ¿Está disponible para visitarla este fin de semana?",
-    source: "web",
-    utmSource: "google",
-    utmMedium: "cpc",
-    utmCampaign: "inmuebles-mdq",
-    status: "new",
-    createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
-  },
-  {
-    id: "in-00000000-0000-0000-0000-000000000002",
-    name: "Juan Pérez",
-    email: "jperez@email.com",
-    phone: "+5491156789012",
-    message: "¿El precio es negociable? ¿Incluye los muebles de la cocina?",
-    source: "web",
-    status: "contacted",
-    notes: "Interesado en negociar. El cliente prefiere USD.",
-    contactedAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
-  },
-  {
-    id: "in-00000000-0000-0000-0000-000000000003",
-    name: "Ana Martínez",
-    email: "anam@email.com",
-    phone: "+5491134567890",
-    message: "¿Tienen fotos del dormitorio principal? ¿La pileta es temperada?",
-    source: "whatsapp",
-    status: "qualified",
-    notes: "Cliente serio, presupuesto aprobado hasta USD 200K.",
-    contactedAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
-  },
-  {
-    id: "in-00000000-0000-0000-0000-000000000004",
-    name: "Carlos Ruiz",
-    email: "cruiz@email.com",
-    phone: "+5491167890123",
-    message: "Necesito algo urgente para mudar mi familia en 2 meses.",
-    source: "phone",
-    utmCampaign: "emergencial",
-    status: "new",
-  },
-  {
-    id: "in-00000000-0000-0000-0000-000000000005",
-    name: "Laura Sánchez",
-    email: "laura.s@email.com",
-    phone: "+5491123456789",
-    message: "¿Aceptan permuta con un departamento más chico?",
-    source: "referral",
-    referrer: "https://www.facebook.com/",
-    status: "converted",
-    notes: "Cliente convirtió. Firmó boleto.",
-    contactedAt: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000).toISOString(),
-    convertedAt: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString(),
-  },
-  {
-    id: "in-00000000-0000-0000-0000-000000000006",
-    name: "Diego Fernández",
-    email: "dfernandez@email.com",
-    message: "Me gustaría recibir más información sobre el loft en Palermo.",
-    source: "web",
-    status: "new",
-  },
-  {
-    id: "in-00000000-0000-0000-0000-000000000007",
-    name: "Patricia López",
-    email: "pato.lopez@email.com",
-    phone: "+5491143210987",
-    message: "¿El edificio tiene洗衣房? ¿Las expensas incluyen la limpieza de la pileta?",
-    source: "whatsapp",
-    status: "contacted",
-    notes: "Consultas sobre amenities. Clienta preocupada por costos adicionales.",
-    contactedAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
-  },
-  {
-    id: "in-00000000-0000-0000-0000-000000000008",
-    name: "Roberto García",
-    email: "rgarcia@email.com",
-    message: "Estoy buscando inversión. ¿Es buena zona para alquilar temporario?",
-    source: "web",
-    utmSource: "instagram",
-    status: "qualified",
-    notes: "Inversionista. Busca rental yield alto.",
-    contactedAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
-  },
-];
