@@ -3,19 +3,24 @@
 // ==========================================
 
 import type { SeedRealEstate, SeedProperty, SeedListing, SeedPropertyImage } from "./types";
+import { generateUUID } from "./lib/logger";
 
-// Helper para generar URLs de imágenes de prueba usando picsum.photos
-function picsumUrl(seed: number, width = 800, height = 600): string {
-  return `https://picsum.photos/seed/${seed}/${width}/${height}`;
-}
+// UUIDs v4 pre-generados para consistencia en datos de seed
+// (Usando generateUUID() de lib/logger.ts para generar estos valores)
 
 // ==========================================
 // REAL ESTATES (Inmobiliarias)
 // ==========================================
 
+const REAL_ESTATE_UUIDS = [
+  "550e8400-e29b-41d4-a716-446655440001",
+  "550e8400-e29b-41d4-a716-446655440002",
+  "550e8400-e29b-41d4-a716-446655440003",
+];
+
 export const REAL_ESTATES: SeedRealEstate[] = [
   {
-    id: "re-00000000-0000-0000-0000-000000000001",
+    id: REAL_ESTATE_UUIDS[0],
     name: "Inmobiliaria Costa del Plata",
     description: "Expertos en propiedades frente al mar y departamentos modernos en las principales ciudades de Argentina. Más de 15 años de experiencia en el mercado inmobiliario.",
     whatsapp: "+5491144445555",
@@ -27,7 +32,7 @@ export const REAL_ESTATES: SeedRealEstate[] = [
     logoUrl: "https://picsum.photos/seed/logo1/200/200",
   },
   {
-    id: "re-00000000-0000-0000-0000-000000000002",
+    id: REAL_ESTATE_UUIDS[1],
     name: "Urban Living Argentina",
     description: "Especialistas en propiedades urbanas, departamentos de diseño y lofts en Buenos Aires y alrededores. Arquitectura contemporánea y espacios inteligentes.",
     whatsapp: "+5491155556666",
@@ -39,7 +44,7 @@ export const REAL_ESTATES: SeedRealEstate[] = [
     logoUrl: "https://picsum.photos/seed/logo2/200/200",
   },
   {
-    id: "re-00000000-0000-0000-0000-000000000003",
+    id: REAL_ESTATE_UUIDS[2],
     name: "Sierra Propiedades",
     description: "Casas y terrenos en las sierras de Córdoba. Vida tranquila y naturaleza en el corazón de Argentina.",
     whatsapp: "+5491134567890",
@@ -56,10 +61,28 @@ export const REAL_ESTATES: SeedRealEstate[] = [
 // PROPERTIES (Propiedades)
 // ==========================================
 
+const PROPERTY_UUIDS = [
+  "550e8400-e29b-41d4-a716-446655440011",
+  "550e8400-e29b-41d4-a716-446655440012",
+  "550e8400-e29b-41d4-a716-446655440013",
+  "550e8400-e29b-41d4-a716-446655440014",
+  "550e8400-e29b-41d4-a716-446655440015",
+  "550e8400-e29b-41d4-a716-446655440016",
+  "550e8400-e29b-41d4-a716-446655440017",
+  "550e8400-e29b-41d4-a716-446655440018",
+  "550e8400-e29b-41d4-a716-446655440019",
+  "550e8400-e29b-41d4-a716-446655440020",
+  "550e8400-e29b-41d4-a716-446655440021",
+  "550e8400-e29b-41d4-a716-446655440022",
+  "550e8400-e29b-41d4-a716-446655440023",
+  "550e8400-e29b-41d4-a716-446655440024",
+  "550e8400-e29b-41d4-a716-446655440025",
+];
+
 export const PROPERTIES: SeedProperty[] = [
   // === Costa del Plata - Mar del Plata ===
   {
-    id: "pr-00000000-0000-0000-0000-000000000001",
+    id: PROPERTY_UUIDS[0],
     realEstateId: REAL_ESTATES[0].id,
     title: "Departamento 3 ambientes con vista al mar",
     slug: "depto-3-ambientes-vista-mar-mdq",
@@ -83,7 +106,7 @@ export const PROPERTIES: SeedProperty[] = [
     amenities: ["pool", "gym", "security", "air_conditioning"],
   },
   {
-    id: "pr-00000000-0000-0000-0000-000000000002",
+    id: PROPERTY_UUIDS[1],
     realEstateId: REAL_ESTATES[0].id,
     title: "Casa/quinta en barrio privado cerca del centro",
     slug: "casa-quinta-barrio-privado-mdq",
@@ -108,7 +131,7 @@ export const PROPERTIES: SeedProperty[] = [
     amenities: ["pool", "security", "garden"],
   },
   {
-    id: "pr-00000000-0000-0000-0000-000000000003",
+    id: PROPERTY_UUIDS[2],
     realEstateId: REAL_ESTATES[0].id,
     title: "Local comercial en Av. Colón",
     slug: "local-comercial-av-colon-mdq",
@@ -129,7 +152,7 @@ export const PROPERTIES: SeedProperty[] = [
     amenities: ["security"],
   },
   {
-    id: "pr-00000000-0000-0000-0000-000000000004",
+    id: PROPERTY_UUIDS[3],
     realEstateId: REAL_ESTATES[0].id,
     title: "Terreno frente al mar en Playa Bristol",
     slug: "terreno-frente-mar-playa-bristol",
@@ -148,7 +171,7 @@ export const PROPERTIES: SeedProperty[] = [
     amenities: [],
   },
   {
-    id: "pr-00000000-0000-0000-0000-000000000005",
+    id: PROPERTY_UUIDS[4],
     realEstateId: REAL_ESTATES[0].id,
     title: "PH con patio y terraza en barrio Los Troncos",
     slug: "ph-patio-terraza-los-troncos",
@@ -175,7 +198,7 @@ export const PROPERTIES: SeedProperty[] = [
 
   // === Urban Living - Buenos Aires ===
   {
-    id: "pr-00000000-0000-0000-0000-000000000006",
+    id: PROPERTY_UUIDS[5],
     realEstateId: REAL_ESTATES[1].id,
     title: "Loft de diseño en Palermo Soho",
     slug: "loft-diseno-palermo-soho",
@@ -199,7 +222,7 @@ export const PROPERTIES: SeedProperty[] = [
     amenities: ["gym", "security", "air_conditioning", "elevator"],
   },
   {
-    id: "pr-00000000-0000-0000-0000-000000000007",
+    id: PROPERTY_UUIDS[6],
     realEstateId: REAL_ESTATES[1].id,
     title: "Oficina premium en Catalinas",
     slug: "oficina-premium-catalinas",
@@ -222,7 +245,7 @@ export const PROPERTIES: SeedProperty[] = [
     amenities: ["gym", "security", "air_conditioning", "elevator"],
   },
   {
-    id: "pr-00000000-0000-0000-0000-000000000008",
+    id: PROPERTY_UUIDS[7],
     realEstateId: REAL_ESTATES[1].id,
     title: "Departamento 2 ambientes en Belgrano",
     slug: "depto-2-ambientes-belgrano",
@@ -246,7 +269,7 @@ export const PROPERTIES: SeedProperty[] = [
     amenities: ["pool", "security", "air_conditioning", "elevator"],
   },
   {
-    id: "pr-00000000-0000-0000-0000-000000000009",
+    id: PROPERTY_UUIDS[8],
     realEstateId: REAL_ESTATES[1].id,
     title: "Casa en Villa Urquiza con potencial",
     slug: "casa-villa-urquiza-potencial",
@@ -271,7 +294,7 @@ export const PROPERTIES: SeedProperty[] = [
     amenities: ["garden", "balcony"],
   },
   {
-    id: "pr-00000000-0000-0000-0000-000000000010",
+    id: PROPERTY_UUIDS[9],
     realEstateId: REAL_ESTATES[1].id,
     title: "Condominio de lujo en Puerto Madero",
     slug: "condominio-lujo-puerto-maderodata",
@@ -297,7 +320,7 @@ export const PROPERTIES: SeedProperty[] = [
 
   // === Sierra Propiedades - Córdoba ===
   {
-    id: "pr-00000000-0000-0000-0000-000000000011",
+    id: PROPERTY_UUIDS[10],
     realEstateId: REAL_ESTATES[2].id,
     title: "Casa estilo alpino en Villa Carlos Paz",
     slug: "casa-alpino-villa-carlos-paz",
@@ -322,7 +345,7 @@ export const PROPERTIES: SeedProperty[] = [
     amenities: ["pool", "security", "garden", "heating"],
   },
   {
-    id: "pr-00000000-0000-0000-0000-000000000012",
+    id: PROPERTY_UUIDS[11],
     realEstateId: REAL_ESTATES[2].id,
     title: "Terreno con vista a las sierras en Mendiolaza",
     slug: "terreno-vista-sierras-mendiolaza",
@@ -341,7 +364,7 @@ export const PROPERTIES: SeedProperty[] = [
     amenities: ["security"],
   },
   {
-    id: "pr-00000000-0000-0000-0000-000000000013",
+    id: PROPERTY_UUIDS[12],
     realEstateId: REAL_ESTATES[2].id,
     title: "Departamento duplex en centro de Carlos Paz",
     slug: "depto-duplex-centro-carlos-paz",
@@ -365,7 +388,7 @@ export const PROPERTIES: SeedProperty[] = [
     amenities: ["balcony", "heating"],
   },
   {
-    id: "pr-00000000-0000-0000-0000-000000000014",
+    id: PROPERTY_UUIDS[13],
     realEstateId: REAL_ESTATES[2].id,
     title: "Bodega/nave industrial en zona rural de Córdoba",
     slug: "bodega-nave-industrial-cordoba",
@@ -388,7 +411,7 @@ export const PROPERTIES: SeedProperty[] = [
     amenities: [],
   },
   {
-    id: "pr-00000000-0000-0000-0000-000000000015",
+    id: PROPERTY_UUIDS[14],
     realEstateId: REAL_ESTATES[2].id,
     title: "Chalet clásico enjesuitico en Jesús María",
     slug: "chalet-clasico-jesus-maria",
@@ -418,10 +441,30 @@ export const PROPERTIES: SeedProperty[] = [
 // LISTINGS (Listados)
 // ==========================================
 
+const LISTING_UUIDS = [
+  "550e8400-e29b-41d4-a716-446655440031",
+  "550e8400-e29b-41d4-a716-446655440032",
+  "550e8400-e29b-41d4-a716-446655440033",
+  "550e8400-e29b-41d4-a716-446655440034",
+  "550e8400-e29b-41d4-a716-446655440035",
+  "550e8400-e29b-41d4-a716-446655440036",
+  "550e8400-e29b-41d4-a716-446655440037",
+  "550e8400-e29b-41d4-a716-446655440038",
+  "550e8400-e29b-41d4-a716-446655440039",
+  "550e8400-e29b-41d4-a716-446655440040",
+  "550e8400-e29b-41d4-a716-446655440041",
+  "550e8400-e29b-41d4-a716-446655440042",
+];
+
+// Helper para generar URLs de imágenes de prueba usando picsum.photos
+function picsumUrl(seed: number, width = 800, height = 600): string {
+  return `https://picsum.photos/seed/${seed}/${width}/${height}`;
+}
+
 export const LISTINGS: SeedListing[] = [
   // Costa del Plata - Mar del Plata
   {
-    id: "li-00000000-0000-0000-0000-000000000001",
+    id: LISTING_UUIDS[0],
     propertyId: PROPERTIES[0].id,
     agentId: "", // Se asigna dinámicamente
     listingType: "sale",
@@ -443,7 +486,7 @@ export const LISTINGS: SeedListing[] = [
     publishedAt: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000).toISOString(),
   },
   {
-    id: "li-00000000-0000-0000-0000-000000000002",
+    id: LISTING_UUIDS[1],
     propertyId: PROPERTIES[0].id,
     agentId: "",
     listingType: "rent",
@@ -465,7 +508,7 @@ export const LISTINGS: SeedListing[] = [
     publishedAt: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString(),
   },
   {
-    id: "li-00000000-0000-0000-0000-000000000003",
+    id: LISTING_UUIDS[2],
     propertyId: PROPERTIES[1].id,
     agentId: "",
     listingType: "sale",
@@ -485,7 +528,7 @@ export const LISTINGS: SeedListing[] = [
     publishedAt: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
   },
   {
-    id: "li-00000000-0000-0000-0000-000000000004",
+    id: LISTING_UUIDS[3],
     propertyId: PROPERTIES[2].id,
     agentId: "",
     listingType: "rent",
@@ -505,7 +548,7 @@ export const LISTINGS: SeedListing[] = [
     publishedAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
   },
   {
-    id: "li-00000000-0000-0000-0000-000000000005",
+    id: LISTING_UUIDS[4],
     propertyId: PROPERTIES[3].id,
     agentId: "",
     listingType: "sale",
@@ -525,7 +568,7 @@ export const LISTINGS: SeedListing[] = [
 
   // Urban Living - Buenos Aires
   {
-    id: "li-00000000-0000-0000-0000-000000000006",
+    id: LISTING_UUIDS[5],
     propertyId: PROPERTIES[5].id,
     agentId: "",
     listingType: "sale",
@@ -545,7 +588,7 @@ export const LISTINGS: SeedListing[] = [
     publishedAt: new Date(Date.now() - 25 * 24 * 60 * 60 * 1000).toISOString(),
   },
   {
-    id: "li-00000000-0000-0000-0000-000000000007",
+    id: LISTING_UUIDS[6],
     propertyId: PROPERTIES[6].id,
     agentId: "",
     listingType: "rent",
@@ -565,7 +608,7 @@ export const LISTINGS: SeedListing[] = [
     publishedAt: new Date(Date.now() - 12 * 24 * 60 * 60 * 1000).toISOString(),
   },
   {
-    id: "li-00000000-0000-0000-0000-000000000008",
+    id: LISTING_UUIDS[7],
     propertyId: PROPERTIES[7].id,
     agentId: "",
     listingType: "sale",
@@ -584,7 +627,7 @@ export const LISTINGS: SeedListing[] = [
     publishedAt: new Date(Date.now() - 8 * 24 * 60 * 60 * 1000).toISOString(),
   },
   {
-    id: "li-00000000-0000-0000-0000-000000000009",
+    id: LISTING_UUIDS[8],
     propertyId: PROPERTIES[9].id,
     agentId: "",
     listingType: "sale",
@@ -606,7 +649,7 @@ export const LISTINGS: SeedListing[] = [
 
   // Sierra Propiedades - Córdoba
   {
-    id: "li-00000000-0000-0000-0000-000000000010",
+    id: LISTING_UUIDS[9],
     propertyId: PROPERTIES[10].id,
     agentId: "",
     listingType: "sale",
@@ -626,7 +669,7 @@ export const LISTINGS: SeedListing[] = [
     publishedAt: new Date(Date.now() - 20 * 24 * 60 * 60 * 1000).toISOString(),
   },
   {
-    id: "li-00000000-0000-0000-0000-000000000011",
+    id: LISTING_UUIDS[10],
     propertyId: PROPERTIES[11].id,
     agentId: "",
     listingType: "sale",
@@ -644,7 +687,7 @@ export const LISTINGS: SeedListing[] = [
     publishedAt: new Date(Date.now() - 40 * 24 * 60 * 60 * 1000).toISOString(),
   },
   {
-    id: "li-00000000-0000-0000-0000-000000000012",
+    id: LISTING_UUIDS[11],
     propertyId: PROPERTIES[12].id,
     agentId: "",
     listingType: "rent",
@@ -670,32 +713,49 @@ export const LISTINGS: SeedListing[] = [
 // PROPERTY IMAGES (Imágenes de propiedades)
 // ==========================================
 
-export const PROPERTY_IMAGES: SeedPropertyImage[] = [
-  // Property 1 - Departamento Mar del Plata
-  { id: "pi-00000000-0000-0000-0000-000000000001", propertyId: PROPERTIES[0].id, publicUrl: picsumUrl(101, 1200, 800), filename: "living.jpg", fileSize: 245000, mimeType: "image/jpeg", width: 1200, height: 800, displayOrder: 0, isPrimary: true, altText: "Living con vista al mar" },
-  { id: "pi-00000000-0000-0000-0000-000000000002", propertyId: PROPERTIES[0].id, publicUrl: picsumUrl(102, 1200, 800), filename: "dormitorio.jpg", fileSize: 198000, mimeType: "image/jpeg", width: 1200, height: 800, displayOrder: 1, isPrimary: false, altText: "Dormitorio principal" },
-  { id: "pi-00000000-0000-0000-0000-000000000003", propertyId: PROPERTIES[0].id, publicUrl: picsumUrl(103, 1200, 800), filename: "cocina.jpg", fileSize: 176000, mimeType: "image/jpeg", width: 1200, height: 800, displayOrder: 2, isPrimary: false, altText: "Cocina completa" },
-  { id: "pi-00000000-0000-0000-0000-000000000004", propertyId: PROPERTIES[0].id, publicUrl: picsumUrl(104, 1200, 800), filename: "banio.jpg", fileSize: 145000, mimeType: "image/jpeg", width: 1200, height: 800, displayOrder: 3, isPrimary: false, altText: "Baño completo" },
-
-  // Property 2 - Casa/quinta Mar del Plata
-  { id: "pi-00000000-0000-0000-0000-000000000005", propertyId: PROPERTIES[1].id, publicUrl: picsumUrl(201, 1200, 800), filename: "fachada.jpg", fileSize: 320000, mimeType: "image/jpeg", width: 1200, height: 800, displayOrder: 0, isPrimary: true, altText: "Fachada de la casa" },
-  { id: "pi-00000000-0000-0000-0000-000000000006", propertyId: PROPERTIES[1].id, publicUrl: picsumUrl(202, 1200, 800), filename: "pileta.jpg", fileSize: 289000, mimeType: "image/jpeg", width: 1200, height: 800, displayOrder: 1, isPrimary: false, altText: "Pileta y jardín" },
-  { id: "pi-00000000-0000-0000-0000-000000000007", propertyId: PROPERTIES[1].id, publicUrl: picsumUrl(203, 1200, 800), filename: "living.jpg", fileSize: 234000, mimeType: "image/jpeg", width: 1200, height: 800, displayOrder: 2, isPrimary: false, altText: "Living con hogar" },
-
-  // Property 6 - Loft Palermo Soho
-  { id: "pi-00000000-0000-0000-0000-000000000008", propertyId: PROPERTIES[5].id, publicUrl: picsumUrl(601, 1200, 800), filename: "loft-01.jpg", fileSize: 356000, mimeType: "image/jpeg", width: 1200, height: 800, displayOrder: 0, isPrimary: true, altText: "Loft Palermo Soho - Living" },
-  { id: "pi-00000000-0000-0000-0000-000000000009", propertyId: PROPERTIES[5].id, publicUrl: picsumUrl(602, 1200, 800), filename: "loft-02.jpg", fileSize: 298000, mimeType: "image/jpeg", width: 1200, height: 800, displayOrder: 1, isPrimary: false, altText: "Altillo dormitorio" },
-  { id: "pi-00000000-0000-0000-0000-000000000010", propertyId: PROPERTIES[5].id, publicUrl: picsumUrl(603, 1200, 800), filename: "loft-03.jpg", fileSize: 267000, mimeType: "image/jpeg", width: 1200, height: 800, displayOrder: 2, isPrimary: false, altText: "Cocina integrated" },
-
-  // Property 10 - Casa Sierra Córdoba
-  { id: "pi-00000000-0000-0000-0000-000000000011", propertyId: PROPERTIES[10].id, publicUrl: picsumUrl(1001, 1200, 800), filename: "chalet-01.jpg", fileSize: 378000, mimeType: "image/jpeg", width: 1200, height: 800, displayOrder: 0, isPrimary: true, altText: "Casa estilo alpino" },
-  { id: "pi-00000000-0000-0000-0000-000000000012", propertyId: PROPERTIES[10].id, publicUrl: picsumUrl(1002, 1200, 800), filename: "chalet-02.jpg", fileSize: 312000, mimeType: "image/jpeg", width: 1200, height: 800, displayOrder: 1, isPrimary: false, altText: "Vista a las sierras" },
-  { id: "pi-00000000-0000-0000-0000-000000000013", propertyId: PROPERTIES[10].id, publicUrl: picsumUrl(1003, 1200, 800), filename: "chalet-03.jpg", fileSize: 289000, mimeType: "image/jpeg", width: 1200, height: 800, displayOrder: 2, isPrimary: false, altText: "Pileta y deck" },
-
-  // Property 9 - Condo Puerto Madero
-  { id: "pi-00000000-0000-0000-0000-000000000014", propertyId: PROPERTIES[9].id, publicUrl: picsumUrl(901, 1200, 800), filename: "pm-01.jpg", fileSize: 456000, mimeType: "image/jpeg", width: 1200, height: 800, displayOrder: 0, isPrimary: true, altText: "Living con vistas" },
-  { id: "pi-00000000-0000-0000-0000-000000000015", propertyId: PROPERTIES[9].id, publicUrl: picsumUrl(902, 1200, 800), filename: "pm-02.jpg", fileSize: 398000, mimeType: "image/jpeg", width: 1200, height: 800, displayOrder: 1, isPrimary: false, altText: "Suite principal" },
-  { id: "pi-00000000-0000-0000-0000-000000000016", propertyId: PROPERTIES[9].id, publicUrl: picsumUrl(903, 1200, 800), filename: "pm-03.jpg", fileSize: 334000, mimeType: "image/jpeg", width: 1200, height: 800, displayOrder: 2, isPrimary: false, altText: "Cocina gourmet" },
+const PROPERTY_IMAGE_UUIDS = [
+  "550e8400-e29b-41d4-a716-446655440051",
+  "550e8400-e29b-41d4-a716-446655440052",
+  "550e8400-e29b-41d4-a716-446655440053",
+  "550e8400-e29b-41d4-a716-446655440054",
+  "550e8400-e29b-41d4-a716-446655440055",
+  "550e8400-e29b-41d4-a716-446655440056",
+  "550e8400-e29b-41d4-a716-446655440057",
+  "550e8400-e29b-41d4-a716-446655440058",
+  "550e8400-e29b-41d4-a716-446655440059",
+  "550e8400-e29b-41d4-a716-446655440060",
+  "550e8400-e29b-41d4-a716-446655440061",
+  "550e8400-e29b-41d4-a716-446655440062",
+  "550e8400-e29b-41d4-a716-446655440063",
+  "550e8400-e29b-41d4-a716-446655440064",
+  "550e8400-e29b-41d4-a716-446655440065",
+  "550e8400-e29b-41d4-a716-446655440066",
 ];
 
+export const PROPERTY_IMAGES: SeedPropertyImage[] = [
+  // Property 1 - Departamento Mar del Plata
+  { id: PROPERTY_IMAGE_UUIDS[0], propertyId: PROPERTIES[0].id, publicUrl: picsumUrl(101, 1200, 800), filename: "living.jpg", fileSize: 245000, mimeType: "image/jpeg", width: 1200, height: 800, displayOrder: 0, isPrimary: true, altText: "Living con vista al mar" },
+  { id: PROPERTY_IMAGE_UUIDS[1], propertyId: PROPERTIES[0].id, publicUrl: picsumUrl(102, 1200, 800), filename: "dormitorio.jpg", fileSize: 198000, mimeType: "image/jpeg", width: 1200, height: 800, displayOrder: 1, isPrimary: false, altText: "Dormitorio principal" },
+  { id: PROPERTY_IMAGE_UUIDS[2], propertyId: PROPERTIES[0].id, publicUrl: picsumUrl(103, 1200, 800), filename: "cocina.jpg", fileSize: 176000, mimeType: "image/jpeg", width: 1200, height: 800, displayOrder: 2, isPrimary: false, altText: "Cocina completa" },
+  { id: PROPERTY_IMAGE_UUIDS[3], propertyId: PROPERTIES[0].id, publicUrl: picsumUrl(104, 1200, 800), filename: "banio.jpg", fileSize: 145000, mimeType: "image/jpeg", width: 1200, height: 800, displayOrder: 3, isPrimary: false, altText: "Baño completo" },
 
+  // Property 2 - Casa/quinta Mar del Plata
+  { id: PROPERTY_IMAGE_UUIDS[4], propertyId: PROPERTIES[1].id, publicUrl: picsumUrl(201, 1200, 800), filename: "fachada.jpg", fileSize: 320000, mimeType: "image/jpeg", width: 1200, height: 800, displayOrder: 0, isPrimary: true, altText: "Fachada de la casa" },
+  { id: PROPERTY_IMAGE_UUIDS[5], propertyId: PROPERTIES[1].id, publicUrl: picsumUrl(202, 1200, 800), filename: "pileta.jpg", fileSize: 289000, mimeType: "image/jpeg", width: 1200, height: 800, displayOrder: 1, isPrimary: false, altText: "Pileta y jardín" },
+  { id: PROPERTY_IMAGE_UUIDS[6], propertyId: PROPERTIES[1].id, publicUrl: picsumUrl(203, 1200, 800), filename: "living.jpg", fileSize: 234000, mimeType: "image/jpeg", width: 1200, height: 800, displayOrder: 2, isPrimary: false, altText: "Living con hogar" },
+
+  // Property 6 - Loft Palermo Soho
+  { id: PROPERTY_IMAGE_UUIDS[7], propertyId: PROPERTIES[5].id, publicUrl: picsumUrl(601, 1200, 800), filename: "loft-01.jpg", fileSize: 356000, mimeType: "image/jpeg", width: 1200, height: 800, displayOrder: 0, isPrimary: true, altText: "Loft Palermo Soho - Living" },
+  { id: PROPERTY_IMAGE_UUIDS[8], propertyId: PROPERTIES[5].id, publicUrl: picsumUrl(602, 1200, 800), filename: "loft-02.jpg", fileSize: 298000, mimeType: "image/jpeg", width: 1200, height: 800, displayOrder: 1, isPrimary: false, altText: "Altillo dormitorio" },
+  { id: PROPERTY_IMAGE_UUIDS[9], propertyId: PROPERTIES[5].id, publicUrl: picsumUrl(603, 1200, 800), filename: "loft-03.jpg", fileSize: 267000, mimeType: "image/jpeg", width: 1200, height: 800, displayOrder: 2, isPrimary: false, altText: "Cocina integrated" },
+
+  // Property 10 - Casa Sierra Córdoba
+  { id: PROPERTY_IMAGE_UUIDS[10], propertyId: PROPERTIES[10].id, publicUrl: picsumUrl(1001, 1200, 800), filename: "chalet-01.jpg", fileSize: 378000, mimeType: "image/jpeg", width: 1200, height: 800, displayOrder: 0, isPrimary: true, altText: "Casa estilo alpino" },
+  { id: PROPERTY_IMAGE_UUIDS[11], propertyId: PROPERTIES[10].id, publicUrl: picsumUrl(1002, 1200, 800), filename: "chalet-02.jpg", fileSize: 312000, mimeType: "image/jpeg", width: 1200, height: 800, displayOrder: 1, isPrimary: false, altText: "Vista a las sierras" },
+  { id: PROPERTY_IMAGE_UUIDS[12], propertyId: PROPERTIES[10].id, publicUrl: picsumUrl(1003, 1200, 800), filename: "chalet-03.jpg", fileSize: 289000, mimeType: "image/jpeg", width: 1200, height: 800, displayOrder: 2, isPrimary: false, altText: "Pileta y deck" },
+
+  // Property 9 - Condo Puerto Madero
+  { id: PROPERTY_IMAGE_UUIDS[13], propertyId: PROPERTIES[9].id, publicUrl: picsumUrl(901, 1200, 800), filename: "pm-01.jpg", fileSize: 456000, mimeType: "image/jpeg", width: 1200, height: 800, displayOrder: 0, isPrimary: true, altText: "Living con vistas" },
+  { id: PROPERTY_IMAGE_UUIDS[14], propertyId: PROPERTIES[9].id, publicUrl: picsumUrl(902, 1200, 800), filename: "pm-02.jpg", fileSize: 398000, mimeType: "image/jpeg", width: 1200, height: 800, displayOrder: 1, isPrimary: false, altText: "Suite principal" },
+  { id: PROPERTY_IMAGE_UUIDS[15], propertyId: PROPERTIES[9].id, publicUrl: picsumUrl(903, 1200, 800), filename: "pm-03.jpg", fileSize: 334000, mimeType: "image/jpeg", width: 1200, height: 800, displayOrder: 2, isPrimary: false, altText: "Cocina gourmet" },
+];
