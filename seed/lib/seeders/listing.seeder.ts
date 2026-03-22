@@ -54,7 +54,7 @@ export async function seedListings(
     );
 
     return {
-      id: listing.id,
+      // id se autogenera con gen_random_uuid() en la BD
       property_id: listing.propertyId,
       agent_id: agentRecord ? `ra-${agentRecord.profileId.split("-").pop()}` : agentId,
       listing_type: listing.listingType,
@@ -83,7 +83,7 @@ export async function seedListings(
 
   const { error } = await supabase
     .from("listings")
-    .upsert(listingInserts, { onConflict: "id" });
+    .insert(listingInserts);
 
   if (error) {
     logger.error("Error insertando listados:", error.message);

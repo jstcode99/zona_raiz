@@ -66,7 +66,7 @@ export async function seedRealEstates(
   // Insertar Real Estates
   logger.info(`Insertando ${realEstates.length} inmobiliarias...`);
   const realEstateInserts = realEstates.map((re) => ({
-    id: re.id,
+    // id se autogenera con gen_random_uuid() en la BD
     name: re.name,
     description: re.description,
     whatsapp: re.whatsapp,
@@ -80,7 +80,7 @@ export async function seedRealEstates(
 
   const { error: reError } = await supabase
     .from("real_estates")
-    .upsert(realEstateInserts, { onConflict: "id" });
+    .insert(realEstateInserts);
 
   if (reError) {
     logger.error("Error insertando inmobiliarias:", reError.message);
@@ -126,7 +126,7 @@ export async function seedRealEstates(
   logger.info(`Insertando ${agents.length} relaciones agente-inmobiliaria...`);
 
   const agentInserts = agents.map((agent) => ({
-    id: `ra-${agent.profileId.split("-").pop()}`,
+    // id se autogenera con gen_random_uuid() en la BD
     real_estate_id: agent.realEstateId,
     profile_id: agent.profileId,
     role: agent.role,
@@ -134,7 +134,7 @@ export async function seedRealEstates(
 
   const { error: raError } = await supabase
     .from("real_estate_agents")
-    .upsert(agentInserts, { onConflict: "real_estate_id,profile_id" });
+    .insert(agentInserts);
 
   if (raError) {
     logger.error("Error insertando agentes:", raError.message);

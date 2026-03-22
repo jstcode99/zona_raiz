@@ -13,101 +13,13 @@ export interface ProfileSeedResult {
 }
 
 /**
- * Genera perfiles de prueba (coordinadores, agentes y clientes).
- */
-export function generateTestProfiles(options: {
-  realEstateCount: number;
-  agentsPerRealEstate: number;
-  clientsCount: number;
-}): ProfileSeedResult {
-  const { realEstateCount, agentsPerRealEstate, clientsCount } = options;
-  const coordinatorProfiles: SeedProfile[] = [];
-  const agentProfiles: SeedProfile[] = [];
-  const clientProfiles: SeedProfile[] = [];
-
-  // Nombres de prueba
-  const coordinatorNames = [
-    "María del Rosario García",
-    "Juan Carlos Martínez",
-    "Ana Lucía Fernández",
-  ];
-
-  const agentNames = [
-    "Pedro Miguel López",
-    "Carmen Rosa Sánchez",
-    "Diego Andrés Rodríguez",
-    "Laura Beatriz Moreno",
-    "Carlos Alberto Juárez",
-    "Sofía Carolina Ruiz",
-    "Martín José Torres",
-    "Valentina Rocío Díaz",
-    "Andrés Felipe Vega",
-    "Isabella María Castro",
-    "Lucas Manuel Ortiz",
-    "Mía Guadalupe Vargas",
-  ];
-
-  const clientNames = [
-    "Roberto Carlos Mendoza",
-    "Patricia Elena Herrera",
-    "Federico David Luna",
-    "Claudia Beatriz Aguirre",
-    "Gustavo Adolfo Ramos",
-    "Daniela Patricia Fuentes",
-    "Eduardo José Mendoza",
-    "Verónica Soledad Cardozo",
-  ];
-
-  // Generar coordinadores (1 por inmobiliaria)
-  for (let i = 0; i < realEstateCount; i++) {
-    const name = coordinatorNames[i] || `Coordinador ${i + 1}`;
-    coordinatorProfiles.push({
-      id: `pr-coord-${String(i + 1).padStart(4, "0")}`,
-      email: `coordinador${i + 1}@zonaraiz.test`,
-      fullName: name,
-      phone: `+54911${String(4000 + i).padStart(4, "0")}${String(1000 + i).padStart(4, "0")}`,
-      role: "real-estate",
-      avatarUrl: `https://picsum.photos/seed/coord${i + 1}/200/200`,
-    });
-  }
-
-  // Generar agentes (3 por inmobiliaria)
-  for (let i = 0; i < realEstateCount * agentsPerRealEstate; i++) {
-    const name = agentNames[i] || `Agente ${i + 1}`;
-    agentProfiles.push({
-      id: `pr-agent-${String(i + 1).padStart(4, "0")}`,
-      email: `agente${i + 1}@zonaraiz.test`,
-      fullName: name,
-      phone: `+54911${String(5000 + i).padStart(4, "0")}${String(1000 + i).padStart(4, "0")}`,
-      role: "real-estate",
-      avatarUrl: `https://picsum.photos/seed/agent${i + 1}/200/200`,
-    });
-  }
-
-  // Generar clientes
-  for (let i = 0; i < clientsCount; i++) {
-    const name = clientNames[i] || `Cliente ${i + 1}`;
-    clientProfiles.push({
-      id: `pr-client-${String(i + 1).padStart(4, "0")}`,
-      email: `cliente${i + 1}@zonaraiz.test`,
-      fullName: name,
-      phone: `+54911${String(6000 + i).padStart(4, "0")}${String(1000 + i).padStart(4, "0")}`,
-      role: "client",
-      avatarUrl: `https://picsum.photos/seed/client${i + 1}/200/200`,
-    });
-  }
-
-  return { coordinatorProfiles, agentProfiles, clientProfiles };
-}
-
-/**
  * Genera usuarios de auth para Supabase.
  */
 export function generateTestUsers(profiles: SeedProfile[]): SeedUser[] {
   return profiles.map((profile) => ({
     id: profile.id,
     email: profile.email,
-    password: "Test123456!", // Contraseña de prueba
+    password: "Test123456!",
     fullName: profile.fullName,
     phone: profile.phone,
     role: profile.role,
