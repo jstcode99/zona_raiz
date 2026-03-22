@@ -93,9 +93,10 @@ export function ListingDetail({
                       {t("listings:detail.labels.expenses")}
                     </span>
                     <p className="font-medium">
-                      {listing.currency} {listing.expenses_amount.toLocaleString()}
+                      {listing.currency}{" "}
+                      {listing.expenses_amount.toLocaleString()}
                       {listing.expenses_included &&
-                        ` ${t("listings:detail.labels.expenses_included")}`}
+                        `${t("listings:detail.labels.expenses_included")}`}
                     </p>
                   </div>
                 )}
@@ -163,7 +164,11 @@ export function ListingDetail({
                   listingId={listing.id}
                   isFavInitial={isFavInitial}
                 />
-                <Button variant="outline" size="icon" title={t("listings:detail.actions.share")}>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  title={t("listings:detail.actions.share")}
+                >
                   <Share2 className="w-4 h-4" />
                 </Button>
               </div>

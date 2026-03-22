@@ -69,17 +69,20 @@ export default async function DashboardLayout({
     const { favoriteService, listingService } = await appModule(lang, {
       cookies: cookieStore,
     });
-    const userId = await sessionService.getCurrentUserId();
-    if (userId) {
-      const userFavorites = await favoriteService.findByProfileId(userId);
-      if (userFavorites.length > 0) {
-        const listingIds = userFavorites.map((f) => f.listing_id);
-        const listings = await listingService.findByIds(listingIds);
-        const listingsMap = new Map(listings.map((l) => [l.id, l]));
-        favorites = userFavorites.map((fav) => ({
-          ...fav,
-          listing: listingsMap.get(fav.listing_id),
-        }));
+    const isAuth = await sessionService.isAuth();
+    if (isAuth) {
+      const userId = await sessionService.getCurrentUserId();
+      if (userId) {
+        const userFavorites = await favoriteService.findByProfileId(userId);
+        if (userFavorites.length > 0) {
+          const listingIds = userFavorites.map((f) => f.listing_id);
+          const listings = await listingService.findByIds(listingIds);
+          const listingsMap = new Map(listings.map((l) => [l.id, l]));
+          favorites = userFavorites.map((fav) => ({
+            ...fav,
+            listing: listingsMap.get(fav.listing_id),
+          }));
+        }
       }
     }
   } catch {
@@ -103,7 +106,7 @@ export default async function DashboardLayout({
       />
       <SidebarInset>
         <SiteHeader />
-        <div className="flex flex-1 flex-col">
+        <div className="flex flex-1 flex-col bg-[radial-gradient(#ccc,transparent_1px)] bg-size-[16px_16px] h-lvh">
           <div className="@container/main flex flex-1 flex-col gap-2">
             <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6  h-full">
               <Suspense fallback={<PageLoader />}>{children}</Suspense>

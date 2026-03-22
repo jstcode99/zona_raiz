@@ -23,18 +23,33 @@ interface HomePageProps {
 export default async function HomePage({ params }: HomePageProps) {
   const { lang } = await params;
   const cookieStore = await cookies();
-  const { sessionService } = await appModule(lang, { cookies: cookieStore });
-  const userId = await sessionService.getCurrentUserId();
-  const isLoggedIn = !!userId;
-
+  const { sessionService, favoriteService } = await appModule(lang, {
+    cookies: cookieStore,
+  });
   const landingData = await getLandingData();
+  let isAuth = false; // ✅ declared in outer scope
+  let favoriteIds: string[] = [];
+
+  try {
+    isAuth = await sessionService.isAuth();
+    if (isAuth) {
+      const userId = await sessionService.getCurrentUserId();
+      if (userId) {
+        const favorites = await favoriteService.findByProfileId(userId);
+        favoriteIds = favorites.map((f) => f.listing_id);
+      }
+    }
+  } catch {
+    isAuth = false;
+    favoriteIds = [];
+  }
 
   return (
-    <div className="bg-white min-h-screen flex flex-col">
-      <LandingNav isLoggedIn={isLoggedIn} />
+    <div className="min-h-screen flex flex-col">
+      <LandingNav isAuth={isAuth} />
       <main className="flex-1">
         <Suspense fallback={<HeroSkeleton />}>
-          <LandingHero cities={landingData.cities} />
+          <LandingHero lang={lang} />
         </Suspense>
         <Suspense fallback={<TrustSectionSkeleton />}>
           <LandingTrust
@@ -43,7 +58,10 @@ export default async function HomePage({ params }: HomePageProps) {
           />
         </Suspense>
         <Suspense fallback={<ListingsSectionSkeleton />}>
-          <LandingListings listings={landingData.listings} />
+          <LandingListings
+            favoriteIds={favoriteIds}
+            listings={landingData.listings}
+          />
         </Suspense>
         <Suspense fallback={<CitiesSectionSkeleton />}>
           <LandingCities cities={landingData.cities} />

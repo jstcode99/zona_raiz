@@ -6,6 +6,16 @@ export const ROUTES = {
     en: "/en",
   },
 
+  contact: {
+    es: "/concto",
+    en: "/contact",
+  },
+
+  about: {
+    es: "/nostros",
+    en: "/about",
+  },
+
   signin: {
     es: "/autenticacion/login",
     en: "/auth/sign-in",
@@ -106,6 +116,11 @@ export const ROUTES = {
     en: "/dashboard/inquiries",
   },
 
+  import: {
+    es: "/panel/importacion",
+    en: "/dashboard/import",
+  },
+
   favorites: {
     es: "/panel/favoritos",
     en: "/dashboard/favorites",
@@ -122,8 +137,8 @@ export const ROUTES = {
   },
 
   search: {
-    es: "/colombia",
-    en: "/colombia",
+    es: "/buscar",
+    en: "/search",
   },
 } as const;
 
