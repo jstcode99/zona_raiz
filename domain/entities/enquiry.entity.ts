@@ -3,7 +3,6 @@ import { EnquirySource, EnquiryStatus } from "./enquiry.enums";
 export interface EnquiryEntity {
   id: string;
   listing_id: string;
-  real_estate_id: string;
 
   name: string;
   email?: string | null;
@@ -78,11 +77,11 @@ export const enquiryStatusLabels: Record<EnquiryStatus, string> = {
 
 /**
  * Input para crear una consulta desde el formulario público.
- * Contiene solo los campos que el usuario puede enviar directamente.
+ * Contiene solo los campos que se insertan en la BD.
+ * NOTA: real_estate_id NO se guarda aquí, se usa solo en el action para consultar WhatsApp.
  */
 export interface CreateEnquiryInput {
   listing_id: string;
-  real_estate_id: string;
   name: string;
   email?: string | null;
   phone?: string | null;
