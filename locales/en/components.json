@@ -1,4 +1,14 @@
 {
+  "nav": {
+    "dashboard": "Dashboard",
+    "real_estates": "real estates",
+    "real_estate": "real estate",
+    "properties": "properties",
+    "listing": "listing",
+    "inquiries": "inquiries",
+    "imports": "imports",
+    "users": "users"
+  },
   "property_images": {
     "drag_drop": "Drag an image here",
     "drop_here": "Drop the image here",

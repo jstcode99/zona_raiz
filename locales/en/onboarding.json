@@ -1,0 +1,25 @@
+{
+  "infographic": {
+    "title": "Zona Raiz",
+    "subtitle": "Register your real estate business",
+    "body": "Discover the complete process to find, sell, rent, and manage your properties.",
+    "steps": {
+      "01": {
+        "title": "Listings",
+        "description": "Publish your properties easily with photos, price, and location in minutes."
+      },
+      "02": {
+        "title": "Request management",
+        "description": "Manage information requests and get clear insights about your leads."
+      },
+      "03": {
+        "title": "Agents",
+        "description": "Assign, coordinate, and add agents"
+      },
+      "04": {
+        "title": "Commercial spaces",
+        "description": "Increase visibility and secure top placement for your listings"
+      }
+    }
+  }
+}

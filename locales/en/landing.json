@@ -16,17 +16,38 @@
     "title_1": "Buy",
     "title_2": "Rent",
     "title_3": "Sell Property",
+    "badge": "Properties in Colombia",
+    "subtitle": "Find your dream home among thousands of available properties.",
+    "see_all": "View all properties",
     "explore": "Explore Properties",
     "search_title": "Find Your Perfect",
     "search_subtitle": "Ideal Property!",
     "location": "Location",
-    "location_placeholder": "Bogota, Colombia",
+    "location_label": "Location",
+    "location_placeholder": "City or neighborhood...",
     "property_type": "Property Type",
+    "property_type_label": "Property type",
     "property_placeholder": "Type of property",
     "beds": "4 Beds",
+    "beds_label": "Bedrooms",
     "baths": "2 Baths",
+    "baths_label": "Bathrooms",
     "max_price": "Max Price",
-    "search_btn": "Search"
+    "max_price_placeholder": "Maximum price",
+    "search_btn": "Search Properties",
+    "searching": "Searching...",
+    "searching_label": "Searching:",
+    "listing_types": {
+      "rent": "Rent",
+      "sale": "Sale"
+    },
+    "property_types": {
+      "apartment": "Apt",
+      "house": "House",
+      "land": "Land",
+      "commercial": "Local",
+      "office": "Office"
+    }
   },
   "trust": {
     "count": "1250+",
