@@ -112,7 +112,7 @@ export const enquirySchema = yup.object({
 
 export type EnquiryFormValues = yup.InferType<typeof enquirySchema>;
 
-export const defaultInquiryValues: Partial<EnquiryFormValues> = {
+export const defaultEnquiryValues: Partial<EnquiryFormValues> = {
   source: "web",
   status: "new",
   email: null,

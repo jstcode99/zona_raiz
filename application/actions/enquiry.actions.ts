@@ -1,7 +1,7 @@
 "use server";
 
 import { withServerAction } from "@/shared/hooks/with-server-action";
-import { revalidateTag } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { cookies } from "next/headers";
 import { getLangServerSide } from "@/shared/utils/lang";
 import { createRouter } from "@/i18n/router";
@@ -28,8 +28,10 @@ export const createEnquiryAction = withServerAction(
     });
 
     // Create the inquiry
+    const realEstateId = raw.real_estate_id as string | undefined;
     await enquiryService.create({
       listing_id: input.listing_id,
+      real_estate_id: realEstateId || "",
       name: input.name,
       email: input.email || null,
       phone: input.phone || null,
@@ -37,8 +39,7 @@ export const createEnquiryAction = withServerAction(
       source: input.source as any,
     });
 
-    // Get real estate whatsapp for redirect (real_estate_id is passed in formData)
-    const realEstateId = raw.real_estate_id as string | undefined;
+    // Throw WhatsApp redirect info as structured error to be handled client-side
     if (realEstateId) {
       try {
         const realEstate = await realEstateService.getById(realEstateId);
@@ -50,17 +51,21 @@ export const createEnquiryAction = withServerAction(
               property: "",
             }) || `Hola, me interesa esta propiedad`,
           );
-          // Redirect to whatsapp (this will be handled client-side via response)
-          return {
-            whatsappUrl: `https://wa.me/${cleanNumber}?text=${encodeMessage}`,
-          };
+          // Throw to signal success with WhatsApp redirect (caught by useServerMutation)
+          const whatsappError = new Error(
+            `__WHATSAPP__:${`https://wa.me/${cleanNumber}?text=${encodeMessage}`}`,
+          );
+          (whatsappError as any)._whatsappUrl = `https://wa.me/${cleanNumber}?text=${encodeMessage}`;
+          throw whatsappError;
         }
-      } catch {
-        // Real estate lookup failed, continue
+      } catch (err: any) {
+        // Re-throw WhatsApp errors, ignore others
+        if (err?._whatsappUrl) throw err;
       }
     }
 
-    return { whatsappUrl: undefined };
+    // Success without WhatsApp - the withServerAction will return { success: true }
+    return;
   },
 );
 

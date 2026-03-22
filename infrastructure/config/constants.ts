@@ -91,6 +91,7 @@ export const CACHE_TAGS = {
     BY_LISTING: (listingId: string) => `enquiry:listing:${listingId}`,
     BY_REAL_ESTATE: (realEstateId: string) =>
       `enquiry:real-estate:${realEstateId}`,
+    COUNT: "enquiry-count",
   },
 } as const;
 
