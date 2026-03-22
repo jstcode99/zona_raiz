@@ -1,13 +1,13 @@
 import { mapEnquiryRowToEntity } from "@/application/mappers/enquiry.mapper";
 import { EnquiryEntity } from "@/domain/entities/enquiry.entity";
 import { EnquiryStatus } from "@/domain/entities/enquiry.enums";
-import { EnquiryPort } from "@/domain/ports/enquiry.port";
+import { EnquiryFilters, EnquiryPort } from "@/domain/ports/enquiry.port";
 import { SupabaseClient } from "@supabase/supabase-js";
 
 export class SupabaseEnquiryAdapter implements EnquiryPort {
   constructor(private readonly supabase: SupabaseClient) {}
 
-  async all(filters?: any): Promise<EnquiryEntity[]> {
+  async all(filters?: EnquiryFilters): Promise<EnquiryEntity[]> {
     let query = this.supabase
       .from("enquiries")
       .select(
@@ -122,7 +122,7 @@ export class SupabaseEnquiryAdapter implements EnquiryPort {
     if (error) throw error;
   }
 
-  async count(filters?: any): Promise<number> {
+  async count(filters?: EnquiryFilters): Promise<number> {
     let query = this.supabase
       .from("enquiries")
       .select("*", { count: "exact", head: true });

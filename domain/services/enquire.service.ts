@@ -1,5 +1,6 @@
-import { EnquiryPort } from "../ports/enquiry.port";
+import { EnquiryPort, EnquiryFilters } from "../ports/enquiry.port";
 import { EnquiryEntity } from "../entities/enquiry.entity";
+import { EnquiryStatus } from "../entities/enquiry.enums";
 
 export type CreateEnquiryInput = Omit<
   EnquiryEntity,
@@ -9,7 +10,7 @@ export type CreateEnquiryInput = Omit<
 export class EnquiryService {
   constructor(private readonly enquiry: EnquiryPort) {}
 
-  all(filters?: any) {
+  all(filters?: EnquiryFilters) {
     return this.enquiry.all(filters);
   }
 
@@ -37,29 +38,29 @@ export class EnquiryService {
     return this.enquiry.delete(id);
   }
 
-  count(filters?: any) {
+  count(filters?: EnquiryFilters) {
     return this.enquiry.count(filters);
   }
 
   markAsContacted(id: string) {
     return this.enquiry.update(id, {
-      status: "contacted" as any,
+      status: EnquiryStatus.CONTACTED,
       contacted_at: new Date().toISOString(),
     });
   }
 
   markAsQualified(id: string) {
-    return this.enquiry.update(id, { status: "qualified" as any });
+    return this.enquiry.update(id, { status: EnquiryStatus.QUALIFIED });
   }
 
   markAsConverted(id: string) {
     return this.enquiry.update(id, {
-      status: "converted" as any,
+      status: EnquiryStatus.CONVERTED,
       converted_at: new Date().toISOString(),
     });
   }
 
   markAsLost(id: string) {
-    return this.enquiry.update(id, { status: "lost" as any });
+    return this.enquiry.update(id, { status: EnquiryStatus.LOST });
   }
 }
