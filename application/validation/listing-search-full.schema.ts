@@ -2,14 +2,14 @@
 // SCHEMA DE BÚSQUEDA COMPLETA PARA LISTINGS
 // (usado en listing-search-filters.tsx)
 // ============================================
-import * as yup from "yup"
-import { searchSchema } from "./base/search.schema"
-import { addressSchema } from "./base/address.schema"
-import { priceSchema } from "./base/price.schema"
-import { bedroomsSchema } from "./base/bedrooms.schema"
-import { bathroomsSchema } from "./base/bathrooms.schema"
-import { propertyTypeSchema } from "./base/property_type.schema"
-import { listingTypeSchema } from "./base/listing_type.schema"
+import * as yup from "yup";
+import { searchSchema } from "./base/search.schema";
+import { addressSchema } from "./base/address.schema";
+import { priceSchema } from "./base/price.schema";
+import { bedroomsSchema } from "./base/bedrooms.schema";
+import { bathroomsSchema } from "./base/bathrooms.schema";
+import { propertyTypeSchema } from "./base/property_type.schema";
+import { listingTypeSchema } from "./base/listing_type.schema";
 
 export const listingSearchFiltersSchema = yup.object({
   q: searchSchema.nullable(),
@@ -26,9 +26,11 @@ export const listingSearchFiltersSchema = yup.object({
   sort_by: yup.string().nullable(),
   page: yup.number().min(1).nullable(),
   limit: yup.number().min(1).max(100).nullable(),
-})
+});
 
-export type ListingSearchFiltersInput = yup.InferType<typeof listingSearchFiltersSchema>
+export type ListingSearchFiltersInput = yup.InferType<
+  typeof listingSearchFiltersSchema
+>;
 
 export const defaultListingSearchFiltersValues: ListingSearchFiltersInput = {
   q: null,
@@ -47,7 +49,7 @@ export const defaultListingSearchFiltersValues: ListingSearchFiltersInput = {
   sort_by: "created_at_desc",
   page: 1,
   limit: 12,
-}
+};
 
 // Alias para compatibilidad con consumidores externos
-export const defaultFilters = defaultListingSearchFiltersValues
+export const defaultFilters = defaultListingSearchFiltersValues;

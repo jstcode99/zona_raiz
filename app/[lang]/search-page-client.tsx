@@ -1,4 +1,5 @@
 "use client";
+
 import { ListingSearchFiltersInput as ListingSearchFiltersType } from "@/application/validation/listing-search-full.schema";
 import { ListingSearchFilters } from "@/features/listing/listing-search-filters";
 import { ListingGrid } from "@/features/listing/listing-grid";
@@ -19,8 +20,12 @@ import {
 import Link from "next/link";
 import { useTranslation } from "react-i18next";
 import { useRouter } from "next/navigation";
-import { buildUrl } from "./_search/helpers";
 import { Lang } from "@/i18n/settings";
+import { LISTINS_SLUG, PROPERTIES_SLUG } from "@/lib/search-config";
+import { ListingType } from "@/domain/entities/listing.enums";
+import { PropertyType } from "@/domain/entities/property.enums";
+import { buildUrl } from "./_search/helpers";
+import { LandingNav } from "@/features/landing/landing-nav";
 
 interface SearchPageClientProps {
   filters: ListingSearchFiltersType;
@@ -32,6 +37,7 @@ interface SearchPageClientProps {
   basePath: string;
   lang: Lang;
   favoriteIds?: string[];
+  isAuth: boolean;
 }
 
 export function SearchPageClient({
@@ -44,36 +50,48 @@ export function SearchPageClient({
   basePath,
   lang,
   favoriteIds,
+  isAuth,
 }: SearchPageClientProps) {
   const { t } = useTranslation();
   const router = useRouter();
 
   const handleFiltersChange = (newFilters: ListingSearchFiltersType) => {
-    const locationParts = [
-      newFilters.country,
-      newFilters.state,
-      newFilters.city,
-    ].filter(Boolean);
-    const newBasePath = `/${lang}${locationParts.length ? `/${locationParts.join("/")}` : ""}`;
+    const parts: string[] = [];
 
-    const url = buildUrl({ ...newFilters, page: 1 }, newBasePath, newFilters);
-    console.log("🔍 navigating to:", url);
-    window.location.href = url;
+    if (newFilters.listing_type) {
+      parts.push(
+        LISTINS_SLUG[newFilters.listing_type as ListingType]?.[lang] ??
+          newFilters.listing_type,
+      );
+    }
+    if (newFilters.type) {
+      parts.push(
+        PROPERTIES_SLUG[newFilters.type as PropertyType]?.[lang] ??
+          newFilters.type,
+      );
+    }
+    if (newFilters.city) parts.push(newFilters.city);
+
+    const newBasePath = `/${lang}${parts.length ? `/${parts.join("/")}` : ""}`;
+    window.location.href = buildUrl(
+      { ...newFilters, page: 1 },
+      newBasePath,
+      newFilters,
+    );
   };
 
   const handleSortChange = (value: string) => {
-    const url = buildUrl({ sort_by: value, page: 1 }, basePath, filters);
-    router.push(url, { scroll: false });
+    router.push(buildUrl({ sort_by: value, page: 1 }, basePath, filters), {
+      scroll: false,
+    });
   };
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="bg-primary/5 border-b">
+      <LandingNav isAuth={isAuth} />
+      <div className="bg-primary border-y">
         <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <Link href="/autenticacion/login" className="hover:text-primary">
-              {t("auth:actions.sign_in")}
-            </Link>
+          <div className="flex items-center gap-2 text-sm  text-primary-foreground">
             <IconMapPin className="size-4" />
             <span className="capitalize">{breadcrumb}</span>
           </div>
@@ -98,10 +116,7 @@ export function SearchPageClient({
             <div className="flex items-center justify-between mb-4">
               <div>
                 <h1 className="text-2xl font-bold capitalize">
-                  {filters.city ||
-                    filters.state ||
-                    filters.country ||
-                    t("words:properties")}
+                  {filters.city || filters.state || t("words:properties")}
                 </h1>
                 <p className="text-sm text-muted-foreground capitalize">
                   {total} {total === 1 ? t("words:result") : t("words:results")}
@@ -117,7 +132,9 @@ export function SearchPageClient({
                   onValueChange={handleSortChange}
                 >
                   <SelectTrigger className="w-50">
-                    <SelectValue placeholder={t("properties:placeholders.order_by")} />
+                    <SelectValue
+                      placeholder={t("properties:placeholders.order_by")}
+                    />
                   </SelectTrigger>
                   <SelectContent>
                     {[
