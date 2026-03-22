@@ -9,6 +9,7 @@ import { appModule } from "@/application/modules/app.module";
 import { initI18n } from "@/i18n/server";
 import { enquirySchema } from "@/application/validation/enquiry.schema";
 import { CACHE_TAGS } from "@/infrastructure/config/constants";
+import { EnquiryStatus } from "@/domain/entities/enquiry.enums";
 
 export const createEnquiryAction = withServerAction(
   async (formData: FormData) => {
@@ -48,9 +49,8 @@ export const createEnquiryAction = withServerAction(
         if (realEstate?.whatsapp) {
           const cleanNumber = realEstate.whatsapp.replace(/[^\d+]/g, "");
           const encodeMessage = encodeURIComponent(
-            t("common:whatsapp.default_message", {
+            t("enquiries:whatsapp.default_message", {
               name: input.name,
-              property: "",
             }) || `Hola, me interesa esta propiedad`,
           );
           // Throw to signal success with WhatsApp redirect (caught by useServerMutation)
@@ -138,10 +138,13 @@ export const updateEnquiryStatusAction = withServerAction(
 
     const id = formData.get("id") as string;
     const status = formData.get("status") as string;
-    if (!id || !status) throw new Error("ID and status required");
+    if (!id || !status)
+      throw new Error(
+        t("validations:required", { attribute: "ID and status" }),
+      );
 
     const userId = await sessionService.getCurrentUserId();
-    if (!userId) throw new Error("No autorizado");
+    if (!userId) throw new Error(t("common:exceptions.unauthorized"));
 
     const inquiry = await enquiryService.findById(id);
     if (!inquiry || !inquiry.listing)
@@ -154,7 +157,7 @@ export const updateEnquiryStatusAction = withServerAction(
     if (!isAdmin && !isCoordinator && !isAssignedAgent)
       throw new Error(t("common:exceptions.unauthorized"));
 
-    await enquiryService.update(id, { status: status as any });
+    await enquiryService.update(id, { status: status as EnquiryStatus });
     revalidatePath(routes.enquiries());
 
     // Invalidar tags específicos del cache
