@@ -1,0 +1,29 @@
+{
+  "infographic": {
+    "title": "Zona Raiz",
+    "subtitle": "Registra tu inmobiliaria",
+    "body": "Descubre el proceso completo para encontrar, vender, rentar y gestionar tu propiedades.",
+    "steps": {
+      "01": {
+        "title": "Publicaciones",
+        "description": "Publica tus propiedades fácilmente con fotos, precio y ubicación en minutos.",
+        "position": "left"
+      },
+      "02": {
+        "title": "Gestión solicutes",
+        "description": "Administra las solicitudes de informacion, obten informacion clara de tus leads.",
+        "position": "left"
+      },
+      "03": {
+        "title": "Agentes",
+        "description": "Asigna, coordina y agrega agentes",
+        "position": "left"
+      },
+      "04": {
+        "title": "Espacios comerciales",
+        "description": "Agrega relevancia y primeros lugares en tus publicaciones",
+        "position": "left"
+      }
+    }
+  }
+}

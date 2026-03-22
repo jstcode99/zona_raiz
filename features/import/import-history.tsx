@@ -13,7 +13,11 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { ImportJobEntity, ImportJobStatus, ImportTableName } from "@/domain/entities/import-job.entity";
+import {
+  ImportJobEntity,
+  ImportJobStatus,
+  ImportTableName,
+} from "@/domain/entities/import-job.entity";
 import { getImportJobsAction } from "@/application/actions/import";
 
 interface ImportHistoryProps {
@@ -68,13 +72,16 @@ export function ImportHistory({ lang }: ImportHistoryProps) {
   };
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString(lang === "es" ? "es-CO" : "en-US", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
+    return new Date(dateString).toLocaleDateString(
+      lang === "es" ? "es-CO" : "en-US",
+      {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+      },
+    );
   };
 
   return (
@@ -91,13 +98,19 @@ export function ImportHistory({ lang }: ImportHistoryProps) {
       <TableBody>
         {isLoading ? (
           <TableRow>
-            <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">
+            <TableCell
+              colSpan={5}
+              className="text-center py-8 text-muted-foreground"
+            >
               {t("messages.loading")}
             </TableCell>
           </TableRow>
         ) : jobs.length === 0 ? (
           <TableRow>
-            <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">
+            <TableCell
+              colSpan={5}
+              className="text-center py-8 text-muted-foreground"
+            >
               {t("messages.no-imports")}
             </TableCell>
           </TableRow>

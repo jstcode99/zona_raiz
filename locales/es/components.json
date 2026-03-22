@@ -1,4 +1,14 @@
 {
+  "nav": {
+    "dashboard": "panel",
+    "real_estates": "inmobiliarias",
+    "real_estate": "inmobiliaria",
+    "properties": "propiedades",
+    "listings": "publicaciones",
+    "inquiries": "consultas",
+    "imports": "importacion",
+    "users": "usuarios"
+  },
   "property_images": {
     "drag_drop": "Arrastra una imagen aquí",
     "drop_here": "Suelta la imagen aquí",

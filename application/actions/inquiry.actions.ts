@@ -124,7 +124,8 @@ export const assignInquiryAction = withServerAction(
 
     const id = formData.get("id") as string;
     const assigned_to = formData.get("assigned_to") as string;
-    if (!id || !assigned_to) throw new Error(t("common:exceptions.unauthorized"));
+    if (!id || !assigned_to)
+      throw new Error(t("common:exceptions.unauthorized"));
 
     const inquiry = await inquiryService.findById(id);
     if (!inquiry || !inquiry.listing)

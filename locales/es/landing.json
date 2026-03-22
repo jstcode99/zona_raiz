@@ -10,23 +10,44 @@
     "faq": "Preguntas Frecuentes",
     "login": "Login / Sign Up",
     "dashboard": "Dashboard",
-    "cta": "Publicar Propiedad"
+    "cta": "Buscar Propiedades"
   },
   "hero": {
     "title_1": "Compra",
     "title_2": "Arrienda",
-    "title_3": "Vende Propiedad",
+    "title_3": "Vende Propiedades",
+    "badge": "Propiedades en Colombia",
+    "subtitle": "Encuentra el hogar de tus sueños entre miles de propiedades disponibles.",
+    "see_all": "Ver todas las propiedades",
     "explore": "Explorar Propiedades",
     "search_title": "Encuentra tu Mejor",
     "search_subtitle": "Propiedad ideal!",
     "location": "Ubicacion",
-    "location_placeholder": "Bogota, Colombia",
+    "location_label": "Ubicación",
+    "location_placeholder": "Ciudad o barrio...",
     "property_type": "Tipo de Propiedad",
+    "property_type_label": "Tipo de propiedad",
     "property_placeholder": "Tipo de apartamento",
     "beds": "4 Hab",
-    "baths": "2 Banos",
-    "max_price": "Precio Maximo",
-    "search_btn": "Buscar"
+    "beds_label": "Habitaciones",
+    "baths": "2 Baños",
+    "baths_label": "Baños",
+    "max_price": "Precio Máximo",
+    "max_price_placeholder": "Precio máximo",
+    "search_btn": "Buscar Propiedades",
+    "searching": "Buscando...",
+    "searching_label": "Buscando:",
+    "listing_types": {
+      "rent": "Arriendo",
+      "sale": "Venta"
+    },
+    "property_types": {
+      "apartment": "Apto",
+      "house": "Casa",
+      "land": "Lote",
+      "commercial": "Local",
+      "office": "Oficina"
+    }
   },
   "trust": {
     "count": "1250+",
