@@ -1,9 +1,9 @@
-export const LANGUAGES = ["es", "en"] as const
+export const LANGUAGES = ["es", "en"] as const;
 
-export type Lang = (typeof LANGUAGES)[number]
-export const fallbackLng: Lang = "es"
+export type Lang = (typeof LANGUAGES)[number];
+export const fallbackLng: Lang = "es";
 
-export const DEFAULT_LANG: Lang = "es"
+export const DEFAULT_LANG: Lang = "es";
 
 export const namespaces = [
   // Domain/Feature namespaces
@@ -15,12 +15,12 @@ export const namespaces = [
   "real-estates",
   "profile",
   "agents",
-  "inquiries",
+  "enquiries",
   "import",
   "images",
   // Common namespaces
   "common",
   "components",
   "validations",
-  "words"
-]
+  "words",
+];

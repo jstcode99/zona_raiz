@@ -1,9 +1,13 @@
 {
-  "title": "Inquiries",
-  "subtitle": "Manage property inquiries",
+  "title": "Enquiries",
+  "subtitle": "Manage property enquiries",
   "labels": {
-    "inquiry": "Inquiry",
-    "new-inquiries": "New inquiries"
+    "enquiry": "Enquiry",
+    "new-inquiries": "New enquiries",
+    "email": "Email",
+    "phone": "Phone",
+    "status": "Status",
+    "source": "Soruce"
   },
   "status": {
     "pending": "Pending",
@@ -11,6 +15,9 @@
     "qualified": "Qualified",
     "converted": "Converted",
     "lost": "Lost"
+  },
+  "actions": {
+    "assign": "Asignar agente"
   },
   "columns": {
     "headers": {
@@ -21,7 +28,9 @@
       "listing": "Listing",
       "assigned_to": "Assigned to",
       "status": "Status",
-      "created_at": "Created"
+      "created_at": "Created",
+      "start_date": "From",
+      "end_date": "To"
     },
     "labels": {
       "no_property": "No property",

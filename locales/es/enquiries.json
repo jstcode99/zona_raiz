@@ -2,8 +2,10 @@
   "title": "Consultas",
   "subtitle": "Gestiona las consultas de tus propiedades",
   "labels": {
-    "inquiry": "Consulta",
-    "new-inquiries": "Nuevas consultas"
+    "enquiry": "Consulta",
+    "new-enquiries": "Nuevas consultas",
+    "email": "Correo",
+    "phone": "Telefono o Whatsapp"
   },
   "status": {
     "pending": "Pendiente",
@@ -11,6 +13,9 @@
     "qualified": "Calificado",
     "converted": "Convertido",
     "lost": "Perdido"
+  },
+  "actions": {
+    "assign": "Asignar agente"
   },
   "columns": {
     "headers": {
@@ -21,7 +26,9 @@
       "listing": "Publicación",
       "assigned_to": "Asignado a",
       "status": "Estado",
-      "created_at": "Creado"
+      "created_at": "Creado",
+      "start_date": "Desde",
+      "end_date": "Hasta"
     },
     "labels": {
       "no_property": "Sin propiedad",

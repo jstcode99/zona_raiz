@@ -1,15 +1,71 @@
 "use server";
 
 import { withServerAction } from "@/shared/hooks/with-server-action";
-import { revalidatePath, revalidateTag } from "next/cache";
-import { getLangServerSide } from "@/shared/utils/lang";
+import { revalidateTag } from "next/cache";
 import { cookies } from "next/headers";
+import { getLangServerSide } from "@/shared/utils/lang";
 import { createRouter } from "@/i18n/router";
 import { appModule } from "@/application/modules/app.module";
 import { initI18n } from "@/i18n/server";
+import { enquirySchema } from "@/application/validation/enquiry.schema";
 import { CACHE_TAGS } from "@/infrastructure/config/constants";
 
-export const deleteInquiryAction = withServerAction(
+export const createEnquiryAction = withServerAction(
+  async (formData: FormData) => {
+    const lang = await getLangServerSide();
+    const cookieStore = await cookies();
+    const i18n = await initI18n(lang);
+    const t = i18n.getFixedT(lang);
+
+    const { enquiryService, realEstateService } = await appModule(lang, {
+      cookies: cookieStore,
+    });
+
+    const raw = Object.fromEntries(formData);
+    const input = await enquirySchema.validate(raw, {
+      abortEarly: false,
+      stripUnknown: true,
+    });
+
+    // Create the inquiry
+    await enquiryService.create({
+      listing_id: input.listing_id,
+      name: input.name,
+      email: input.email || null,
+      phone: input.phone || null,
+      message: input.message || null,
+      source: input.source as any,
+      status: "new" as any,
+    });
+
+    // Get real estate whatsapp for redirect (real_estate_id is passed in formData)
+    const realEstateId = raw.real_estate_id as string | undefined;
+    if (realEstateId) {
+      try {
+        const realEstate = await realEstateService.getById(realEstateId);
+        if (realEstate?.whatsapp) {
+          const cleanNumber = realEstate.whatsapp.replace(/[^\d+]/g, "");
+          const encodeMessage = encodeURIComponent(
+            t("common:whatsapp.default_message", {
+              name: input.name,
+              property: "",
+            }) || `Hola, me interesa esta propiedad`,
+          );
+          // Redirect to whatsapp (this will be handled client-side via response)
+          return {
+            whatsappUrl: `https://wa.me/${cleanNumber}?text=${encodeMessage}`,
+          };
+        }
+      } catch {
+        // Real estate lookup failed, continue
+      }
+    }
+
+    return { whatsappUrl: undefined };
+  },
+);
+
+export const deleteEnquiryAction = withServerAction(
   async (formData: FormData) => {
     const lang = await getLangServerSide();
     const cookieStore = await cookies();
@@ -17,7 +73,7 @@ export const deleteInquiryAction = withServerAction(
     const i18n = await initI18n(lang);
     const t = i18n.getFixedT(lang);
 
-    const { sessionService, inquiryService } = await appModule(lang, {
+    const { sessionService, enquiryService } = await appModule(lang, {
       cookies: cookieStore,
     });
 
@@ -33,7 +89,7 @@ export const deleteInquiryAction = withServerAction(
 
     if (!userId) throw new Error(t("common:exceptions.unauthorized"));
 
-    const inquiry = await inquiryService.findById(id);
+    const inquiry = await enquiryService.findById(id);
     if (!inquiry || !inquiry.listing)
       throw new Error(t("common:exceptions.data_not_found"));
 
@@ -44,15 +100,15 @@ export const deleteInquiryAction = withServerAction(
     if (!isAdmin && !isCoordinator && !isAssignedAgent)
       throw new Error(t("common:exceptions.unauthorized"));
 
-    await inquiryService.delete(id);
+    await enquiryService.delete(id);
 
-    revalidatePath(routes.inquiries());
+    revalidatePath(routes.enquiries());
 
     // Invalidar tags específicos del cache
-    revalidateTag(CACHE_TAGS.INQUIRY.PRINCIPAL, { expire: 0 });
-    revalidateTag(CACHE_TAGS.INQUIRY.ALL, { expire: 0 });
-    revalidateTag(CACHE_TAGS.INQUIRY.DETAIL(id), { expire: 0 });
-    revalidateTag(CACHE_TAGS.INQUIRY.COUNT, { expire: 0 });
+    revalidateTag(CACHE_TAGS.ENQUIRY.PRINCIPAL, { expire: 0 });
+    revalidateTag(CACHE_TAGS.ENQUIRY.ALL, { expire: 0 });
+    revalidateTag(CACHE_TAGS.ENQUIRY.DETAIL(id), { expire: 0 });
+    revalidateTag(CACHE_TAGS.ENQUIRY.COUNT, { expire: 0 });
     revalidateTag(CACHE_TAGS.LISTING.DETAIL(inquiry.listing_id), { expire: 0 });
     if (inquiry.assigned_to) {
       revalidateTag(CACHE_TAGS.AGENT.BY_REAL_ESTATE(inquiry.assigned_to), {
@@ -62,7 +118,7 @@ export const deleteInquiryAction = withServerAction(
   },
 );
 
-export const updateInquiryStatusAction = withServerAction(
+export const updateEnquiryStatusAction = withServerAction(
   async (formData: FormData) => {
     const lang = await getLangServerSide();
     const cookieStore = await cookies();
@@ -70,7 +126,7 @@ export const updateInquiryStatusAction = withServerAction(
     const i18n = await initI18n(lang);
     const t = i18n.getFixedT(lang);
 
-    const { sessionService, inquiryService } = await appModule(lang, {
+    const { sessionService, enquiryService } = await appModule(lang, {
       cookies: cookieStore,
     });
 
@@ -81,7 +137,7 @@ export const updateInquiryStatusAction = withServerAction(
     const userId = await sessionService.getCurrentUserId();
     if (!userId) throw new Error("No autorizado");
 
-    const inquiry = await inquiryService.findById(id);
+    const inquiry = await enquiryService.findById(id);
     if (!inquiry || !inquiry.listing)
       throw new Error(t("common:exceptions.data_not_found"));
 
@@ -92,14 +148,14 @@ export const updateInquiryStatusAction = withServerAction(
     if (!isAdmin && !isCoordinator && !isAssignedAgent)
       throw new Error(t("common:exceptions.unauthorized"));
 
-    await inquiryService.update(id, { status: status as any });
-    revalidatePath(routes.inquiries());
+    await enquiryService.update(id, { status: status as any });
+    revalidatePath(routes.enquiries());
 
     // Invalidar tags específicos del cache
-    revalidateTag(CACHE_TAGS.INQUIRY.PRINCIPAL, { expire: 0 });
-    revalidateTag(CACHE_TAGS.INQUIRY.ALL, { expire: 0 });
-    revalidateTag(CACHE_TAGS.INQUIRY.DETAIL(id), { expire: 0 });
-    revalidateTag(CACHE_TAGS.INQUIRY.COUNT, { expire: 0 });
+    revalidateTag(CACHE_TAGS.ENQUIRY.PRINCIPAL, { expire: 0 });
+    revalidateTag(CACHE_TAGS.ENQUIRY.ALL, { expire: 0 });
+    revalidateTag(CACHE_TAGS.ENQUIRY.DETAIL(id), { expire: 0 });
+    revalidateTag(CACHE_TAGS.ENQUIRY.COUNT, { expire: 0 });
     revalidateTag(CACHE_TAGS.LISTING.DETAIL(inquiry.listing_id), { expire: 0 });
     if (inquiry.assigned_to) {
       revalidateTag(CACHE_TAGS.AGENT.BY_REAL_ESTATE(inquiry.assigned_to), {
@@ -109,7 +165,7 @@ export const updateInquiryStatusAction = withServerAction(
   },
 );
 
-export const assignInquiryAction = withServerAction(
+export const assignEnquiryAction = withServerAction(
   async (formData: FormData) => {
     const lang = await getLangServerSide();
     const cookieStore = await cookies();
@@ -117,7 +173,7 @@ export const assignInquiryAction = withServerAction(
     const i18n = await initI18n(lang);
     const t = i18n.getFixedT(lang);
 
-    const { sessionService, inquiryService, profileService } = await appModule(
+    const { sessionService, enquiryService, profileService } = await appModule(
       lang,
       { cookies: cookieStore },
     );
@@ -127,7 +183,7 @@ export const assignInquiryAction = withServerAction(
     if (!id || !assigned_to)
       throw new Error(t("common:exceptions.unauthorized"));
 
-    const inquiry = await inquiryService.findById(id);
+    const inquiry = await enquiryService.findById(id);
     if (!inquiry || !inquiry.listing)
       throw new Error(t("common:exceptions.data_not_found"));
 
@@ -147,15 +203,15 @@ export const assignInquiryAction = withServerAction(
     );
     if (!targetAgent) throw new Error(t("common:exceptions.unauthorized"));
 
-    await inquiryService.update(id, { assigned_to });
+    await enquiryService.update(id, { assigned_to });
 
-    revalidatePath(routes.inquiries());
+    revalidatePath(routes.enquiries());
 
     // Invalidar tags específicos del cache
-    revalidateTag(CACHE_TAGS.INQUIRY.PRINCIPAL, { expire: 0 });
-    revalidateTag(CACHE_TAGS.INQUIRY.ALL, { expire: 0 });
-    revalidateTag(CACHE_TAGS.INQUIRY.DETAIL(id), { expire: 0 });
-    revalidateTag(CACHE_TAGS.INQUIRY.COUNT, { expire: 0 });
+    revalidateTag(CACHE_TAGS.ENQUIRY.PRINCIPAL, { expire: 0 });
+    revalidateTag(CACHE_TAGS.ENQUIRY.ALL, { expire: 0 });
+    revalidateTag(CACHE_TAGS.ENQUIRY.DETAIL(id), { expire: 0 });
+    revalidateTag(CACHE_TAGS.ENQUIRY.COUNT, { expire: 0 });
     revalidateTag(CACHE_TAGS.LISTING.DETAIL(inquiry.listing_id), { expire: 0 });
     // Invalidar agent antiguo y nuevo
     if (inquiry.assigned_to) {

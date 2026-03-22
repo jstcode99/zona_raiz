@@ -134,10 +134,28 @@
       "view_tour": "View 360° tour",
       "view_video": "View video",
       "whatsapp": "WhatsApp",
-      "share": "Share"
+      "share": "Share",
+      "contact": "Contact"
     },
     "words": {
       "price_negotiable": "Negotiable price"
+    },
+    "contact": {
+      "title": "Contact agent",
+      "subtitle": "Send us a message and we'll get back to you soon",
+      "name": "Name",
+      "email": "Email",
+      "phone": "Phone",
+      "message": "Message",
+      "placeholder": {
+        "name": "Your full name",
+        "email": "your@email.com",
+        "phone": "Your phone number",
+        "message": "How can we help you?"
+      },
+      "submit": "Send message",
+      "success": "Message sent successfully",
+      "error": "Error sending message"
     }
   },
   "listing_types": {

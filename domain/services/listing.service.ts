@@ -1,4 +1,8 @@
-import { ListingPort, ListingCountFilters, ListingSearchFilters } from "@/domain/ports/listing.port";
+import {
+  ListingPort,
+  ListingCountFilters,
+  ListingSearchFilters,
+} from "@/domain/ports/listing.port";
 import { ListingEntity } from "@/domain/entities/listing.entity";
 import { unstable_cache } from "next/cache";
 import { Lang } from "@/i18n/settings";
@@ -111,7 +115,9 @@ export class ListingService {
         tags: [
           CACHE_TAGS.LISTING.PRINCIPAL,
           CACHE_TAGS.LISTING.FEATURED,
-          ...(realEstateId ? [CACHE_TAGS.REAL_ESTATE.DETAIL(realEstateId)] : []),
+          ...(realEstateId
+            ? [CACHE_TAGS.REAL_ESTATE.DETAIL(realEstateId)]
+            : []),
         ],
       },
     )();
@@ -180,7 +186,10 @@ export class ListingService {
       [`listing-count:real-estate:${realEstateId}`],
       {
         revalidate: 300,
-        tags: [CACHE_TAGS.LISTING.PRINCIPAL, CACHE_TAGS.REAL_ESTATE.DETAIL(realEstateId)],
+        tags: [
+          CACHE_TAGS.LISTING.PRINCIPAL,
+          CACHE_TAGS.REAL_ESTATE.DETAIL(realEstateId),
+        ],
       },
     )();
   }
@@ -224,7 +233,10 @@ export class ListingService {
       [cacheKey],
       {
         revalidate: 300,
-        tags: [CACHE_TAGS.LISTING.PRINCIPAL, CACHE_TAGS.REAL_ESTATE.DETAIL(realEstateId)],
+        tags: [
+          CACHE_TAGS.LISTING.PRINCIPAL,
+          CACHE_TAGS.REAL_ESTATE.DETAIL(realEstateId),
+        ],
       },
     )();
   }
@@ -241,7 +253,10 @@ export class ListingService {
       [cacheKey],
       {
         revalidate: 60,
-        tags: [CACHE_TAGS.LISTING.PRINCIPAL, CACHE_TAGS.LISTING.SIMPLE_PUBLISHED],
+        tags: [
+          CACHE_TAGS.LISTING.PRINCIPAL,
+          CACHE_TAGS.LISTING.SIMPLE_PUBLISHED,
+        ],
       },
     )();
   }
@@ -322,11 +337,17 @@ export class ListingService {
     )();
   }
 
-  countByStatusAndMonth(year: number, filters?: Omit<ListingCountFilters, "start_date" | "end_date">) {
+  countByStatusAndMonth(
+    year: number,
+    filters?: Omit<ListingCountFilters, "start_date" | "end_date">,
+  ) {
     return this.listingPort.countByStatusAndMonth(year, filters);
   }
 
-  getCachedCountByStatusAndMonth(year: number, filters?: Omit<ListingCountFilters, "start_date" | "end_date">) {
+  getCachedCountByStatusAndMonth(
+    year: number,
+    filters?: Omit<ListingCountFilters, "start_date" | "end_date">,
+  ) {
     const cacheKey = `listing-count:status-month:${year}:${filters?.real_estate_id || "all"}`;
 
     return unstable_cache(

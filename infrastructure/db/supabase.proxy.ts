@@ -2,17 +2,18 @@ import { NextRequest, NextResponse } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 import { EUserRole } from "@/domain/entities/profile.entity";
 import { COOKIE_NAMES } from "../config/constants";
-import { PUBLIC_ROUTES } from "../config/routes";
+import { getRoutes, ROUTES } from "../config/routes";
 import { appModule } from "@/application/modules/app.module";
 import { detectLang } from "@/i18n/detect-lang";
 import { createRouter } from "@/i18n/router";
+import { Lang } from "@/i18n/settings";
 
 export async function updateSession(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const lang = detectLang(request);
   const routes = createRouter(lang);
 
-  if (isPublicRoute(pathname)) {
+  if (isPublicRoute(pathname, lang)) {
     return NextResponse.next();
   }
 
@@ -168,8 +169,9 @@ function SupabaseServerClient(request: NextRequest, response: NextResponse) {
   );
 }
 
-function isPublicRoute(pathname: string) {
-  return PUBLIC_ROUTES.some((route) => isRoute(pathname, route));
+function isPublicRoute(pathname: string, lang: Lang) {
+  // implement isPublicRoute with ROUTES
+  return true;
 }
 
 function isRoute(pathname: string, base: string) {

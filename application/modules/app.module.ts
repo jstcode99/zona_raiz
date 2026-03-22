@@ -8,8 +8,8 @@ import { AgentService } from "@/domain/services/agent.service";
 import { CookieContext } from "@/interfaces/http/http-context";
 import { CookiesAdapter } from "@/infrastructure/cookies/cookies.adapter";
 import { CookiesService } from "@/domain/services/cookies.service";
-import { SupabaseInquiryAdapter } from "@/infrastructure/adapters/supabase/supabase-inquiry.adapter";
-import { InquiryService } from "@/domain/services/inquire.service";
+import { SupabaseEnquiryAdapter } from "@/infrastructure/adapters/supabase/supabase-enquiry.adapter";
+import { EnquiryService } from "@/domain/services/enquire.service";
 import { SupabaseListingAdapter } from "@/infrastructure/adapters/supabase/supabase-listing.adapter";
 import { ListingService } from "@/domain/services/listing.service";
 import { OnboardingService } from "@/domain/services/onboarding.service";
@@ -39,7 +39,7 @@ export async function appModule(lang: Lang = "es", ctx: CookieContext) {
   const propertyAdapter = new SupabasePropertyAdapter(supabase);
   const propertyImageAdapter = new SupabasePropertyImageAdapter(supabase);
 
-  const inquiryAdapter = new SupabaseInquiryAdapter(supabase);
+  const enquiryAdapter = new SupabaseEnquiryAdapter(supabase);
   const sessionAdapter = new SupabaseSessionAdapter(supabase, profileAdapter);
   const listingAdapter = new SupabaseListingAdapter(supabase);
   const userAdapter = new SupabaseUserAdapter(supabase);
@@ -50,7 +50,7 @@ export async function appModule(lang: Lang = "es", ctx: CookieContext) {
 
   const agentService = new AgentService(agentAdapter, lang);
   const cookiesService = new CookiesService(cookiesAdapter);
-  const inquiryService = new InquiryService(inquiryAdapter);
+  const enquiryService = new EnquiryService(enquiryAdapter);
   const listingService = new ListingService(listingAdapter, lang);
   const sessionService = new SessionService(
     sessionAdapter,
@@ -81,7 +81,7 @@ export async function appModule(lang: Lang = "es", ctx: CookieContext) {
     listingAdapter,
     agentService,
     cookiesService,
-    inquiryService,
+    enquiryService,
     listingService,
     sessionService,
     onboardingService,

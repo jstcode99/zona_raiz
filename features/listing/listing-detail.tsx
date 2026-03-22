@@ -10,6 +10,7 @@ import { FavoriteToggleButton } from "@/features/favorites/favorite-toggle-butto
 import { useTranslation } from "react-i18next";
 import { ListingDetailDTO } from "@/application/mappers/listing.mapper";
 import { useListingOptions } from "./hooks/use-listing-options";
+import { EnquiryForm } from "./enquiry-form";
 
 interface ListingDetailProps {
   data: ListingDetailDTO | null | undefined;
@@ -206,6 +207,14 @@ export function ListingDetail({
                 <p className="text-foreground">{property.real_estate.name}</p>
               </CardContent>
             </Card>
+          )}
+
+          {/* Contact Form */}
+          {property.real_estate_id && (
+            <EnquiryForm
+              listingId={listing.id}
+              realEstateId={property.real_estate_id}
+            />
           )}
 
           {/* Keywords */}

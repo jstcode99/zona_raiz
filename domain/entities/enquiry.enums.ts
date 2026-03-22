@@ -1,4 +1,4 @@
-export enum InquirySource {
+export enum EnquirySource {
   WEB = "web",
   WHATSAPP = "whatsapp",
   PHONE = "phone",
@@ -6,7 +6,7 @@ export enum InquirySource {
   REFERRAL = "referral",
 }
 
-export enum InquiryStatus {
+export enum EnquiryStatus {
   NEW = "new",
   CONTACTED = "contacted",
   QUALIFIED = "qualified",
@@ -14,5 +14,5 @@ export enum InquiryStatus {
   LOST = "lost",
 }
 
-export const inquirySourceValues: string[] = Object.values(InquirySource);
-export const inquiryStatusValues: string[] = Object.values(InquiryStatus);
+export const enquirySourceValues: string[] = Object.values(EnquirySource);
+export const enquiryStatusValues: string[] = Object.values(EnquiryStatus);

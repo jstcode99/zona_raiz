@@ -134,10 +134,28 @@
       "view_tour": "Ver tour 360°",
       "view_video": "Ver video",
       "whatsapp": "WhatsApp",
-      "share": "Compartir"
+      "share": "Compartir",
+      "contact": "Contactar"
     },
     "words": {
       "price_negotiable": "Precio negociable"
+    },
+    "contact": {
+      "title": "Contactar agente",
+      "subtitle": "Escríbenos y te atenderemos pronto",
+      "name": "Nombre",
+      "email": "Email",
+      "phone": "Teléfono",
+      "message": "Mensaje",
+      "placeholder": {
+        "name": "Tu nombre completo",
+        "email": "tu@email.com",
+        "phone": "Tu número de teléfono",
+        "message": "¿En qué podemos ayudarte?"
+      },
+      "submit": "Enviar mensaje",
+      "success": "Mensaje enviado correctamente",
+      "error": "Error al enviar el mensaje"
     }
   },
   "listing_types": {

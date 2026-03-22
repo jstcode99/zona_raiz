@@ -111,9 +111,9 @@ export const ROUTES = {
     en: "/dashboard/listings",
   },
 
-  inquiries: {
+  enquiries: {
     es: "/panel/consultas",
-    en: "/dashboard/inquiries",
+    en: "/dashboard/enquiries",
   },
 
   import: {
@@ -147,38 +147,3 @@ type Lang = "es" | "en";
 export function getRoutes(keys: readonly (keyof typeof ROUTES)[], lang: Lang) {
   return keys.map((key) => ROUTES[key][lang]);
 }
-
-export const PUBLIC_ROUTE_KEYS = [
-  "home",
-  "signin",
-  "signup",
-  "otp",
-  "callback",
-] as const;
-
-export const PROTECTED_ROUTE_KEYS = [
-  "dashboard",
-  "realEstates",
-  "realEstate",
-  "properties",
-  "listings",
-  "inquiries",
-  "favorites",
-] as const;
-
-export const PUBLIC_ROUTES = [
-  ...getRoutes(PUBLIC_ROUTE_KEYS, "en"),
-  ...getRoutes(PUBLIC_ROUTE_KEYS, "es"),
-];
-
-export const PROTECTED_BASE_ROUTES = [
-  ...getRoutes(PROTECTED_ROUTE_KEYS, "en"),
-  ...getRoutes(PROTECTED_ROUTE_KEYS, "es"),
-  "/api",
-];
-
-export const ROLE_ACCESS: Record<EUserRole, string[]> = {
-  admin: PROTECTED_BASE_ROUTES,
-  "real-estate": PROTECTED_BASE_ROUTES,
-  client: PROTECTED_BASE_ROUTES,
-};
