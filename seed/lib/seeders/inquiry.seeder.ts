@@ -3,8 +3,8 @@
 // ==========================================
 
 import { SupabaseClient } from "@supabase/supabase-js";
-import type { SeedInquiry, SeedListing, SeedAgent } from "../types";
-import { SeedLogger } from "../lib/logger";
+import type { SeedInquiry, SeedListing, SeedAgent } from "../../types";
+import { SeedLogger } from "../logger";
 
 export interface GeneratedInquiry extends Omit<SeedInquiry, "listingId"> {
   listingId: string;
@@ -152,7 +152,7 @@ export function generateInquiries(
       contactedAt,
       convertedAt,
       notes,
-      created_at: createdAt,
+      createdAt,
     });
   }
 
@@ -167,7 +167,7 @@ export async function seedInquiries(
   inquiries: GeneratedInquiry[],
   truncate: boolean
 ): Promise<void> {
-  const logger = new SeedLogger();
+  const logger = SeedLogger;
 
   logger.subSection("Seed Inquiries");
 
@@ -200,7 +200,7 @@ export async function seedInquiries(
     assigned_to: inq.assignedTo || null,
     contacted_at: inq.contactedAt || null,
     converted_at: inq.convertedAt || null,
-    created_at: inq.created_at || new Date().toISOString(),
+    created_at: inq.createdAt || new Date().toISOString(),
   }));
 
   const { error } = await supabase

@@ -3,8 +3,8 @@
 // ==========================================
 
 import { SupabaseClient } from "@supabase/supabase-js";
-import type { SeedProperty, SeedPropertyImage, SeedAgent } from "../types";
-import { SeedLogger } from "../lib/logger";
+import type { SeedProperty, SeedPropertyImage, SeedAgent } from "../../types";
+import { SeedLogger } from "../logger";
 
 export interface PropertySeedResult {
   properties: SeedProperty[];
@@ -20,7 +20,7 @@ export async function seedProperties(
   agents: SeedAgent[],
   truncate: boolean
 ): Promise<PropertySeedResult> {
-  const logger = new SeedLogger();
+  const logger = SeedLogger;
 
   logger.subSection("Seed Properties");
 
@@ -95,7 +95,7 @@ export async function seedPropertyImages(
   images: SeedPropertyImage[],
   truncate: boolean
 ): Promise<void> {
-  const logger = new SeedLogger();
+  const logger = SeedLogger;
 
   logger.subSection("Seed Property Images");
 

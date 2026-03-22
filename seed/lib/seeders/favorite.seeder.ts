@@ -3,8 +3,8 @@
 // ==========================================
 
 import { SupabaseClient } from "@supabase/supabase-js";
-import type { SeedFavorite, SeedListing, SeedProfile } from "../types";
-import { SeedLogger } from "../lib/logger";
+import type { SeedFavorite, SeedListing, SeedProfile } from "../../types";
+import { SeedLogger } from "../logger";
 
 /**
  * Genera favoritos aleatorios entre clientes y listados activos.
@@ -45,7 +45,7 @@ export async function seedFavorites(
   favorites: SeedFavorite[],
   truncate: boolean
 ): Promise<void> {
-  const logger = new SeedLogger();
+  const logger = SeedLogger;
 
   logger.subSection("Seed Favorites");
 

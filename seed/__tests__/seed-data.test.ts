@@ -82,15 +82,23 @@ describe("TestSeedLogger (clone of SeedLogger)", () => {
 });
 
 describe("Profile Generation Logic", () => {
+  // Types for test profiles
+  interface TestProfile {
+    id: string;
+    email: string;
+    fullName: string;
+    role: string;
+  }
+
   // Helper function to generate profiles (simplified version)
   function generateTestProfiles(options: {
     realEstateCount: number;
     agentsPerRealEstate: number;
     clientsCount: number;
   }) {
-    const coordinatorProfiles: any[] = [];
-    const agentProfiles: any[] = [];
-    const clientProfiles: any[] = [];
+    const coordinatorProfiles: TestProfile[] = [];
+    const agentProfiles: TestProfile[] = [];
+    const clientProfiles: TestProfile[] = [];
 
     const coordinatorNames = [
       "María del Rosario García",
@@ -203,12 +211,23 @@ describe("Profile Generation Logic", () => {
 });
 
 describe("Favorite Generation Logic", () => {
+  // Types for favorites test
+  interface TestListing {
+    id: string;
+  }
+
+  interface TestFavorite {
+    id: string;
+    profileId: string;
+    listingId: string;
+  }
+
   function generateFavorites(
-    clientProfiles: any[],
-    activeListings: any[],
+    clientProfiles: { id: string }[],
+    activeListings: TestListing[],
     count: number
   ) {
-    const favorites: any[] = [];
+    const favorites: TestFavorite[] = [];
     const usedKeys = new Set<string>();
 
     while (favorites.length < count && favorites.length < clientProfiles.length * activeListings.length) {
@@ -272,8 +291,27 @@ describe("Inquiry Generation Logic", () => {
   const validStatuses = ["new", "contacted", "qualified", "converted", "lost"];
   const validSources = ["web", "whatsapp", "phone", "email", "referral"];
 
-  function generateInquiries(listings: any[], agents: any[], count: number) {
-    const inquiries: any[] = [];
+  // Types for inquiries test
+  interface TestAgent {
+    profileId: string;
+  }
+
+  interface TestListing {
+    id: string;
+  }
+
+  interface TestInquiry {
+    id: string;
+    listingId: string;
+    name: string;
+    email: string;
+    source: string;
+    status: string;
+    assignedTo: string;
+  }
+
+  function generateInquiries(listings: TestListing[], agents: TestAgent[], count: number) {
+    const inquiries: TestInquiry[] = [];
 
     for (let i = 0; i < count; i++) {
       const listing = listings[i % listings.length];

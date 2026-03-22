@@ -3,8 +3,8 @@
 // ==========================================
 
 import { SupabaseClient } from "@supabase/supabase-js";
-import type { SeedProfile, SeedUser } from "../types";
-import { SeedLogger } from "../lib/logger";
+import type { SeedProfile, SeedUser } from "../../types";
+import { SeedLogger } from "../logger";
 
 export interface ProfileSeedResult {
   coordinatorProfiles: SeedProfile[];
@@ -123,7 +123,7 @@ export async function seedProfiles(
   profiles: SeedProfile[],
   truncate: boolean
 ): Promise<void> {
-  const logger = new SeedLogger();
+  const logger = SeedLogger;
 
   logger.subSection("Seed Profiles");
 
@@ -163,7 +163,7 @@ export async function seedAuthUsers(
   supabase: SupabaseClient,
   users: SeedUser[]
 ): Promise<{ success: number; failed: number }> {
-  const logger = new SeedLogger();
+  const logger = SeedLogger;
 
   logger.subSection("Seed Auth Users (Opcional)");
 
