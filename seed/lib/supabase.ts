@@ -50,7 +50,7 @@ export async function verifySeedClient(): Promise<boolean> {
   
   try {
     // Intentar hacer una consulta simple para verificar la conexión
-    const { data, error } = await client
+    const { error } = await client
       .from("profiles")
       .select("id")
       .limit(1);
