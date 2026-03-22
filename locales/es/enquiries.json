@@ -36,5 +36,8 @@
       "unassigned": "No asignado",
       "agent": "Agente"
     }
+  },
+  "whatsapp": {
+    "default_message": "Hola, me interesa esta propiedad"
   }
 }
