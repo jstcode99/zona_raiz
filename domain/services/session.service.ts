@@ -114,7 +114,7 @@ export class SessionService {
             icon: "tags",
           },
           {
-            title: t("components:nav.inquiries"),
+            title: t("components:nav.enquiries"),
             url: routes.enquiries(),
             icon: "tags",
           },
@@ -142,7 +142,7 @@ export class SessionService {
             icon: "tags",
           },
           {
-            title: t("components:nav.inquiries"),
+            title: t("components:nav.enquiries"),
             url: routes.enquiries(),
             icon: "tags",
           },

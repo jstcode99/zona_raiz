@@ -14,7 +14,7 @@ export type CreateListingInput = Omit<
   | "id"
   | "property_id"
   | "views_count"
-  | "inquiries_count"
+  | "enquiries_count"
   | "whatsapp_clicks"
   | "published_at"
   | "property"

@@ -3,6 +3,7 @@ import { EnquirySource, EnquiryStatus } from "./enquiry.enums";
 export interface EnquiryEntity {
   id: string;
   listing_id: string;
+  real_estate_id: string;
 
   name: string;
   email?: string | null;
@@ -74,3 +75,17 @@ export const enquiryStatusLabels: Record<EnquiryStatus, string> = {
   [EnquiryStatus.CONVERTED]: "Convertido",
   [EnquiryStatus.LOST]: "Perdido",
 };
+
+/**
+ * Input para crear una consulta desde el formulario público.
+ * Contiene solo los campos que el usuario puede enviar directamente.
+ */
+export interface CreateEnquiryInput {
+  listing_id: string;
+  real_estate_id: string;
+  name: string;
+  email?: string | null;
+  phone?: string | null;
+  message?: string | null;
+  source?: EnquirySource;
+}

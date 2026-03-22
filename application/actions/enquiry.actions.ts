@@ -35,7 +35,6 @@ export const createEnquiryAction = withServerAction(
       phone: input.phone || null,
       message: input.message || null,
       source: input.source as any,
-      status: "new" as any,
     });
 
     // Get real estate whatsapp for redirect (real_estate_id is passed in formData)

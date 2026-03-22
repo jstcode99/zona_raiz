@@ -1,16 +1,16 @@
-"use client"
+"use client";
 
-import { BaseRow } from "@/components/ui/data-table"
-import { PropertyEntity } from "@/domain/entities/property.entity"
-import { type ColumnDef } from "@tanstack/react-table"
+import { BaseRow } from "@/components/ui/data-table";
+import { PropertyEntity } from "@/domain/entities/property.entity";
+import { type ColumnDef } from "@tanstack/react-table";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { Button } from "@/components/ui/button"
+} from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
 import {
   IconDotsVertical,
   IconHome,
@@ -19,24 +19,24 @@ import {
   IconEye,
   IconMessage,
   IconBrandWhatsapp,
-} from "@tabler/icons-react"
-import Link from "next/link"
-import { Badge } from "@/components/ui/badge"
-import { ListingEntity } from "@/domain/entities/listing.entity"
-import { useRoutes } from "@/i18n/client-router"
-import { useTranslation } from "react-i18next"
-import { useListingOptions } from "./hooks/use-listing-options"
+} from "@tabler/icons-react";
+import Link from "next/link";
+import { Badge } from "@/components/ui/badge";
+import { ListingEntity } from "@/domain/entities/listing.entity";
+import { useRoutes } from "@/i18n/client-router";
+import { useTranslation } from "react-i18next";
+import { useListingOptions } from "./hooks/use-listing-options";
 
 export type ListingRow = BaseRow & {
-  created_at: string
+  created_at: string;
 } & ListingEntity & {
-  property: PropertyEntity
-}
+    property: PropertyEntity;
+  };
 
 export const getListingColumns = (): ColumnDef<ListingRow>[] => {
-  const routes = useRoutes()
-  const { t, i18n } = useTranslation("listings")
-  const { getListingTypeLabel, getListingStatusLabel } = useListingOptions()
+  const routes = useRoutes();
+  const { t, i18n } = useTranslation("listings");
+  const { getListingTypeLabel, getListingStatusLabel } = useListingOptions();
 
   return [
     // =========================
@@ -46,7 +46,7 @@ export const getListingColumns = (): ColumnDef<ListingRow>[] => {
       id: "property",
       header: () => t("columns.headers.property"),
       cell: ({ row }) => {
-        const property = row.original.property
+        const property = row.original.property;
 
         return (
           <Link href={routes.property(property.id)}>
@@ -64,7 +64,7 @@ export const getListingColumns = (): ColumnDef<ListingRow>[] => {
               </div>
             </div>
           </Link>
-        )
+        );
       },
     },
 
@@ -82,7 +82,7 @@ export const getListingColumns = (): ColumnDef<ListingRow>[] => {
           price_negotiable,
           expenses_amount,
           expenses_included,
-        } = row.original
+        } = row.original;
 
         return (
           <div className="flex flex-col gap-1 text-xs">
@@ -103,12 +103,13 @@ export const getListingColumns = (): ColumnDef<ListingRow>[] => {
 
             {expenses_amount && (
               <span className="text-muted-foreground">
-                {t("words.expenses")}: {currency} {expenses_amount.toLocaleString(i18n.language)}{" "}
+                {t("words.expenses")}: {currency}{" "}
+                {expenses_amount.toLocaleString(i18n.language)}{" "}
                 {expenses_included ? `(${t("words.included")})` : ""}
               </span>
             )}
           </div>
-        )
+        );
       },
     },
 
@@ -119,16 +120,17 @@ export const getListingColumns = (): ColumnDef<ListingRow>[] => {
       accessorKey: "status",
       header: () => t("columns.headers.status"),
       cell: ({ row }) => {
-        const { status, featured, featured_until } = row.original
+        const { status, featured, featured_until } = row.original;
 
         return (
           <div className="flex flex-col gap-1">
-            <Badge>
-              {getListingStatusLabel(status)}
-            </Badge>
+            <Badge>{getListingStatusLabel(status)}</Badge>
 
             {featured && (
-              <Badge variant="outline" className="flex items-center gap-1 text-xs">
+              <Badge
+                variant="outline"
+                className="flex items-center gap-1 text-xs"
+              >
                 <IconStar className="size-3" />
                 {t("words.featured")}
               </Badge>
@@ -136,11 +138,12 @@ export const getListingColumns = (): ColumnDef<ListingRow>[] => {
 
             {featured && featured_until && (
               <span className="text-[11px] text-muted-foreground">
-                {t("words.until")} {new Date(featured_until).toLocaleDateString(i18n.language)}
+                {t("words.until")}{" "}
+                {new Date(featured_until).toLocaleDateString(i18n.language)}
               </span>
             )}
           </div>
-        )
+        );
       },
     },
 
@@ -151,11 +154,7 @@ export const getListingColumns = (): ColumnDef<ListingRow>[] => {
       id: "metrics",
       header: () => t("columns.headers.metrics"),
       cell: ({ row }) => {
-        const {
-          views_count,
-          inquiries_count,
-          whatsapp_clicks,
-        } = row.original
+        const { views_count, enquiries_count, whatsapp_clicks } = row.original;
 
         return (
           <div className="flex flex-wrap gap-2 text-xs">
@@ -166,7 +165,7 @@ export const getListingColumns = (): ColumnDef<ListingRow>[] => {
 
             <div className="flex items-center gap-1 text-muted-foreground bg-muted px-2 py-1 rounded">
               <IconMessage className="size-3.5" />
-              {inquiries_count}
+              {enquiries_count}
             </div>
 
             <div className="flex items-center gap-1 text-muted-foreground bg-muted px-2 py-1 rounded">
@@ -174,7 +173,7 @@ export const getListingColumns = (): ColumnDef<ListingRow>[] => {
               {whatsapp_clicks}
             </div>
           </div>
-        )
+        );
       },
     },
 
@@ -185,31 +184,30 @@ export const getListingColumns = (): ColumnDef<ListingRow>[] => {
       id: "dates",
       header: () => t("columns.headers.dates"),
       cell: ({ row }) => {
-        const {
-          created_at,
-          published_at,
-          available_from,
-        } = row.original
+        const { created_at, published_at, available_from } = row.original;
 
         return (
           <div className="flex flex-col text-xs">
             <span>
-              {t("words.created")}: {new Date(created_at).toLocaleDateString(i18n.language)}
+              {t("words.created")}:{" "}
+              {new Date(created_at).toLocaleDateString(i18n.language)}
             </span>
 
             {published_at && (
               <span className="text-muted-foreground">
-                {t("words.published")}: {new Date(published_at).toLocaleDateString(i18n.language)}
+                {t("words.published")}:{" "}
+                {new Date(published_at).toLocaleDateString(i18n.language)}
               </span>
             )}
 
             {available_from && (
               <span className="text-muted-foreground">
-                {t("words.available")}: {new Date(available_from).toLocaleDateString(i18n.language)}
+                {t("words.available")}:{" "}
+                {new Date(available_from).toLocaleDateString(i18n.language)}
               </span>
             )}
           </div>
-        )
+        );
       },
     },
 
@@ -220,7 +218,7 @@ export const getListingColumns = (): ColumnDef<ListingRow>[] => {
       id: "actions",
       header: "",
       cell: ({ row }) => {
-        const { id } = row.original
+        const { id } = row.original;
 
         return (
           <DropdownMenu>
@@ -231,13 +229,17 @@ export const getListingColumns = (): ColumnDef<ListingRow>[] => {
                 size="icon"
               >
                 <IconDotsVertical className="size-4" />
-                <span className="sr-only">{t("columns.actions.open_menu")}</span>
+                <span className="sr-only">
+                  {t("columns.actions.open_menu")}
+                </span>
               </Button>
             </DropdownMenuTrigger>
 
             <DropdownMenuContent align="end" className="w-44">
               <Link href={routes.listing(id)}>
-                <DropdownMenuItem>{t("columns.actions.edit_listing")}</DropdownMenuItem>
+                <DropdownMenuItem>
+                  {t("columns.actions.edit_listing")}
+                </DropdownMenuItem>
               </Link>
 
               <DropdownMenuItem>
@@ -251,8 +253,8 @@ export const getListingColumns = (): ColumnDef<ListingRow>[] => {
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-        )
+        );
       },
     },
-  ]
-}
+  ];
+};

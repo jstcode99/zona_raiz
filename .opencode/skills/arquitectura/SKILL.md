@@ -26,7 +26,7 @@ Nunca importes `infrastructure/` desde `domain/`.
 zona_raiz/
 ├── app/[lang]/                     # App Router con i18n obligatoria
 │   ├── auth/                       # sign-in, sign-up, otp, callback, sign-out
-│   ├── dashboard/                  # properties, listings, users, inquiries, profile
+│   ├── dashboard/                  # properties, listings, users, enquiries, profile
 │   ├── onboarding/                 # primer acceso, registro inmobiliaria
 │   ├── listing/[slug]/             # página pública de listado
 │   ├── estate/[slug]/              # página pública de inmobiliaria
@@ -64,7 +64,7 @@ zona_raiz/
 ├── features/                       # componentes UI agrupados por dominio
 │   ├── agents/, auth/, dashboard/
 │   ├── properties/, listings/, real-states/
-│   ├── users/, inquiries/, profile/
+│   ├── users/, enquiries/, profile/
 │   ├── favorites/, image-manager/, import/
 │   ├── places/, landing/, navigation/
 │   └── onboarding/, loader/

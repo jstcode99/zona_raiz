@@ -3,7 +3,7 @@ import { EnquiryEntity } from "../entities/enquiry.entity";
 
 export type CreateEnquiryInput = Omit<
   EnquiryEntity,
-  "id" | "created_at" | "contacted_at" | "converted_at"
+  "id" | "created_at" | "contacted_at" | "converted_at" | "status"
 >;
 
 export class EnquiryService {

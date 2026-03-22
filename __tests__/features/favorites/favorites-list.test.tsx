@@ -29,7 +29,7 @@ describe("FavoritesList", () => {
         status: ListingStatus.ACTIVE,
         featured: false,
         views_count: 0,
-        inquiries_count: 0,
+        enquiries_count: 0,
         whatsapp_clicks: 0,
         created_at: "2024-01-01",
         updated_at: "2024-01-01",

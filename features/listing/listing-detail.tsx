@@ -189,8 +189,8 @@ export function ListingDetail({
                 <div className="flex items-center gap-2">
                   <MessageCircle className="w-4 h-4" />
                   <span>
-                    {listing.inquiries_count}{" "}
-                    {t("listings:detail.labels.inquiries")}
+                    {listing.enquiries_count}{" "}
+                    {t("listings:detail.labels.enquiries")}
                   </span>
                 </div>
               </div>

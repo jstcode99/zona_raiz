@@ -1,5 +1,6 @@
 import { mapEnquiryRowToEntity } from "@/application/mappers/enquiry.mapper";
 import { EnquiryEntity } from "@/domain/entities/enquiry.entity";
+import { EnquiryStatus } from "@/domain/entities/enquiry.enums";
 import { EnquiryPort } from "@/domain/ports/enquiry.port";
 import { SupabaseClient } from "@supabase/supabase-js";
 
@@ -52,7 +53,10 @@ export class SupabaseEnquiryAdapter implements EnquiryPort {
   async create(data: Partial<EnquiryEntity>): Promise<EnquiryEntity> {
     const { data: row, error } = await this.supabase
       .from("enquiries")
-      .insert(data)
+      .insert({
+        ...data,
+        status: EnquiryStatus.NEW,
+      })
       .select()
       .single();
 

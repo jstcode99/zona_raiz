@@ -1,5 +1,5 @@
 // ============================================
-// SCHEMAS DE CONSULTAS (INQUIRIES)
+// SCHEMAS DE CONSULTAS (ENQUIRIES)
 // ============================================
 import i18next from "i18next";
 import * as yup from "yup";
