@@ -7,7 +7,7 @@
     "email": "Email",
     "phone": "Phone",
     "status": "Status",
-    "source": "Soruce"
+    "source": "Source"
   },
   "status": {
     "pending": "Pending",
@@ -17,7 +17,7 @@
     "lost": "Lost"
   },
   "actions": {
-    "assign": "Asignar agente"
+    "assign": "Assign agent"
   },
   "columns": {
     "headers": {
@@ -38,5 +38,8 @@
       "unassigned": "Unassigned",
       "agent": "Agent"
     }
+  },
+  "whatsapp": {
+    "default_message": "Hello, I'm interested in this property"
   }
 }
