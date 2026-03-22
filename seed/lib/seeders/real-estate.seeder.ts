@@ -3,8 +3,8 @@
 // ==========================================
 
 import { SupabaseClient } from "@supabase/supabase-js";
-import type { SeedRealEstate, SeedProfile, SeedAgent } from "../types";
-import { SeedLogger } from "../lib/logger";
+import type { SeedRealEstate, SeedProfile, SeedAgent } from "../../types";
+import { SeedLogger } from "../logger";
 
 export interface RealEstateSeedResult {
   realEstates: SeedRealEstate[];
@@ -19,26 +19,47 @@ export async function seedRealEstates(
     coordinatorProfiles: SeedProfile[];
     agentProfiles: SeedProfile[];
   },
-  truncate: boolean
+  truncate: boolean,
 ): Promise<RealEstateSeedResult> {
-  const logger = new SeedLogger();
+  const logger = SeedLogger;
   const { realEstates, coordinatorProfiles, agentProfiles } = data;
 
   logger.subSection("Seed Real Estates");
 
-  // Truncar tablas relacionadas si se solicita
+  // Truncar tablas relacionadas si se solicita`
   if (truncate) {
     logger.info("Truncando tablas relacionadas...");
 
     // Primero eliminar en orden inverso de dependencias
-    await supabase.from("favorites").delete().neq("id", "00000000-0000-0000-0000-000000000000");
-    await supabase.from("inquiries").delete().neq("id", "00000000-0000-0000-0000-000000000000");
-    await supabase.from("property_images").delete().neq("id", "00000000-0000-0000-0000-000000000000");
-    await supabase.from("listings").delete().neq("id", "00000000-0000-0000-0000-000000000000");
-    await supabase.from("properties").delete().neq("id", "00000000-0000-0000-0000-000000000000");
-    await supabase.from("real_estate_agents").delete().neq("id", "00000000-0000-0000-0000-000000000000");
-    await supabase.from("real_estates").delete().neq("id", "00000000-0000-0000-0000-000000000000");
-    
+    await supabase
+      .from("favorites")
+      .delete()
+      .neq("id", "00000000-0000-0000-0000-000000000000");
+    await supabase
+      .from("inquiries")
+      .delete()
+      .neq("id", "00000000-0000-0000-0000-000000000000");
+    await supabase
+      .from("property_images")
+      .delete()
+      .neq("id", "00000000-0000-0000-0000-000000000000");
+    await supabase
+      .from("listings")
+      .delete()
+      .neq("id", "00000000-0000-0000-0000-000000000000");
+    await supabase
+      .from("properties")
+      .delete()
+      .neq("id", "00000000-0000-0000-0000-000000000000");
+    await supabase
+      .from("real_estate_agents")
+      .delete()
+      .neq("id", "00000000-0000-0000-0000-000000000000");
+    await supabase
+      .from("real_estates")
+      .delete()
+      .neq("id", "00000000-0000-0000-0000-000000000000");
+
     logger.success("Tablas truncadas correctamente");
   }
 
@@ -71,13 +92,13 @@ export async function seedRealEstates(
   // Crear relaciones agente-perfil
   // Para cada inmobiliaria: 1 coordinador + agentes
   const agents: SeedAgent[] = [];
-  
+
   realEstates.forEach((re, index) => {
     // Encontrar el coordinator para esta inmobiliaria
     const coordinator = coordinatorProfiles.find(
-      (p) => p.id === coordinatorProfiles[index * 3]?.id
+      (p) => p.id === coordinatorProfiles[index * 3]?.id,
     );
-    
+
     if (coordinator) {
       agents.push({
         profileId: coordinator.id,
@@ -90,7 +111,7 @@ export async function seedRealEstates(
     for (let i = 0; i < 3; i++) {
       const agentIndex = index * 3 + i;
       const agentProfile = agentProfiles[agentIndex];
-      
+
       if (agentProfile && agentProfile.id !== coordinator?.id) {
         agents.push({
           profileId: agentProfile.id,
@@ -103,7 +124,7 @@ export async function seedRealEstates(
 
   // Insertar agentes en real_estate_agents
   logger.info(`Insertando ${agents.length} relaciones agente-inmobiliaria...`);
-  
+
   const agentInserts = agents.map((agent) => ({
     id: `ra-${agent.profileId.split("-").pop()}`,
     real_estate_id: agent.realEstateId,
@@ -120,7 +141,9 @@ export async function seedRealEstates(
     throw raError;
   }
 
-  logger.success(`✓ ${agents.length} relaciones agente-inmobiliaria insertadas`);
+  logger.success(
+    `✓ ${agents.length} relaciones agente-inmobiliaria insertadas`,
+  );
 
   return {
     realEstates,

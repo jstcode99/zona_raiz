@@ -3,8 +3,8 @@
 // ==========================================
 
 import { SupabaseClient } from "@supabase/supabase-js";
-import type { SeedListing, SeedProperty, SeedAgent } from "../types";
-import { SeedLogger } from "../lib/logger";
+import type { SeedListing, SeedProperty, SeedAgent } from "../../types";
+import { SeedLogger } from "../logger";
 
 /**
  * Inserta listings (listados) en la base de datos.
@@ -16,7 +16,7 @@ export async function seedListings(
   agents: SeedAgent[],
   truncate: boolean
 ): Promise<SeedListing[]> {
-  const logger = new SeedLogger();
+  const logger = SeedLogger;
 
   logger.subSection("Seed Listings");
 

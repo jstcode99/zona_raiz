@@ -97,7 +97,7 @@ Distribuidas entre las inmobiliarias:
 ```bash
 pnpm seed:dry-run
 ```
-Solo muestra qué datos se插入arían sin ejecutarlos.
+Solo muestra qué datos se insertarían sin ejecutarlos.
 
 ### Omitir Auth Users
 ```bash
@@ -236,7 +236,7 @@ pnpm supabase:start
 ```
 
 ### Error: "duplicate key value"
-Esto es normal si ejecutas el seed dos veces sin truncate. Usa `pnpm seed` (con truncate por defecto) o `pnpm seed --no-truncate` si quieres añadir datos增量.
+Esto es normal si ejecutas el seed dos veces sin truncate. Usa `pnpm seed` (con truncate por defecto) o `pnpm seed --no-truncate` si quieres añadir datos incrementales.
 
 ## 📄 Licencia
 

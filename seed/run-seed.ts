@@ -82,12 +82,12 @@ async function main() {
   logger.section("🌱 ZONA_RAIZ SEED");
   
   if (options.dryRun) {
-    logger.warn("⚠️  Modo DRY-RUN: Solo se mostrarán los datos que se插入arían");
+    logger.warn("⚠️  Modo DRY-RUN: Solo se mostrarán los datos que se insertarían");
     // En dry-run simplemente mostramos los datos que tenemos
     const { REAL_ESTATES, PROPERTIES, LISTINGS, PROPERTY_IMAGES } = await import("./data");
     const { generateTestProfiles } = await import("./lib/seeders/profile.seeder");
     
-    console.log("\n📊 Datos que se插入arían:");
+    console.log("\n📊 Datos que se insertarían:");
     console.log(`   - Real Estates: ${REAL_ESTATES.length}`);
     console.log(`   - Properties: ${PROPERTIES.length}`);
     console.log(`   - Listings: ${LISTINGS.length}`);
