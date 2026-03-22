@@ -46,7 +46,7 @@ export async function seedProperties(
     const createdBy = availableAgents[0] || null;
 
     return {
-      // id se autogenera con gen_random_uuid() en la BD
+      id: property.id, // ID pre-generado por Faker para mantener consistencia
       real_estate_id: property.realEstateId,
       title: property.title,
       slug: property.slug,
@@ -75,7 +75,7 @@ export async function seedProperties(
 
   const { error: propError } = await supabase
     .from("properties")
-    .insert(propertyInserts);
+    .upsert(propertyInserts, { onConflict: "id" });
 
   if (propError) {
     logger.error("Error insertando propiedades:", propError.message);
@@ -107,7 +107,7 @@ export async function seedPropertyImages(
   logger.info(`Insertando ${images.length} imágenes...`);
 
   const imageInserts = images.map((image) => ({
-    // id se autogenera con gen_random_uuid() en la BD
+    id: image.id, // ID pre-generado por Faker para mantener consistencia
     property_id: image.propertyId,
     public_url: image.publicUrl,
     filename: image.filename,
@@ -123,7 +123,7 @@ export async function seedPropertyImages(
 
   const { error } = await supabase
     .from("property_images")
-    .insert(imageInserts);
+    .upsert(imageInserts, { onConflict: "id" });
 
   if (error) {
     logger.error("Error insertando imágenes:", error.message);

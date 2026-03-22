@@ -25,7 +25,7 @@ export async function seedListings(
     await supabase.from("listings").delete().neq("id", "00000000-0000-0000-0000-000000000000");
   }
 
-  // Crear mapa de property -> agentes disponibles
+  // Crear mapa de real_estate_id -> profile_ids de agentes
   const agentsByRealEstate = new Map<string, string[]>();
   agents.forEach((agent) => {
     const existing = agentsByRealEstate.get(agent.realEstateId) || [];
@@ -45,18 +45,14 @@ export async function seedListings(
     // Asignar un agente de la inmobiliaria de la propiedad
     const realEstateId = propertyToRealEstate.get(listing.propertyId);
     const availableAgents = realEstateId ? agentsByRealEstate.get(realEstateId) || [] : [];
+    
+    // Usar agente pre-asignado o seleccionar uno disponible
     const agentId = listing.agentId || availableAgents[index % availableAgents.length] || "";
 
-    // Buscar el ID del real_estate_agents para este agente
-    // Necesitamos encontrar el registro que conecta agente con inmobiliaria
-    const agentRecord = agents.find(
-      (a) => a.profileId === availableAgents[index % availableAgents.length]
-    );
-
     return {
-      // id se autogenera con gen_random_uuid() en la BD
+      id: listing.id, // ID pre-generado por Faker para mantener consistencia
       property_id: listing.propertyId,
-      agent_id: agentRecord ? `ra-${agentRecord.profileId.split("-").pop()}` : agentId,
+      agent_id: agentId, // Referencia a profiles.id
       listing_type: listing.listingType,
       price: listing.price,
       currency: listing.currency,
@@ -83,7 +79,7 @@ export async function seedListings(
 
   const { error } = await supabase
     .from("listings")
-    .insert(listingInserts);
+    .upsert(listingInserts, { onConflict: "id" });
 
   if (error) {
     logger.error("Error insertando listados:", error.message);
