@@ -14,7 +14,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { useServerMutation } from "@/shared/hooks/use-server-mutation.hook";
-import { assignInquiryAction } from "@/application/actions/inquiry.actions";
+import { assignEnquiryAction } from "@/application/actions/enquiry.actions";
 import { getAgentsByRealEstateAction } from "@/application/actions/agent.actions";
 
 interface AgentSelectorClientProps {
@@ -62,7 +62,7 @@ export function AgentSelectorClient({
   });
 
   const assignMutation = useServerMutation({
-    action: assignInquiryAction,
+    action: assignEnquiryAction,
     onSuccess: () => {
       toast.success(t("words.assigned") || "Asignado");
     },
