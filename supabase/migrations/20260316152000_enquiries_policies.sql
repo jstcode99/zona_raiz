@@ -1,7 +1,7 @@
 -- ============================================
 -- POLICIES CRUD PARA ENQUIRIES
 -- ============================================
-alter table public.listings enable row level security;
+alter table public.enquiries enable row level security;
 --
 create policy "enquiries: selectable by admins, coordinators, assigned agents, property agents"
   on public.enquiries for select
