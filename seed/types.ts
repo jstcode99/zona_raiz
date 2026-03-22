@@ -112,13 +112,13 @@ export interface SeedPropertyImage {
 }
 
 export interface SeedFavorite {
-  id: string;
+  id?: string; // Se autogenera con gen_random_uuid() en la BD
   profileId: string;
   listingId: string;
 }
 
 export interface SeedInquiry {
-  id: string;
+  id?: string; // Se autogenera con gen_random_uuid() en la BD
   listingId: string;
   name: string;
   email?: string;

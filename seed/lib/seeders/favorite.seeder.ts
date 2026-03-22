@@ -3,39 +3,11 @@
 // ==========================================
 
 import { SupabaseClient } from "@supabase/supabase-js";
-import type { SeedFavorite, SeedListing, SeedProfile } from "../../types";
+import type { SeedFavorite } from "../../types";
 import { SeedLogger } from "../logger";
 
-/**
- * Genera favoritos aleatorios entre clientes y listados activos.
- */
-export function generateFavorites(
-  clientProfiles: SeedProfile[],
-  activeListings: SeedListing[],
-  count: number
-): SeedFavorite[] {
-  const favorites: SeedFavorite[] = [];
-  const usedKeys = new Set<string>();
-
-  const activeListingIds = activeListings.map((l) => l.id);
-
-  while (favorites.length < count && favorites.length < clientProfiles.length * activeListingIds.length) {
-    const randomClient = clientProfiles[Math.floor(Math.random() * clientProfiles.length)];
-    const randomListing = activeListings[Math.floor(Math.random() * activeListings.length)];
-    const key = `${randomClient.id}-${randomListing.id}`;
-
-    if (!usedKeys.has(key)) {
-      usedKeys.add(key);
-      favorites.push({
-        id: `fv-${String(favorites.length + 1).padStart(4, "0")}`,
-        profileId: randomClient.id,
-        listingId: randomListing.id,
-      });
-    }
-  }
-
-  return favorites;
-}
+// Re-export from faker-data for backwards compatibility
+export { generateFakeFavorites as generateFavorites } from "../faker-data";
 
 /**
  * Inserta favoritos en la base de datos.
@@ -62,14 +34,14 @@ export async function seedFavorites(
   logger.info(`Insertando ${favorites.length} favoritos...`);
 
   const favoriteInserts = favorites.map((fav) => ({
-    id: fav.id,
+    // id se autogenera con gen_random_uuid() en la BD
     profile_id: fav.profileId,
     listing_id: fav.listingId,
   }));
 
   const { error } = await supabase
     .from("favorites")
-    .upsert(favoriteInserts, { onConflict: "id" });
+    .insert(favoriteInserts);
 
   if (error) {
     logger.error("Error insertando favoritos:", error.message);
