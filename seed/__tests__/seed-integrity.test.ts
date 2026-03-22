@@ -86,6 +86,19 @@ describe("Seed Data Integrity - Properties", () => {
   });
 
   it("should have at least one property per real estate", () => {
+    REAL_ESTATES.forEach((re) => {
+      const count = PROPERTIES.filter((p) => p.realEstateId === re.id).length;
+      expect(count).toBeGreaterThan(0);
+    });
+  });
+
+  it("should have unique property IDs globally", () => {
+    const allIds = PROPERTIES.map((p) => p.id);
+    const uniqueIds = new Set(allIds);
+    expect(uniqueIds.size).toBe(allIds.length);
+  });
+
+  it("should have at least one property per real estate", () => {
     const reIds = new Set(REAL_ESTATES.map((re) => re.id));
     reIds.forEach((reId) => {
       const count = PROPERTIES.filter((p) => p.realEstateId === reId).length;
@@ -211,9 +224,9 @@ describe("Seed Data Integrity - Listings", () => {
 
 describe("Seed Data Integrity - Property Images", () => {
   it("should have images referencing existing properties", () => {
-    const propIds = new Set(PROPERTIES.map((p) => p.id));
+    const propIdSet = new Set(PROPERTIES.map((p) => p.id));
     PROPERTY_IMAGES.forEach((img) => {
-      expect(propIds.has(img.propertyId)).toBe(true);
+      expect(propIdSet.has(img.propertyId)).toBe(true);
     });
   });
 
@@ -223,7 +236,6 @@ describe("Seed Data Integrity - Property Images", () => {
   });
 
   it("should have exactly one primary image per property that has images", () => {
-    const propIds = new Set(PROPERTIES.map((p) => p.id));
     const propIdsWithImages = new Set(PROPERTY_IMAGES.map((img) => img.propertyId));
 
     propIdsWithImages.forEach((propId) => {
