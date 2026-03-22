@@ -246,7 +246,7 @@ export default async function Page({ params, searchParams }: SearchPageProps) {
         breadcrumb={getBreadcrumbLabel(parsed, t)}
         basePath={basePath}
         favoriteIds={favoriteIds}
-        isLoggedIn={isAuth}
+        isAuth={isAuth}
       />
     </>
   );
