@@ -27,11 +27,13 @@ export const createEnquiryAction = withServerAction(
       stripUnknown: true,
     });
 
-    // Create the inquiry
-    const realEstateId = raw.real_estate_id as string | undefined;
+    // real_estate_id viene del formulario (property.real_estate_id)
+    // Se usa SOLO para consultar el WhatsApp, NO se guarda en BD
+    const realEstateId = input.real_estate_id;
+
+    // Create the inquiry (sin real_estate_id - no se guarda en la tabla)
     await enquiryService.create({
       listing_id: input.listing_id,
-      real_estate_id: realEstateId || "",
       name: input.name,
       email: input.email || null,
       phone: input.phone || null,
@@ -39,7 +41,7 @@ export const createEnquiryAction = withServerAction(
       source: input.source as any,
     });
 
-    // Throw WhatsApp redirect info as structured error to be handled client-side
+    // Consultar WhatsApp y redirigir si existe
     if (realEstateId) {
       try {
         const realEstate = await realEstateService.getById(realEstateId);
