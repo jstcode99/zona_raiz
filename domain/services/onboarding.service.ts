@@ -5,7 +5,7 @@ import { RealEstateWithRoleEntity } from "@/domain/entities/real-estate.entity";
 import { ROUTES } from "@/infrastructure/config/routes";
 import { Lang } from "@/i18n/settings";
 
-export type OnboardingState = 
+export type OnboardingState =
   | { step: "loading" }
   | { step: "redirect"; path: string }
   | { step: "register-real-estate" }
