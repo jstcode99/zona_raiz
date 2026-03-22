@@ -42,29 +42,30 @@ export function EnquiryForm({ listingId, realEstateId }: EnquiryFormProps) {
   const mutation = useServerMutation({
     action: createEnquiryAction as any,
     setError,
-    onSuccess: (result) => {
-      if (result.success && "whatsappUrl" in result && result.whatsappUrl) {
-        toast.success(t("detail.contact.success"));
-        form.reset({
-          ...defaultEnquiryValues,
-          listing_id: listingId,
-          real_estate_id: realEstateId,
-        });
-
-        // Redirect to WhatsApp
-        window.location.href = result.whatsappUrl as string;
-      } else if (result.success) {
-        toast.success(t("detail.contact.success"));
-        form.reset({
-          ...defaultEnquiryValues,
-          listing_id: listingId,
-          real_estate_id: realEstateId,
-        });
-      }
+    onSuccess: () => {
+      toast.success(t("detail.contact.success"));
+      form.reset({
+        ...defaultEnquiryValues,
+        listing_id: listingId,
+        real_estate_id: realEstateId,
+      });
     },
     onError: (error) => {
-      toast.error(t("detail.contact.error"));
-      console.error("Enquiry error:", error);
+      // Check if this is a WhatsApp redirect error (thrown from action with _whatsappUrl)
+      const whatsappUrl = (error as any)?._whatsappUrl;
+      if (whatsappUrl) {
+        toast.success(t("detail.contact.success"));
+        form.reset({
+          ...defaultEnquiryValues,
+          listing_id: listingId,
+          real_estate_id: realEstateId,
+        });
+        // Redirect to WhatsApp
+        window.location.href = whatsappUrl as string;
+      } else {
+        toast.error(t("detail.contact.error"));
+        console.error("Enquiry error:", error);
+      }
     },
   });
 

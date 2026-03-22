@@ -1,10 +1,28 @@
 // ============================================
 // SCHEMAS DE CONSULTAS (ENQUIRIES)
 // ============================================
+//
+// NOTA: El schema incluye `real_estate_id` para el formulario público porque
+// viene de property.real_estate_id y se necesita para consultar el WhatsApp.
+// PERO no se guarda en la tabla `enquiries` — se obtiene via listing → property.
+//
+// Schema público (formulario de contacto):
+//   - listing_id (requerido)
+//   - real_estate_id (requerido, UUID)
+//   - name, email?, phone?, message?, source?
+//
+// Schema de gestión (dashboard):
+//   - Todos los campos arriba + status, notes, assigned_to, utm_*, etc.
+// ============================================
 import i18next from "i18next";
 import * as yup from "yup";
 
 export const enquirySchema = yup.object({
+  // real_estate_id del formulario público (NO se guarda en BD, se usa para WhatsApp)
+  real_estate_id: yup
+    .string()
+    .uuid(i18next.t("validations.uuid", { attribute: "real_estate_id" }))
+    .required(i18next.t("validations.required", { attribute: "real_estate_id" })),
   listing_id: yup
     .string()
     .uuid(i18next.t("validations.uuid", { attribute: "listing_id" }))
@@ -112,7 +130,8 @@ export const enquirySchema = yup.object({
 
 export type EnquiryFormValues = yup.InferType<typeof enquirySchema>;
 
-export const defaultInquiryValues: Partial<EnquiryFormValues> = {
+export const defaultEnquiryValues: Partial<EnquiryFormValues> = {
+  real_estate_id: undefined, // Requerido en formulario público
   source: "web",
   status: "new",
   email: null,

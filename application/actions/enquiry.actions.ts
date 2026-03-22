@@ -1,7 +1,7 @@
 "use server";
 
 import { withServerAction } from "@/shared/hooks/with-server-action";
-import { revalidateTag } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { cookies } from "next/headers";
 import { getLangServerSide } from "@/shared/utils/lang";
 import { createRouter } from "@/i18n/router";
@@ -9,6 +9,7 @@ import { appModule } from "@/application/modules/app.module";
 import { initI18n } from "@/i18n/server";
 import { enquirySchema } from "@/application/validation/enquiry.schema";
 import { CACHE_TAGS } from "@/infrastructure/config/constants";
+import { EnquiryStatus } from "@/domain/entities/enquiry.enums";
 
 export const createEnquiryAction = withServerAction(
   async (formData: FormData) => {
@@ -27,7 +28,11 @@ export const createEnquiryAction = withServerAction(
       stripUnknown: true,
     });
 
-    // Create the inquiry
+    // real_estate_id viene del formulario (property.real_estate_id)
+    // Se usa SOLO para consultar el WhatsApp, NO se guarda en BD
+    const realEstateId = input.real_estate_id;
+
+    // Create the inquiry (sin real_estate_id - no se guarda en la tabla)
     await enquiryService.create({
       listing_id: input.listing_id,
       name: input.name,
@@ -37,30 +42,32 @@ export const createEnquiryAction = withServerAction(
       source: input.source as any,
     });
 
-    // Get real estate whatsapp for redirect (real_estate_id is passed in formData)
-    const realEstateId = raw.real_estate_id as string | undefined;
+    // Consultar WhatsApp y redirigir si existe
     if (realEstateId) {
       try {
         const realEstate = await realEstateService.getById(realEstateId);
         if (realEstate?.whatsapp) {
           const cleanNumber = realEstate.whatsapp.replace(/[^\d+]/g, "");
           const encodeMessage = encodeURIComponent(
-            t("common:whatsapp.default_message", {
+            t("enquiries:whatsapp.default_message", {
               name: input.name,
-              property: "",
             }) || `Hola, me interesa esta propiedad`,
           );
-          // Redirect to whatsapp (this will be handled client-side via response)
-          return {
-            whatsappUrl: `https://wa.me/${cleanNumber}?text=${encodeMessage}`,
-          };
+          // Throw to signal success with WhatsApp redirect (caught by useServerMutation)
+          const whatsappError = new Error(
+            `__WHATSAPP__:${`https://wa.me/${cleanNumber}?text=${encodeMessage}`}`,
+          );
+          (whatsappError as any)._whatsappUrl = `https://wa.me/${cleanNumber}?text=${encodeMessage}`;
+          throw whatsappError;
         }
-      } catch {
-        // Real estate lookup failed, continue
+      } catch (err: any) {
+        // Re-throw WhatsApp errors, ignore others
+        if (err?._whatsappUrl) throw err;
       }
     }
 
-    return { whatsappUrl: undefined };
+    // Success without WhatsApp - the withServerAction will return { success: true }
+    return;
   },
 );
 
@@ -131,10 +138,13 @@ export const updateEnquiryStatusAction = withServerAction(
 
     const id = formData.get("id") as string;
     const status = formData.get("status") as string;
-    if (!id || !status) throw new Error("ID and status required");
+    if (!id || !status)
+      throw new Error(
+        t("validations:required", { attribute: "ID and status" }),
+      );
 
     const userId = await sessionService.getCurrentUserId();
-    if (!userId) throw new Error("No autorizado");
+    if (!userId) throw new Error(t("common:exceptions.unauthorized"));
 
     const inquiry = await enquiryService.findById(id);
     if (!inquiry || !inquiry.listing)
@@ -147,7 +157,7 @@ export const updateEnquiryStatusAction = withServerAction(
     if (!isAdmin && !isCoordinator && !isAssignedAgent)
       throw new Error(t("common:exceptions.unauthorized"));
 
-    await enquiryService.update(id, { status: status as any });
+    await enquiryService.update(id, { status: status as EnquiryStatus });
     revalidatePath(routes.enquiries());
 
     // Invalidar tags específicos del cache
