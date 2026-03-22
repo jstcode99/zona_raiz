@@ -1,71 +1,76 @@
-import { NextRequest, NextResponse } from "next/server"
-import { createServerClient } from "@supabase/ssr"
-import { EUserRole } from "@/domain/entities/profile.entity"
-import { COOKIE_NAMES } from "../config/constants"
-import { PUBLIC_ROUTES, ROUTES } from "../config/routes"
-import { appModule } from "@/application/modules/app.module"
-import { detectLang } from "@/i18n/detect-lang"
+import { NextRequest, NextResponse } from "next/server";
+import { createServerClient } from "@supabase/ssr";
+import { EUserRole } from "@/domain/entities/profile.entity";
+import { COOKIE_NAMES } from "../config/constants";
+import { PUBLIC_ROUTES } from "../config/routes";
+import { appModule } from "@/application/modules/app.module";
+import { detectLang } from "@/i18n/detect-lang";
+import { createRouter } from "@/i18n/router";
 
 export async function updateSession(request: NextRequest) {
-
-  const { pathname } = request.nextUrl
-  const lang = detectLang(request)
+  const { pathname } = request.nextUrl;
+  const lang = detectLang(request);
+  const routes = createRouter(lang);
 
   if (isPublicRoute(pathname)) {
-    return NextResponse.next()
+    return NextResponse.next();
   }
 
-  let response = createMutableResponse(request)
+  let response = createMutableResponse(request);
 
-  const supabase = SupabaseServerClient(request, response)
+  const supabase = SupabaseServerClient(request, response);
 
   const { sessionService, cookiesService } = await appModule(lang, {
     request,
-    response
-  })
+    response,
+  });
 
   const redirect = async (path: string) => {
-    const res = redirectTo(path, request)
+    const res = redirectTo(path, request);
     const { cookiesService } = await appModule(lang, {
       request,
-      response: res
-    })
+      response: res,
+    });
 
-    return { res, cookiesService }
-  }
+    return { res, cookiesService };
+  };
 
   // =========================
   // AUTH
   // =========================
+  const isAuth = await sessionService.isAuth();
 
-  const { data: { user }, error } = await supabase.auth.getUser()
+  if (!isAuth) {
+    return redirectTo(routes.signin(), request);
+  }
+
+  const {
+    data: { user },
+    error,
+  } = await supabase.auth.getUser();
 
   if (!user || error) {
-    return redirectTo(ROUTES.signin[lang], request)
+    return redirectTo(routes.signin(), request);
   }
 
-  const role = await cookiesService.getProfileRole()
+  const role = await cookiesService.getProfileRole();
 
   if (!role) {
-    return redirectTo(ROUTES.signin[lang], request)
+    return redirectTo(routes.signin(), request);
   }
 
-  const realEstateId = await cookiesService.getRealEstateId()
+  const realEstateId = await cookiesService.getRealEstateId();
 
   // =========================
   // CLIENT
   // =========================
 
   if (role === EUserRole.Client) {
+    const { res, cookiesService } = await redirect(routes.home());
 
-    const { res, cookiesService } = await redirect(ROUTES.home[lang])
+    cookiesService.setSession(COOKIE_NAMES.REAL_ESTATE_ROLE, "client");
 
-    cookiesService.setSession(
-      COOKIE_NAMES.REAL_ESTATE_ROLE,
-      "client"
-    )
-
-    return res
+    return res;
   }
 
   // =========================
@@ -73,17 +78,13 @@ export async function updateSession(request: NextRequest) {
   // =========================
 
   if (role === EUserRole.Admin) {
+    cookiesService.setSession(COOKIE_NAMES.REAL_ESTATE_ROLE, "admin");
 
-    cookiesService.setSession(
-      COOKIE_NAMES.REAL_ESTATE_ROLE,
-      "admin"
-    )
-
-    if (isRoute(pathname, ROUTES.dashboard[lang])) {
-      return response
+    if (isRoute(pathname, routes.dashboard())) {
+      return response;
     }
 
-    return redirectTo(ROUTES.dashboard[lang], request)
+    return redirectTo(routes.dashboard(), request);
   }
 
   // =========================
@@ -91,65 +92,52 @@ export async function updateSession(request: NextRequest) {
   // =========================
 
   if (role !== EUserRole.RealEstate) {
-    return redirectTo(ROUTES.home[lang], request)
+    return redirectTo(routes.home(), request);
   }
-
 
   // 🔁 Sin contexto
   if (!realEstateId) {
-
-    const realEstates = await sessionService.getRealEstatesForUser()
+    const realEstates = await sessionService.getRealEstatesForUser();
 
     if (realEstates.length === 1) {
+      const current = realEstates[0];
 
-      const current = realEstates[0]
-
-      const { res, cookiesService } = await redirect(
-        ROUTES.dashboard[lang]
-      )
+      const { res, cookiesService } = await redirect(routes.dashboard());
 
       cookiesService.setSession(
         COOKIE_NAMES.REAL_ESTATE,
-        current.real_estate.id
-      )
+        current.real_estate.id,
+      );
 
-      cookiesService.setSession(
-        COOKIE_NAMES.REAL_ESTATE_ROLE,
-        current.role
-      )
+      cookiesService.setSession(COOKIE_NAMES.REAL_ESTATE_ROLE, current.role);
 
-      return res
+      return res;
     }
 
-    if (!isRoute(pathname, ROUTES.onboarding[lang])) {
-      return redirectTo(ROUTES.onboarding[lang], request)
+    if (!isRoute(pathname, routes.onboarding())) {
+      return redirectTo(routes.onboarding(), request);
     }
 
-    return response
+    return response;
   }
 
   // =========================
   // CONTEXTO ACTIVO
   // =========================
 
-  const realEstates = await sessionService.getRealEstatesForUser()
+  const realEstates = await sessionService.getRealEstatesForUser();
 
-  const current = realEstates.find(
-    (r) => r.real_estate.id === realEstateId
-  )
+  const current = realEstates.find((r) => r.real_estate.id === realEstateId);
 
   if (current) {
-    cookiesService.setSession(
-      COOKIE_NAMES.REAL_ESTATE_ROLE,
-      current.role
-    )
+    cookiesService.setSession(COOKIE_NAMES.REAL_ESTATE_ROLE, current.role);
   }
 
-  if (isRoute(pathname, ROUTES.onboarding[lang])) {
-    return redirectTo(ROUTES.dashboard[lang], request)
+  if (isRoute(pathname, routes.onboarding())) {
+    return redirectTo(routes.dashboard(), request);
   }
 
-  return response
+  return response;
 }
 
 // ==========================================
@@ -159,13 +147,10 @@ export async function updateSession(request: NextRequest) {
 function createMutableResponse(request: NextRequest) {
   return NextResponse.next({
     request: { headers: request.headers },
-  })
+  });
 }
 
-function SupabaseServerClient(
-  request: NextRequest,
-  response: NextResponse
-) {
+function SupabaseServerClient(request: NextRequest, response: NextResponse) {
   return createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -174,25 +159,25 @@ function SupabaseServerClient(
         getAll: () => request.cookies.getAll(),
         setAll: (cookies) => {
           cookies.forEach(({ name, value, options }) => {
-            request.cookies.set(name, value)
-            response.cookies.set(name, value, options)
-          })
+            request.cookies.set(name, value);
+            response.cookies.set(name, value, options);
+          });
         },
       },
-    }
-  )
+    },
+  );
 }
 
 function isPublicRoute(pathname: string) {
-  return PUBLIC_ROUTES.some((route) => isRoute(pathname, route))
+  return PUBLIC_ROUTES.some((route) => isRoute(pathname, route));
 }
 
 function isRoute(pathname: string, base: string) {
-  return pathname === base || pathname.startsWith(base + "/")
+  return pathname === base || pathname.startsWith(base + "/");
 }
 
 function redirectTo(path: string, request: NextRequest) {
-  const url = request.nextUrl.clone()
-  url.pathname = path
-  return NextResponse.redirect(url)
+  const url = request.nextUrl.clone();
+  url.pathname = path;
+  return NextResponse.redirect(url);
 }
