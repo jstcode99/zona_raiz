@@ -1,22 +1,22 @@
 import { appModule } from "@/application/modules/app.module";
-import { OnboardingWrapper } from "@/features/onboarding/onboarding-wrapper"
-import { Lang } from "@/i18n/settings"
+import { OnboardingWrapper } from "@/features/onboarding/onboarding-wrapper";
+import { Lang } from "@/i18n/settings";
 import { cookies } from "next/headers";
 
 interface props {
-  params: Promise<{ lang: Lang }>
+  params: Promise<{ lang: Lang }>;
 }
 
 export default async function page({ params }: props) {
   const { lang } = await params;
-  const cookieStore = await cookies()
-  const { onboardingService } = await appModule(lang, { cookies: cookieStore })
+  const cookieStore = await cookies();
+  const { onboardingService } = await appModule(lang, { cookies: cookieStore });
 
-  const state = await onboardingService.getOnboardingState()
+  const state = await onboardingService.getOnboardingState();
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-muted/50 p-4">
+    <div className="flex items-center">
       <OnboardingWrapper initialState={state} />
     </div>
-  )
+  );
 }
