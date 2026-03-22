@@ -1,11 +1,8 @@
 {
   "compilerOptions": {
     "target": "ES2017",
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "types": ["google.maps"],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
@@ -19,47 +16,23 @@
     "incremental": true,
     "plugins": [
       {
-        "name": "next"
-      }
+        "name": "next",
+      },
     ],
     "paths": {
-      "@/*": [
-        "./app/*"
-      ],
-      "@/modules/*": [
-        "./modules/*"
-      ],
-      "@/assets/*": [
-        "./assets/*"
-      ],
-      "@/lib/*": [
-        "./app/lib/*"
-      ],
-      "@/infrastructure/*": [
-        "./infrastructure/*"
-      ],
-      "@/interfaces/*": [
-        "./interfaces/*"
-      ],
-      "@/domain/*": [
-        "./domain/*"
-      ],
-      "@/features/*": [
-        "./features/*"
-      ],
-      "@/application/*": [
-        "./application/*"
-      ],
-      "@/shared/*": [
-        "./shared/*"
-      ],
-      "@/i18n/*": [
-        "./i18n/*"
-      ],
-      "@/locales/*": [
-        "./locales/*"
-      ]
-    }
+      "@/*": ["./app/*"],
+      "@/modules/*": ["./modules/*"],
+      "@/assets/*": ["./assets/*"],
+      "@/lib/*": ["./app/lib/*"],
+      "@/infrastructure/*": ["./infrastructure/*"],
+      "@/interfaces/*": ["./interfaces/*"],
+      "@/domain/*": ["./domain/*"],
+      "@/features/*": ["./features/*"],
+      "@/application/*": ["./application/*"],
+      "@/shared/*": ["./shared/*"],
+      "@/i18n/*": ["./i18n/*"],
+      "@/locales/*": ["./locales/*"],
+    },
   },
   "include": [
     "next-env.d.ts",
@@ -69,9 +42,7 @@
     ".next/dev/types/**/*.ts",
     "**/*.mts",
     "**/*.d.ts",
-    "assets/svg/background-shape.sbvg"
+    "assets/svg/background-shape.sbvg",
   ],
-  "exclude": [
-    "node_modules"
-  ]
+  "exclude": ["node_modules"],
 }
