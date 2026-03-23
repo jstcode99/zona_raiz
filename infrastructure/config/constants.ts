@@ -212,7 +212,6 @@ export const STORAGE_BUCKETS = {
   AVATARS: "avatars",
   REAL_ESTATE_LOGOS: "real-estate-logos",
   PROPERTIES: "property-images",
-  IMPORTS: "imports",
 } as const;
 
 // ==========================================

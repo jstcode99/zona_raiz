@@ -59,12 +59,16 @@ export function XlsUpload({
         // Import dinámico de xlsx para parsing en cliente
         // eslint-disable-next-line @typescript-eslint/no-require-imports
         const XLSX = require("xlsx");
-        const workbook = XLSX.read(arrayBuffer, { type: "array" });
+        const workbook = XLSX.read(arrayBuffer, {
+          type: "array",
+          codepage: 65001, // 👈 fuerza UTF-8
+        });
         const firstSheetName = workbook.SheetNames[0];
         const worksheet = workbook.Sheets[firstSheetName];
         const jsonData = XLSX.utils.sheet_to_json(worksheet, {
           header: 1,
           defval: "",
+          raw: false,
         }) as (string | number | null | undefined)[][];
 
         if (jsonData.length === 0) {
@@ -102,7 +106,6 @@ export function XlsUpload({
         const detectionResult = detectTable(headers);
         const detectedTable = detectionResult.table;
         const confidence = detectionResult.confidence;
-
         // 4. Crear datos para preview - NO se sube archivo a servidor
         const importData: ImportData = { headers, rows };
 

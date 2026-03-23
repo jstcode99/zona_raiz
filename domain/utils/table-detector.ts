@@ -12,9 +12,6 @@ export interface TableDetectionResult {
   missingHeaders: string[];
 }
 
-/**
- * Mapeo de headers en español a inglés para cada tabla
- */
 const PROPERTY_HEADERS_ES: Record<string, string> = {
   título: "title",
   titulo: "title",
@@ -99,42 +96,36 @@ const REAL_ESTATE_HEADERS_ES: Record<string, string> = {
   descripcion: "description",
 };
 
-/**
- * Mapeo combinado de todos los headers (ES -> EN)
- */
 const ALL_HEADERS_ES: Record<string, string> = {
   ...PROPERTY_HEADERS_ES,
   ...LISTING_HEADERS_ES,
   ...REAL_ESTATE_HEADERS_ES,
 };
 
-/**
- * Normaliza un header: lowercase y elimina acentos/tildes
- */
 export function normalizeHeader(header: string): string {
   return header
     .toLowerCase()
     .trim()
     .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "");
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9_]/g, "");
 }
 
-/**
- * Convierte headers del archivo a formato estándar (inglés)
- * Detecta el idioma y hace la traducción correspondiente
- */
+export function fixEncoding(str: string): string {
+  try {
+    return decodeURIComponent(escape(str));
+  } catch {
+    return str;
+  }
+}
+
 export function normalizeHeaders(fileHeaders: string[]): string[] {
   return fileHeaders.map((header) => {
-    const normalized = normalizeHeader(header);
-    // Primero buscar coincidencia exacta normalizada
+    const normalized = normalizeHeader(fixEncoding(header));
     return ALL_HEADERS_ES[normalized] || normalized;
   });
 }
 
-/**
- * Detecta qué tabla corresponde basándose en los headers del archivo
- * Soporta headers en español e inglés, retornando la tabla con mayor coincidencia
- */
 export function detectTable(headers: string[]): TableDetectionResult {
   if (!headers || headers.length === 0) {
     return {
@@ -145,31 +136,31 @@ export function detectTable(headers: string[]): TableDetectionResult {
     };
   }
 
-  // Normalizar headers (convertir español a inglés)
   const normalizedHeaders = normalizeHeaders(headers);
 
-  // Detectar para cada tabla
+  // ✅ Se pasa la tabla como segundo argumento
   const propertyMatch = calculateMatch(
     normalizedHeaders,
     propertyImportHeaders.map((h) => h.toLowerCase()),
+    ImportTableName.PROPERTIES,
   );
   const listingMatch = calculateMatch(
     normalizedHeaders,
     listingImportHeaders.map((h) => h.toLowerCase()),
+    ImportTableName.LISTINGS,
   );
   const realEstateMatch = calculateMatch(
     normalizedHeaders,
     realEstateImportHeaders.map((h) => h.toLowerCase()),
+    ImportTableName.REAL_ESTATES,
   );
 
-  // Seleccionar el de mayor confianza
   const matches = [
     { table: ImportTableName.PROPERTIES, ...propertyMatch },
     { table: ImportTableName.LISTINGS, ...listingMatch },
     { table: ImportTableName.REAL_ESTATES, ...realEstateMatch },
   ];
 
-  // Ordenar por confianza descendente
   matches.sort((a, b) => b.confidence - a.confidence);
 
   const bestMatch = matches[0];
@@ -182,12 +173,11 @@ export function detectTable(headers: string[]): TableDetectionResult {
   };
 }
 
-/**
- * Calcula el % de coincidencia entre headers del archivo y headers esperados
- */
+// ✅ Recibe table como parámetro en lugar de comparar por referencia
 function calculateMatch(
   fileHeaders: string[],
   expectedHeaders: readonly string[],
+  table: ImportTableName,
 ): {
   confidence: number;
   matchedHeaders: string[];
@@ -195,7 +185,6 @@ function calculateMatch(
 } {
   const fileSet = new Set(fileHeaders);
 
-  // Headers que coinciden
   const matchedHeaders: string[] = [];
   const missingHeaders: string[] = [];
 
@@ -207,12 +196,9 @@ function calculateMatch(
     }
   }
 
-  // Headers requeridos para cada tabla
-  const requiredHeaders = getRequiredHeaders(expectedHeaders);
-
+  const requiredHeaders = getRequiredHeaders(table);
   const matchedRequired = requiredHeaders.filter((h) => fileSet.has(h));
 
-  // Calcular confianza como % de headers requeridos que coinciden
   const confidence =
     requiredHeaders.length > 0
       ? matchedRequired.length / requiredHeaders.length
@@ -225,28 +211,19 @@ function calculateMatch(
   };
 }
 
-/**
- * Obtiene los headers requeridos para cada tabla
- */
-function getRequiredHeaders(expectedHeaders: readonly string[]): string[] {
-  // Properties
-  if (expectedHeaders === propertyImportHeaders) {
-    return ["title", "property_type", "city", "state"];
+function getRequiredHeaders(table: ImportTableName): string[] {
+  switch (table) {
+    case ImportTableName.PROPERTIES:
+      return ["title", "property_type", "city", "state"];
+    case ImportTableName.LISTINGS:
+      return ["listing_type", "price", "whatsapp_contact"];
+    case ImportTableName.REAL_ESTATES:
+      return ["name", "whatsapp", "city", "state"];
+    default:
+      return [];
   }
-  // Listings
-  if (expectedHeaders === listingImportHeaders) {
-    return ["listing_type", "price", "whatsapp_contact"];
-  }
-  // RealEstates
-  if (expectedHeaders === realEstateImportHeaders) {
-    return ["name", "whatsapp", "city", "state"];
-  }
-  return [];
 }
 
-/**
- * Verifica si la confianza es suficiente para auto-seleccionar la tabla
- */
 export function isConfidenceSufficient(confidence: number): boolean {
-  return confidence >= 0.8; // 80%
+  return confidence >= 0.8;
 }

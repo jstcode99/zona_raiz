@@ -175,7 +175,7 @@ export function ImportDialog({ open, onOpenChange }: ImportDialogProps) {
       <DialogTrigger asChild>
         {/* Trigger would be handled by parent component */}
       </DialogTrigger>
-      <DialogContent className="w-[900px] max-w-full max-h-[80vh] overflow-hidden">
+      <DialogContent className="w-225 max-w-full max-h-[80vh] overflow-hidden">
         <div className="flex flex-col max-h-full">
           <DialogHeader>
             <DialogTitle>{t("title")}</DialogTitle>
@@ -187,7 +187,7 @@ export function ImportDialog({ open, onOpenChange }: ImportDialogProps) {
           )}
 
           {step === "preview" && (
-            <div className="flex-1 overflow-auto pr-1">
+            <div className="flex-1 pr-1 space-y-2 p-2">
               {/* Table selector if confidence is low - showing in dialog, not in preview */}
               {detection.showTableSelector && (
                 <ImportTableSelector
