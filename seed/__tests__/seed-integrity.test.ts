@@ -207,7 +207,7 @@ describe("Seed Data Integrity - Listings (Faker)", () => {
   it("should have valid statistics (views, inquiries, whatsapp clicks)", () => {
     TEST_LISTINGS.forEach((l) => {
       expect(l.viewsCount).toBeGreaterThanOrEqual(0);
-      expect(l.inquiriesCount).toBeGreaterThanOrEqual(0);
+      expect(l.enquiriesCount).toBeGreaterThanOrEqual(0);
       expect(l.whatsappClicks).toBeGreaterThanOrEqual(0);
     });
   });
@@ -445,9 +445,9 @@ describe("Favorite Generator", () => {
     ];
 
     const listings = [
-      { id: "li-1", propertyId: "pr-1", agentId: "ag-1", listingType: "sale" as const, price: 100000, currency: "USD" as const, priceNegotiable: true, whatsappContact: "+54911", expensesIncluded: true, status: "active" as const, featured: false, viewsCount: 0, inquiriesCount: 0, whatsappClicks: 0 },
-      { id: "li-2", propertyId: "pr-2", agentId: "ag-1", listingType: "sale" as const, price: 100000, currency: "USD" as const, priceNegotiable: true, whatsappContact: "+54911", expensesIncluded: true, status: "active" as const, featured: false, viewsCount: 0, inquiriesCount: 0, whatsappClicks: 0 },
-      { id: "li-3", propertyId: "pr-3", agentId: "ag-1", listingType: "sale" as const, price: 100000, currency: "USD" as const, priceNegotiable: true, whatsappContact: "+54911", expensesIncluded: true, status: "active" as const, featured: false, viewsCount: 0, inquiriesCount: 0, whatsappClicks: 0 },
+      { id: "li-1", propertyId: "pr-1", agentId: "ag-1", listingType: "sale" as const, price: 100000, currency: "USD" as const, priceNegotiable: true, whatsappContact: "+54911", expensesIncluded: true, status: "active" as const, featured: false, viewsCount: 0, enquiriesCount: 0, whatsappClicks: 0 },
+      { id: "li-2", propertyId: "pr-2", agentId: "ag-1", listingType: "sale" as const, price: 100000, currency: "USD" as const, priceNegotiable: true, whatsappContact: "+54911", expensesIncluded: true, status: "active" as const, featured: false, viewsCount: 0, enquiriesCount: 0, whatsappClicks: 0 },
+      { id: "li-3", propertyId: "pr-3", agentId: "ag-1", listingType: "sale" as const, price: 100000, currency: "USD" as const, priceNegotiable: true, whatsappContact: "+54911", expensesIncluded: true, status: "active" as const, featured: false, viewsCount: 0, enquiriesCount: 0, whatsappClicks: 0 },
     ];
 
     const favorites = generateFakeFavorites(5, clients, listings);
@@ -462,7 +462,7 @@ describe("Favorite Generator", () => {
       { id: "client-1", email: "c@test.com", fullName: "C", phone: "+54911", role: "client" as const },
     ];
     const listings = [
-      { id: "li-1", propertyId: "pr-1", agentId: "ag-1", listingType: "sale" as const, price: 100, currency: "USD" as const, priceNegotiable: true, whatsappContact: "+54911", expensesIncluded: true, status: "active" as const, featured: false, viewsCount: 0, inquiriesCount: 0, whatsappClicks: 0 },
+      { id: "li-1", propertyId: "pr-1", agentId: "ag-1", listingType: "sale" as const, price: 100, currency: "USD" as const, priceNegotiable: true, whatsappContact: "+54911", expensesIncluded: true, status: "active" as const, featured: false, viewsCount: 0, enquiriesCount: 0, whatsappClicks: 0 },
     ];
 
     const favorites = generateFakeFavorites(100, clients, listings);
@@ -481,8 +481,8 @@ describe("Favorite Generator", () => {
       { id: "client-3", email: "c3@test.com", fullName: "C3", phone: "+54911", role: "client" as const },
     ];
     const listings = [
-      { id: "li-1", propertyId: "pr-1", agentId: "ag-1", listingType: "sale" as const, price: 100, currency: "USD" as const, priceNegotiable: true, whatsappContact: "+54911", expensesIncluded: true, status: "active" as const, featured: false, viewsCount: 0, inquiriesCount: 0, whatsappClicks: 0 },
-      { id: "li-2", propertyId: "pr-2", agentId: "ag-1", listingType: "sale" as const, price: 100, currency: "USD" as const, priceNegotiable: true, whatsappContact: "+54911", expensesIncluded: true, status: "active" as const, featured: false, viewsCount: 0, inquiriesCount: 0, whatsappClicks: 0 },
+      { id: "li-1", propertyId: "pr-1", agentId: "ag-1", listingType: "sale" as const, price: 100, currency: "USD" as const, priceNegotiable: true, whatsappContact: "+54911", expensesIncluded: true, status: "active" as const, featured: false, viewsCount: 0, enquiriesCount: 0, whatsappClicks: 0 },
+      { id: "li-2", propertyId: "pr-2", agentId: "ag-1", listingType: "sale" as const, price: 100, currency: "USD" as const, priceNegotiable: true, whatsappContact: "+54911", expensesIncluded: true, status: "active" as const, featured: false, viewsCount: 0, enquiriesCount: 0, whatsappClicks: 0 },
     ];
 
     const favorites = generateFakeFavorites(3, clients, listings);
@@ -493,7 +493,7 @@ describe("Favorite Generator", () => {
 describe("Inquiry Generator", () => {
   it("should generate correct number of inquiries", () => {
     const listings = [
-      { id: "li-1", propertyId: "pr-1", agentId: "ag-1", listingType: "sale" as const, price: 100, currency: "USD" as const, priceNegotiable: true, whatsappContact: "+54911", expensesIncluded: true, status: "active" as const, featured: false, viewsCount: 0, inquiriesCount: 0, whatsappClicks: 0 },
+      { id: "li-1", propertyId: "pr-1", agentId: "ag-1", listingType: "sale" as const, price: 100, currency: "USD" as const, priceNegotiable: true, whatsappContact: "+54911", expensesIncluded: true, status: "active" as const, featured: false, viewsCount: 0, enquiriesCount: 0, whatsappClicks: 0 },
     ];
     const agents = [{ profileId: "agent-1", realEstateId: "re-1", role: "agent" as const }];
 
@@ -503,7 +503,7 @@ describe("Inquiry Generator", () => {
 
   it("should assign valid statuses", () => {
     const listings = [
-      { id: "li-1", propertyId: "pr-1", agentId: "ag-1", listingType: "sale" as const, price: 100, currency: "USD" as const, priceNegotiable: true, whatsappContact: "+54911", expensesIncluded: true, status: "active" as const, featured: false, viewsCount: 0, inquiriesCount: 0, whatsappClicks: 0 },
+      { id: "li-1", propertyId: "pr-1", agentId: "ag-1", listingType: "sale" as const, price: 100, currency: "USD" as const, priceNegotiable: true, whatsappContact: "+54911", expensesIncluded: true, status: "active" as const, featured: false, viewsCount: 0, enquiriesCount: 0, whatsappClicks: 0 },
     ];
     const agents = [{ profileId: "agent-1", realEstateId: "re-1", role: "agent" as const }];
 
@@ -517,7 +517,7 @@ describe("Inquiry Generator", () => {
 
   it("should assign valid sources", () => {
     const listings = [
-      { id: "li-1", propertyId: "pr-1", agentId: "ag-1", listingType: "sale" as const, price: 100, currency: "USD" as const, priceNegotiable: true, whatsappContact: "+54911", expensesIncluded: true, status: "active" as const, featured: false, viewsCount: 0, inquiriesCount: 0, whatsappClicks: 0 },
+      { id: "li-1", propertyId: "pr-1", agentId: "ag-1", listingType: "sale" as const, price: 100, currency: "USD" as const, priceNegotiable: true, whatsappContact: "+54911", expensesIncluded: true, status: "active" as const, featured: false, viewsCount: 0, enquiriesCount: 0, whatsappClicks: 0 },
     ];
     const agents = [{ profileId: "agent-1", realEstateId: "re-1", role: "agent" as const }];
 
@@ -531,7 +531,7 @@ describe("Inquiry Generator", () => {
 
   it("should distribute status across different values", () => {
     const listings = [
-      { id: "li-1", propertyId: "pr-1", agentId: "ag-1", listingType: "sale" as const, price: 100, currency: "USD" as const, priceNegotiable: true, whatsappContact: "+54911", expensesIncluded: true, status: "active" as const, featured: false, viewsCount: 0, inquiriesCount: 0, whatsappClicks: 0 },
+      { id: "li-1", propertyId: "pr-1", agentId: "ag-1", listingType: "sale" as const, price: 100, currency: "USD" as const, priceNegotiable: true, whatsappContact: "+54911", expensesIncluded: true, status: "active" as const, featured: false, viewsCount: 0, enquiriesCount: 0, whatsappClicks: 0 },
     ];
     const agents = [{ profileId: "agent-1", realEstateId: "re-1", role: "agent" as const }];
 
@@ -550,8 +550,8 @@ describe("Inquiry Generator", () => {
 
   it("should reference active listings only", () => {
     const listings = [
-      { id: "li-1", propertyId: "pr-1", agentId: "ag-1", listingType: "sale" as const, price: 100, currency: "USD" as const, priceNegotiable: true, whatsappContact: "+54911", expensesIncluded: true, status: "active" as const, featured: false, viewsCount: 0, inquiriesCount: 0, whatsappClicks: 0 },
-      { id: "li-2", propertyId: "pr-2", agentId: "ag-1", listingType: "sale" as const, price: 100, currency: "USD" as const, priceNegotiable: true, whatsappContact: "+54911", expensesIncluded: true, status: "draft" as const, featured: false, viewsCount: 0, inquiriesCount: 0, whatsappClicks: 0 },
+      { id: "li-1", propertyId: "pr-1", agentId: "ag-1", listingType: "sale" as const, price: 100, currency: "USD" as const, priceNegotiable: true, whatsappContact: "+54911", expensesIncluded: true, status: "active" as const, featured: false, viewsCount: 0, enquiriesCount: 0, whatsappClicks: 0 },
+      { id: "li-2", propertyId: "pr-2", agentId: "ag-1", listingType: "sale" as const, price: 100, currency: "USD" as const, priceNegotiable: true, whatsappContact: "+54911", expensesIncluded: true, status: "draft" as const, featured: false, viewsCount: 0, enquiriesCount: 0, whatsappClicks: 0 },
     ];
     const agents = [{ profileId: "agent-1", realEstateId: "re-1", role: "agent" as const }];
 
@@ -564,7 +564,7 @@ describe("Inquiry Generator", () => {
 
   it("should assign agents from the provided list", () => {
     const listings = [
-      { id: "li-1", propertyId: "pr-1", agentId: "ag-1", listingType: "sale" as const, price: 100, currency: "USD" as const, priceNegotiable: true, whatsappContact: "+54911", expensesIncluded: true, status: "active" as const, featured: false, viewsCount: 0, inquiriesCount: 0, whatsappClicks: 0 },
+      { id: "li-1", propertyId: "pr-1", agentId: "ag-1", listingType: "sale" as const, price: 100, currency: "USD" as const, priceNegotiable: true, whatsappContact: "+54911", expensesIncluded: true, status: "active" as const, featured: false, viewsCount: 0, enquiriesCount: 0, whatsappClicks: 0 },
     ];
     const agents = [
       { profileId: "agent-1", realEstateId: "re-1", role: "agent" as const },

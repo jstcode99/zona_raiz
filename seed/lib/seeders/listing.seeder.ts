@@ -25,12 +25,14 @@ export async function seedListings(
     await supabase.from("listings").delete().neq("id", "00000000-0000-0000-0000-000000000000");
   }
 
-  // Crear mapa de real_estate_id -> profile_ids de agentes
-  const agentsByRealEstate = new Map<string, string[]>();
+  // Crear mapa de real_estate_id -> IDs de real_estate_agents
+  const agentIdsByRealEstate = new Map<string, string[]>();
   agents.forEach((agent) => {
-    const existing = agentsByRealEstate.get(agent.realEstateId) || [];
-    existing.push(agent.profileId);
-    agentsByRealEstate.set(agent.realEstateId, existing);
+    if (agent.id) {
+      const existing = agentIdsByRealEstate.get(agent.realEstateId) || [];
+      existing.push(agent.id);
+      agentIdsByRealEstate.set(agent.realEstateId, existing);
+    }
   });
 
   // Crear mapa de property -> real_estate_id
@@ -44,15 +46,15 @@ export async function seedListings(
   const listingInserts = listings.map((listing, index) => {
     // Asignar un agente de la inmobiliaria de la propiedad
     const realEstateId = propertyToRealEstate.get(listing.propertyId);
-    const availableAgents = realEstateId ? agentsByRealEstate.get(realEstateId) || [] : [];
+    const availableAgentIds = realEstateId ? agentIdsByRealEstate.get(realEstateId) || [] : [];
     
     // Usar agente pre-asignado o seleccionar uno disponible
-    const agentId = listing.agentId || availableAgents[index % availableAgents.length] || "";
+    const agentId = listing.agentId || availableAgentIds[index % availableAgentIds.length] || "";
 
     return {
       id: listing.id, // ID pre-generado por Faker para mantener consistencia
       property_id: listing.propertyId,
-      agent_id: agentId, // Referencia a profiles.id
+      agent_id: agentId, // Referencia a real_estate_agents.id
       listing_type: listing.listingType,
       price: listing.price,
       currency: listing.currency,
@@ -71,7 +73,7 @@ export async function seedListings(
       available_from: listing.availableFrom || null,
       minimum_contract_duration: listing.minimumContractDuration || null,
       views_count: listing.viewsCount,
-      inquiries_count: listing.inquiriesCount,
+      enquiries_count: listing.enquiriesCount,
       whatsapp_clicks: listing.whatsappClicks,
       published_at: listing.publishedAt || null,
     };

@@ -94,20 +94,8 @@ export async function runSeed(options: Partial<SeedOptions> = {}): Promise<SeedR
   const allProfiles: SeedProfile[] = [...coordinatorProfiles, ...agentProfiles, ...clientProfiles];
   logger.info(`Generados ${allProfiles.length} perfiles (${coordinatorProfiles.length} coordinadores, ${agentProfiles.length} agentes, ${clientProfiles.length} clientes)`);
 
-  // 4. Insertar perfiles (primero para tener las FK disponibles)
-  try {
-    await seedProfiles(supabase, allProfiles, opts.truncate!);
-  } catch (err) {
-    const error = `Error insertando perfiles: ${err}`;
-    logger.error(error);
-    errors.push(error);
-  }
-
-  // 5. Generar inmobiliarias fake con Faker
-  const fakeRealEstates = generateFakeRealEstates(opts.realEstateCount!);
-  logger.info(`Generadas ${fakeRealEstates.length} inmobiliarias con Faker`);
-
-  // 6. Crear usuarios en auth (opcional, puede fallar si ya existen)
+  // 4. Crear usuarios en auth PRIMERO (required for profiles FK)
+  // Este paso es crítico: auth.users debe crearse antes de profiles
   if (!opts.skipAuth) {
     try {
       const usersToCreate = allProfiles.map((profile) => ({
@@ -122,9 +110,25 @@ export async function runSeed(options: Partial<SeedOptions> = {}): Promise<SeedR
       const authResult = await seedAuthUsers(supabase, usersToCreate);
       logger.info(`Auth users: ${authResult.success} creados, ${authResult.failed} fallidos`);
     } catch (err) {
-      logger.warn(`Error creando auth users (no crítico): ${err}`);
+      logger.warn(`Error creando auth users: ${err}`);
     }
+  } else {
+    logger.warn("⚠️  Saltando creación de auth.users (--skip-auth)");
+    logger.warn("   Esto puede causar FK violations si los usuarios no existen");
   }
+
+  // 5. Insertar perfiles DESPUÉS de auth.users (required for profiles FK)
+  try {
+    await seedProfiles(supabase, allProfiles, opts.truncate!);
+  } catch (err) {
+    const error = `Error insertando perfiles: ${err}`;
+    logger.error(error);
+    errors.push(error);
+  }
+
+  // 6. Generar inmobiliarias fake con Faker
+  const fakeRealEstates = generateFakeRealEstates(opts.realEstateCount!);
+  logger.info(`Generadas ${fakeRealEstates.length} inmobiliarias con Faker`);
 
   // 7. Insertar inmobiliarias y agentes
   let agentsResult: SeedAgent[] = [];

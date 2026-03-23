@@ -173,7 +173,7 @@ export function generateFakeListings(
       metaDescription: faker.lorem.sentence(),
       keywords: faker.helpers.arrayElements(["apartment", "house", "pool", "garden", "modern", "luxury", "city", "sea"], 3),
       viewsCount: faker.number.int({ min: 0, max: 1000 }),
-      inquiriesCount: faker.number.int({ min: 0, max: 50 }),
+      enquiriesCount: faker.number.int({ min: 0, max: 50 }),
       whatsappClicks: faker.number.int({ min: 0, max: 100 }),
       publishedAt: faker.date.recent({ days: 90 }).toISOString(),
       minimumContractDuration: listingType === "rent" ? faker.number.int({ min: 6, max: 36 }) : undefined,
