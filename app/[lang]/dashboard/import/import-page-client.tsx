@@ -36,14 +36,20 @@ export function ImportPageClient({ lang }: ImportPageClientProps) {
     action: downloadTemplateAction,
     onSuccess: (result) => {
       if (result.success && result.data) {
-        const data = result.data;
+        const { content, filename, mimeType } = result.data;
+
+        // Crear Blob en el cliente (navegador)
+        const blob = new Blob([content], { type: mimeType });
+        const url = URL.createObjectURL(blob);
+
+        // Crear enlace y descargar
         const link = document.createElement("a");
-        link.href = data.url;
-        link.download = data.filename;
+        link.href = url;
+        link.download = filename;
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
-        URL.revokeObjectURL(data.url);
+        URL.revokeObjectURL(url);
       }
     },
     onError: (error) => {

@@ -12,8 +12,9 @@ import {
 } from "@/application/validation/import";
 
 export interface DownloadTemplateResult {
-  url: string;
+  content: string;
   filename: string;
+  mimeType: string;
 }
 
 export const downloadTemplateAction = withServerAction(
@@ -37,12 +38,14 @@ export const downloadTemplateAction = withServerAction(
         throw new Error("Invalid table name");
     }
 
-    // Crear CSV con headers
+    // Crear CSV con headers (solo headers, sin datos)
     const csvContent = headers.join(",") + "\n";
-    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-    const url = URL.createObjectURL(blob);
 
-    // Retornar URL para descarga
-    return { url, filename: `plantilla-${tableName}-${lang}.csv` };
+    // Retornar contenido como string, NO como Blob URL
+    return {
+      content: csvContent,
+      filename: `plantilla-${tableName}-${lang}.csv`,
+      mimeType: "text/csv;charset=utf-8;",
+    };
   },
 );
