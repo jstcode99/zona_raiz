@@ -6,7 +6,10 @@ import { getSeedClient, verifySeedClient } from "./lib/supabase";
 import { SeedLogger, LogLevel } from "./lib/logger";
 import { seedProfiles, seedAuthUsers } from "./lib/seeders/profile.seeder";
 import { seedRealEstates } from "./lib/seeders/real-estate.seeder";
-import { seedProperties, seedPropertyImages } from "./lib/seeders/property.seeder";
+import {
+  seedProperties,
+  seedPropertyImages,
+} from "./lib/seeders/property.seeder";
 import { seedListings, getListingStats } from "./lib/seeders/listing.seeder";
 import { seedFavorites } from "./lib/seeders/favorite.seeder";
 import { seedInquiries } from "./lib/seeders/inquiry.seeder";
@@ -52,9 +55,11 @@ const logger = SeedLogger;
 /**
  * Ejecuta el seed completo de la base de datos usando Faker.js.
  */
-export async function runSeed(options: Partial<SeedOptions> = {}): Promise<SeedResult> {
+export async function runSeed(
+  options: Partial<SeedOptions> = {},
+): Promise<SeedResult> {
   const errors: string[] = [];
-  
+
   // Mezclar opciones con valores por defecto
   const opts: SeedOptions = {
     ...DEFAULT_SEED_OPTIONS,
@@ -72,7 +77,17 @@ export async function runSeed(options: Partial<SeedOptions> = {}): Promise<SeedR
   if (!isConnected) {
     const error = "No se pudo conectar a Supabase";
     logger.error(error);
-    return { success: false, realEstates: 0, profiles: 0, agents: 0, properties: 0, listings: 0, favorites: 0, inquiries: 0, errors: [error] };
+    return {
+      success: false,
+      realEstates: 0,
+      profiles: 0,
+      agents: 0,
+      properties: 0,
+      listings: 0,
+      favorites: 0,
+      inquiries: 0,
+      errors: [error],
+    };
   }
 
   // 2. Obtener cliente
@@ -85,14 +100,20 @@ export async function runSeed(options: Partial<SeedOptions> = {}): Promise<SeedR
     agentsPerCoordinator: opts.agentsPerRealEstate!,
     clients: opts.clientsCount!,
   });
-  
+
   // Alias para compatibilidad
   const coordinatorProfiles = coordinators;
   const agentProfiles = agents;
   const clientProfiles = clients;
-  
-  const allProfiles: SeedProfile[] = [...coordinatorProfiles, ...agentProfiles, ...clientProfiles];
-  logger.info(`Generados ${allProfiles.length} perfiles (${coordinatorProfiles.length} coordinadores, ${agentProfiles.length} agentes, ${clientProfiles.length} clientes)`);
+
+  const allProfiles: SeedProfile[] = [
+    ...coordinatorProfiles,
+    ...agentProfiles,
+    ...clientProfiles,
+  ];
+  logger.info(
+    `Generados ${allProfiles.length} perfiles (${coordinatorProfiles.length} coordinadores, ${agentProfiles.length} agentes, ${clientProfiles.length} clientes)`,
+  );
 
   // 4. Crear usuarios en auth PRIMERO (required for profiles FK)
   // Este paso es crítico: auth.users debe crearse antes de profiles
@@ -108,13 +129,17 @@ export async function runSeed(options: Partial<SeedOptions> = {}): Promise<SeedR
         avatarUrl: profile.avatarUrl,
       }));
       const authResult = await seedAuthUsers(supabase, usersToCreate);
-      logger.info(`Auth users: ${authResult.success} creados, ${authResult.failed} fallidos`);
+      logger.info(
+        `Auth users: ${authResult.success} creados, ${authResult.failed} fallidos`,
+      );
     } catch (err) {
       logger.warn(`Error creando auth users: ${err}`);
     }
   } else {
     logger.warn("⚠️  Saltando creación de auth.users (--skip-auth)");
-    logger.warn("   Esto puede causar FK violations si los usuarios no existen");
+    logger.warn(
+      "   Esto puede causar FK violations si los usuarios no existen",
+    );
   }
 
   // 5. Insertar perfiles DESPUÉS de auth.users (required for profiles FK)
@@ -133,11 +158,15 @@ export async function runSeed(options: Partial<SeedOptions> = {}): Promise<SeedR
   // 7. Insertar inmobiliarias y agentes
   let agentsResult: SeedAgent[] = [];
   try {
-    const reResult = await seedRealEstates(supabase, {
-      realEstates: fakeRealEstates,
-      coordinatorProfiles,
-      agentProfiles,
-    }, opts.truncate!);
+    const reResult = await seedRealEstates(
+      supabase,
+      {
+        realEstates: fakeRealEstates,
+        coordinatorProfiles,
+        agentProfiles,
+      },
+      opts.truncate!,
+    );
     agentsResult = reResult.agents;
   } catch (err) {
     const error = `Error insertando inmobiliarias: ${err}`;
@@ -147,11 +176,19 @@ export async function runSeed(options: Partial<SeedOptions> = {}): Promise<SeedR
 
   // 8. Generar e insertar propiedades fake con Faker
   const realEstateIds = fakeRealEstates.map((re) => re.id);
-  const fakeProperties = generateFakeProperties(opts.propertiesPerRealEstate! * opts.realEstateCount!, realEstateIds);
-  
+  const fakeProperties = generateFakeProperties(
+    opts.propertiesPerRealEstate! * opts.realEstateCount!,
+    realEstateIds,
+  );
+
   let insertedProperties = fakeProperties;
   try {
-    const propResult = await seedProperties(supabase, fakeProperties, agentsResult, opts.truncate!);
+    const propResult = await seedProperties(
+      supabase,
+      fakeProperties,
+      agentsResult,
+      opts.truncate!,
+    );
     insertedProperties = propResult.properties;
   } catch (err) {
     const error = `Error insertando propiedades: ${err}`;
@@ -173,14 +210,22 @@ export async function runSeed(options: Partial<SeedOptions> = {}): Promise<SeedR
   const fakeListings = generateFakeListings(
     opts.listingsPerProperty! * insertedProperties.length,
     insertedProperties,
-    fakeRealEstates[0]?.whatsapp || "+5491100000000"
+    fakeRealEstates[0]?.whatsapp || "+5491100000000",
   );
-  
+
   let insertedListings = fakeListings;
   try {
-    insertedListings = await seedListings(supabase, fakeListings, insertedProperties, agentsResult, opts.truncate!);
+    insertedListings = await seedListings(
+      supabase,
+      fakeListings,
+      insertedProperties,
+      agentsResult,
+      opts.truncate!,
+    );
     const stats = getListingStats(insertedListings);
-    logger.info(`Stats: ${stats.total} total, ${stats.active} activos, ${stats.featured} destacados`);
+    logger.info(
+      `Stats: ${stats.total} total, ${stats.active} activos, ${stats.featured} destacados`,
+    );
   } catch (err) {
     const error = `Error insertando listings: ${err}`;
     logger.error(error);
@@ -189,7 +234,11 @@ export async function runSeed(options: Partial<SeedOptions> = {}): Promise<SeedR
 
   // 11. Generar e insertar favoritos fake con Faker
   const activeListings = insertedListings.filter((l) => l.status === "active");
-  const fakeFavorites = generateFakeFavorites(opts.favoritesCount!, clientProfiles, activeListings);
+  const fakeFavorites = generateFakeFavorites(
+    opts.favoritesCount!,
+    clientProfiles,
+    activeListings,
+  );
   try {
     await seedFavorites(supabase, fakeFavorites, opts.truncate!);
   } catch (err) {
@@ -199,7 +248,11 @@ export async function runSeed(options: Partial<SeedOptions> = {}): Promise<SeedR
   }
 
   // 12. Generar e insertar inquiries fake con Faker
-  const fakeInquiries = generateFakeInquiries(insertedListings, agentsResult, opts.inquiriesCount!);
+  const fakeInquiries = generateFakeInquiries(
+    insertedListings,
+    agentsResult,
+    opts.inquiriesCount!,
+  );
   try {
     await seedInquiries(supabase, fakeInquiries, opts.truncate!);
   } catch (err) {
@@ -219,7 +272,7 @@ export async function runSeed(options: Partial<SeedOptions> = {}): Promise<SeedR
   logger.info(`   - Listados: ${insertedListings.length}`);
   logger.info(`   - Favoritos: ${fakeFavorites.length}`);
   logger.info(`   - Inquiries: ${fakeInquiries.length}`);
-  
+
   if (errors.length > 0) {
     logger.warn(`⚠️ ${errors.length} errores encontrados:`);
     errors.forEach((err) => logger.error(`  - ${err}`));

@@ -82,7 +82,8 @@
     "unknown-table": "Unknown table: {{table}}",
     "unauthorized": "User not authenticated",
     "real-estate-not-found": "Real estate not found",
-    "all-rows-invalid": "All records have validation errors. Please check the data and try again."
+    "all-rows-invalid": "All records have validation errors. Please check the data and try again.",
+    "download-failed": "Failed to download template"
   },
   "messages": {
     "upload-success": "File uploaded successfully",

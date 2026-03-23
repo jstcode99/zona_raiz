@@ -29,7 +29,7 @@ import {
   generateFakeProfiles,
 } from "./lib/faker-data";
 
-dotenv.config({ path: `.env.${process.env.NODE_ENV}` });
+dotenv.config({ path: ".env.local" });
 // Seed Faker para reproducibilidad en dry-run
 faker.seed(42);
 
