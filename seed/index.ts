@@ -116,6 +116,7 @@ export async function runSeed(
   );
 
   // 4. Crear usuarios en auth.users - los perfiles se crean automáticamente via trigger
+  let profileIdMap: Map<string, string> = new Map(); // authUserId -> profileId
   if (!opts.skipAuth) {
     try {
       const usersToCreate = allProfiles.map((profile) => ({
@@ -131,9 +132,23 @@ export async function runSeed(
       logger.info(
         `Auth users: ${authResult.success} creados, ${authResult.failed} fallidos`,
       );
-      // NOTA: Los perfiles en la tabla 'profiles' se crean automáticamente
-      // vía el trigger handle_new_user() en Supabase
-      logger.info("Perfiles creados automáticamente via trigger");
+
+      // OBTENER los profile_ids creados por el trigger
+      // El trigger handle_new_user() crea perfiles con IDs diferentes a los user_id
+      const authUserIds = usersToCreate.map(u => u.id);
+      const { data: profiles, error: profilesError } = await supabase
+        .from('profiles')
+        .select('id, user_id')
+        .in('user_id', authUserIds);
+
+      if (profilesError) {
+        logger.warn(`Error obteniendo perfiles: ${profilesError.message}`);
+      } else if (profiles) {
+        profiles.forEach(p => {
+          profileIdMap.set(p.user_id, p.id);
+        });
+        logger.info(`✓ Mapeados ${profiles.length} perfiles (auth_user_id → profile_id)`);
+      }
     } catch (err) {
       logger.warn(`Error creando auth users: ${err}`);
     }
@@ -144,11 +159,25 @@ export async function runSeed(
     );
   }
 
-  // 5. Generar inmobiliarias fake con Faker
+  // 5. Actualizar los perfiles con los profile_ids correctos
+  coordinatorProfiles.forEach(p => {
+    const profileId = profileIdMap.get(p.id);
+    if (profileId) p.id = profileId;
+  });
+  agentProfiles.forEach(p => {
+    const profileId = profileIdMap.get(p.id);
+    if (profileId) p.id = profileId;
+  });
+  clientProfiles.forEach(p => {
+    const profileId = profileIdMap.get(p.id);
+    if (profileId) p.id = profileId;
+  });
+
+  // 6. Generar inmobiliarias fake con Faker
   const fakeRealEstates = generateFakeRealEstates(opts.realEstateCount!);
   logger.info(`Generadas ${fakeRealEstates.length} inmobiliarias con Faker`);
 
-  // 6. Insertar inmobiliarias y agentes (obtenemos los IDs reales de la BD)
+  // 7. Insertar inmobiliarias y agentes (obtenemos los IDs reales de la BD)
   let agentsResult: SeedAgent[] = [];
   let realEstateIds: string[] = [];
   try {
@@ -169,7 +198,7 @@ export async function runSeed(
     errors.push(error);
   }
 
-  // 7. Generar e insertar propiedades fake con Faker
+  // 8. Generar e insertar propiedades fake con Faker
   // IMPORTANTE: Usar los IDs reales de las inmobiliarias
   const fakeProperties = generateFakeProperties(
     opts.propertiesPerRealEstate! * opts.realEstateCount!,
@@ -191,7 +220,7 @@ export async function runSeed(
     errors.push(error);
   }
 
-  // 8. Generar e insertar imágenes fake con Faker
+  // 9. Generar e insertar imágenes fake con Faker
   // Usar las propiedades con IDs reales
   const fakeImages = generateFakePropertyImages(0, insertedProperties);
   let insertedImagesCount = 0;
@@ -204,7 +233,7 @@ export async function runSeed(
     errors.push(error);
   }
 
-  // 9. Generar e insertar listings fake con Faker
+  // 10. Generar e insertar listings fake con Faker
   // Usar las propiedades con IDs reales
   const fakeListings = generateFakeListings(
     opts.listingsPerProperty! * insertedProperties.length,
@@ -231,7 +260,7 @@ export async function runSeed(
     errors.push(error);
   }
 
-  // 10. Generar e insertar favoritos fake con Faker
+  // 11. Generar e insertar favoritos fake con Faker
   const activeListings = insertedListings.filter((l) => l.status === "active");
   const fakeFavorites = generateFakeFavorites(
     opts.favoritesCount!,
@@ -246,7 +275,7 @@ export async function runSeed(
     errors.push(error);
   }
 
-  // 11. Generar e insertar inquiries fake con Faker
+  // 12. Generar e insertar inquiries fake con Faker
   const fakeInquiries = generateFakeInquiries(
     insertedListings,
     agentsResult,
