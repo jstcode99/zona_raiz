@@ -31,13 +31,14 @@ export async function seedProperties(
     await supabase.from("properties").delete().neq("id", "00000000-0000-0000-0000-000000000000");
   }
 
-  // Crear un mapa de real_estate_id a IDs de real_estate_agents
-  const agentIdsByRealEstate = new Map<string, string>();
+  // Crear un mapa de real_estate_id a profile_ids (NO agent.id)
+  // properties.created_by es una FK a profiles.id, no a real_estate_agents.id
+  const profileIdsByRealEstate = new Map<string, string>();
   agents.forEach((agent) => {
-    if (agent.id && agent.realEstateId) {
-      // Usar el primer agente disponible para cada real_estate
-      if (!agentIdsByRealEstate.has(agent.realEstateId)) {
-        agentIdsByRealEstate.set(agent.realEstateId, agent.id);
+    if (agent.profileId && agent.realEstateId) {
+      // Usar el primer perfil disponible para cada real_estate
+      if (!profileIdsByRealEstate.has(agent.realEstateId)) {
+        profileIdsByRealEstate.set(agent.realEstateId, agent.profileId);
       }
     }
   });
@@ -47,8 +48,8 @@ export async function seedProperties(
   const insertedProperties: SeedProperty[] = [];
 
   for (const property of properties) {
-    // Asignar el agente de la misma inmobiliaria
-    const createdBy = agentIdsByRealEstate.get(property.realEstateId) || null;
+    // Asignar el profile_id del agente de la misma inmobiliaria
+    const createdBy = profileIdsByRealEstate.get(property.realEstateId) || null;
 
     const { data: inserted, error } = await supabase
       .from("properties")
@@ -75,7 +76,7 @@ export async function seedProperties(
         year_built: property.yearBuilt || null,
         parking_spots: property.parkingSpots || null,
         amenities: property.amenities || [],
-        created_by: createdBy,
+        created_by: createdBy, // ← profile_id (FK a profiles.id)
       })
       .select()
       .single();
@@ -125,6 +126,7 @@ export async function seedPropertyImages(
   const insertedImages: SeedPropertyImage[] = [];
 
   for (const image of propertyImages) {
+    // NO incluir id - la BD lo genera con gen_random_uuid()
     const { data: inserted, error } = await supabase
       .from("property_images")
       .insert({

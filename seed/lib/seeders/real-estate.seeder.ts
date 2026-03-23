@@ -16,10 +16,10 @@ export interface RealEstateSeedResult {
  * Ejecuta SQL raw usando la función exec_sql de Supabase
  */
 async function execSql(supabase: SupabaseClient, sql: string): Promise<void> {
-  const { error } = await supabase.rpc('exec_sql', { sql });
+  const { error } = await supabase.rpc("exec_sql", { sql });
   if (error) {
     // Si la función no existe, intentar de otra forma
-    console.warn('exec_sql no disponible, intentando método alternativo');
+    console.warn("exec_sql no disponible, intentando método alternativo");
   }
 }
 
@@ -40,7 +40,10 @@ export async function seedRealEstates(
   // Intentar deshabilitar el trigger on_real_estate_created durante el seed
   // El trigger usa auth.uid() que es nulo con service role
   try {
-    await execSql(supabase, 'DROP TRIGGER IF EXISTS on_real_estate_created ON real_estates');
+    await execSql(
+      supabase,
+      "DROP TRIGGER IF EXISTS on_real_estate_created ON real_estates",
+    );
     logger.info("Trigger deshabilitado para el seed");
   } catch (e) {
     logger.warn("No se pudo deshabilitar el trigger, continuando...");
@@ -85,9 +88,9 @@ export async function seedRealEstates(
 
   // Insertar Real Estates SIN ID - la BD lo genera con gen_random_uuid()
   logger.info(`Insertando ${realEstates.length} inmobiliarias...`);
-  
+
   const insertedRealEstates: SeedRealEstate[] = [];
-  
+
   for (const re of realEstates) {
     const { data: inserted, error } = await supabase
       .from("real_estates")
@@ -156,7 +159,7 @@ export async function seedRealEstates(
   logger.info(`Insertando ${agents.length} relaciones agente-inmobiliaria...`);
 
   const insertedAgents: SeedAgent[] = [];
-  
+
   for (const agent of agents) {
     const { data: inserted, error } = await supabase
       .from("real_estate_agents")
@@ -185,15 +188,18 @@ export async function seedRealEstates(
     `✓ ${insertedAgents.length} relaciones agente-inmobiliaria insertadas`,
   );
 
-  // Recrear el trigger después del seed
+  // Recrear el trigger después del seed con el nombre correcto de la función
   try {
-    await execSql(supabase, `
+    await execSql(
+      supabase,
+      `
       CREATE TRIGGER on_real_estate_created
-      AFTER INSERT ON real_estates
-      FOR EACH ROW
-      EXECUTE FUNCTION handle_real_estate_created()
-    `);
-    logger.info("Trigger recreado después del seed");
+        AFTER INSERT ON real_estates
+        FOR EACH ROW
+        EXECUTE FUNCTION handle_new_real_estate()
+    `,
+    );
+    logger.info("Trigger on_real_estate_created recreado");
   } catch (e) {
     logger.warn("No se pudo recrear el trigger");
   }
