@@ -45,15 +45,35 @@ export const uploadAndParseImportAction = withServerAction(
     // 5. Parsear el archivo
     const importData = importService.parseFileFromBuffer(arrayBuffer);
 
-    // 6. Detectar la tabla
-    const detectionResult = detectTable(importData.headers);
+    // 6. Limpiar datos: filtrar columnas vacías y filas vacías
+    const rawHeaders = importData.headers
+    const nonEmptyHeaderIndices = rawHeaders
+      .map((header, index) => (header && header.trim() ? index : -1))
+      .filter((index) => index >= 0)
 
-    // 7. Retornar resultado
+    // Si no hay headers válidos, usar los que haya (evitar crash)
+    const headers =
+      nonEmptyHeaderIndices.length > 0
+        ? nonEmptyHeaderIndices.map((i) => rawHeaders[i])
+        : rawHeaders
+
+    const rows = importData.rows
+      .map((row) =>
+        nonEmptyHeaderIndices.length > 0
+          ? nonEmptyHeaderIndices.map((i) => (row[i] ?? ""))
+          : row.map((cell) => (cell ?? ""))
+      )
+      .filter((row) => row.some((cell) => cell !== ""))
+
+    // 7. Detectar la tabla con headers limpios
+    const detectionResult = detectTable(headers);
+
+    // 8. Retornar resultado
     return {
       fileId,
       url,
-      headers: importData.headers,
-      rows: importData.rows,
+      headers,
+      rows,
       detectedTable: detectionResult.table,
       confidence: detectionResult.confidence,
     } as UploadAndParseResult;

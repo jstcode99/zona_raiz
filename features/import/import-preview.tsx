@@ -102,7 +102,7 @@ export function ImportPreview({
   }
 
   // Handle null data gracefully — after all hooks
-  if (!data) {
+  if (!data || !data.headers || data.headers.length === 0) {
     return (
       <div className="text-center py-8 text-muted-foreground">
         {t("messages.no-data")}
@@ -111,7 +111,7 @@ export function ImportPreview({
   }
 
   // Create columns for DataTable with error highlighting
-  const columns: ColumnDef<TableRow, unknown>[] = data.headers.map((header, colIndex) => ({
+  const columns: ColumnDef<TableRow, unknown>[] = (data.headers || []).map((header, colIndex) => ({
     accessorKey: `col${colIndex}`,
     header: header,
     cell: ({ row }: { row: { original: TableRow } }) => {

@@ -102,13 +102,31 @@ export function XlsUpload({
         return
       }
       
-      const headers = jsonData[0].map((h) => String(h).trim())
-      const rows = jsonData.slice(1).map((row) =>
-        row.map((cell) => {
-          if (cell === null || cell === undefined) return ""
-          return typeof cell === "number" ? cell : String(cell)
-        })
-      )
+      // 1. Filtrar columnas vacías (headers vacíos o solo espacios)
+      const rawHeaders = jsonData[0].map((h) => String(h).trim())
+      const nonEmptyHeaderIndices = rawHeaders
+        .map((header, index) => (header ? index : -1))
+        .filter((index) => index >= 0)
+
+      // Si no hay headers válidos, error
+      if (nonEmptyHeaderIndices.length === 0) {
+        onError(t("exceptions.parse-failed"))
+        return
+      }
+
+      const headers = nonEmptyHeaderIndices.map((i) => rawHeaders[i])
+
+      // 2. Filtrar filas vacías y limpiar celdas
+      const rows = jsonData
+        .slice(1)
+        .map((row) =>
+          nonEmptyHeaderIndices.map((i) => {
+            const cell = row[i]
+            if (cell === null || cell === undefined) return ""
+            return typeof cell === "number" ? cell : String(cell)
+          })
+        )
+        .filter((row) => row.some((cell) => cell !== "")) // eliminar filas completamente vacías
       
       // Crear datos para preview
       const previewData: ImportData = { headers, rows }
