@@ -130,13 +130,15 @@ export const confirmImportAction = withServerAction(
       headers,
     );
 
-    // 7. Si hay errores, retornarlos (no procesamos si hay errores)
+    // 7. Si hay errores, lanzar excepción para que withServerAction la capture
     if (!validationResult.isValid) {
-      return {
-        success: false,
-        errors: validationResult.errors,
-        message: "Validation failed",
-      };
+      const errorMessage = "Validation failed";
+
+      // Crear un error que incluya los detalles de validación
+      const validationError = new Error(errorMessage);
+      // Agregar los errores específicos al error para que el cliente los pueda leer
+      (validationError as any).validationErrors = validationResult.errors;
+      throw validationError;
     }
 
     // 8. Crear el job de importación (SIN fileUrl ni originalFilename)
@@ -237,15 +239,17 @@ export const processImportAction = withServerAction(
       headers,
     );
 
-    // 6. Si hay errores, retornarlos
+    // 6. Si hay errores, lanzar excepción para que withServerAction la capture
     if (!validationResult.isValid) {
-      return {
-        success: false,
-        errors: validationResult.errors,
-        message: t("import:validation.errors_found", {
-          count: validationResult.errors.length,
-        }),
-      };
+      const errorMessage = t("validation.errors_found", {
+        count: validationResult.errors.length,
+      });
+
+      // Crear un error que incluya los detalles de validación
+      const validationError = new Error(errorMessage);
+      // Agregar los errores específicos al error para que el cliente los pueda leer
+      (validationError as any).validationErrors = validationResult.errors;
+      throw validationError;
     }
 
     // 7. Crear el job de importación (SIN fileUrl ni originalFilename)

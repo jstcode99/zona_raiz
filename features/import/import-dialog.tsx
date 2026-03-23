@@ -63,9 +63,12 @@ export function ImportDialog({ open, onOpenChange }: ImportDialogProps) {
       }, 2000);
     },
     onError: (error) => {
-      // Check if it's a validation error (has field property)
-      if (error.field) {
-        toast.error(t("validation.errors_found"));
+      // Verificar si hay errores de validación en el error
+      const validationErrors = (error as any).validationErrors;
+      if (validationErrors && validationErrors.length > 0) {
+        // Actualizar el estado de errores para mostrarlos en la tabla
+        setErrors(validationErrors);
+        toast.error(t("validation.errors_found", { count: validationErrors.length }));
       } else {
         toast.error(error.message || t("exceptions.import-failed"));
       }
