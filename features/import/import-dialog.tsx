@@ -62,16 +62,21 @@ export function ImportDialog({ open, onOpenChange }: ImportDialogProps) {
         resetState();
       }, 2000);
     },
+    onErrors: (errors) => {
+      // 👈 reemplaza onError
+      const importErrors: ImportError[] = errors.map((e) => ({
+        row: (e as any).row,
+        column: (e as any).column,
+        value: (e as any).value,
+        message: e.message,
+      }));
+      setErrors(importErrors);
+      console.log(importErrors);
+      toast.error(t("validation.errors_found", { count: importErrors.length }));
+    },
     onError: (error) => {
-      // Verificar si hay errores de validación en el error
-      const validationErrors = (error as any).validationErrors;
-      if (validationErrors && validationErrors.length > 0) {
-        // Actualizar el estado de errores para mostrarlos en la tabla
-        setErrors(validationErrors);
-        toast.error(t("validation.errors_found", { count: validationErrors.length }));
-      } else {
-        toast.error(error.message || t("exceptions.import-failed"));
-      }
+      // solo errores inesperados
+      toast.error(error.message || t("exceptions.import-failed"));
     },
   });
 
@@ -200,11 +205,7 @@ export function ImportDialog({ open, onOpenChange }: ImportDialogProps) {
                 />
               )}
 
-              <ImportPreview
-                data={previewData}
-                selectedTable={selectedTable}
-                errors={errors}
-              />
+              <ImportPreview data={previewData} errors={errors} />
             </div>
           )}
 

@@ -13,6 +13,7 @@ import { createRouter } from "@/i18n/router";
 import { CACHE_TAGS } from "@/infrastructure/config/constants";
 import { ImportTableName } from "@/domain/entities/import-job.entity";
 import { initI18n } from "@/i18n/server";
+import { ImportError } from "@/features/import/import.types";
 
 export interface ValidationResult {
   isValid: boolean;
@@ -232,24 +233,25 @@ export const processImportAction = withServerAction(
       return obj;
     });
 
+    console.log(data);
     // 5. Validar filas antes de crear el job
     const validationResult = await importJobService.validateAllRows(
       data,
       tableName,
       headers,
     );
-
     // 6. Si hay errores, lanzar excepción para que withServerAction la capture
     if (!validationResult.isValid) {
-      const errorMessage = t("validation.errors_found", {
-        count: validationResult.errors.length,
-      });
-
-      // Crear un error que incluya los detalles de validación
-      const validationError = new Error(errorMessage);
-      // Agregar los errores específicos al error para que el cliente los pueda leer
-      (validationError as any).validationErrors = validationResult.errors;
-      throw validationError;
+      return {
+        success: false,
+        errors: validationResult.errors.map((err: ImportError) => ({
+          field: `${err.row}_${err.column}`,
+          message: err.message,
+          row: err.row,
+          column: err.column,
+          value: err.value,
+        })),
+      } as any;
     }
 
     // 7. Crear el job de importación (SIN fileUrl ni originalFilename)

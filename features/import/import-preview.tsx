@@ -5,7 +5,6 @@ import { DataTable } from "@/components/ui/data-table";
 import { AlertTriangle } from "lucide-react";
 import type { ColumnDef } from "@tanstack/react-table";
 import type { ImportData, ImportRow, ImportError } from "./import.types";
-import { ImportTableName } from "@/domain/entities/import-job.entity";
 
 // Tipo para las filas de la tabla de preview
 type TableRow = { id: string; hasError?: boolean } & Record<
@@ -15,15 +14,10 @@ type TableRow = { id: string; hasError?: boolean } & Record<
 
 interface ImportPreviewProps {
   data: ImportData | null;
-  selectedTable: ImportTableName | null;
   errors?: ImportError[];
 }
 
-export function ImportPreview({
-  data,
-  selectedTable,
-  errors = [],
-}: ImportPreviewProps) {
+export function ImportPreview({ data, errors = [] }: ImportPreviewProps) {
   const { t } = useTranslation("import");
 
   // Check if there's errors for a cell
