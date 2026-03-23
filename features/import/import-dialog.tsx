@@ -13,9 +13,12 @@ import { Button } from "@/components/ui/button"
 import { XlsUpload } from "./xls-upload"
 import { ImportPreview } from "./import-preview"
 import { ImportTableSelector } from "./import-table-selector"
-import { useState, useCallback, useMemo } from "react"
+import { useState, useCallback } from "react"
 import { useTranslation } from "react-i18next"
-import type { ImportData, ImportRecord, ImportError, TableDetection, TableMappingResult } from "./import.types"
+import { useServerMutation } from "@/shared/hooks/use-server-mutation.hook"
+import { processImportAction } from "@/application/actions/import.actions"
+import { toast } from "sonner"
+import type { ImportData, ImportError, TableDetection, ImportRow } from "./import.types"
 import { ImportTableName } from "@/domain/entities/import-job.entity"
 import { isConfidenceSufficient } from "@/domain/utils/table-detector"
 import { getTableHeaders, transformDataToTable } from "@/domain/utils/table-mapper"
@@ -37,14 +40,52 @@ export function ImportDialog({ open, onOpenChange }: ImportDialogProps) {
     showTableSelector: false,
   })
   const [selectedTable, setSelectedTable] = useState<ImportTableName | null>(null)
-  const [fileUrl, setFileUrl] = useState<string | null>(null)
   const [fileName, setFileName] = useState<string | null>(null)
   const [errors, setErrors] = useState<ImportError[]>([])
-  const [isValidating, setIsValidating] = useState(false)
+
+  // Estado para headers originales
+  const [originalHeaders, setOriginalHeaders] = useState<string[]>([])
+  
+  // Estado para datos originales del archivo (sin mapear)
+  const [originalData, setOriginalData] = useState<ImportData | null>(null)
+
+  // Server action para procesar la importación
+  const { action: processAction, isPending: isProcessing } = useServerMutation({
+    action: processImportAction,
+    onSuccess: (result) => {
+      toast.success(t("messages.import-success"))
+      setStep('confirm')
+      // After a brief delay, close dialog
+      setTimeout(() => {
+        onOpenChange(false)
+        resetState()
+      }, 2000)
+    },
+    onError: (error) => {
+      // Check if it's a validation error (has field property)
+      if (error.field) {
+        toast.error(t("validation.errors_found"))
+      } else {
+        toast.error(error.message || t("exceptions.import-failed"))
+      }
+    },
+  })
+
+  const resetState = useCallback(() => {
+    setStep('upload')
+    setPreviewData(null)
+    setDetection({ table: null, confidence: 0, showTableSelector: false })
+    setSelectedTable(null)
+    setFileName(null)
+    setErrors([])
+    setOriginalHeaders([])
+    setOriginalData(null)
+  }, [])
 
   const handleDataLoaded = useCallback((data: ImportData, detected: ImportTableName | null, confidence: number, url: string, name: string) => {
+    // Guardar datos originales sin transformar
+    setOriginalData(data)
     setPreviewData(data)
-    setFileUrl(url)
     setFileName(name)
     
     // Configurar detección
@@ -64,19 +105,19 @@ export function ImportDialog({ open, onOpenChange }: ImportDialogProps) {
   }, [])
 
   const handleError = (error: string) => {
-    // TODO: Show error toast
+    toast.error(error)
     console.error('Import error:', error)
   }
 
   const handleTableSelect = (table: ImportTableName) => {
     setSelectedTable(table)
     
-    // Si hay datos cargados, re-mapear según la tabla seleccionada
-    if (previewData && previewData.headers && previewData.rows) {
+    // Si hay datos originales, re-mapear según la nueva tabla
+    if (originalData && originalData.headers && originalData.rows) {
       const targetHeaders = getTableHeaders(table)
       
-      // Transformar datos según mapeo (convertir rows a formato compatible)
-      const sourceRows: (string | null)[][] = previewData.rows.map(row => 
+      // Transformar datos según mapeo (usando datos originales)
+      const sourceRows: (string | null)[][] = originalData.rows.map(row => 
         row.map(cell => {
           if (cell === null || cell === undefined) return null
           return String(cell)
@@ -85,7 +126,7 @@ export function ImportDialog({ open, onOpenChange }: ImportDialogProps) {
       
       // Transformar datos según mapeo
       const result = transformDataToTable(
-        previewData.headers,
+        originalData.headers,
         sourceRows,
         targetHeaders,
         table
@@ -97,60 +138,38 @@ export function ImportDialog({ open, onOpenChange }: ImportDialogProps) {
         rows: result.rows,
       })
       
-      // Guardar los headers originales para referencia
-      setOriginalHeaders(previewData.headers)
-    }
-  }
-  
-  // Estado para guardar los headers originales del archivo
-  const [originalHeaders, setOriginalHeaders] = useState<string[]>([])
-
-  const handlePreviewConfirm = (data: ImportRecord[]) => {
-    // TODO: Send data to parent or process further
-    console.log('Confirmed data:', data)
-    setStep('confirm')
-    // After a brief delay, close dialog
-    setTimeout(() => {
-      onOpenChange(false)
-      // Reset state
-      setStep('upload')
-      setPreviewData(null)
-      setDetection({ table: null, confidence: 0, showTableSelector: false })
-      setSelectedTable(null)
-      setFileUrl(null)
-      setFileName(null)
+      // Limpiar errores de validación anteriores
       setErrors([])
-    }, 1500)
+    }
   }
 
   const handleConfirmClick = () => {
-    // The actual confirmation is handled by ImportPreview component
-    // This just triggers the visual confirm state in the dialog
-    if (previewData) {
-      setStep('confirm')
-      // After a brief delay, close dialog
-      setTimeout(() => {
-        onOpenChange(false)
-        // Reset state
-        setStep('upload')
-        setPreviewData(null)
-        setDetection({ table: null, confidence: 0, showTableSelector: false })
-        setSelectedTable(null)
-        setFileUrl(null)
-        setFileName(null)
-        setErrors([])
-      }, 1500)
-    }
+    if (!previewData || !selectedTable) return
+    
+    // Llamar a la server action con los datos
+    const formData = new FormData()
+    formData.append('headers', JSON.stringify(previewData.headers))
+    formData.append('rows', JSON.stringify(previewData.rows))
+    formData.append('tableName', selectedTable)
+    
+    processAction(formData)
   }
 
-  const handlePreviewCancel = () => {
+  const handleCancel = () => {
+    resetState()
+    onOpenChange(false)
+  }
+  
+  const handleCancelPreview = () => {
+    // Resetear todo el estado al paso de upload
     setStep('upload')
     setPreviewData(null)
     setDetection({ table: null, confidence: 0, showTableSelector: false })
     setSelectedTable(null)
-    setFileUrl(null)
     setFileName(null)
     setErrors([])
+    setOriginalData(null)
+    setOriginalHeaders([])
   }
 
   return (
@@ -158,96 +177,88 @@ export function ImportDialog({ open, onOpenChange }: ImportDialogProps) {
       <DialogTrigger asChild>
         {/* Trigger would be handled by parent component */}
       </DialogTrigger>
-      <DialogContent className="w-[900px] max-w-full">
-        <DialogHeader>
-          <DialogTitle>
-            {t("title")}
-          </DialogTitle>
-          <DialogDescription>
-            {t("subtitle")}
-          </DialogDescription>
-        </DialogHeader>
-        
-        {step === 'upload' && (
-          <XlsUpload
-            onDataLoaded={handleDataLoaded}
-            onError={handleError}
-          />
-        )}
-        
-        {step === 'preview' && (
-          <>
-            {/* Table selector if confidence is low */}
-            {detection.showTableSelector && (
-              <ImportTableSelector
-                detectedTable={detection.table}
-                confidence={detection.confidence}
-                onSelect={handleTableSelect}
-              />
-            )}
-            
-            <ImportPreview
-              data={previewData}
-              onConfirm={handlePreviewConfirm}
-              onCancel={handlePreviewCancel}
-              detectedTable={detection.table}
-              selectedTable={selectedTable}
-              onTableSelect={handleTableSelect}
-              fileUrl={fileUrl}
-              fileName={fileName}
-              errors={errors}
-              originalHeaders={originalHeaders}
-            />
-          </>
-        )}
-        
-        {step === 'confirm' && (
-          <div className="text-center py-8">
-            <div className="flex items-center justify-center mb-4">
-              <div className="h-8 w-8 rounded-full bg-green-100 flex items-center justify-center">
-                <svg className="h-5 w-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-                </svg>
-              </div>
-            </div>
-            <h3 className="text-lg font-semibold mb-2">
-              {t("messages.import-success")}
-            </h3>
-            <p className="text-muted-foreground">
-              {t("messages.import-success")}
-            </p>
-          </div>
-        )}
-        
-        <DialogFooter>
+      <DialogContent className="w-[900px] max-w-full max-h-[80vh] overflow-hidden">
+        <div className="flex flex-col max-h-full">
+          <DialogHeader>
+            <DialogTitle>
+              {t("title")}
+            </DialogTitle>
+            <DialogDescription>
+              {t("subtitle")}
+            </DialogDescription>
+          </DialogHeader>
+          
           {step === 'upload' && (
-            <>
-              {/* No buttons in upload step - handled by dropzone */}
-            </>
+            <XlsUpload
+              onDataLoaded={handleDataLoaded}
+              onError={handleError}
+            />
           )}
+          
           {step === 'preview' && (
-            <>
-              <Button 
-                variant="outline"
-                onClick={handlePreviewCancel}
-              >
-                {t("actions.cancel")}
-              </Button>
-              <Button 
-                onClick={handleConfirmClick}
-              >
-                {t("actions.confirm")}
-              </Button>
-            </>
+            <div className="flex-1 overflow-auto pr-1">
+              {/* Table selector if confidence is low - showing in dialog, not in preview */}
+              {detection.showTableSelector && (
+                <ImportTableSelector
+                  detectedTable={detection.table}
+                  confidence={detection.confidence}
+                  onSelect={handleTableSelect}
+                />
+              )}
+              
+              <ImportPreview
+                data={previewData}
+                selectedTable={selectedTable}
+                errors={errors}
+              />
+            </div>
           )}
+          
           {step === 'confirm' && (
-            <Button 
-              onClick={() => onOpenChange(false)}
-            >
-              {t("actions.close")}
-            </Button>
+            <div className="text-center py-8">
+              <div className="flex items-center justify-center mb-4">
+                <div className="h-8 w-8 rounded-full bg-green-100 flex items-center justify-center">
+                  <svg className="h-5 w-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                  </svg>
+                </div>
+              </div>
+              <h3 className="text-lg font-semibold mb-2">
+                {t("messages.import-success")}
+              </h3>
+            </div>
           )}
-        </DialogFooter>
+          
+          <DialogFooter>
+            {step === 'upload' && (
+              <>{/* No buttons in upload step */}</>
+            )}
+            {step === 'preview' && (
+              <>
+                <Button 
+                  variant="outline"
+                  onClick={handleCancelPreview}
+                  disabled={isProcessing}
+                >
+                  {t("actions.cancel")}
+                </Button>
+                <Button 
+                  onClick={handleConfirmClick}
+                  disabled={isProcessing || !previewData || !selectedTable}
+                >
+                  {isProcessing ? t("actions.confirming") : t("actions.confirm")}
+                </Button>
+              </>
+            )}
+            {step === 'confirm' && (
+              <Button 
+                onClick={() => onOpenChange(false)}
+              >
+                {t("actions.close")}
+              </Button>
+            )}
+          </DialogFooter>
+        </div>
       </DialogContent>
     </Dialog>
   );

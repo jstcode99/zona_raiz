@@ -1,12 +1,13 @@
 "use client";
 
-import { useCallback, useRef } from "react";
+import { useCallback, useRef, useState } from "react";
 import { useDropzone, FileRejection } from "react-dropzone";
 import { Button } from "@/components/ui/button";
 import { useTranslation } from "react-i18next";
 import { FileSpreadsheet } from "lucide-react";
 import type { ImportData } from "./import.types";
 import { ImportTableName } from "@/domain/entities/import-job.entity";
+import { isConfidenceSufficient, detectTable } from "@/domain/utils/table-detector";
 
 interface XlsUploadProps {
   onDataLoaded: (
@@ -21,15 +22,6 @@ interface XlsUploadProps {
   maxSize?: number;
 }
 
-interface UploadResult {
-  fileId: string;
-  url: string;
-  headers: string[];
-  rows: string[][];
-  detectedTable: ImportTableName | null;
-  confidence: number;
-}
-
 export function XlsUpload({
   onDataLoaded,
   onError,
@@ -38,35 +30,7 @@ export function XlsUpload({
 }: XlsUploadProps) {
   const { t } = useTranslation("import");
   const fileRef = useRef<File | null>(null);
-
-  const { action: uploadAction, isPending: isUploading } = useServerMutation({
-    action: uploadAndParseImportAction,
-    onSuccess: (result) => {
-      if (!result) {
-        onError(t("exceptions.upload-failed"));
-        return;
-      }
-
-      const uploadResult = result?.data as unknown as UploadResult;
-      // Convertir el resultado de vuelta al formato ImportData
-      const importData: ImportData = {
-        headers: uploadResult.headers,
-        rows: uploadResult.rows,
-      };
-
-      // Llamar al callback con los datos completos
-      onDataLoaded(
-        importData,
-        uploadResult.detectedTable,
-        uploadResult.confidence,
-        uploadResult.url,
-        fileRef.current?.name || "unknown",
-      );
-    },
-    onError: (error) => {
-      onError(error.message || t("exceptions.upload-failed"));
-    },
-  });
+  const [isParsing, setIsParsing] = useState(false);
 
   const onDrop = useCallback(
     async (acceptedFiles: File[], fileRejections: FileRejection[]) => {
@@ -89,8 +53,9 @@ export function XlsUpload({
       const file = acceptedFiles[0];
       fileRef.current = file;
 
-      // Primero leer el archivo y parsearlo en el cliente para preview rápido
+      // Parsear archivo localmente - SIN upload a servidor
       try {
+        setIsParsing(true);
         const arrayBuffer = await file.arrayBuffer();
 
         // Import dinámico de xlsx para parsing en cliente
@@ -135,20 +100,30 @@ export function XlsUpload({
           )
           .filter((row) => row.some((cell) => cell !== "")); // eliminar filas completamente vacías
 
-        // Crear datos para preview
-        const previewData: ImportData = { headers, rows };
+        // 3. Detectar tabla automáticamente desde headers locales
+        const detectionResult = detectTable(headers);
+        const detectedTable = detectionResult.table;
+        const confidence = detectionResult.confidence;
 
-        // Enviar al servidor para upload + detección
-        const formData = new FormData();
-        formData.append("file", file);
+        // 4. Crear datos para preview - NO se sube archivo a servidor
+        const importData: ImportData = { headers, rows };
 
-        uploadAction(formData);
+        // 5. Enviar datos parseados al padre (sin URL de archivo)
+        onDataLoaded(
+          importData,
+          detectedTable,
+          confidence,
+          "", // url vacía - no hay upload
+          file.name
+        );
       } catch (err) {
         console.error("Parse error:", err);
         onError(t("exceptions.parse-failed"));
+      } finally {
+        setIsParsing(false);
       }
     },
-    [onError, uploadAction, maxSize, t],
+    [onError, onDataLoaded, maxSize, t]
   );
 
   const { getRootProps, getInputProps, isDragActive, isDragReject } =
@@ -168,7 +143,7 @@ export function XlsUpload({
       className={`
         border-2 border-dashed rounded-lg p-6 text-center cursor-pointer transition-all
         duration-200 hover:border-primary/50
-        ${isUploading ? "opacity-70" : ""}
+        ${isParsing ? "opacity-70" : ""}
         ${isDragActive ? "border-primary bg-primary/5" : ""}
         ${isDragReject ? "border-destructive" : ""}
       `}
@@ -176,14 +151,14 @@ export function XlsUpload({
       <input {...getInputProps()} />
       <FileSpreadsheet className="mx-auto mb-4 h-8 w-8 text-muted-foreground" />
 
-      {isUploading ? (
+      {isParsing ? (
         <>
           <div className="flex items-center justify-center mb-2">
             <div className="h-4 w-4 animate-spin rounded-full border-2 border-primary border-t-transparent"></div>
-            <span className="ml-2">{t("actions.uploading")}</span>
+            <span className="ml-2">{t("actions.parsing")}</span>
           </div>
           <p className="text-xs text-muted-foreground">
-            {t("messages.processing-file")}
+            {t("messages.processing-locally")}
           </p>
         </>
       ) : (

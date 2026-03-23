@@ -249,3 +249,121 @@ export const confirmImportAction = withServerAction(
     };
   },
 );
+
+// processImportAction - nueva action sin upload de archivo
+export interface ProcessImportInput {
+  headers: string[];
+  rows: (string | null)[][];
+  tableName: ImportTableName;
+}
+
+export const processImportAction = withServerAction(
+  async (formData: FormData) => {
+    // 1. Obtener servicios
+    const lang = await getLangServerSide();
+    const cookieStore = await cookies();
+    const routes = createRouter(lang);
+    const i18n = await import("@/i18n/server").then(m => m.initI18n(lang));
+    const t = i18n.getFixedT(lang);
+    
+    const {
+      importJobService,
+      sessionService,
+      cookiesService,
+    } = await appModule(lang, { cookies: cookieStore });
+
+    // 2. Obtener userId y realEstateId
+    const userId = await sessionService.getCurrentUserId();
+    if (!userId) {
+      throw new Error(t("import:exceptions.unauthorized"));
+    }
+
+    const realEstateId = await cookiesService.getRealEstateId();
+    if (!realEstateId) {
+      throw new Error(t("import:exceptions.real-estate-not-found"));
+    }
+
+    // 3. Parsear formData
+    const raw = Object.fromEntries(formData);
+    const headers = JSON.parse(raw.headers as string) as string[];
+    const rows = JSON.parse(raw.rows as string) as (string | null)[][];
+    const tableName = (raw.tableName as ImportTableName) || ImportTableName.PROPERTIES;
+
+    // 4. Convertir rows a objetos
+    const data: Record<string, unknown>[] = rows.map((row) => {
+      const obj: Record<string, unknown> = {};
+      headers.forEach((header, index) => {
+        const value = row[index];
+        // Convertir strings numéricos
+        if (value !== null && value !== undefined && value !== "") {
+          const numValue = Number(value);
+          obj[header.toLowerCase().trim()] = isNaN(numValue) ? value : numValue;
+        } else {
+          obj[header.toLowerCase().trim()] = value;
+        }
+      });
+      return obj;
+    });
+
+    // 5. Validar filas antes de crear el job
+    const validationResult = await importJobService.validateAllRows(
+      data,
+      tableName,
+      headers,
+    );
+
+    // 6. Si hay errores, retornarlos
+    if (!validationResult.isValid) {
+      return {
+        success: false,
+        errors: validationResult.errors,
+        message: t("import:validation.errors_found", { count: validationResult.errors.length }),
+      };
+    }
+
+    // 7. Crear el job de importación (SIN fileUrl ni originalFilename)
+    const job = await importJobService.createJob({
+      userId,
+      realEstateId,
+      tableName,
+      totalRows: rows.length,
+      batchSize: 100,
+    });
+
+    // 8. Procesar la importación
+    const summary = await importJobService.processImport(
+      job.id,
+      validationResult.validatedData,
+      tableName,
+      realEstateId,
+      userId,
+    );
+
+    // 9. Invalidar cache según tabla
+    switch (tableName) {
+      case ImportTableName.PROPERTIES:
+        revalidateTag(CACHE_TAGS.PROPERTY.ALL, { expire: 0 });
+        revalidateTag(CACHE_TAGS.PROPERTY.COUNT, { expire: 0 });
+        revalidatePath(routes.properties());
+        break;
+      case ImportTableName.LISTINGS:
+        revalidateTag(CACHE_TAGS.LISTING.ALL, { expire: 0 });
+        revalidateTag(CACHE_TAGS.LISTING.COUNT, { expire: 0 });
+        revalidatePath(routes.listings());
+        break;
+      case ImportTableName.REAL_ESTATES:
+        revalidateTag(CACHE_TAGS.REAL_ESTATE.ALL, { expire: 0 });
+        revalidateTag(CACHE_TAGS.REAL_ESTATE.COUNT, { expire: 0 });
+        revalidatePath(routes.realEstates());
+        break;
+    }
+    revalidateTag(CACHE_TAGS.IMPORT_JOB.ALL, { expire: 0 });
+    revalidatePath(routes.dashboard());
+
+    return {
+      success: true,
+      jobId: job.id,
+      summary,
+    };
+  },
+);
