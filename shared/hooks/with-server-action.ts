@@ -1,15 +1,17 @@
-import { ActionResult } from "./use-server-mutation.hook"
-import { toActionResult } from "./to-action-result"
+import { ActionResult } from "./use-server-mutation.hook";
+import { toActionResult } from "./to-action-result";
 
-export function withServerAction<T extends any[]>(
-  fn: (...args: T) => Promise<void>
+export function withServerAction<T extends any[], D = void>(
+  fn: (...args: T) => Promise<D>,
 ) {
-  return async (...args: T): Promise<ActionResult> => {
+  return async (...args: T): Promise<ActionResult<D>> => {
     try {
-      await fn(...args)
-      return { success: true }
+      const data = await fn(...args);
+      return data === undefined
+        ? ({ success: true } as ActionResult<D>)
+        : ({ success: true, data } as ActionResult<D>);
     } catch (error) {
-      return toActionResult(error)
+      return toActionResult(error);
     }
-  }
+  };
 }
