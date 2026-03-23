@@ -1,15 +1,15 @@
 "use client";
 
-import { useCallback, useRef } from "react"
-import { useDropzone, FileRejection } from "react-dropzone"
-import { Button } from "@/components/ui/button"
-import { useTranslation } from "react-i18next"
-import { UploadCloud, FileSpreadsheet } from "lucide-react"
-import { useServerMutation } from "@/shared/hooks/use-server-mutation.hook"
-import { uploadAndParseImportAction } from "@/application/actions/import.actions"
-import type { ImportData } from "./import.types"
-import { ImportTableName } from "@/domain/entities/import-job.entity"
-import { toast } from "sonner"
+import { useCallback, useRef } from "react";
+import { useDropzone, FileRejection } from "react-dropzone";
+import { Button } from "@/components/ui/button";
+import { useTranslation } from "react-i18next";
+import { UploadCloud, FileSpreadsheet } from "lucide-react";
+import { useServerMutation } from "@/shared/hooks/use-server-mutation.hook";
+import { uploadAndParseImportAction } from "@/application/actions/import.actions";
+import type { ImportData } from "./import.types";
+import { ImportTableName } from "@/domain/entities/import-job.entity";
+import { toast } from "sonner";
 
 interface XlsUploadProps {
   onDataLoaded: (data: ImportData, detectedTable: ImportTableName | null, confidence: number, url: string, fileName: string) => void;
