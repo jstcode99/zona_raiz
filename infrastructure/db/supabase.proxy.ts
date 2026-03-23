@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 import { EUserRole } from "@/domain/entities/profile.entity";
 import { COOKIE_NAMES } from "../config/constants";
-import { getRoutes, ROUTES } from "../config/routes";
+import { ROUTES } from "../config/routes";
 import { appModule } from "@/application/modules/app.module";
 import { detectLang } from "@/i18n/detect-lang";
 import { createRouter } from "@/i18n/router";
@@ -17,7 +17,7 @@ export async function updateSession(request: NextRequest) {
     return NextResponse.next();
   }
 
-  let response = createMutableResponse(request);
+  const response = createMutableResponse(request);
 
   const supabase = SupabaseServerClient(request, response);
 
@@ -25,16 +25,6 @@ export async function updateSession(request: NextRequest) {
     request,
     response,
   });
-
-  const redirect = async (path: string) => {
-    const res = redirectTo(path, request);
-    const { cookiesService } = await appModule(lang, {
-      request,
-      response: res,
-    });
-
-    return { res, cookiesService };
-  };
 
   // =========================
   // AUTH
@@ -65,21 +55,17 @@ export async function updateSession(request: NextRequest) {
   // =========================
   // CLIENT
   // =========================
-
   if (role === EUserRole.Client) {
-    const { res, cookiesService } = await redirect(routes.home());
-
-    cookiesService.setSession(COOKIE_NAMES.REAL_ESTATE_ROLE, "client");
-
+    const { res, cookiesService: cs } = await redirect(routes.home());
+    cs.setSession(COOKIE_NAMES.REAL_ESTATE_ROLE, EUserRole.Client);
     return res;
   }
 
   // =========================
   // ADMIN
   // =========================
-
   if (role === EUserRole.Admin) {
-    cookiesService.setSession(COOKIE_NAMES.REAL_ESTATE_ROLE, "admin");
+    cookiesService.setSession(COOKIE_NAMES.REAL_ESTATE_ROLE, EUserRole.Admin);
 
     if (isRoute(pathname, routes.dashboard())) {
       return response;
@@ -91,30 +77,12 @@ export async function updateSession(request: NextRequest) {
   // =========================
   // REAL ESTATE
   // =========================
-
   if (role !== EUserRole.RealEstate) {
     return redirectTo(routes.home(), request);
   }
 
-  // 🔁 Sin contexto
+  // 🔁 Sin contexto — delega lógica al OnboardingService
   if (!realEstateId) {
-    const realEstates = await sessionService.getRealEstatesForUser();
-
-    if (realEstates.length === 1) {
-      const current = realEstates[0];
-
-      const { res, cookiesService } = await redirect(routes.dashboard());
-
-      cookiesService.setSession(
-        COOKIE_NAMES.REAL_ESTATE,
-        current.real_estate.id,
-      );
-
-      cookiesService.setSession(COOKIE_NAMES.REAL_ESTATE_ROLE, current.role);
-
-      return res;
-    }
-
     if (!isRoute(pathname, routes.onboarding())) {
       return redirectTo(routes.onboarding(), request);
     }
@@ -125,9 +93,7 @@ export async function updateSession(request: NextRequest) {
   // =========================
   // CONTEXTO ACTIVO
   // =========================
-
   const realEstates = await sessionService.getRealEstatesForUser();
-
   const current = realEstates.find((r) => r.real_estate.id === realEstateId);
 
   if (current) {
@@ -139,6 +105,18 @@ export async function updateSession(request: NextRequest) {
   }
 
   return response;
+
+  // ==========================================
+  // HELPERS (inner scope)
+  // ==========================================
+  async function redirect(path: string) {
+    const res = redirectTo(path, request);
+    const { cookiesService } = await appModule(lang, {
+      request,
+      response: res,
+    });
+    return { res, cookiesService };
+  }
 }
 
 // ==========================================
@@ -170,8 +148,21 @@ function SupabaseServerClient(request: NextRequest, response: NextResponse) {
 }
 
 function isPublicRoute(pathname: string, lang: Lang) {
-  // implement isPublicRoute with ROUTES
-  return true;
+  const publicKeys: (keyof typeof ROUTES)[] = [
+    "home",
+    "contact",
+    "about",
+    "signin",
+    "signup",
+    "signout",
+    "otp",
+    "callback",
+    "search",
+  ];
+
+  return publicKeys
+    .map((key) => ROUTES[key][lang])
+    .some((route) => isRoute(pathname, route));
 }
 
 function isRoute(pathname: string, base: string) {

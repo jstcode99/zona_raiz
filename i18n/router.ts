@@ -13,6 +13,9 @@ export function createRouter(lang: Lang) {
         params.forEach((param) => {
           path = path.replace(/:[^/]+/, param);
         });
+        if (`/${lang}` == path) {
+          return path;
+        }
         return `/${lang}${path}`;
       },
     ]),

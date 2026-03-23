@@ -5,31 +5,31 @@ import { LandingAgent } from "@/domain/types/landing.types";
 import { SupabaseClient } from "@supabase/supabase-js";
 
 export class SupabaseAgentAdapter implements AgentPort {
-  constructor(private readonly supabase: SupabaseClient) { }
+  constructor(private readonly supabase: SupabaseClient) {}
 
   async addAgent(realEstateId: string, profile_id: string): Promise<void> {
     const { error } = await this.supabase
       .from("real_estate_agents")
-      .insert({ real_estate_id: realEstateId, profile_id: profile_id })
+      .insert({ real_estate_id: realEstateId, profile_id: profile_id });
 
-    if (error) throw new Error(error.message)
+    if (error) throw new Error(error.message);
   }
-
 
   async removeAgent(realEstateId: string, profile_id: string): Promise<void> {
     const { error } = await this.supabase
       .from("real_estate_agents")
       .delete()
       .eq("real_estate_id", realEstateId)
-      .eq("profile_id", profile_id)
+      .eq("profile_id", profile_id);
 
-    if (error) throw new Error(error.message)
+    if (error) throw new Error(error.message);
   }
 
   async listAgents(realEstateId: string): Promise<ProfileEntity[]> {
     const { data, error } = await this.supabase
       .from("real_estate_agents")
-      .select(`
+      .select(
+        `
         profile:profiles (
           id,
           full_name,
@@ -38,24 +38,27 @@ export class SupabaseAgentAdapter implements AgentPort {
           role,
           created_at
         )
-      `)
-      .eq("real_estate_id", realEstateId)
+      `,
+      )
+      .eq("real_estate_id", realEstateId);
 
-    if (error) throw new Error(error.message)
+    if (error) throw new Error(error.message);
 
-    return data.map((p) => mapRealEstateAgentRowToEntity(p.profile))
+    return data.map((p) => mapRealEstateAgentRowToEntity(p.profile));
   }
 
   async getTopAgents(limit: number): Promise<LandingAgent[]> {
     const { data, error } = await this.supabase
       .from("real_estate_agents")
-      .select(`
+      .select(
+        `
         profile:profiles (
           id,
           full_name,
           avatar_url
         )
-      `)
+      `,
+      )
       .eq("role", "agent")
       .not("profile.avatar_url", "is", null)
       .limit(limit);

@@ -3,15 +3,24 @@
 import { RealEstateSelector } from "../real-states/real-estate-selector";
 import { RealEstateRegisterPrompt } from "@/features/real-states/real-estate-register-prompt";
 import { OnboardingState } from "@/domain/services/onboarding.service";
-import { redirect, RedirectType } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { PageLoader } from "../loader/page-loader";
+import { useEffect } from "react";
+
 interface Props {
   initialState: OnboardingState;
 }
 
 export function OnboardingWrapper({ initialState }: Props) {
-  // Estado inicial determina qué mostrar
-  if (initialState.step === "loading") {
+  const router = useRouter();
+
+  useEffect(() => {
+    if (initialState.step === "redirect") {
+      router.push(initialState.path);
+    }
+  }, [initialState, router]);
+
+  if (initialState.step === "redirect") {
     return <PageLoader />;
   }
 
@@ -19,12 +28,8 @@ export function OnboardingWrapper({ initialState }: Props) {
     return <RealEstateSelector realEstates={initialState.realEstates} />;
   }
 
-  if (initialState.step === "redirect") {
-    redirect(initialState.path, RedirectType.push);
-  }
-
   if (initialState.step === "register-real-estate") {
-    return <RealEstateRegisterPrompt onSkip={() => redirect("/")} />;
+    return <RealEstateRegisterPrompt />;
   }
 
   return <PageLoader />;

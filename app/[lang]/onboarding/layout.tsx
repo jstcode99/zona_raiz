@@ -31,7 +31,7 @@ export default async function layout({
   }
 
   return (
-    <section className="flex-1 py-12 sm:py-16 lg:py-12">
+    <section className="flex min-h-svh flex-col items-center justify-center">
       <div className="mx-auto flex h-full max-w-7xl flex-col gap-16 px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 gap-6 gap-y-12 md:gap-y-16 lg:grid-cols-5">
           <div className="flex w-full flex-col justify-center gap-5 max-lg:items-center lg:col-span-3">

@@ -15,8 +15,7 @@ export class SupabaseEnquiryAdapter implements EnquiryPort {
         *,
         listing:listings (
           id,
-          real_estate_id,
-          property:properties (id, title, slug)
+          property:properties (id, title, slug, real_estate_id)
         ),
         assigned_to_profile:real_estate_agents (
           profile:profiles (id, full_name, avatar_url, email)

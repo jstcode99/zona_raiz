@@ -1,6 +1,5 @@
 "use client";
 
-import { useTransition } from "react";
 import {
   Card,
   CardContent,
@@ -10,26 +9,14 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Building2, Plus, ArrowRight, Loader2 } from "lucide-react";
+import { Building2, Plus, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { useTranslation } from "react-i18next";
 import { useRoutes } from "@/i18n/client-router";
 
-interface Props {
-  onSkip: () => void;
-}
-
-export function RealEstateRegisterPrompt({ onSkip }: Props) {
+export function RealEstateRegisterPrompt() {
   const { t } = useTranslation("real-estates");
   const routes = useRoutes();
-
-  const [isPending, startTransition] = useTransition();
-
-  const handleSkip = () => {
-    startTransition(async () => {
-      await onSkip();
-    });
-  };
 
   return (
     <Card className="w-full max-w-lg">
@@ -49,19 +36,12 @@ export function RealEstateRegisterPrompt({ onSkip }: Props) {
         </Button>
       </CardContent>
       <CardFooter>
-        <Button
-          variant="ghost"
-          className="w-full"
-          onClick={handleSkip}
-          disabled={isPending}
-        >
-          {isPending ? (
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-          ) : (
+        <Link href={`${routes.home()}`}>
+          <Button variant="ghost" className="w-full">
             <ArrowRight className="mr-2 h-4 w-4" />
-          )}
-          {t("words.back_home")}
-        </Button>
+            {t("words.back_home")}
+          </Button>
+        </Link>
       </CardFooter>
     </Card>
   );
