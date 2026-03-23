@@ -12,6 +12,9 @@ import type { ColumnDef } from "@tanstack/react-table"
 import type { ImportData, ImportRow, ImportRecord, ImportError } from "./import.types"
 import { ImportTableName } from "@/domain/entities/import-job.entity"
 
+// Tipo para las filas de la tabla de preview
+type TableRow = { id: string; hasError?: boolean } & Record<string, string | number | boolean | null | undefined>
+
 interface ImportPreviewProps {
   data: ImportData | null
   onConfirm: (data: ImportRecord[]) => void
@@ -22,10 +25,8 @@ interface ImportPreviewProps {
   fileUrl?: string | null
   fileName?: string | null
   errors?: ImportError[]
+  originalHeaders?: string[]  // headers originales del archivo
 }
-
-// Tipo para las filas de la tabla de preview
-type TableRow = { id: string; hasError?: boolean } & Record<string, string | number | boolean | null | undefined>
 
 export function ImportPreview({
   data,
@@ -37,6 +38,7 @@ export function ImportPreview({
   fileUrl,
   fileName,
   errors = [],
+  originalHeaders = [],
 }: ImportPreviewProps) {
   const { t } = useTranslation("import")
   const [table, setTable] = useState<ImportTableName | null>(

@@ -47,3 +47,11 @@ export interface ImportError {
   value: string | number | null
   message: string
 }
+
+/** Resultado del mapeo de datos a una tabla */
+export interface TableMappingResult {
+  headers: string[]           // headers de la tabla seleccionada
+  rows: (string | null)[][]   // filas transformadas según mapeo
+  originalHeaders: string[]   // headers originales del archivo (para referencia)
+  unmappedColumns: string[]   // columnas del archivo sin mapeo
+}

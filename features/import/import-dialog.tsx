@@ -13,11 +13,12 @@ import { Button } from "@/components/ui/button"
 import { XlsUpload } from "./xls-upload"
 import { ImportPreview } from "./import-preview"
 import { ImportTableSelector } from "./import-table-selector"
-import { useState, useCallback } from "react"
+import { useState, useCallback, useMemo } from "react"
 import { useTranslation } from "react-i18next"
-import type { ImportData, ImportRecord, ImportError, TableDetection } from "./import.types"
+import type { ImportData, ImportRecord, ImportError, TableDetection, TableMappingResult } from "./import.types"
 import { ImportTableName } from "@/domain/entities/import-job.entity"
 import { isConfidenceSufficient } from "@/domain/utils/table-detector"
+import { getTableHeaders, transformDataToTable } from "@/domain/utils/table-mapper"
 
 interface ImportDialogProps {
   open: boolean
@@ -69,7 +70,40 @@ export function ImportDialog({ open, onOpenChange }: ImportDialogProps) {
 
   const handleTableSelect = (table: ImportTableName) => {
     setSelectedTable(table)
+    
+    // Si hay datos cargados, re-mapear según la tabla seleccionada
+    if (previewData && previewData.headers && previewData.rows) {
+      const targetHeaders = getTableHeaders(table)
+      
+      // Transformar datos según mapeo (convertir rows a formato compatible)
+      const sourceRows: (string | null)[][] = previewData.rows.map(row => 
+        row.map(cell => {
+          if (cell === null || cell === undefined) return null
+          return String(cell)
+        })
+      )
+      
+      // Transformar datos según mapeo
+      const result = transformDataToTable(
+        previewData.headers,
+        sourceRows,
+        targetHeaders,
+        table
+      )
+      
+      // Actualizar preview con headers de la tabla y rows transformados
+      setPreviewData({
+        headers: result.headers,
+        rows: result.rows,
+      })
+      
+      // Guardar los headers originales para referencia
+      setOriginalHeaders(previewData.headers)
+    }
   }
+  
+  // Estado para guardar los headers originales del archivo
+  const [originalHeaders, setOriginalHeaders] = useState<string[]>([])
 
   const handlePreviewConfirm = (data: ImportRecord[]) => {
     // TODO: Send data to parent or process further
@@ -162,6 +196,7 @@ export function ImportDialog({ open, onOpenChange }: ImportDialogProps) {
               fileUrl={fileUrl}
               fileName={fileName}
               errors={errors}
+              originalHeaders={originalHeaders}
             />
           </>
         )}
