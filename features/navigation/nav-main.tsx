@@ -27,7 +27,6 @@ export const RenderMenu = ({ items }: { items: Items[] }) => {
 
   return items?.map((item) => {
     const isActive = isCurrentRoute(item.url);
-
     return (
       <Link key={item.title} href={item.url} className="font-medium ">
         <SidebarMenuItem>

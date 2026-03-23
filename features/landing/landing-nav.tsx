@@ -15,10 +15,9 @@ import {
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
 import { cn } from "@/lib/utils";
-import { ArrowUpRight, Lock, TextAlignJustify, Unlock } from "lucide-react";
+import { Lock, TextAlignJustify, Unlock } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
-import { buildSearchUrl, useRoutes } from "@/i18n/client-router";
-import { Lang } from "@/i18n/settings";
+import { useRoutes } from "@/i18n/client-router";
 import Logo from "../navigation/logo";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
@@ -116,7 +115,7 @@ export function LandingNav({ isAuth }: LandingNavProps) {
                 : "bg-transparent border-transparent",
             )}
           >
-            <Link href={"/"}>
+            <Link href={routes.home()}>
               <Logo />
             </Link>
             <div>

@@ -2,6 +2,10 @@ import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { AuthShape } from "@/assets/svg/auth-shape";
 import { PageTransition } from "@/components/ui/page-transtion";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import { ArrowLeft } from "lucide-react";
+import BackButton from "@/components/ui/back-button";
 
 export default function AuthLayout({
   children,
@@ -24,6 +28,9 @@ export default function AuthLayout({
         style={{ animation: "authFadeIn 0.5s ease both" }}
       >
         <div className={cn("flex flex-col gap-6")}>
+          <div>
+            <BackButton />
+          </div>
           <Card className="overflow-hidden p-0 shadow-xl">
             <CardContent className="grid p-0 md:grid-cols-2">
               {/* Form side */}

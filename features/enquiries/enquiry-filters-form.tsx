@@ -8,7 +8,7 @@ import {
   enquiryStatusOptions,
   enquirySourceOptions,
 } from "@/domain/entities/enquiry.entity";
-import { IconClearAll, IconSearch } from "@tabler/icons-react";
+import { IconClearAll } from "@tabler/icons-react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { objectToSearchParams } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -125,8 +125,8 @@ export function EnquiryFiltersForm({
       <div className="flex gap-2 items-center">
         <Form.Input
           name="search"
-          label={t("words:search")}
-          placeholder={t("words:search")}
+          label={t("common:words.search")}
+          placeholder={t("common:words.search")}
         />
         <Button
           type="button"
@@ -141,7 +141,7 @@ export function EnquiryFiltersForm({
       <Form.Set
         legend={
           <span className="flex items-center gap-1 text-xs font-medium text-muted-foreground">
-            {t("words:filters")}
+            {t("common:words.filters")}
           </span>
         }
       >

@@ -21,6 +21,7 @@ import {
 } from "@/application/validation/auth.validation";
 import { signUpAction } from "@/application/actions/auth.actions";
 import { useRoutes } from "@/i18n/client-router";
+import { Separator } from "@/components/ui/separator";
 
 export function SignUpForm({ className, ...props }: ComponentProps<"form">) {
   const { t } = useTranslation("auth");
@@ -76,7 +77,7 @@ export function SignUpForm({ className, ...props }: ComponentProps<"form">) {
       className={cn("py-16 px-6", className)}
       onSubmit={onSubmit}
     >
-      <FieldGroup className="gap-2">
+      <Form.Set className="gap-2">
         {/* Header */}
         <div
           className="flex flex-col items-center gap-1 text-center my-2"
@@ -155,16 +156,12 @@ export function SignUpForm({ className, ...props }: ComponentProps<"form">) {
 
         {/* Submit */}
         <div style={{ animation: "authFadeIn 0.4s ease 360ms both" }}>
-          <Field>
-            <Button type="submit" disabled={isLoading} className="w-full">
-              {isLoading && (
-                <Spinner data-icon="inline-start" className="mr-2" />
-              )}
-              {t("actions.sign_up")}
-            </Button>
-          </Field>
+          <Button type="submit" disabled={isLoading} className="w-full my-4">
+            {isLoading && <Spinner data-icon="inline-start" className="mr-2" />}
+            {t("actions.sign_up")}
+          </Button>
         </div>
-
+        <Separator />
         {/* Google + link */}
         <div style={{ animation: "authFadeIn 0.4s ease 400ms both" }}>
           <Field className="py-4">
@@ -179,7 +176,7 @@ export function SignUpForm({ className, ...props }: ComponentProps<"form">) {
             </FieldDescription>
           </Field>
         </div>
-      </FieldGroup>
+      </Form.Set>
 
       <style>{`
         @keyframes authFadeIn {

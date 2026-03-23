@@ -1,9 +1,13 @@
 import { UserPort, ListUsersFilters } from "@/domain/ports/user.port";
 import { unstable_cache } from "next/cache";
 import { Lang } from "@/i18n/settings";
+import { CACHE_TAGS } from "@/infrastructure/config/constants";
 
 export class UserService {
-  constructor(private userPort: UserPort, private lang: Lang = "es") {}
+  constructor(
+    private userPort: UserPort,
+    private lang: Lang = "es",
+  ) {}
 
   getUserById(userId: string) {
     return this.userPort.getUserById(userId);
@@ -12,11 +16,11 @@ export class UserService {
   getCachedUserById(userId: string) {
     return unstable_cache(
       async () => this.userPort.getUserById(userId),
-      [`user:${userId}`],
+      [CACHE_TAGS.USER.KEYS.BY_USER(userId)],
       {
         revalidate: 300,
-        tags: ["users", `user:${userId}`],
-      }
+        tags: [CACHE_TAGS.USER.PRINCIPAL, CACHE_TAGS.USER.DETAIL(userId)],
+      },
     )();
   }
 
@@ -27,11 +31,11 @@ export class UserService {
   getCachedUserByEmail(email: string) {
     return unstable_cache(
       async () => this.userPort.getUserByEmail(email),
-      [`user:email:${email}`],
+      [CACHE_TAGS.USER.KEYS.USER_BY_EMAIL(email)],
       {
         revalidate: 300,
-        tags: ["users", "user:email"],
-      }
+        tags: [CACHE_TAGS.USER.PRINCIPAL, CACHE_TAGS.USER.EMAIL(email)],
+      },
     )();
   }
 
@@ -40,15 +44,13 @@ export class UserService {
   }
 
   getCachedListUsers(filters?: ListUsersFilters) {
-    const cacheKey = filters ? `user:list:${JSON.stringify(filters)}` : "user:list";
-    
     return unstable_cache(
       async () => this.userPort.listUsers(filters),
-      [cacheKey],
+      [CACHE_TAGS.USER.KEYS.LIST(filters)],
       {
         revalidate: 300,
-        tags: ["users", "user:list"],
-      }
+        tags: [CACHE_TAGS.USER.PRINCIPAL, CACHE_TAGS.USER.LIST],
+      },
     )();
   }
 
@@ -60,7 +62,10 @@ export class UserService {
     return this.userPort.updateUser(userId, data);
   }
 
-  updateUserRole(userId: string, role: Parameters<UserPort["updateUserRole"]>[1]) {
+  updateUserRole(
+    userId: string,
+    role: Parameters<UserPort["updateUserRole"]>[1],
+  ) {
     return this.userPort.updateUserRole(userId, role);
   }
 

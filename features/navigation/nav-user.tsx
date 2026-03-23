@@ -103,7 +103,7 @@ export function NavUser({ profile }: { profile: ProfileEntity }) {
               <Link href={routes.profile()}>
                 <DropdownMenuItem className="capitalize">
                   <IconUserCircle />
-                  {t("words:profile")}
+                  {t("words.profile")}
                 </DropdownMenuItem>
               </Link>
             </DropdownMenuGroup>
@@ -114,7 +114,7 @@ export function NavUser({ profile }: { profile: ProfileEntity }) {
               className="capitalize"
             >
               <IconLogout />
-              {t("words:sign-out")}
+              {t("words.sign_out")}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

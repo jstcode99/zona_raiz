@@ -21,12 +21,7 @@ import {
 import { signInAction } from "@/application/actions/auth.actions";
 import { useRoutes } from "@/i18n/client-router";
 import { toast } from "sonner";
-
-const item = (i: number) => ({
-  opacity: 1,
-  transform: "translateY(0)",
-  transition: `opacity 0.4s ease ${i * 60}ms, transform 0.4s ease ${i * 60}ms`,
-});
+import { Separator } from "@/components/ui/separator";
 
 const hidden = {
   opacity: 0,
@@ -52,11 +47,14 @@ export function SignInForm({ className, ...props }: ComponentProps<"form">) {
   const mutation = useServerMutation({
     action: signInAction,
     setError,
-    onSuccess: () => {
-      router.push(routes.onboarding());
-      router.refresh();
+    onSuccess: (result) => {
+      if ("data" in result) {
+        router.push(result.data.redirectTo);
+        router.refresh();
+      }
     },
     onError: (error) => {
+      console.log(t("messages.error.sign_up"));
       toast.error(t("messages.error.sign_up"));
       console.error("Sign in error:", error);
     },
@@ -87,7 +85,7 @@ export function SignInForm({ className, ...props }: ComponentProps<"form">) {
       className={cn("py-16 px-6", className)}
       onSubmit={onSubmit}
     >
-      <FieldGroup className="gap-3">
+      <Form.Set className="gap-3">
         {/* Header */}
         <div
           className="flex flex-col items-center gap-2 text-center"
@@ -141,23 +139,19 @@ export function SignInForm({ className, ...props }: ComponentProps<"form">) {
         <div
           style={{ ...hidden, animation: "authFadeIn 0.4s ease 200ms both" }}
         >
-          <Field>
-            <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading && (
-                <Spinner data-icon="inline-start" className="mr-2 h-4 w-4" />
-              )}
-              {t("actions.sign_in")}
-            </Button>
-          </Field>
+          <Button type="submit" className="w-full my-4" disabled={isLoading}>
+            {isLoading && (
+              <Spinner data-icon="inline-start" className="mr-2 h-4 w-4" />
+            )}
+            {t("actions.sign_in")}
+          </Button>
         </div>
-
+        <Separator />
         {/* Google */}
         <div
           style={{ ...hidden, animation: "authFadeIn 0.4s ease 240ms both" }}
         >
-          <Field className="py-4">
-            <GoogleAuth disabled={isLoading} />
-          </Field>
+          <GoogleAuth disabled={isLoading} />
         </div>
 
         {/* Sign up link */}
@@ -173,7 +167,7 @@ export function SignInForm({ className, ...props }: ComponentProps<"form">) {
             </Link>
           </FieldDescription>
         </div>
-      </FieldGroup>
+      </Form.Set>
 
       <style>{`
         @keyframes authFadeIn {
