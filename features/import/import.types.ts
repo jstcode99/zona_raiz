@@ -26,9 +26,6 @@ export interface TableDetection {
 /** Estado del proceso de importación */
 export interface ImportState {
   step: 'upload' | 'preview' | 'confirm'
-  fileId: string | null
-  fileUrl: string | null
-  fileName: string | null
   headers: string[]
   rows: string[][]
   detectedTable: ImportTableName | null

@@ -1,5 +1,3 @@
-// application/actions/import/download-template.action.ts
-
 "use server";
 
 import { withServerAction } from "@/shared/hooks/with-server-action";

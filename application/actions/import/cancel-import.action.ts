@@ -1,5 +1,3 @@
-// application/actions/import/cancel-import.action.ts
-
 "use server";
 
 import { withServerAction } from "@/shared/hooks/with-server-action";

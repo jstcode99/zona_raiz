@@ -12,73 +12,6 @@ import { revalidatePath, revalidateTag } from "next/cache";
 import { createRouter } from "@/i18n/router";
 import { CACHE_TAGS } from "@/infrastructure/config/constants";
 import { ImportTableName } from "@/domain/entities/import-job.entity";
-import { detectTable, isConfidenceSufficient } from "@/domain/utils/table-detector";
-
-export interface UploadAndParseResult {
-  fileId: string;
-  url: string;
-  headers: string[];
-  rows: string[][];
-  detectedTable: ImportTableName | null;
-  confidence: number;
-}
-
-export const uploadAndParseImportAction = withServerAction(
-  async (formData: FormData) => {
-    // 1. Obtener servicios
-    const lang = await getLangServerSide();
-    const cookieStore = await cookies();
-    const { importService } = await appModule(lang, { cookies: cookieStore });
-
-    // 2. Obtener el archivo del formData
-    const file = formData.get("file") as File | null;
-    if (!file) {
-      throw new Error("No file provided");
-    }
-
-    // 3. Upload del archivo a Supabase Storage
-    const { fileId, url } = await importService.uploadFile(file);
-
-    // 4. Leer el archivo como buffer para parsear
-    const arrayBuffer = await file.arrayBuffer();
-
-    // 5. Parsear el archivo
-    const importData = importService.parseFileFromBuffer(arrayBuffer);
-
-    // 6. Limpiar datos: filtrar columnas vacías y filas vacías
-    const rawHeaders = importData.headers
-    const nonEmptyHeaderIndices = rawHeaders
-      .map((header, index) => (header && header.trim() ? index : -1))
-      .filter((index) => index >= 0)
-
-    // Si no hay headers válidos, usar los que haya (evitar crash)
-    const headers =
-      nonEmptyHeaderIndices.length > 0
-        ? nonEmptyHeaderIndices.map((i) => rawHeaders[i])
-        : rawHeaders
-
-    const rows = importData.rows
-      .map((row) =>
-        nonEmptyHeaderIndices.length > 0
-          ? nonEmptyHeaderIndices.map((i) => (row[i] ?? ""))
-          : row.map((cell) => (cell ?? ""))
-      )
-      .filter((row) => row.some((cell) => cell !== ""))
-
-    // 7. Detectar la tabla con headers limpios
-    const detectionResult = detectTable(headers);
-
-    // 8. Retornar resultado
-    return {
-      fileId,
-      url,
-      headers,
-      rows,
-      detectedTable: detectionResult.table,
-      confidence: detectionResult.confidence,
-    } as UploadAndParseResult;
-  },
-);
 
 export interface ValidationResult {
   isValid: boolean;
@@ -191,8 +124,6 @@ export const confirmImportAction = withServerAction(
 
     // 5. Obtener tabla del formData
     const tableName = formData.get("tableName") as ImportTableName;
-    const fileUrl = formData.get("fileUrl") as string | null;
-    const originalFilename = formData.get("originalFilename") as string | null;
 
     // 6. Validar filas antes de crear el job
     const validationResult = await importJobService.validateAllRows(
@@ -210,14 +141,12 @@ export const confirmImportAction = withServerAction(
       };
     }
 
-    // 8. Crear el job de importación
+    // 8. Crear el job de importación (SIN fileUrl ni originalFilename)
     const job = await importJobService.createJob({
       userId,
       realEstateId,
       tableName,
       totalRows: rows.length,
-      fileUrl: fileUrl || undefined,
-      originalFilename: originalFilename || undefined,
     });
 
     // 9. Procesar la importación

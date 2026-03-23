@@ -20,8 +20,6 @@ export class SupabaseImportJobAdapter implements ImportJobPort {
     tableName: ImportTableName;
     totalRows: number;
     batchSize: number;
-    fileUrl?: string;
-    originalFilename?: string;
   }): Promise<ImportJobEntity> {
     const { data, error } = await this.supabase
       .from("import_jobs")
@@ -31,8 +29,6 @@ export class SupabaseImportJobAdapter implements ImportJobPort {
         table_name: params.tableName,
         total_rows: params.totalRows,
         batch_size: params.batchSize,
-        file_url: params.fileUrl,
-        original_filename: params.originalFilename,
         status: ImportJobStatus.PENDING,
       })
       .select()
@@ -455,8 +451,6 @@ export class SupabaseImportJobAdapter implements ImportJobPort {
       batchSize: row.batch_size as number,
       errors: (row.errors as ImportError[]) || [],
       resultSummary: row.result_summary as ImportResultSummary | null,
-      fileUrl: row.file_url as string | null,
-      originalFilename: row.original_filename as string | null,
       createdAt: row.created_at as string,
       updatedAt: row.updated_at as string,
       completedAt: row.completed_at as string | null,

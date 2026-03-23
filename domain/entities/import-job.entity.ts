@@ -40,8 +40,6 @@ export interface ImportJobEntity {
   batchSize: number;
   errors: ImportError[];
   resultSummary: ImportResultSummary | null;
-  fileUrl: string | null;
-  originalFilename: string | null;
   createdAt: string;
   updatedAt: string;
   completedAt: string | null;

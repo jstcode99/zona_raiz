@@ -1,11 +1,19 @@
-// domain/services/import-job.service.ts
-
 import * as yup from "yup";
 import i18next from "i18next";
 import { ImportJobPort } from "@/domain/ports/import-job.port";
-import type { ImportJobEntity, ImportError, ImportResultSummary } from "@/domain/entities/import-job.entity";
-import { ImportJobStatus, ImportTableName } from "@/domain/entities/import-job.entity";
-import { DEFAULT_BATCH_SIZE, MAX_ROWS_PER_FILE } from "@/domain/entities/import-job.entity";
+import type {
+  ImportJobEntity,
+  ImportError,
+  ImportResultSummary,
+} from "@/domain/entities/import-job.entity";
+import {
+  ImportJobStatus,
+  ImportTableName,
+} from "@/domain/entities/import-job.entity";
+import {
+  DEFAULT_BATCH_SIZE,
+  MAX_ROWS_PER_FILE,
+} from "@/domain/entities/import-job.entity";
 import { Lang } from "@/i18n/settings";
 import {
   propertyImportSchema,
@@ -25,7 +33,7 @@ const t = (key: string, options?: Record<string, unknown>) =>
 export class ImportJobService {
   constructor(
     private port: ImportJobPort,
-    private lang: Lang = "es"
+    private lang: Lang = "es",
   ) {}
 
   /**
@@ -37,18 +45,18 @@ export class ImportJobService {
     tableName: ImportTableName;
     totalRows: number;
     batchSize?: number;
-    fileUrl?: string;
-    originalFilename?: string;
   }): Promise<ImportJobEntity> {
     // Validar límite de filas
     if (params.totalRows > MAX_ROWS_PER_FILE) {
-      throw new Error(t("exceptions.max_rows_exceeded", { max: MAX_ROWS_PER_FILE }));
+      throw new Error(
+        t("exceptions.max_rows_exceeded", { max: MAX_ROWS_PER_FILE }),
+      );
     }
 
     // Verificar acceso a la inmobiliaria
     const hasAccess = await this.port.verifyRealEstateAccess(
       params.userId,
-      params.realEstateId
+      params.realEstateId,
     );
 
     if (!hasAccess) {
@@ -63,8 +71,6 @@ export class ImportJobService {
       tableName: params.tableName,
       totalRows: params.totalRows,
       batchSize,
-      fileUrl: params.fileUrl,
-      originalFilename: params.originalFilename,
     });
   }
 
@@ -78,7 +84,10 @@ export class ImportJobService {
   /**
    * Obtiene los jobs del usuario
    */
-  async getUserJobs(userId: string, limit?: number): Promise<ImportJobEntity[]> {
+  async getUserJobs(
+    userId: string,
+    limit?: number,
+  ): Promise<ImportJobEntity[]> {
     return this.port.getJobsByUserId(userId, limit);
   }
 
@@ -88,7 +97,7 @@ export class ImportJobService {
   async validateAllRows(
     rows: Record<string, unknown>[],
     tableName: ImportTableName,
-    headers: string[]
+    headers: string[],
   ): Promise<ValidationResult> {
     const errors: ImportError[] = [];
     const validatedData: Record<string, unknown>[] = [];
@@ -135,7 +144,7 @@ export class ImportJobService {
     validatedData: Record<string, unknown>[],
     tableName: ImportTableName,
     realEstateId: string,
-    userId: string
+    userId: string,
   ): Promise<ImportResultSummary> {
     const startTime = Date.now();
     const job = await this.port.getJobById(jobId);
@@ -171,10 +180,18 @@ export class ImportJobService {
       let result;
       switch (tableName) {
         case ImportTableName.PROPERTIES:
-          result = await this.port.bulkInsertProperties(batch, realEstateId, userId);
+          result = await this.port.bulkInsertProperties(
+            batch,
+            realEstateId,
+            userId,
+          );
           break;
         case ImportTableName.LISTINGS:
-          result = await this.port.bulkInsertListings(batch, realEstateId, userId);
+          result = await this.port.bulkInsertListings(
+            batch,
+            realEstateId,
+            userId,
+          );
           break;
         case ImportTableName.REAL_ESTATES:
           result = await this.port.bulkInsertRealEstates(batch, userId);
@@ -217,7 +234,9 @@ export class ImportJobService {
   /**
    * Obtiene el schema de validación según la tabla
    */
-  private getValidationSchema(tableName: ImportTableName): yup.ObjectSchema<yup.AnyObject> {
+  private getValidationSchema(
+    tableName: ImportTableName,
+  ): yup.ObjectSchema<yup.AnyObject> {
     switch (tableName) {
       case ImportTableName.PROPERTIES:
         return propertyImportSchema as yup.ObjectSchema<yup.AnyObject>;

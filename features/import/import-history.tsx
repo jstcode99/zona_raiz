@@ -118,7 +118,7 @@ export function ImportHistory({ lang }: ImportHistoryProps) {
           jobs.map((job) => (
             <TableRow key={job.id}>
               <TableCell className="font-medium">
-                {job.originalFilename || t("labels.unnamed")}
+                {t("labels.import")} #{job.id.slice(0, 8)}
               </TableCell>
               <TableCell>
                 <Badge variant="outline">{getTableLabel(job.tableName)}</Badge>

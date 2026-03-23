@@ -40,7 +40,6 @@ export function ImportDialog({ open, onOpenChange }: ImportDialogProps) {
     showTableSelector: false,
   })
   const [selectedTable, setSelectedTable] = useState<ImportTableName | null>(null)
-  const [fileName, setFileName] = useState<string | null>(null)
   const [errors, setErrors] = useState<ImportError[]>([])
 
   // Estado para headers originales
@@ -76,17 +75,15 @@ export function ImportDialog({ open, onOpenChange }: ImportDialogProps) {
     setPreviewData(null)
     setDetection({ table: null, confidence: 0, showTableSelector: false })
     setSelectedTable(null)
-    setFileName(null)
     setErrors([])
     setOriginalHeaders([])
     setOriginalData(null)
   }, [])
 
-  const handleDataLoaded = useCallback((data: ImportData, detected: ImportTableName | null, confidence: number, url: string, name: string) => {
+  const handleDataLoaded = useCallback((data: ImportData, detected: ImportTableName | null, confidence: number) => {
     // Guardar datos originales sin transformar
     setOriginalData(data)
     setPreviewData(data)
-    setFileName(name)
     
     // Configurar detección
     const showSelector = !isConfidenceSufficient(confidence)
@@ -166,7 +163,6 @@ export function ImportDialog({ open, onOpenChange }: ImportDialogProps) {
     setPreviewData(null)
     setDetection({ table: null, confidence: 0, showTableSelector: false })
     setSelectedTable(null)
-    setFileName(null)
     setErrors([])
     setOriginalData(null)
     setOriginalHeaders([])

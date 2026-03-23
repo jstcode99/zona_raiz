@@ -14,8 +14,6 @@ interface XlsUploadProps {
     data: ImportData,
     detectedTable: ImportTableName | null,
     confidence: number,
-    url: string,
-    fileName: string,
   ) => void;
   onError: (error: string) => void;
   acceptedTypes?: string[];
@@ -112,9 +110,7 @@ export function XlsUpload({
         onDataLoaded(
           importData,
           detectedTable,
-          confidence,
-          "", // url vacía - no hay upload
-          file.name
+          confidence
         );
       } catch (err) {
         console.error("Parse error:", err);
