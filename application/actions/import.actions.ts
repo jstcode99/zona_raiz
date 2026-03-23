@@ -12,6 +12,7 @@ import { revalidatePath, revalidateTag } from "next/cache";
 import { createRouter } from "@/i18n/router";
 import { CACHE_TAGS } from "@/infrastructure/config/constants";
 import { ImportTableName } from "@/domain/entities/import-job.entity";
+import { initI18n } from "@/i18n/server";
 
 export interface ValidationResult {
   isValid: boolean;
@@ -91,11 +92,8 @@ export const confirmImportAction = withServerAction(
     const lang = await getLangServerSide();
     const cookieStore = await cookies();
     const routes = createRouter(lang);
-    const {
-      importJobService,
-      sessionService,
-      cookiesService,
-    } = await appModule(lang, { cookies: cookieStore });
+    const { importJobService, sessionService, cookiesService } =
+      await appModule(lang, { cookies: cookieStore });
 
     // 3. Obtener userId y realEstateId
     const userId = await sessionService.getCurrentUserId();
@@ -192,14 +190,11 @@ export const processImportAction = withServerAction(
     const lang = await getLangServerSide();
     const cookieStore = await cookies();
     const routes = createRouter(lang);
-    const i18n = await import("@/i18n/server").then(m => m.initI18n(lang));
+    const i18n = await initI18n(lang);
     const t = i18n.getFixedT(lang);
-    
-    const {
-      importJobService,
-      sessionService,
-      cookiesService,
-    } = await appModule(lang, { cookies: cookieStore });
+
+    const { importJobService, sessionService, cookiesService } =
+      await appModule(lang, { cookies: cookieStore });
 
     // 2. Obtener userId y realEstateId
     const userId = await sessionService.getCurrentUserId();
@@ -216,7 +211,8 @@ export const processImportAction = withServerAction(
     const raw = Object.fromEntries(formData);
     const headers = JSON.parse(raw.headers as string) as string[];
     const rows = JSON.parse(raw.rows as string) as (string | null)[][];
-    const tableName = (raw.tableName as ImportTableName) || ImportTableName.PROPERTIES;
+    const tableName =
+      (raw.tableName as ImportTableName) || ImportTableName.PROPERTIES;
 
     // 4. Convertir rows a objetos
     const data: Record<string, unknown>[] = rows.map((row) => {
@@ -246,7 +242,9 @@ export const processImportAction = withServerAction(
       return {
         success: false,
         errors: validationResult.errors,
-        message: t("import:validation.errors_found", { count: validationResult.errors.length }),
+        message: t("import:validation.errors_found", {
+          count: validationResult.errors.length,
+        }),
       };
     }
 
