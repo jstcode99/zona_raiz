@@ -1,19 +1,30 @@
 "use client";
 
-import { useCallback } from "react"
+import { useCallback, useRef } from "react"
 import { useDropzone, FileRejection } from "react-dropzone"
 import { Button } from "@/components/ui/button"
 import { useTranslation } from "react-i18next"
-import { UploadCloud } from "lucide-react"
+import { UploadCloud, FileSpreadsheet } from "lucide-react"
 import { useServerMutation } from "@/shared/hooks/use-server-mutation.hook"
 import { uploadAndParseImportAction } from "@/application/actions/import.actions"
 import type { ImportData } from "./import.types"
+import { ImportTableName } from "@/domain/entities/import-job.entity"
+import { toast } from "sonner"
 
 interface XlsUploadProps {
-  onDataLoaded: (data: ImportData) => void;
+  onDataLoaded: (data: ImportData, detectedTable: ImportTableName | null, confidence: number, url: string, fileName: string) => void;
   onError: (error: string) => void;
   acceptedTypes?: string[];
   maxSize?: number;
+}
+
+interface UploadResult {
+  fileId: string;
+  url: string;
+  headers: string[];
+  rows: string[][];
+  detectedTable: ImportTableName | null;
+  confidence: number;
 }
 
 export function XlsUpload({ 
@@ -22,46 +33,96 @@ export function XlsUpload({
   acceptedTypes = ['.xlsx', '.xls', '.csv'],
   maxSize = 10 * 1024 * 1024 // 10MB
 }: XlsUploadProps) {
-  const { t } = useTranslation("import");
+  const { t } = useTranslation("import")
+  const fileRef = useRef<File | null>(null)
 
   const { action: uploadAction, isPending: isUploading } = useServerMutation({
     action: uploadAndParseImportAction,
-    onSuccess: () => {
-      // Mock data for now since the server action doesn't return parsed data
-      const mockData = {
-        headers: ['Name', 'Email', 'Phone', 'Company'],
-        rows: [
-          ['John Doe', 'john@example.com', '123-456-7890', 'Acme Corp'],
-          ['Jane Smith', 'jane@example.com', '098-765-4321', 'Beta Inc'],
-          ['Bob Johnson', 'bob@example.com', '555-123-4567', 'Test LLC']
-        ]
-      };
-      onDataLoaded(mockData);
+    onSuccess: (result) => {
+      if (!result) {
+        onError(t("exceptions.upload-failed"))
+        return
+      }
+      
+      const uploadResult = result as unknown as UploadResult
+      
+      // Convertir el resultado de vuelta al formato ImportData
+      const importData: ImportData = {
+        headers: uploadResult.headers,
+        rows: uploadResult.rows,
+      }
+      
+      // Llamar al callback con los datos completos
+      onDataLoaded(
+        importData,
+        uploadResult.detectedTable,
+        uploadResult.confidence,
+        uploadResult.url,
+        fileRef.current?.name || 'unknown'
+      )
     },
     onError: (error) => {
-      onError(error.message || t('exceptions.upload-failed'));
+      onError(error.message || t("exceptions.upload-failed"))
     },
-  });
+  })
 
-  const onDrop = useCallback((acceptedFiles: File[], fileRejections: FileRejection[]) => {
+  const onDrop = useCallback(async (acceptedFiles: File[], fileRejections: FileRejection[]) => {
     if (fileRejections.length > 0) {
-      const file = fileRejections[0];
+      const file = fileRejections[0]
       if (file.file.size > maxSize) {
-        onError(t('exceptions.file-too-large', { size: `${maxSize / (1024*1024)}MB` }));
+        onError(t('exceptions.file-too-large', { size: `${maxSize / (1024*1024)}MB` }))
       } else {
-        onError(t('exceptions.invalid-format'));
+        onError(t('exceptions.invalid-format'))
       }
-      return;
+      return
     }
 
-    if (acceptedFiles.length === 0) return;
+    if (acceptedFiles.length === 0) return
 
-    const file = acceptedFiles[0];
-    const formData = new FormData();
-    formData.append('file', file);
+    const file = acceptedFiles[0]
+    fileRef.current = file
     
-    uploadAction(formData);
-  }, [onError, uploadAction, maxSize, t]);
+    // Primero leer el archivo y parsearlo en el cliente para preview rápido
+    try {
+      const arrayBuffer = await file.arrayBuffer()
+      
+      // Import dinámico de xlsx para parsing en cliente
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      const XLSX = require("xlsx")
+      const workbook = XLSX.read(arrayBuffer, { type: "array" })
+      const firstSheetName = workbook.SheetNames[0]
+      const worksheet = workbook.Sheets[firstSheetName]
+      const jsonData = XLSX.utils.sheet_to_json(worksheet, {
+        header: 1,
+        defval: "",
+      }) as (string | number | null | undefined)[][]
+      
+      if (jsonData.length === 0) {
+        onError(t("exceptions.parse-failed"))
+        return
+      }
+      
+      const headers = jsonData[0].map((h) => String(h).trim())
+      const rows = jsonData.slice(1).map((row) =>
+        row.map((cell) => {
+          if (cell === null || cell === undefined) return ""
+          return typeof cell === "number" ? cell : String(cell)
+        })
+      )
+      
+      // Crear datos para preview
+      const previewData: ImportData = { headers, rows }
+      
+      // Enviar al servidor para upload + detección
+      const formData = new FormData()
+      formData.append('file', file)
+      
+      uploadAction(formData)
+    } catch (err) {
+      console.error("Parse error:", err)
+      onError(t("exceptions.parse-failed"))
+    }
+  }, [onError, uploadAction, maxSize, t])
 
   const { getRootProps, getInputProps, isDragActive, isDragReject } =
     useDropzone({
@@ -72,7 +133,7 @@ export function XlsUpload({
       },
       multiple: false,
       onDrop,
-    });
+    })
 
   return (
     <div
@@ -86,7 +147,7 @@ export function XlsUpload({
       `}
     >
       <input {...getInputProps()} />
-      <UploadCloud className="mx-auto mb-4 h-6 w-6" />
+      <FileSpreadsheet className="mx-auto mb-4 h-8 w-8 text-muted-foreground" />
       
       {isUploading ? (
         <>
@@ -94,6 +155,9 @@ export function XlsUpload({
             <div className="h-4 w-4 animate-spin rounded-full border-2 border-primary border-t-transparent"></div>
             <span className="ml-2">{t('actions.uploading')}</span>
           </div>
+          <p className="text-xs text-muted-foreground">
+            {t('messages.processing-file')}
+          </p>
         </>
       ) : (
         <>

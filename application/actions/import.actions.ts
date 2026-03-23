@@ -2,7 +2,7 @@
 
 import { withServerAction } from "@/shared/hooks/with-server-action";
 import {
-  importFileSchema,
+  importDataSchema,
   confirmImportSchema,
 } from "@/application/validation/import.schema";
 import { appModule } from "@/application/modules/app.module";
@@ -11,24 +11,117 @@ import { cookies } from "next/headers";
 import { revalidatePath, revalidateTag } from "next/cache";
 import { createRouter } from "@/i18n/router";
 import { CACHE_TAGS } from "@/infrastructure/config/constants";
+import { ImportTableName } from "@/domain/entities/import-job.entity";
+import { detectTable, isConfidenceSufficient } from "@/domain/utils/table-detector";
+
+export interface UploadAndParseResult {
+  fileId: string;
+  url: string;
+  headers: string[];
+  rows: string[][];
+  detectedTable: ImportTableName | null;
+  confidence: number;
+}
 
 export const uploadAndParseImportAction = withServerAction(
   async (formData: FormData) => {
+    // 1. Obtener servicios
+    const lang = await getLangServerSide();
+    const cookieStore = await cookies();
+    const { importService } = await appModule(lang, { cookies: cookieStore });
+
+    // 2. Obtener el archivo del formData
+    const file = formData.get("file") as File | null;
+    if (!file) {
+      throw new Error("No file provided");
+    }
+
+    // 3. Upload del archivo a Supabase Storage
+    const { fileId, url } = await importService.uploadFile(file);
+
+    // 4. Leer el archivo como buffer para parsear
+    const arrayBuffer = await file.arrayBuffer();
+
+    // 5. Parsear el archivo
+    const importData = importService.parseFileFromBuffer(arrayBuffer);
+
+    // 6. Detectar la tabla
+    const detectionResult = detectTable(importData.headers);
+
+    // 7. Retornar resultado
+    return {
+      fileId,
+      url,
+      headers: importData.headers,
+      rows: importData.rows,
+      detectedTable: detectionResult.table,
+      confidence: detectionResult.confidence,
+    } as UploadAndParseResult;
+  },
+);
+
+export interface ValidationResult {
+  isValid: boolean;
+  errors: Array<{
+    row: number;
+    column: string;
+    value: string | number | null;
+    message: string;
+  }>;
+  validatedData: Record<string, unknown>[];
+}
+
+export const validateImportAction = withServerAction(
+  async (formData: FormData) => {
     // 1. Validar input
     const raw = Object.fromEntries(formData);
-    await importFileSchema.validate(raw, {
+    const validated = await importDataSchema.validate(raw, {
       abortEarly: false,
+      stripUnknown: true,
     });
 
     // 2. Obtener servicios
     const lang = await getLangServerSide();
     const cookieStore = await cookies();
-    await appModule(lang, { cookies: cookieStore });
+    const { importJobService, sessionService } = await appModule(lang, {
+      cookies: cookieStore,
+    });
 
-    // 3. Crear job de importación
-    // Por ahora no hacemos upload de archivo - se maneja en el cliente
-    // Los datos parseados se manejan en el cliente por ahora
-    // TODO: Implementar almacenamiento temporales de datos parseados
+    // 3. Obtener userId y realEstateId
+    const userId = await sessionService.getCurrentUserId();
+    if (!userId) {
+      throw new Error("Unauthorized");
+    }
+
+    // 4. Convertir rows a objetos
+    const headers = validated.headers as string[];
+    const rows = validated.rows.map((row) => {
+      if (!row) return {};
+      const rowArr = row as string[];
+      const obj: Record<string, string> = {};
+      headers.forEach((header, index) => {
+        if (header === undefined) return;
+        const value = rowArr[index];
+        obj[header] = value ?? "";
+      });
+      return obj;
+    }) as Record<string, unknown>[];
+
+    // 5. Obtener tableName del formData
+    const tableName = formData.get("tableName") as ImportTableName;
+
+    // 6. Validar todas las filas
+    const validationResult = await importJobService.validateAllRows(
+      rows,
+      tableName,
+      headers,
+    );
+
+    return {
+      isValid: validationResult.isValid,
+      errors: validationResult.errors,
+      validatedData: validationResult.validatedData,
+    } as ValidationResult;
   },
 );
 
@@ -45,9 +138,24 @@ export const confirmImportAction = withServerAction(
     const lang = await getLangServerSide();
     const cookieStore = await cookies();
     const routes = createRouter(lang);
-    await appModule(lang, { cookies: cookieStore });
+    const {
+      importJobService,
+      sessionService,
+      cookiesService,
+    } = await appModule(lang, { cookies: cookieStore });
 
-    // 3. Procesar los datos (convertir rows a objetos)
+    // 3. Obtener userId y realEstateId
+    const userId = await sessionService.getCurrentUserId();
+    if (!userId) {
+      throw new Error("Unauthorized");
+    }
+
+    const realEstateId = await cookiesService.getRealEstateId();
+    if (!realEstateId) {
+      throw new Error("Real estate not found");
+    }
+
+    // 4. Convertir rows a objetos
     const headers = validated.headers as string[];
     const rows = validated.rows.map((row) => {
       if (!row) return {};
@@ -61,16 +169,63 @@ export const confirmImportAction = withServerAction(
       return obj;
     });
 
-    // 4. Aquí iría la lógica de crear/actualizar las entidades
-    // Por ahora solo revalidamos cache si hay datos
-    if (rows.length > 0) {
-      // TODO: Procesar los datos según el tipo de importación
-      // await importService.processImportData(rows);
+    // 5. Obtener tabla del formData
+    const tableName = formData.get("tableName") as ImportTableName;
+    const fileUrl = formData.get("fileUrl") as string | null;
+    const originalFilename = formData.get("originalFilename") as string | null;
+
+    // 6. Validar filas antes de crear el job
+    const validationResult = await importJobService.validateAllRows(
+      rows,
+      tableName,
+      headers,
+    );
+
+    // 7. Si hay errores, retornarlos (no procesamos si hay errores)
+    if (!validationResult.isValid) {
+      return {
+        success: false,
+        errors: validationResult.errors,
+        message: "Validation failed",
+      };
     }
 
+    // 8. Crear el job de importación
+    const job = await importJobService.createJob({
+      userId,
+      realEstateId,
+      tableName,
+      totalRows: rows.length,
+      fileUrl: fileUrl || undefined,
+      originalFilename: originalFilename || undefined,
+    });
+
+    // 9. Procesar la importación
+    const summary = await importJobService.processImport(
+      job.id,
+      validationResult.validatedData,
+      tableName,
+      realEstateId,
+      userId,
+    );
+
+    // 10. Invalidar cache
     revalidatePath(routes.dashboard());
     revalidatePath(routes.properties());
+    revalidatePath(routes.listings());
+    revalidatePath(routes.realEstates());
     revalidateTag(CACHE_TAGS.PROPERTY.PRINCIPAL, { expire: 0 });
-    revalidateTag(CACHE_TAGS.PROPERTY.COUNT, { expire: 0 });
+    revalidateTag(CACHE_TAGS.PROPERTY.ALL, { expire: 0 });
+    revalidateTag(CACHE_TAGS.LISTING.PRINCIPAL, { expire: 0 });
+    revalidateTag(CACHE_TAGS.LISTING.ALL, { expire: 0 });
+    revalidateTag(CACHE_TAGS.REAL_ESTATE.PRINCIPAL, { expire: 0 });
+    revalidateTag(CACHE_TAGS.REAL_ESTATE.ALL, { expire: 0 });
+    revalidateTag(CACHE_TAGS.IMPORT_JOB.ALL, { expire: 0 });
+
+    return {
+      success: true,
+      jobId: job.id,
+      summary,
+    };
   },
 );

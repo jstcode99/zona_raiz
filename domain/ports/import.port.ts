@@ -1,3 +1,5 @@
+// domain/ports/import.port.ts
+
 import { ImportData } from "../types/import.types";
 
 export interface ImportPort {
@@ -9,9 +11,9 @@ export interface ImportPort {
   uploadFile(file: File): Promise<{ fileId: string; url: string }>;
 
   /**
-   * Parse an uploaded file and return the data
-   * @param fileId - ID of the uploaded file
+   * Parse file from buffer
+   * @param buffer - ArrayBuffer of the file
    * @returns Parsed import data
    */
-  parseFile(fileId: string): Promise<ImportData>;
+  parseFileFromBuffer(buffer: ArrayBuffer): ImportData;
 }

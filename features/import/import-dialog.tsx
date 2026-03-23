@@ -12,9 +12,12 @@ import {
 import { Button } from "@/components/ui/button"
 import { XlsUpload } from "./xls-upload"
 import { ImportPreview } from "./import-preview"
-import { useState } from "react"
+import { ImportTableSelector } from "./import-table-selector"
+import { useState, useCallback } from "react"
 import { useTranslation } from "react-i18next"
-import type { ImportData, ImportRecord } from "./import.types"
+import type { ImportData, ImportRecord, ImportError, TableDetection } from "./import.types"
+import { ImportTableName } from "@/domain/entities/import-job.entity"
+import { isConfidenceSufficient } from "@/domain/utils/table-detector"
 
 interface ImportDialogProps {
   open: boolean
@@ -25,15 +28,47 @@ export function ImportDialog({ open, onOpenChange }: ImportDialogProps) {
   const { t } = useTranslation("import")
   const [previewData, setPreviewData] = useState<ImportData | null>(null)
   const [step, setStep] = useState<'upload' | 'preview' | 'confirm'>('upload')
+  
+  // Estado para detección y selección de tabla
+  const [detection, setDetection] = useState<TableDetection>({
+    table: null,
+    confidence: 0,
+    showTableSelector: false,
+  })
+  const [selectedTable, setSelectedTable] = useState<ImportTableName | null>(null)
+  const [fileUrl, setFileUrl] = useState<string | null>(null)
+  const [fileName, setFileName] = useState<string | null>(null)
+  const [errors, setErrors] = useState<ImportError[]>([])
+  const [isValidating, setIsValidating] = useState(false)
 
-  const handleDataLoaded = (data: ImportData) => {
+  const handleDataLoaded = useCallback((data: ImportData, detected: ImportTableName | null, confidence: number, url: string, name: string) => {
     setPreviewData(data)
+    setFileUrl(url)
+    setFileName(name)
+    
+    // Configurar detección
+    const showSelector = !isConfidenceSufficient(confidence)
+    setDetection({
+      table: detected,
+      confidence,
+      showTableSelector: showSelector,
+    })
+    
+    // Si no hay selector, usar la tabla detectada
+    if (!showSelector && detected) {
+      setSelectedTable(detected)
+    }
+    
     setStep('preview')
-  }
+  }, [])
 
   const handleError = (error: string) => {
     // TODO: Show error toast
     console.error('Import error:', error)
+  }
+
+  const handleTableSelect = (table: ImportTableName) => {
+    setSelectedTable(table)
   }
 
   const handlePreviewConfirm = (data: ImportRecord[]) => {
@@ -46,6 +81,11 @@ export function ImportDialog({ open, onOpenChange }: ImportDialogProps) {
       // Reset state
       setStep('upload')
       setPreviewData(null)
+      setDetection({ table: null, confidence: 0, showTableSelector: false })
+      setSelectedTable(null)
+      setFileUrl(null)
+      setFileName(null)
+      setErrors([])
     }, 1500)
   }
 
@@ -60,6 +100,11 @@ export function ImportDialog({ open, onOpenChange }: ImportDialogProps) {
         // Reset state
         setStep('upload')
         setPreviewData(null)
+        setDetection({ table: null, confidence: 0, showTableSelector: false })
+        setSelectedTable(null)
+        setFileUrl(null)
+        setFileName(null)
+        setErrors([])
       }, 1500)
     }
   }
@@ -67,6 +112,11 @@ export function ImportDialog({ open, onOpenChange }: ImportDialogProps) {
   const handlePreviewCancel = () => {
     setStep('upload')
     setPreviewData(null)
+    setDetection({ table: null, confidence: 0, showTableSelector: false })
+    setSelectedTable(null)
+    setFileUrl(null)
+    setFileName(null)
+    setErrors([])
   }
 
   return (
@@ -92,11 +142,28 @@ export function ImportDialog({ open, onOpenChange }: ImportDialogProps) {
         )}
         
         {step === 'preview' && (
-          <ImportPreview
-            data={previewData}
-            onConfirm={handlePreviewConfirm}
-            onCancel={handlePreviewCancel}
-          />
+          <>
+            {/* Table selector if confidence is low */}
+            {detection.showTableSelector && (
+              <ImportTableSelector
+                detectedTable={detection.table}
+                confidence={detection.confidence}
+                onSelect={handleTableSelect}
+              />
+            )}
+            
+            <ImportPreview
+              data={previewData}
+              onConfirm={handlePreviewConfirm}
+              onCancel={handlePreviewCancel}
+              detectedTable={detection.table}
+              selectedTable={selectedTable}
+              onTableSelect={handleTableSelect}
+              fileUrl={fileUrl}
+              fileName={fileName}
+              errors={errors}
+            />
+          </>
         )}
         
         {step === 'confirm' && (
