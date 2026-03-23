@@ -48,8 +48,15 @@ export async function seedListings(
     const realEstateId = propertyToRealEstate.get(listing.propertyId);
     const availableAgentIds = realEstateId ? agentIdsByRealEstate.get(realEstateId) || [] : [];
     
+    // Validar que hay agentes disponibles - NO usar string vacío
+    if (availableAgentIds.length === 0) {
+      throw new Error(`No hay agentes disponibles para la inmobiliaria ${realEstateId}. Asegúrate de que los agentes tengan IDs asignados.`);
+    }
+    
     // Usar agente pre-asignado o seleccionar uno disponible
-    const agentId = listing.agentId || availableAgentIds[index % availableAgentIds.length] || "";
+    const agentId = listing.agentId && listing.agentId !== "" 
+      ? listing.agentId 
+      : availableAgentIds[index % availableAgentIds.length];
 
     return {
       id: listing.id, // ID pre-generado por Faker para mantener consistencia

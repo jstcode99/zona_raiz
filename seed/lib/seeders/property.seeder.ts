@@ -32,18 +32,20 @@ export async function seedProperties(
 
   logger.info(`Insertando ${properties.length} propiedades...`);
 
-  // Crear un mapa de real_estate_id a agentes disponibles
-  const agentsByRealEstate = new Map<string, string[]>();
+  // Crear un mapa de real_estate_id a IDs de real_estate_agents (no profile IDs)
+  const agentIdsByRealEstate = new Map<string, string[]>();
   agents.forEach((agent) => {
-    const existing = agentsByRealEstate.get(agent.realEstateId) || [];
-    existing.push(agent.profileId);
-    agentsByRealEstate.set(agent.realEstateId, existing);
+    if (agent.id) {  // Solo agentes que tienen ID de real_estate_agents
+      const existing = agentIdsByRealEstate.get(agent.realEstateId) || [];
+      existing.push(agent.id);
+      agentIdsByRealEstate.set(agent.realEstateId, existing);
+    }
   });
 
   const propertyInserts = properties.map((property) => {
-    // Asignar un agente de la misma inmobiliaria
-    const availableAgents = agentsByRealEstate.get(property.realEstateId) || [];
-    const createdBy = availableAgents[0] || null;
+    // Asignar un agente de la misma inmobiliaria (por su ID de real_estate_agents)
+    const availableAgentIds = agentIdsByRealEstate.get(property.realEstateId) || [];
+    const createdBy = availableAgentIds[0] || null;
 
     return {
       id: property.id, // ID pre-generado por Faker para mantener consistencia
