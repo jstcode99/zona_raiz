@@ -18,12 +18,7 @@ import { useTranslation } from "react-i18next";
 import { useServerMutation } from "@/shared/hooks/use-server-mutation.hook";
 import { processImportAction } from "@/application/actions/import.actions";
 import { toast } from "sonner";
-import type {
-  ImportData,
-  ImportError,
-  TableDetection,
-  ImportRow,
-} from "./import.types";
+import type { ImportData, ImportError, TableDetection } from "./import.types";
 import { ImportTableName } from "@/domain/entities/import-job.entity";
 import { isConfidenceSufficient } from "@/domain/utils/table-detector";
 import {
@@ -52,16 +47,13 @@ export function ImportDialog({ open, onOpenChange }: ImportDialogProps) {
   );
   const [errors, setErrors] = useState<ImportError[]>([]);
 
-  // Estado para headers originales
-  const [originalHeaders, setOriginalHeaders] = useState<string[]>([]);
-
   // Estado para datos originales del archivo (sin mapear)
   const [originalData, setOriginalData] = useState<ImportData | null>(null);
 
   // Server action para procesar la importación
   const { action: processAction, isPending: isProcessing } = useServerMutation({
     action: processImportAction,
-    onSuccess: (result) => {
+    onSuccess: () => {
       toast.success(t("messages.import-success"));
       setStep("confirm");
       // After a brief delay, close dialog
@@ -86,7 +78,6 @@ export function ImportDialog({ open, onOpenChange }: ImportDialogProps) {
     setDetection({ table: null, confidence: 0, showTableSelector: false });
     setSelectedTable(null);
     setErrors([]);
-    setOriginalHeaders([]);
     setOriginalData(null);
   }, []);
 
@@ -177,7 +168,6 @@ export function ImportDialog({ open, onOpenChange }: ImportDialogProps) {
     setSelectedTable(null);
     setErrors([]);
     setOriginalData(null);
-    setOriginalHeaders([]);
   };
 
   return (
