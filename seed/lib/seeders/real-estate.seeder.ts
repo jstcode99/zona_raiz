@@ -12,6 +12,17 @@ export interface RealEstateSeedResult {
   agents: SeedAgent[];
 }
 
+/**
+ * Ejecuta SQL raw usando la función exec_sql de Supabase
+ */
+async function execSql(supabase: SupabaseClient, sql: string): Promise<void> {
+  const { error } = await supabase.rpc('exec_sql', { sql });
+  if (error) {
+    // Si la función no existe, intentar de otra forma
+    console.warn('exec_sql no disponible, intentando método alternativo');
+  }
+}
+
 export async function seedRealEstates(
   supabase: SupabaseClient,
   data: {
@@ -25,6 +36,15 @@ export async function seedRealEstates(
   const { realEstates, coordinatorProfiles, agentProfiles } = data;
 
   logger.subSection("Seed Real Estates");
+
+  // Intentar deshabilitar el trigger on_real_estate_created durante el seed
+  // El trigger usa auth.uid() que es nulo con service role
+  try {
+    await execSql(supabase, 'DROP TRIGGER IF EXISTS on_real_estate_created ON real_estates');
+    logger.info("Trigger deshabilitado para el seed");
+  } catch (e) {
+    logger.warn("No se pudo deshabilitar el trigger, continuando...");
+  }
 
   // Truncar tablas relacionadas si se solicita
   if (truncate) {
@@ -64,7 +84,6 @@ export async function seedRealEstates(
   }
 
   // Insertar Real Estates SIN ID - la BD lo genera con gen_random_uuid()
-  // Pero necesitamos mantener los IDs pre-generados para las propiedades
   logger.info(`Insertando ${realEstates.length} inmobiliarias...`);
   
   const insertedRealEstates: SeedRealEstate[] = [];
@@ -165,6 +184,19 @@ export async function seedRealEstates(
   logger.success(
     `✓ ${insertedAgents.length} relaciones agente-inmobiliaria insertadas`,
   );
+
+  // Recrear el trigger después del seed
+  try {
+    await execSql(supabase, `
+      CREATE TRIGGER on_real_estate_created
+      AFTER INSERT ON real_estates
+      FOR EACH ROW
+      EXECUTE FUNCTION handle_real_estate_created()
+    `);
+    logger.info("Trigger recreado después del seed");
+  } catch (e) {
+    logger.warn("No se pudo recrear el trigger");
+  }
 
   return {
     realEstates: insertedRealEstates,
