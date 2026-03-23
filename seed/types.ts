@@ -37,6 +37,7 @@ export interface SeedRealEstate {
 }
 
 export interface SeedAgent {
+  id?: string; // ID del registro en real_estate_agents (generado por la BD)
   profileId: string;
   realEstateId: string;
   role: "agent" | "coordinator";
@@ -91,7 +92,7 @@ export interface SeedListing {
   availableFrom?: string;
   minimumContractDuration?: number;
   viewsCount: number;
-  inquiriesCount: number;
+  enquiriesCount: number;
   whatsappClicks: number;
   publishedAt?: string;
 }
