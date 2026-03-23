@@ -1,99 +1,97 @@
 {
-  "import": {
-    "title": "Importar Datos",
-    "subtitle": "Sube y previsualiza tus datos antes de importar",
-    "actions": {
-      "cancel": "Cancelar",
-      "confirm": "Confirmar Importación",
-      "confirming": "Confirmando...",
-      "upload": "Subir Archivo",
-      "uploading": "Subiendo...",
-      "retry": "Reintentar",
-      "close": "Cerrar",
-      "new-import": "Nueva Importación",
-      "download-template": "Descargar Plantilla"
-    },
-    "fields": {
-      "file": "Archivo",
-      "headers": "Encabezados",
-      "rows": "Filas",
-      "preview": "Vista Previa",
-      "status": "Estado",
-      "progress": "Progreso",
-      "table": "Tabla de Destino",
-      "filename": "Nombre de Archivo",
-      "date": "Fecha"
-    },
-    "placeholders": {
-      "drag-drop": "Arrastra y suelta tu archivo aquí",
-      "or-click": "o haz clic para buscar",
-      "supported-formats": "Formatos soportados: XLS, XLSX, CSV",
-      "max-size": "Tamaño máximo: 10MB",
-      "select-table": "Selecciona una tabla"
-    },
-    "descriptions": {
-      "table-help": "Selecciona la tabla donde se importarán los datos"
-    },
-    "status": {
-      "pending": "Pendiente",
-      "uploading": "Subiendo",
-      "processing": "Procesando",
-      "completed": "Completado",
-      "failed": "Fallido",
-      "cancelled": "Cancelado",
-      "ready": "Listo",
-      "error": "Error",
-      "success": "Éxito"
-    },
-    "tables": {
-      "properties": "Propiedades",
-      "listings": "Listados",
-      "real-estates": "Inmobiliarias"
-    },
-    "labels": {
-      "file": "Archivo",
-      "headers": "Encabezados",
-      "rows": "Filas",
-      "preview": "Vista Previa",
-      "status": "Estado",
-      "progress": "Progreso",
-      "total": "Total",
-      "imported": "Importadas",
-      "failed": "Fallidas",
-      "errors": "errores",
-      "history": "Historial de Importaciones",
-      "current-job": "Importación en Progreso",
-      "unnamed": "Sin nombre",
-      "recent-errors": "Errores recientes:",
-      "row": "Fila"
-    },
-    "exceptions": {
-      "file-too-large": "El archivo es demasiado grande. El tamaño máximo es 10MB",
-      "invalid-format": "Formato de archivo no válido. Soportados: XLS, XLSX, CSV",
-      "upload-failed": "Error al subir el archivo. Por favor, inténtalo de nuevo",
-      "parse-failed": "Error al procesar el archivo. Por favor, verifica el formato",
-      "confirm-failed": "Error al confirmar la importación. Por favor, inténtalo de nuevo",
-      "no-data": "No hay datos para importar",
-      "network-error": "Error de red. Por favor, verifica tu conexión",
-      "import-failed": "La importación ha fallado",
-      "max-rows-exceeded": "El archivo excede el límite de {{max}} filas",
-      "no-real-estate-access": "No tienes acceso a esta inmobiliaria",
-      "job-not-found": "Job no encontrado",
-      "job-not-pending": "El job no está en estado pendiente",
-      "unknown-table": "Tabla desconocida: {{table}}",
-      "unauthorized": "Usuario no autenticado",
-      "real-estate-not-found": "No se encontró la inmobiliaria",
-      "all-rows-invalid": "Todos los registros tienen errores de validación. Revise los datos e intente nuevamente."
-    },
-    "messages": {
-      "upload-success": "Archivo subido exitosamente",
-      "import-success": "Datos importados exitosamente",
-      "import-cancelled": "Importación cancelada",
-      "processing-file": "Procesando archivo...",
-      "validating-data": "Validando datos...",
-      "no-data": "No hay datos para importar",
-      "loading": "Cargando...",
-      "no-imports": "No hay importaciones anteriores"
-    }
+  "title": "Importar Datos",
+  "subtitle": "Sube y previsualiza tus datos antes de importar",
+  "actions": {
+    "cancel": "Cancelar",
+    "confirm": "Confirmar Importación",
+    "confirming": "Confirmando...",
+    "upload": "Subir Archivo",
+    "uploading": "Subiendo...",
+    "retry": "Reintentar",
+    "close": "Cerrar",
+    "new-import": "Nueva Importación",
+    "download-template": "Descargar Plantilla"
+  },
+  "fields": {
+    "file": "Archivo",
+    "headers": "Encabezados",
+    "rows": "Filas",
+    "preview": "Vista Previa",
+    "status": "Estado",
+    "progress": "Progreso",
+    "table": "Tabla de Destino",
+    "filename": "Nombre de Archivo",
+    "date": "Fecha"
+  },
+  "placeholders": {
+    "drag-drop": "Arrastra y suelta tu archivo aquí",
+    "or-click": "o haz clic para buscar",
+    "supported-formats": "Formatos soportados: XLS, XLSX, CSV",
+    "max-size": "Tamaño máximo: 10MB",
+    "select-table": "Selecciona una tabla"
+  },
+  "descriptions": {
+    "table-help": "Selecciona la tabla donde se importarán los datos"
+  },
+  "status": {
+    "pending": "Pendiente",
+    "uploading": "Subiendo",
+    "processing": "Procesando",
+    "completed": "Completado",
+    "failed": "Fallido",
+    "cancelled": "Cancelado",
+    "ready": "Listo",
+    "error": "Error",
+    "success": "Éxito"
+  },
+  "tables": {
+    "properties": "Propiedades",
+    "listings": "Listados",
+    "real-estates": "Inmobiliarias"
+  },
+  "labels": {
+    "file": "Archivo",
+    "headers": "Encabezados",
+    "rows": "Filas",
+    "preview": "Vista Previa",
+    "status": "Estado",
+    "progress": "Progreso",
+    "total": "Total",
+    "imported": "Importadas",
+    "failed": "Fallidas",
+    "errors": "errores",
+    "history": "Historial de Importaciones",
+    "current-job": "Importación en Progreso",
+    "unnamed": "Sin nombre",
+    "recent-errors": "Errores recientes:",
+    "row": "Fila"
+  },
+  "exceptions": {
+    "file-too-large": "El archivo es demasiado grande. El tamaño máximo es 10MB",
+    "invalid-format": "Formato de archivo no válido. Soportados: XLS, XLSX, CSV",
+    "upload-failed": "Error al subir el archivo. Por favor, inténtalo de nuevo",
+    "parse-failed": "Error al procesar el archivo. Por favor, verifica el formato",
+    "confirm-failed": "Error al confirmar la importación. Por favor, inténtalo de nuevo",
+    "no-data": "No hay datos para importar",
+    "network-error": "Error de red. Por favor, verifica tu conexión",
+    "import-failed": "La importación ha fallado",
+    "max-rows-exceeded": "El archivo excede el límite de {{max}} filas",
+    "no-real-estate-access": "No tienes acceso a esta inmobiliaria",
+    "job-not-found": "Job no encontrado",
+    "job-not-pending": "El job no está en estado pendiente",
+    "unknown-table": "Tabla desconocida: {{table}}",
+    "unauthorized": "Usuario no autenticado",
+    "real-estate-not-found": "No se encontró la inmobiliaria",
+    "all-rows-invalid": "Todos los registros tienen errores de validación. Revise los datos e intente nuevamente."
+  },
+  "messages": {
+    "upload-success": "Archivo subido exitosamente",
+    "import-success": "Datos importados exitosamente",
+    "import-cancelled": "Importación cancelada",
+    "processing-file": "Procesando archivo...",
+    "validating-data": "Validando datos...",
+    "no-data": "No hay datos para importar",
+    "loading": "Cargando...",
+    "no-imports": "No hay importaciones anteriores"
   }
 }

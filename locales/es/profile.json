@@ -9,9 +9,13 @@
     "role": "Rol",
     "avatar": "Avatar"
   },
+  "sections": {
+    "basic_data": "Datos basicos"
+  },
   "placeholders": {
     "full_name": "Joe",
-    "last_name": "Doe"
+    "last_name": "Doe",
+    "email": "Doe@email.com"
   },
   "actions": {
     "save_changes": "Guardar cambios"
