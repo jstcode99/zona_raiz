@@ -2,11 +2,11 @@ import { SessionPort } from "@/domain/ports/sesion.port";
 import { ProfilePort } from "@/domain/ports/profile.port";
 import { EUserRole } from "@/domain/entities/profile.entity";
 import { RealEstateWithRoleEntity } from "@/domain/entities/real-estate.entity";
-import { ROUTES } from "@/infrastructure/config/routes";
 import { Lang } from "@/i18n/settings";
+import { getLangServerSide } from "@/shared/utils/lang";
+import { createRouter } from "@/i18n/router";
 
 export type OnboardingState =
-  | { step: "loading" }
   | { step: "redirect"; path: string }
   | { step: "register-real-estate" }
   | { step: "select-real-estate"; realEstates: RealEstateWithRoleEntity[] };
@@ -20,20 +20,22 @@ export class OnboardingService {
 
   async getOnboardingState(): Promise<OnboardingState> {
     const userId = await this.sessionPort.getCurrentUserId();
+    const lang = await getLangServerSide();
+    const routes = createRouter(lang);
 
     if (!userId) {
-      return { step: "redirect", path: ROUTES.signin[this.lang] };
+      return { step: "redirect", path: routes.signin() };
     }
 
     const profile = await this.profilePort.getProfileByUserId(userId);
     const role = profile.role;
 
     if (role === EUserRole.Client) {
-      return { step: "redirect", path: "/" };
+      return { step: "redirect", path: routes.home() };
     }
 
     if (role === EUserRole.Admin) {
-      return { step: "redirect", path: ROUTES.dashboard[this.lang] };
+      return { step: "redirect", path: routes.dashboard() };
     }
 
     if (role === EUserRole.RealEstate) {
@@ -45,7 +47,7 @@ export class OnboardingService {
       }
 
       if (count === 1) {
-        return { step: "redirect", path: ROUTES.dashboard[this.lang] };
+        return { step: "redirect", path: routes.dashboard() };
       }
 
       return {
@@ -54,6 +56,6 @@ export class OnboardingService {
       };
     }
 
-    return { step: "redirect", path: "/" };
+    return { step: "redirect", path: routes.home() };
   }
 }

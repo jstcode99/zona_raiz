@@ -2,24 +2,26 @@ import { RealEstatePort } from "@/domain/ports/real-estate.port";
 import { RealEstateFilters } from "@/domain/entities/real-estate.entity";
 import { unstable_cache } from "next/cache";
 import { Lang } from "@/i18n/settings";
+import { CACHE_TAGS } from "@/infrastructure/config/constants";
 
 export class RealEstateService {
-  constructor(private realEstatePort: RealEstatePort, private lang: Lang = "es") {}
+  constructor(
+    private realEstatePort: RealEstatePort,
+    private lang: Lang = "es",
+  ) {}
 
   all(filters?: RealEstateFilters) {
     return this.realEstatePort.all(filters);
   }
 
   getCachedAll(filters?: RealEstateFilters) {
-    const cacheKey = filters ? `real-estate:all:${JSON.stringify(filters)}` : "real-estate:all";
-    
     return unstable_cache(
       async () => this.realEstatePort.all(filters),
-      [cacheKey],
+      [CACHE_TAGS.REAL_ESTATE.KEYS.ALL(filters)],
       {
         revalidate: 300,
-        tags: ["real-estates", "real-estate:all"],
-      }
+        tags: [CACHE_TAGS.REAL_ESTATE.PRINCIPAL, CACHE_TAGS.REAL_ESTATE.ALL],
+      },
     )();
   }
 
@@ -30,11 +32,14 @@ export class RealEstateService {
   getCachedById(id: string) {
     return unstable_cache(
       async () => this.realEstatePort.getById(id),
-      [`real-estate:${id}`],
+      [CACHE_TAGS.REAL_ESTATE.KEYS.BY_ID(id)],
       {
         revalidate: 300,
-        tags: ["real-estates", `real-estate:${id}`],
-      }
+        tags: [
+          CACHE_TAGS.REAL_ESTATE.PRINCIPAL,
+          CACHE_TAGS.REAL_ESTATE.DETAIL(id),
+        ],
+      },
     )();
   }
 
@@ -63,28 +68,25 @@ export class RealEstateService {
   }
 
   getCachedCount(filters?: { start_date?: string; end_date?: string }) {
-    const cacheKey = filters ? `real-estate:count:${JSON.stringify(filters)}` : "real-estate:count";
-    
     return unstable_cache(
       async () => this.realEstatePort.count(filters),
-      [cacheKey],
+      [CACHE_TAGS.REAL_ESTATE.KEYS.COUNT(filters)],
       {
         revalidate: 300,
-        tags: ["real-estates", "real-estate-count"],
-      }
+        tags: [CACHE_TAGS.REAL_ESTATE.PRINCIPAL, CACHE_TAGS.REAL_ESTATE.COUNT],
+      },
     )();
   }
 
   getCachedCountWithDateRange(startDate: string, endDate: string) {
-    const cacheKey = `real-estate:count:date-range:${startDate}:${endDate}`;
-    
     return unstable_cache(
-      async () => this.realEstatePort.count({ start_date: startDate, end_date: endDate }),
-      [cacheKey],
+      async () =>
+        this.realEstatePort.count({ start_date: startDate, end_date: endDate }),
+      [CACHE_TAGS.REAL_ESTATE.KEYS.COUNT_DATE_RANGE(startDate, endDate)],
       {
         revalidate: 300,
-        tags: ["real-estates", "real-estate-count"],
-      }
+        tags: [CACHE_TAGS.REAL_ESTATE.PRINCIPAL, CACHE_TAGS.REAL_ESTATE.COUNT],
+      },
     )();
   }
 }

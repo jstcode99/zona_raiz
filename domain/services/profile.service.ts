@@ -2,53 +2,24 @@ import { ProfilePort } from "@/domain/ports/profile.port";
 import { EUserRole, ProfileEntity } from "@/domain/entities/profile.entity";
 import { unstable_cache } from "next/cache";
 import { Lang } from "@/i18n/settings";
+import { CACHE_TAGS } from "@/infrastructure/config/constants";
 
 export class ProfileService {
-  constructor(private profilePort: ProfilePort, private lang: Lang = "es") { }
+  constructor(
+    private profilePort: ProfilePort,
+    private lang: Lang = "es",
+  ) {}
 
   searchProfilesByEmail(email: string) {
     return this.profilePort.searchProfilesByEmail(email);
-  }
-
-  getCachedSearchProfilesByEmail(email: string) {
-    return unstable_cache(
-      async () => this.profilePort.searchProfilesByEmail(email),
-      [`profile:search:${email}`],
-      {
-        revalidate: 300,
-        tags: ["profiles", "profile:search"],
-      }
-    )();
   }
 
   getRoleByUserId(userId: string) {
     return this.profilePort.getRoleByUserId(userId);
   }
 
-  getCachedRoleByUserId(userId: string) {
-    return unstable_cache(
-      async () => this.profilePort.getRoleByUserId(userId),
-      [`profile:role:${userId}`],
-      {
-        revalidate: 300,
-        tags: ["profiles", `profile:${userId}`],
-      }
-    )();
-  }
-
   getProfileByUserId(userId: string) {
     return this.profilePort.getProfileByUserId(userId);
-  }
-
-  getCachedProfileByUserId(userId: string) {
-    return unstable_cache(
-      async () => this.profilePort.getProfileByUserId(userId),
-      [`profile:user:${userId}`],
-      {
-        revalidate: 300,
-        tags: ["profiles", `profile:${userId}`],
-      }
-    )();
   }
 
   updateProfile(userId: string, data: Partial<ProfileEntity>) {
@@ -67,37 +38,75 @@ export class ProfileService {
     return this.profilePort.updateRole(userId, role);
   }
 
-  count(filters?: { start_date?: string; end_date?: string; real_estate_id?: string }) {
+  count(filters?: {
+    start_date?: string;
+    end_date?: string;
+    real_estate_id?: string;
+  }) {
     return this.profilePort.count(filters);
   }
 
-  getAgentRoleInRealEstate(userId: string, realEstateId: string): Promise<{ role: string } | null> {
-    return this.profilePort.getAgentRoleInRealEstate(userId, realEstateId);
-  }
-
-  getCachedCount(filters?: { start_date?: string; end_date?: string; real_estate_id?: string }) {
-    const cacheKey = filters ? `profile:count:${JSON.stringify(filters)}` : "profile:count";
-
+  getCachedSearchProfilesByEmail(email: string) {
     return unstable_cache(
-      async () => this.profilePort.count(filters),
-      [cacheKey],
+      async () => this.profilePort.searchProfilesByEmail(email),
+      [CACHE_TAGS.USER.KEYS.SEARCH_BY_EMAIL(email)], // ← centralizado
       {
         revalidate: 300,
-        tags: ["profiles", "profile-count"],
-      }
+        tags: [CACHE_TAGS.USER.PRINCIPAL, CACHE_TAGS.USER.EMAIL(email)],
+      },
+    )();
+  }
+
+  getCachedRoleByUserId(userId: string) {
+    return unstable_cache(
+      async () => this.profilePort.getRoleByUserId(userId),
+      [CACHE_TAGS.USER.KEYS.ROLE_BY_USER(userId)],
+      {
+        revalidate: 300,
+        tags: [
+          CACHE_TAGS.USER.PRINCIPAL,
+          CACHE_TAGS.USER.DETAIL(userId),
+          CACHE_TAGS.USER.ROLE(userId),
+        ],
+      },
+    )();
+  }
+
+  getCachedProfileByUserId(userId: string) {
+    return unstable_cache(
+      async () => this.profilePort.getProfileByUserId(userId),
+      [CACHE_TAGS.USER.KEYS.BY_USER(userId)],
+      {
+        revalidate: 300,
+        tags: [CACHE_TAGS.USER.PRINCIPAL, CACHE_TAGS.USER.DETAIL(userId)],
+      },
+    )();
+  }
+
+  getCachedCount(filters?: {
+    start_date?: string;
+    end_date?: string;
+    real_estate_id?: string;
+  }) {
+    return unstable_cache(
+      async () => this.profilePort.count(filters),
+      [CACHE_TAGS.USER.KEYS.COUNT(filters)],
+      {
+        revalidate: 300,
+        tags: [CACHE_TAGS.USER.PRINCIPAL, CACHE_TAGS.USER.COUNT],
+      },
     )();
   }
 
   getCachedCountWithDateRange(startDate: string, endDate: string) {
-    const cacheKey = `profile:count:date-range:${startDate}:${endDate}`;
-
     return unstable_cache(
-      async () => this.profilePort.count({ start_date: startDate, end_date: endDate }),
-      [cacheKey],
+      async () =>
+        this.profilePort.count({ start_date: startDate, end_date: endDate }),
+      [CACHE_TAGS.USER.KEYS.COUNT_DATE_RANGE(startDate, endDate)],
       {
         revalidate: 300,
-        tags: ["profiles", "profile-count"],
-      }
+        tags: [CACHE_TAGS.USER.PRINCIPAL, CACHE_TAGS.USER.COUNT],
+      },
     )();
   }
 }

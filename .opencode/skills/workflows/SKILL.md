@@ -88,7 +88,7 @@ CREATE INDEX IF NOT EXISTS idx_mi_tabla_created_at ON public.mi_tabla(created_at
 
 ## Cache — CACHE_TAGS
 
-Todos los tags están en `infrastructure/config/constants.ts`. Usar **siempre** las constantes, nunca strings crudos:
+Todos los tags están en `infrastructure/config/constants.ts`. Usar **siempre** las constantes, nunca strings crudos, si se crea un feauture con entidad nueva documentar en actuales:
 
 ```typescript
 // En Server Actions — invalidar al mutar
@@ -96,19 +96,50 @@ revalidateTag(CACHE_TAGS.PROPERTY.ALL, { expire: 0 });
 revalidateTag(CACHE_TAGS.PROPERTY.DETAIL(id), { expire: 0 });
 revalidateTag(CACHE_TAGS.PROPERTY.PRINCIPAL, { expire: 0 });
 
+//example:
+revalidateTag(CACHE_TAGS.AGENT.PRINCIPAL, { expire: 0 });
+revalidateTag(CACHE_TAGS.AGENT.BY_REAL_ESTATE(real_estate_id), { expire: 0 });
+
 // En Services — leer con cache
-unstable_cache(fn, [cacheKey], { revalidate: 300, tags: ["tag1", "tag2"] })
+unstable_cache(fn, CACHE_TAGS.KEY.SOME() | CACHE_TAGS.KEY.SOME, { revalidate: 300, tags: [CACHE_TAGS.SOME, CACHE_TAGS.SOME] })
+
+//example: 
+  getCachedById(id: string) {
+    return unstable_cache(
+      async () => this.listingPort.findById(id),
+      [CACHE_TAGS.LISTING.KEYS.BY_ID(id)],
+      {
+        revalidate: 300,
+        tags: [CACHE_TAGS.LISTING.PRINCIPAL, CACHE_TAGS.LISTING.DETAIL(id)],
+      },
+    )();
+  }
 ```
 
-Tags actuales: `LISTING`, `PROPERTY`, `USER`, `REAL_ESTATE`, `AGENT`, `INQUIRY`, `DASHBOARD`.
+Tags actuales: `
+  SESSION,
+  LISTING,
+  PROPERTY,
+  USER,
+  REAL_ESTATE,
+  AGENT,
+  DASHBOARD,
+  IMPORT_JOB,
+  ENQUIRY,
+`.
 
 **Al añadir una entidad nueva**, agregar sus tags en `constants.ts`:
 ```typescript
 MY_ENTITY: {
   PRINCIPAL: "my-entities",
   ALL: "my-entity:all",
-  DETAIL: (id: string) => `my-entity:${id}`,
   COUNT: "my-entity-count",
+  DETAIL: (id: string) => `my-entity:${id}`,
+  KEYS: {
+    ALL: (filter?: object) =>
+      filter ? `listing:all:${JSON.stringify(filter)}` : "listing:all",
+    BY_ID: (id: string) => `listing:${id}`
+  }
 },
 ```
 

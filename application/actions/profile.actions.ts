@@ -11,7 +11,6 @@ import { cookies } from "next/headers";
 import { createRouter } from "@/i18n/router";
 import { initI18n } from "@/i18n/server";
 import { appModule } from "@/application/modules/app.module";
-import { ProfileEntity } from "@/domain/entities/profile.entity";
 import * as yup from "yup";
 
 const searchProfilesSchema = yup.object({

@@ -23,7 +23,7 @@ export const createPropertyImageAction = withServerAction(
     const i18n = await initI18n(lang);
     const t = i18n.getFixedT(lang);
 
-    const { propertyImageService, propertyService } = await appModule(lang, {
+    const { propertyImageService } = await appModule(lang, {
       cookies: cookieStore,
     });
 
@@ -214,7 +214,10 @@ export const deletePropertyImageFormAction = withServerAction(
  * Recibe array de { id, display_order } y actualiza todos en batch
  */
 export const reorderPropertyImagesAction = withServerAction(
-  async (updates: Array<{ id: string; display_order: number }>, propertyId: string) => {
+  async (
+    updates: Array<{ id: string; display_order: number }>,
+    propertyId: string,
+  ) => {
     const lang = await getLangServerSide();
     const cookieStore = await cookies();
     const routes = createRouter(lang);
@@ -268,7 +271,10 @@ export const reorderPropertyImagesFormAction = withServerAction(
       throw new Error(t("validations:required", { attribute: "propertyId" }));
     }
 
-    const updates = JSON.parse(updatesJson) as Array<{ id: string; display_order: number }>;
+    const updates = JSON.parse(updatesJson) as Array<{
+      id: string;
+      display_order: number;
+    }>;
 
     await propertyImageService.updateDisplayOrder(updates);
 

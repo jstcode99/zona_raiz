@@ -110,6 +110,14 @@ export class MyEntityService {
 
 ## Formularios en Client Components
 
+se debe usar `@/components/ui/form` y sus subcomponentes que ya integran useForm para validar errores
+tambien seccionar cuando sean formularios muy grandes en secciones con Formmmmm.Set
+
+```typescript
+import { Form } from "@/components/ui/form";
+```
+
+
 ```typescript
 "use client";
 
@@ -142,6 +150,7 @@ export function MyEntityForm() {
     <Form {...form}>
       <form action={action}>
         {/* campos */}
+        {/* Usar <Form.Set> para dividir por secciones, y usar los componentes que propociona <Form.Input> */}
       </form>
     </Form>
   );
@@ -216,6 +225,14 @@ export function PropertyForm() {
 
 - Todo texto visible al usuario via `t()` de `react-i18next` por `useTranslation  (client) o `initI18n` (server)
 - Namespace por dominio: `properties`, `listings`, `auth`, `common`, `dashboard`, etc.
+- Estructura del json
+ 
+```json
+"title":"val",
+"subtitle":"val",
+"other":{},
+...
+```
 - Rutas: `getLangServerSide()` en server, `useRoutes()` en client
 - Traducciones en `locales/es/` y `locales/en/`
 

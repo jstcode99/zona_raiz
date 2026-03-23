@@ -8,6 +8,7 @@ import { createRouter } from "@/i18n/router";
 import { CookiesPort } from "../ports/cookies.port";
 import { EUserRole } from "../entities/profile.entity";
 import { initI18n } from "@/i18n/server";
+import { CACHE_TAGS } from "@/infrastructure/config/constants";
 
 export class SessionService {
   constructor(
@@ -28,10 +29,10 @@ export class SessionService {
   getCachedCurrentUserId() {
     return unstable_cache(
       async () => this.sessionPort.getCurrentUserId(),
-      ["session:user-id"],
+      [CACHE_TAGS.SESSION.USER_ID],
       {
         revalidate: 300,
-        tags: ["session", "user-id"],
+        tags: [CACHE_TAGS.SESSION.SINGLE, CACHE_TAGS.SESSION.USER_ID],
       },
     )();
   }
@@ -43,10 +44,10 @@ export class SessionService {
   getCachedCurrentUser() {
     return unstable_cache(
       async () => this.sessionPort.getCurrentUser(),
-      ["session:current-user"],
+      [CACHE_TAGS.SESSION.CURRENT_USER],
       {
         revalidate: 300,
-        tags: ["session", "current-user"],
+        tags: [CACHE_TAGS.SESSION.SINGLE, CACHE_TAGS.SESSION.CURRENT_USER],
       },
     )();
   }
@@ -58,10 +59,10 @@ export class SessionService {
   getCachedRealEstatesForUser() {
     return unstable_cache(
       async () => this.sessionPort.getRealEstatesForUser(),
-      ["session:real-estates"],
+      [CACHE_TAGS.SESSION.REAL_ESTATES],
       {
         revalidate: 300,
-        tags: ["session", "real-estates"],
+        tags: [CACHE_TAGS.SESSION.SINGLE, CACHE_TAGS.SESSION.REAL_ESTATES],
       },
     )();
   }
@@ -111,17 +112,17 @@ export class SessionService {
           {
             title: t("components:nav.users"),
             url: routes.users(),
-            icon: "tags",
+            icon: "users",
           },
           {
             title: t("components:nav.enquiries"),
             url: routes.enquiries(),
-            icon: "tags",
+            icon: "message-square-text",
           },
           {
             title: t("components:nav.import"),
             url: routes.import(),
-            icon: "tags",
+            icon: "upload",
           },
         ];
       default:
@@ -144,7 +145,7 @@ export class SessionService {
           {
             title: t("components:nav.enquiries"),
             url: routes.enquiries(),
-            icon: "tags",
+            icon: "message-square-text",
           },
           {
             title: t("components:nav.users"),
@@ -154,7 +155,7 @@ export class SessionService {
           {
             title: t("components:nav.imports"),
             url: routes.import(),
-            icon: "xls",
+            icon: "upload",
           },
         ];
     }

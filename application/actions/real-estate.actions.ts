@@ -15,16 +15,15 @@ import { appModule } from "../modules/app.module";
 import { createRouter } from "@/i18n/router";
 import { initI18n } from "@/i18n/server";
 import { CACHE_TAGS } from "@/infrastructure/config/constants";
+import { EAgentRole } from "@/domain/entities/real-estate-agent.entity";
 
 export const createRealEstateAction = withServerAction(
   async (formData: FormData) => {
     const lang = await getLangServerSide();
     const cookieStore = await cookies();
     const routes = createRouter(lang);
-    const i18n = await initI18n(lang);
-    const t = i18n.getFixedT(lang);
 
-    const { realEstateService } = await appModule(lang, {
+    const { realEstateService, cookiesService } = await appModule(lang, {
       cookies: cookieStore,
     });
 
@@ -33,7 +32,13 @@ export const createRealEstateAction = withServerAction(
       { abortEarly: false, stripUnknown: true },
     );
 
-    await realEstateService.create(mapRealEstateRowToDomain(input));
+    const id = await realEstateService.create(mapRealEstateRowToDomain(input));
+
+    cookiesService.setSession(COOKIE_NAMES.REAL_ESTATE, id);
+    cookiesService.setSession(
+      COOKIE_NAMES.REAL_ESTATE_ROLE,
+      EAgentRole.Coordinator,
+    );
 
     revalidatePath(routes.dashboard());
     revalidatePath(routes.realEstates());

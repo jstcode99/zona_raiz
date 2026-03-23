@@ -38,21 +38,6 @@ export class ListingService {
     return this.listingPort.all(filter);
   }
 
-  getCachedAll(filter?: ListingSearchFilters) {
-    const cacheKey = filter
-      ? `listing:all:${JSON.stringify(filter)}`
-      : "listing:all";
-
-    return unstable_cache(
-      async () => this.listingPort.all(filter),
-      [cacheKey],
-      {
-        revalidate: 300,
-        tags: [CACHE_TAGS.LISTING.PRINCIPAL, CACHE_TAGS.LISTING.ALL],
-      },
-    )();
-  }
-
   create(data: CreateListingInput) {
     return this.listingPort.create(data);
   }
@@ -70,30 +55,8 @@ export class ListingService {
     return this.listingPort.findByIds(ids);
   }
 
-  getCachedById(id: string) {
-    return unstable_cache(
-      async () => this.listingPort.findById(id),
-      [`listing:${id}`],
-      {
-        revalidate: 300,
-        tags: [CACHE_TAGS.LISTING.PRINCIPAL, CACHE_TAGS.LISTING.DETAIL(id)],
-      },
-    )();
-  }
-
   findActive() {
     return this.listingPort.findActive();
-  }
-
-  getCachedActive() {
-    return unstable_cache(
-      async () => this.listingPort.findActive(),
-      ["listing:active"],
-      {
-        revalidate: 300,
-        tags: [CACHE_TAGS.LISTING.PRINCIPAL, CACHE_TAGS.LISTING.ACTIVE],
-      },
-    )();
   }
 
   delete(id: string) {
@@ -104,161 +67,23 @@ export class ListingService {
     return this.listingPort.findFeatured(limit, realEstateId);
   }
 
-  getCachedFeatured(limit?: number, realEstateId?: string) {
-    const cacheKey = `listing:featured:${limit}:${realEstateId}`;
-
-    return unstable_cache(
-      async () => this.listingPort.findFeatured(limit, realEstateId),
-      [cacheKey],
-      {
-        revalidate: 300,
-        tags: [
-          CACHE_TAGS.LISTING.PRINCIPAL,
-          CACHE_TAGS.LISTING.FEATURED,
-          ...(realEstateId
-            ? [CACHE_TAGS.REAL_ESTATE.DETAIL(realEstateId)]
-            : []),
-        ],
-      },
-    )();
-  }
-
   findBySlug(slug: string) {
     return this.listingPort.findBySlug(slug);
-  }
-
-  getCachedBySlug(slug: string) {
-    return unstable_cache(
-      async () => this.listingPort.findBySlug(slug),
-      [`listing:slug:${slug}`],
-      {
-        revalidate: 300,
-        tags: [CACHE_TAGS.LISTING.PRINCIPAL, CACHE_TAGS.LISTING.SLUG(slug)],
-      },
-    )();
   }
 
   count(filters?: ListingCountFilters) {
     return this.listingPort.count(filters);
   }
 
-  getCachedCount(filters?: ListingCountFilters) {
-    const cacheKey = filters
-      ? `listing:count:${JSON.stringify(filters)}`
-      : "listing:count";
-
-    return unstable_cache(
-      async () => this.listingPort.count(filters),
-      [cacheKey],
-      {
-        revalidate: 300,
-        tags: [CACHE_TAGS.LISTING.PRINCIPAL, CACHE_TAGS.LISTING.COUNT],
-      },
-    )();
-  }
-
   countWithViews(filters?: ListingCountFilters) {
     return this.listingPort.countWithViews(filters);
   }
-
-  getCachedCountWithViews(filters?: ListingCountFilters) {
-    const cacheKey = filters
-      ? `listing:count:with-views:${JSON.stringify(filters)}`
-      : "listing:count:with-views";
-
-    return unstable_cache(
-      async () => this.listingPort.countWithViews(filters),
-      [cacheKey],
-      {
-        revalidate: 300,
-        tags: [CACHE_TAGS.LISTING.PRINCIPAL, CACHE_TAGS.LISTING.COUNT],
-      },
-    )();
-  }
-
   async getCountByRealEstate(realEstateId: string): Promise<number> {
     return this.listingPort.count({ real_estate_id: realEstateId });
   }
 
-  getCachedCountByRealEstate(realEstateId: string) {
-    return unstable_cache(
-      async () => this.listingPort.count({ real_estate_id: realEstateId }),
-      [`listing-count:real-estate:${realEstateId}`],
-      {
-        revalidate: 300,
-        tags: [
-          CACHE_TAGS.LISTING.PRINCIPAL,
-          CACHE_TAGS.REAL_ESTATE.DETAIL(realEstateId),
-        ],
-      },
-    )();
-  }
-
-  getCachedCountWithDateRange(
-    startDate: string,
-    endDate: string,
-    filters?: Omit<ListingCountFilters, "start_date" | "end_date">,
-  ) {
-    const cacheKey = `listing-count:date-range:${startDate}:${endDate}:${this.buildCacheKey(filters as ListingSearchFilters | undefined)}`;
-
-    return unstable_cache(
-      async () =>
-        this.listingPort.count({
-          ...filters,
-          start_date: startDate,
-          end_date: endDate,
-        }),
-      [cacheKey],
-      {
-        revalidate: 300,
-        tags: [CACHE_TAGS.LISTING.PRINCIPAL, CACHE_TAGS.LISTING.COUNT],
-      },
-    )();
-  }
-
-  getCachedCountByRealEstateWithDateRange(
-    realEstateId: string,
-    startDate: string,
-    endDate: string,
-  ) {
-    const cacheKey = `listing-count:real-estate:${realEstateId}:date-range:${startDate}:${endDate}`;
-
-    return unstable_cache(
-      async () =>
-        this.listingPort.count({
-          real_estate_id: realEstateId,
-          start_date: startDate,
-          end_date: endDate,
-        }),
-      [cacheKey],
-      {
-        revalidate: 300,
-        tags: [
-          CACHE_TAGS.LISTING.PRINCIPAL,
-          CACHE_TAGS.REAL_ESTATE.DETAIL(realEstateId),
-        ],
-      },
-    )();
-  }
-
   findSimplePublished(limit: number = 10) {
     return this.listingPort.findSimplePublished(limit);
-  }
-
-  getCachedSimplePublished(limit: number = 10) {
-    const cacheKey = `listing:simple-published:${limit}`;
-
-    return unstable_cache(
-      async () => this.listingPort.findSimplePublished(limit),
-      [cacheKey],
-      {
-        revalidate: 60,
-        tags: [
-          CACHE_TAGS.LISTING.PRINCIPAL,
-          CACHE_TAGS.LISTING.SIMPLE_PUBLISHED,
-        ],
-      },
-    )();
   }
 
   private buildCacheKey(filters?: ListingSearchFilters): string {
@@ -293,15 +118,6 @@ export class ListingService {
     };
   }
 
-  getCachedSearch(filters: ListingSearchFilters) {
-    const cacheKey = `listing-search:${this.buildCacheKey(filters)}`;
-
-    return unstable_cache(async () => this.search(filters), [cacheKey], {
-      revalidate: 60,
-      tags: [CACHE_TAGS.LISTING.PRINCIPAL, CACHE_TAGS.LISTING.SEARCH],
-    })();
-  }
-
   async searchWithCount(
     filters: ListingSearchFilters,
   ): Promise<{ listings: ListingEntity[]; total: number }> {
@@ -324,19 +140,6 @@ export class ListingService {
     };
   }
 
-  getCachedSearchWithCount(filters: ListingSearchFilters) {
-    const cacheKey = `listing-search:with-count:${this.buildCacheKey(filters)}`;
-
-    return unstable_cache(
-      async () => this.searchWithCount(filters),
-      [cacheKey],
-      {
-        revalidate: 60,
-        tags: [CACHE_TAGS.LISTING.PRINCIPAL, CACHE_TAGS.LISTING.SEARCH],
-      },
-    )();
-  }
-
   countByStatusAndMonth(
     year: number,
     filters?: Omit<ListingCountFilters, "start_date" | "end_date">,
@@ -344,15 +147,75 @@ export class ListingService {
     return this.listingPort.countByStatusAndMonth(year, filters);
   }
 
-  getCachedCountByStatusAndMonth(
-    year: number,
-    filters?: Omit<ListingCountFilters, "start_date" | "end_date">,
-  ) {
-    const cacheKey = `listing-count:status-month:${year}:${filters?.real_estate_id || "all"}`;
+  findCitiesWithActiveListings() {
+    return this.listingPort.findCitiesWithActiveListings();
+  }
 
+  getCachedAll(filter?: ListingSearchFilters) {
     return unstable_cache(
-      async () => this.listingPort.countByStatusAndMonth(year, filters),
-      [cacheKey],
+      async () => this.listingPort.all(filter),
+      [CACHE_TAGS.LISTING.KEYS.ALL(filter)],
+      {
+        revalidate: 300,
+        tags: [CACHE_TAGS.LISTING.PRINCIPAL, CACHE_TAGS.LISTING.ALL],
+      },
+    )();
+  }
+
+  getCachedById(id: string) {
+    return unstable_cache(
+      async () => this.listingPort.findById(id),
+      [CACHE_TAGS.LISTING.KEYS.BY_ID(id)],
+      {
+        revalidate: 300,
+        tags: [CACHE_TAGS.LISTING.PRINCIPAL, CACHE_TAGS.LISTING.DETAIL(id)],
+      },
+    )();
+  }
+
+  getCachedActive() {
+    return unstable_cache(
+      async () => this.listingPort.findActive(),
+      [CACHE_TAGS.LISTING.KEYS.ACTIVE()],
+      {
+        revalidate: 300,
+        tags: [CACHE_TAGS.LISTING.PRINCIPAL, CACHE_TAGS.LISTING.ACTIVE],
+      },
+    )();
+  }
+
+  getCachedFeatured(limit?: number, realEstateId?: string) {
+    return unstable_cache(
+      async () => this.listingPort.findFeatured(limit, realEstateId),
+      [CACHE_TAGS.LISTING.KEYS.FEATURED(limit, realEstateId)],
+      {
+        revalidate: 300,
+        tags: [
+          CACHE_TAGS.LISTING.PRINCIPAL,
+          CACHE_TAGS.LISTING.FEATURED,
+          ...(realEstateId
+            ? [CACHE_TAGS.REAL_ESTATE.DETAIL(realEstateId)]
+            : []),
+        ],
+      },
+    )();
+  }
+
+  getCachedBySlug(slug: string) {
+    return unstable_cache(
+      async () => this.listingPort.findBySlug(slug),
+      [CACHE_TAGS.LISTING.KEYS.BY_SLUG(slug)],
+      {
+        revalidate: 300,
+        tags: [CACHE_TAGS.LISTING.PRINCIPAL, CACHE_TAGS.LISTING.SLUG(slug)],
+      },
+    )();
+  }
+
+  getCachedCount(filters?: ListingCountFilters) {
+    return unstable_cache(
+      async () => this.listingPort.count(filters),
+      [CACHE_TAGS.LISTING.KEYS.COUNT(filters)],
       {
         revalidate: 300,
         tags: [CACHE_TAGS.LISTING.PRINCIPAL, CACHE_TAGS.LISTING.COUNT],
@@ -360,14 +223,139 @@ export class ListingService {
     )();
   }
 
-  findCitiesWithActiveListings() {
-    return this.listingPort.findCitiesWithActiveListings();
+  getCachedCountWithViews(filters?: ListingCountFilters) {
+    return unstable_cache(
+      async () => this.listingPort.countWithViews(filters),
+      [CACHE_TAGS.LISTING.KEYS.COUNT_WITH_VIEWS(filters)],
+      {
+        revalidate: 300,
+        tags: [CACHE_TAGS.LISTING.PRINCIPAL, CACHE_TAGS.LISTING.COUNT],
+      },
+    )();
+  }
+
+  getCachedCountByRealEstate(realEstateId: string) {
+    return unstable_cache(
+      async () => this.listingPort.count({ real_estate_id: realEstateId }),
+      [CACHE_TAGS.LISTING.KEYS.COUNT_BY_REAL_ESTATE(realEstateId)],
+      {
+        revalidate: 300,
+        tags: [
+          CACHE_TAGS.LISTING.PRINCIPAL,
+          CACHE_TAGS.REAL_ESTATE.DETAIL(realEstateId),
+        ],
+      },
+    )();
+  }
+
+  getCachedCountWithDateRange(
+    startDate: string,
+    endDate: string,
+    filters?: Omit<ListingCountFilters, "start_date" | "end_date">,
+  ) {
+    return unstable_cache(
+      async () =>
+        this.listingPort.count({
+          ...filters,
+          start_date: startDate,
+          end_date: endDate,
+        }),
+      [CACHE_TAGS.LISTING.KEYS.COUNT_DATE_RANGE(startDate, endDate, filters)],
+      {
+        revalidate: 300,
+        tags: [CACHE_TAGS.LISTING.PRINCIPAL, CACHE_TAGS.LISTING.COUNT],
+      },
+    )();
+  }
+
+  getCachedCountByRealEstateWithDateRange(
+    realEstateId: string,
+    startDate: string,
+    endDate: string,
+  ) {
+    return unstable_cache(
+      async () =>
+        this.listingPort.count({
+          real_estate_id: realEstateId,
+          start_date: startDate,
+          end_date: endDate,
+        }),
+      [
+        CACHE_TAGS.LISTING.KEYS.COUNT_REAL_ESTATE_DATE_RANGE(
+          realEstateId,
+          startDate,
+          endDate,
+        ),
+      ],
+      {
+        revalidate: 300,
+        tags: [
+          CACHE_TAGS.LISTING.PRINCIPAL,
+          CACHE_TAGS.REAL_ESTATE.DETAIL(realEstateId),
+        ],
+      },
+    )();
+  }
+
+  getCachedSimplePublished(limit: number = 10) {
+    return unstable_cache(
+      async () => this.listingPort.findSimplePublished(limit),
+      [CACHE_TAGS.LISTING.KEYS.SIMPLE_PUBLISHED(limit)],
+      {
+        revalidate: 60,
+        tags: [
+          CACHE_TAGS.LISTING.PRINCIPAL,
+          CACHE_TAGS.LISTING.SIMPLE_PUBLISHED,
+        ],
+      },
+    )();
+  }
+
+  getCachedSearch(filters: ListingSearchFilters) {
+    return unstable_cache(
+      async () => this.search(filters),
+      [CACHE_TAGS.LISTING.KEYS.SEARCH(this.buildCacheKey(filters))],
+      {
+        revalidate: 60,
+        tags: [CACHE_TAGS.LISTING.PRINCIPAL, CACHE_TAGS.LISTING.SEARCH],
+      },
+    )();
+  }
+
+  getCachedSearchWithCount(filters: ListingSearchFilters) {
+    return unstable_cache(
+      async () => this.searchWithCount(filters),
+      [CACHE_TAGS.LISTING.KEYS.SEARCH_WITH_COUNT(this.buildCacheKey(filters))],
+      {
+        revalidate: 60,
+        tags: [CACHE_TAGS.LISTING.PRINCIPAL, CACHE_TAGS.LISTING.SEARCH],
+      },
+    )();
+  }
+
+  getCachedCountByStatusAndMonth(
+    year: number,
+    filters?: Omit<ListingCountFilters, "start_date" | "end_date">,
+  ) {
+    return unstable_cache(
+      async () => this.listingPort.countByStatusAndMonth(year, filters),
+      [
+        CACHE_TAGS.LISTING.KEYS.COUNT_STATUS_MONTH(
+          year,
+          filters?.real_estate_id,
+        ),
+      ],
+      {
+        revalidate: 300,
+        tags: [CACHE_TAGS.LISTING.PRINCIPAL, CACHE_TAGS.LISTING.COUNT],
+      },
+    )();
   }
 
   getCachedCitiesWithActiveListings() {
     return unstable_cache(
       async () => this.listingPort.findCitiesWithActiveListings(),
-      [CACHE_TAGS.LISTING.CITIES],
+      [CACHE_TAGS.LISTING.KEYS.CITIES()],
       {
         revalidate: 300,
         tags: [CACHE_TAGS.LISTING.PRINCIPAL, CACHE_TAGS.LISTING.CITIES],
@@ -375,14 +363,10 @@ export class ListingService {
     )();
   }
 
-  getLandingStats() {
-    return this.listingPort.getLandingStats();
-  }
-
   getCachedLandingStats() {
     return unstable_cache(
       async () => this.listingPort.getLandingStats(),
-      [CACHE_TAGS.LISTING.STATS],
+      [CACHE_TAGS.LISTING.KEYS.STATS()],
       {
         revalidate: 300,
         tags: [CACHE_TAGS.LISTING.PRINCIPAL, CACHE_TAGS.LISTING.STATS],

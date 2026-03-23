@@ -1,5 +1,3 @@
-import { EUserRole } from "@/domain/entities/profile.entity";
-
 export const ROUTES = {
   home: {
     es: "/es",
@@ -137,8 +135,8 @@ export const ROUTES = {
   },
 
   search: {
-    es: "/buscar",
-    en: "/search",
+    es: "/apartamentos",
+    en: "/apartments",
   },
 } as const;
 

@@ -2,9 +2,13 @@ import { AgentPort } from "@/domain/ports/agent.port";
 import { unstable_cache } from "next/cache";
 import { Lang } from "@/i18n/settings";
 import { LandingAgent } from "@/domain/types/landing.types";
+import { CACHE_TAGS } from "@/infrastructure/config/constants";
 
 export class AgentService {
-  constructor(private agentPort: AgentPort, private lang: Lang = "es") {}
+  constructor(
+    private agentPort: AgentPort,
+    private lang: Lang = "es",
+  ) {}
 
   addAgent(realEstateId: string, profileId: string) {
     return this.agentPort.addAgent(realEstateId, profileId);
@@ -21,11 +25,14 @@ export class AgentService {
   getCachedListAgents(realEstateId: string) {
     return unstable_cache(
       async () => this.agentPort.listAgents(realEstateId),
-      [`agent:real-estate:${realEstateId}`],
+      [CACHE_TAGS.AGENT.BY_REAL_ESTATE(realEstateId)],
       {
         revalidate: 300,
-        tags: ["agents", `real-estate:${realEstateId}`],
-      }
+        tags: [
+          CACHE_TAGS.AGENT.PRINCIPAL,
+          CACHE_TAGS.REAL_ESTATE.DETAIL(realEstateId),
+        ],
+      },
     )();
   }
 
@@ -36,8 +43,8 @@ export class AgentService {
       [cacheKey],
       {
         revalidate: 300,
-        tags: ["agents", "landing"],
-      }
+        tags: [CACHE_TAGS.AGENT.PRINCIPAL, CACHE_TAGS.AGENT.TOP],
+      },
     )();
   }
 }
