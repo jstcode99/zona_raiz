@@ -130,13 +130,23 @@ export async function seedRealEstates(
     role: agent.role,
   }));
 
-  const { error: raError } = await supabase
+  const { error: raError, data: agentsData } = await supabase
     .from("real_estate_agents")
-    .insert(agentInserts);
+    .insert(agentInserts)
+    .select();
 
   if (raError) {
     logger.error("Error insertando agentes:", raError.message);
     throw raError;
+  }
+
+  // Mapear los IDs generados por la BD a los agentes
+  if (agentsData) {
+    agentsData.forEach((insertedAgent, index) => {
+      if (agents[index]) {
+        agents[index].id = insertedAgent.id;
+      }
+    });
   }
 
   logger.success(
