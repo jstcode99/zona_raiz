@@ -177,3 +177,31 @@ export const propertyImportHeaders = [
 ] as const;
 
 export type PropertyImportHeader = (typeof propertyImportHeaders)[number];
+
+/**
+ * Headers en español para plantillas de importación de properties
+ */
+export const propertyImportHeadersES = [
+  "título",
+  "tipo_propiedad",
+  "ciudad",
+  "estado",
+  "país",
+  "código_postal",
+  "calle",
+  "barrio",
+  "latitud",
+  "longitud",
+  "habitaciones",
+  "baños",
+  "área_total",
+  "área_construida",
+  "área_lote",
+  "pisos",
+  "año_construcción",
+  "parqueaderos",
+  "amenities",
+  "descripción",
+] as const;
+
+export type PropertyImportHeaderES = (typeof propertyImportHeadersES)[number];

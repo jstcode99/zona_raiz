@@ -141,3 +141,31 @@ export const listingImportHeaders = [
 ] as const;
 
 export type ListingImportHeader = (typeof listingImportHeaders)[number];
+
+/**
+ * Headers en español para plantillas de importación de listings
+ */
+export const listingImportHeadersES = [
+  "tipo_listado",
+  "precio",
+  "moneda",
+  "precio_negociable",
+  "estado",
+  "whatsapp_contacto",
+  "id_propiedad",
+  "título_propiedad",
+  "ciudad_propiedad",
+  "estado_propiedad",
+  "tipo_propiedad",
+  "meta_título",
+  "meta_descripción",
+  "palabras_clave",
+  "monto_gastos",
+  "gastos_incluidos",
+  "tour_virtual",
+  "video_url",
+  "disponible_desde",
+  "duración_mínima_contrato",
+] as const;
+
+export type ListingImportHeaderES = (typeof listingImportHeadersES)[number];

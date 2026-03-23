@@ -82,3 +82,21 @@ export const realEstateImportHeaders = [
 ] as const;
 
 export type RealEstateImportHeader = (typeof realEstateImportHeaders)[number];
+
+/**
+ * Headers en español para plantillas de importación de real estates
+ */
+export const realEstateImportHeadersES = [
+  "nombre",
+  "whatsapp",
+  "ciudad",
+  "estado",
+  "país",
+  "código_postal",
+  "calle",
+  "email",
+  "teléfono",
+  "descripción",
+] as const;
+
+export type RealEstateImportHeaderES = (typeof realEstateImportHeadersES)[number];
