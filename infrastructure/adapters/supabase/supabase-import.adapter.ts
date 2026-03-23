@@ -5,6 +5,29 @@ import { ImportData } from "@/domain/types/import.types";
 import { SupabaseClient } from "@supabase/supabase-js";
 import { STORAGE_BUCKETS, IMPORT_CONFIG } from "@/infrastructure/config/constants";
 
+/**
+ * Normalizes a filename for Supabase Storage:
+ * - Converts to lowercase
+ * - Removes accents/diacritics
+ * - Replaces spaces and special characters with hyphens
+ * - Keeps original extension
+ */
+function normalizeFilename(filename: string): string {
+  const lastDot = filename.lastIndexOf('.');
+  const name = lastDot === -1 ? filename : filename.substring(0, lastDot);
+  const ext = lastDot === -1 ? '' : filename.substring(lastDot);
+
+  const normalized = name
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '') // Remove accents/diacritics
+    .replace(/[^a-z0-9]/g, '-') // Replace non-alphanumeric with hyphen
+    .replace(/-+/g, '-') // Reduce multiple hyphens to one
+    .replace(/^-|-$/g, ''); // Remove leading/trailing hyphens
+
+  return normalized + ext;
+}
+
 export class SupabaseImportAdapter implements ImportPort {
   constructor(private supabase: SupabaseClient) {}
 
@@ -28,10 +51,9 @@ export class SupabaseImportAdapter implements ImportPort {
     }
 
     // Generate a unique file ID
-    const fileId = `import-${Date.now()}-${Math.random()
-      .toString(36)
-      .substr(2, 9)}`;
-    const filePath = `${fileId}/${file.name}`;
+    const fileId = `import-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    const normalizedFileName = normalizeFilename(file.name);
+    const filePath = `${fileId}/${normalizedFileName}`;
 
     // Upload file to Supabase Storage
     const { data, error } = await this.supabase.storage
