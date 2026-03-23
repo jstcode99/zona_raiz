@@ -26,7 +26,7 @@ export async function seedRealEstates(
 
   logger.subSection("Seed Real Estates");
 
-  // Truncar tablas relacionadas si se solicita`
+  // Truncar tablas relacionadas si se solicita
   if (truncate) {
     logger.info("Truncando tablas relacionadas...");
 
@@ -63,38 +63,50 @@ export async function seedRealEstates(
     logger.success("Tablas truncadas correctamente");
   }
 
-  // Insertar Real Estates con IDs pre-generados
+  // Insertar Real Estates SIN ID - la BD lo genera con gen_random_uuid()
+  // Pero necesitamos mantener los IDs pre-generados para las propiedades
   logger.info(`Insertando ${realEstates.length} inmobiliarias...`);
-  const realEstateInserts = realEstates.map((re) => ({
-    id: re.id, // ID pre-generado por Faker para mantener consistencia
-    name: re.name,
-    description: re.description,
-    whatsapp: re.whatsapp,
-    street: re.street,
-    city: re.city,
-    state: re.state,
-    postal_code: re.postalCode,
-    country: re.country,
-    logo_url: re.logoUrl || null,
-  }));
+  
+  const insertedRealEstates: SeedRealEstate[] = [];
+  
+  for (const re of realEstates) {
+    const { data: inserted, error } = await supabase
+      .from("real_estates")
+      .insert({
+        name: re.name,
+        description: re.description,
+        whatsapp: re.whatsapp,
+        street: re.street,
+        city: re.city,
+        state: re.state,
+        postal_code: re.postalCode,
+        country: re.country,
+        logo_url: re.logoUrl || null,
+      })
+      .select()
+      .single();
 
-  const { error: reError } = await supabase
-    .from("real_estates")
-    .upsert(realEstateInserts, { onConflict: "id" });
+    if (error) {
+      logger.error("Error insertando inmobiliarias:", error.message);
+      throw error;
+    }
 
-  if (reError) {
-    logger.error("Error insertando inmobiliarias:", reError.message);
-    throw reError;
+    if (inserted) {
+      insertedRealEstates.push({
+        ...re,
+        id: inserted.id, // Usar el ID generado por la BD
+      });
+    }
   }
 
-  logger.success(`✓ ${realEstates.length} inmobiliarias insertadas`);
+  logger.success(`✓ ${insertedRealEstates.length} inmobiliarias insertadas`);
 
   // Crear relaciones agente-perfil
   // Para cada inmobiliaria: 1 coordinador + agentes
   const agents: SeedAgent[] = [];
 
-  realEstates.forEach((re, index) => {
-    // El coordinador para esta inmobiliaria está en el índice corresponding
+  insertedRealEstates.forEach((re, index) => {
+    // El coordinador para esta inmobiliaria está en el índice correspondiente
     const coordinator = coordinatorProfiles[index];
 
     if (coordinator) {
@@ -121,41 +133,42 @@ export async function seedRealEstates(
     }
   });
 
-  // Insertar agentes en real_estate_agents
+  // Insertar agentes en real_estate_agents SIN ID - la BD lo genera
   logger.info(`Insertando ${agents.length} relaciones agente-inmobiliaria...`);
 
-  const agentInserts = agents.map((agent) => ({
-    profile_id: agent.profileId,
-    real_estate_id: agent.realEstateId,
-    role: agent.role,
-  }));
+  const insertedAgents: SeedAgent[] = [];
+  
+  for (const agent of agents) {
+    const { data: inserted, error } = await supabase
+      .from("real_estate_agents")
+      .insert({
+        profile_id: agent.profileId,
+        real_estate_id: agent.realEstateId,
+        role: agent.role,
+      })
+      .select()
+      .single();
 
-  const { error: raError, data: agentsData } = await supabase
-    .from("real_estate_agents")
-    .insert(agentInserts)
-    .select();
+    if (error) {
+      logger.error("Error insertando agente:", error.message);
+      throw error;
+    }
 
-  if (raError) {
-    logger.error("Error insertando agentes:", raError.message);
-    throw raError;
-  }
-
-  // Mapear los IDs generados por la BD a los agentes
-  if (agentsData) {
-    agentsData.forEach((insertedAgent, index) => {
-      if (agents[index]) {
-        agents[index].id = insertedAgent.id;
-      }
-    });
+    if (inserted) {
+      insertedAgents.push({
+        ...agent,
+        id: inserted.id, // Capturar el ID generado por la BD
+      });
+    }
   }
 
   logger.success(
-    `✓ ${agents.length} relaciones agente-inmobiliaria insertadas`,
+    `✓ ${insertedAgents.length} relaciones agente-inmobiliaria insertadas`,
   );
 
   return {
-    realEstates,
+    realEstates: insertedRealEstates,
     profiles: [...coordinatorProfiles, ...agentProfiles],
-    agents,
+    agents: insertedAgents,
   };
 }

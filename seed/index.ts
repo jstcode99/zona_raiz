@@ -4,9 +4,12 @@
 
 import { getSeedClient, verifySeedClient } from "./lib/supabase";
 import { SeedLogger, LogLevel } from "./lib/logger";
-import { seedProfiles, seedAuthUsers } from "./lib/seeders/profile.seeder";
+import { seedAuthUsers } from "./lib/seeders/profile.seeder";
 import { seedRealEstates } from "./lib/seeders/real-estate.seeder";
-import { seedProperties, seedPropertyImages } from "./lib/seeders/property.seeder";
+import {
+  seedProperties,
+  seedPropertyImages,
+} from "./lib/seeders/property.seeder";
 import { seedListings, getListingStats } from "./lib/seeders/listing.seeder";
 import { seedFavorites } from "./lib/seeders/favorite.seeder";
 import { seedInquiries } from "./lib/seeders/inquiry.seeder";
@@ -22,7 +25,7 @@ import {
   generateFakeFavorites,
   generateFakeInquiries,
 } from "./lib/faker-data";
-import type { SeedProfile, SeedAgent } from "./types";
+import type { SeedProfile, SeedAgent, SeedProperty, SeedListing } from "./types";
 
 export interface SeedResult {
   success: boolean;
@@ -52,9 +55,11 @@ const logger = SeedLogger;
 /**
  * Ejecuta el seed completo de la base de datos usando Faker.js.
  */
-export async function runSeed(options: Partial<SeedOptions> = {}): Promise<SeedResult> {
+export async function runSeed(
+  options: Partial<SeedOptions> = {},
+): Promise<SeedResult> {
   const errors: string[] = [];
-  
+
   // Mezclar opciones con valores por defecto
   const opts: SeedOptions = {
     ...DEFAULT_SEED_OPTIONS,
@@ -72,7 +77,17 @@ export async function runSeed(options: Partial<SeedOptions> = {}): Promise<SeedR
   if (!isConnected) {
     const error = "No se pudo conectar a Supabase";
     logger.error(error);
-    return { success: false, realEstates: 0, profiles: 0, agents: 0, properties: 0, listings: 0, favorites: 0, inquiries: 0, errors: [error] };
+    return {
+      success: false,
+      realEstates: 0,
+      profiles: 0,
+      agents: 0,
+      properties: 0,
+      listings: 0,
+      favorites: 0,
+      inquiries: 0,
+      errors: [error],
+    };
   }
 
   // 2. Obtener cliente
@@ -85,17 +100,22 @@ export async function runSeed(options: Partial<SeedOptions> = {}): Promise<SeedR
     agentsPerCoordinator: opts.agentsPerRealEstate!,
     clients: opts.clientsCount!,
   });
-  
+
   // Alias para compatibilidad
   const coordinatorProfiles = coordinators;
   const agentProfiles = agents;
   const clientProfiles = clients;
-  
-  const allProfiles: SeedProfile[] = [...coordinatorProfiles, ...agentProfiles, ...clientProfiles];
-  logger.info(`Generados ${allProfiles.length} perfiles (${coordinatorProfiles.length} coordinadores, ${agentProfiles.length} agentes, ${clientProfiles.length} clientes)`);
 
-  // 4. Crear usuarios en auth PRIMERO (required for profiles FK)
-  // Este paso es crítico: auth.users debe crearse antes de profiles
+  const allProfiles: SeedProfile[] = [
+    ...coordinatorProfiles,
+    ...agentProfiles,
+    ...clientProfiles,
+  ];
+  logger.info(
+    `Generados ${allProfiles.length} perfiles (${coordinatorProfiles.length} coordinadores, ${agentProfiles.length} agentes, ${clientProfiles.length} clientes)`,
+  );
+
+  // 4. Crear usuarios en auth.users - los perfiles se crean automáticamente via trigger
   if (!opts.skipAuth) {
     try {
       const usersToCreate = allProfiles.map((profile) => ({
@@ -108,50 +128,62 @@ export async function runSeed(options: Partial<SeedOptions> = {}): Promise<SeedR
         avatarUrl: profile.avatarUrl,
       }));
       const authResult = await seedAuthUsers(supabase, usersToCreate);
-      logger.info(`Auth users: ${authResult.success} creados, ${authResult.failed} fallidos`);
+      logger.info(
+        `Auth users: ${authResult.success} creados, ${authResult.failed} fallidos`,
+      );
+      // NOTA: Los perfiles en la tabla 'profiles' se crean automáticamente
+      // vía el trigger handle_new_user() en Supabase
+      logger.info("Perfiles creados automáticamente via trigger");
     } catch (err) {
       logger.warn(`Error creando auth users: ${err}`);
     }
   } else {
     logger.warn("⚠️  Saltando creación de auth.users (--skip-auth)");
-    logger.warn("   Esto puede causar FK violations si los usuarios no existen");
+    logger.warn(
+      "   Esto puede causar FK violations si los usuarios no existen",
+    );
   }
 
-  // 5. Insertar perfiles DESPUÉS de auth.users (required for profiles FK)
-  try {
-    await seedProfiles(supabase, allProfiles, opts.truncate!);
-  } catch (err) {
-    const error = `Error insertando perfiles: ${err}`;
-    logger.error(error);
-    errors.push(error);
-  }
-
-  // 6. Generar inmobiliarias fake con Faker
+  // 5. Generar inmobiliarias fake con Faker
   const fakeRealEstates = generateFakeRealEstates(opts.realEstateCount!);
   logger.info(`Generadas ${fakeRealEstates.length} inmobiliarias con Faker`);
 
-  // 7. Insertar inmobiliarias y agentes
+  // 6. Insertar inmobiliarias y agentes (obtenemos los IDs reales de la BD)
   let agentsResult: SeedAgent[] = [];
+  let realEstateIds: string[] = [];
   try {
-    const reResult = await seedRealEstates(supabase, {
-      realEstates: fakeRealEstates,
-      coordinatorProfiles,
-      agentProfiles,
-    }, opts.truncate!);
+    const reResult = await seedRealEstates(
+      supabase,
+      {
+        realEstates: fakeRealEstates,
+        coordinatorProfiles,
+        agentProfiles,
+      },
+      opts.truncate!,
+    );
     agentsResult = reResult.agents;
+    realEstateIds = reResult.realEstates.map((re) => re.id);
   } catch (err) {
     const error = `Error insertando inmobiliarias: ${err}`;
     logger.error(error);
     errors.push(error);
   }
 
-  // 8. Generar e insertar propiedades fake con Faker
-  const realEstateIds = fakeRealEstates.map((re) => re.id);
-  const fakeProperties = generateFakeProperties(opts.propertiesPerRealEstate! * opts.realEstateCount!, realEstateIds);
-  
-  let insertedProperties = fakeProperties;
+  // 7. Generar e insertar propiedades fake con Faker
+  // IMPORTANTE: Usar los IDs reales de las inmobiliarias
+  const fakeProperties = generateFakeProperties(
+    opts.propertiesPerRealEstate! * opts.realEstateCount!,
+    realEstateIds,
+  );
+
+  let insertedProperties: SeedProperty[] = [];
   try {
-    const propResult = await seedProperties(supabase, fakeProperties, agentsResult, opts.truncate!);
+    const propResult = await seedProperties(
+      supabase,
+      fakeProperties,
+      agentsResult,
+      opts.truncate!,
+    );
     insertedProperties = propResult.properties;
   } catch (err) {
     const error = `Error insertando propiedades: ${err}`;
@@ -159,37 +191,53 @@ export async function runSeed(options: Partial<SeedOptions> = {}): Promise<SeedR
     errors.push(error);
   }
 
-  // 9. Generar e insertar imágenes fake con Faker
-  const fakeImages = generateFakePropertyImages(0, insertedProperties); // count=0 para auto-generar por propiedad
+  // 8. Generar e insertar imágenes fake con Faker
+  // Usar las propiedades con IDs reales
+  const fakeImages = generateFakePropertyImages(0, insertedProperties);
+  let insertedImagesCount = 0;
   try {
-    await seedPropertyImages(supabase, fakeImages, opts.truncate!);
+    const imagesResult = await seedPropertyImages(supabase, fakeImages, opts.truncate!);
+    insertedImagesCount = imagesResult.length;
   } catch (err) {
     const error = `Error insertando imágenes: ${err}`;
     logger.error(error);
     errors.push(error);
   }
 
-  // 10. Generar e insertar listings fake con Faker
+  // 9. Generar e insertar listings fake con Faker
+  // Usar las propiedades con IDs reales
   const fakeListings = generateFakeListings(
     opts.listingsPerProperty! * insertedProperties.length,
     insertedProperties,
-    fakeRealEstates[0]?.whatsapp || "+5491100000000"
+    fakeRealEstates[0]?.whatsapp || "+5491100000000",
   );
-  
-  let insertedListings = fakeListings;
+
+  let insertedListings: SeedListing[] = [];
   try {
-    insertedListings = await seedListings(supabase, fakeListings, insertedProperties, agentsResult, opts.truncate!);
+    insertedListings = await seedListings(
+      supabase,
+      fakeListings,
+      insertedProperties,
+      agentsResult,
+      opts.truncate!,
+    );
     const stats = getListingStats(insertedListings);
-    logger.info(`Stats: ${stats.total} total, ${stats.active} activos, ${stats.featured} destacados`);
+    logger.info(
+      `Stats: ${stats.total} total, ${stats.active} activos, ${stats.featured} destacados`,
+    );
   } catch (err) {
     const error = `Error insertando listings: ${err}`;
     logger.error(error);
     errors.push(error);
   }
 
-  // 11. Generar e insertar favoritos fake con Faker
+  // 10. Generar e insertar favoritos fake con Faker
   const activeListings = insertedListings.filter((l) => l.status === "active");
-  const fakeFavorites = generateFakeFavorites(opts.favoritesCount!, clientProfiles, activeListings);
+  const fakeFavorites = generateFakeFavorites(
+    opts.favoritesCount!,
+    clientProfiles,
+    activeListings,
+  );
   try {
     await seedFavorites(supabase, fakeFavorites, opts.truncate!);
   } catch (err) {
@@ -198,8 +246,12 @@ export async function runSeed(options: Partial<SeedOptions> = {}): Promise<SeedR
     errors.push(error);
   }
 
-  // 12. Generar e insertar inquiries fake con Faker
-  const fakeInquiries = generateFakeInquiries(insertedListings, agentsResult, opts.inquiriesCount!);
+  // 11. Generar e insertar inquiries fake con Faker
+  const fakeInquiries = generateFakeInquiries(
+    insertedListings,
+    agentsResult,
+    opts.inquiriesCount!,
+  );
   try {
     await seedInquiries(supabase, fakeInquiries, opts.truncate!);
   } catch (err) {
@@ -215,11 +267,11 @@ export async function runSeed(options: Partial<SeedOptions> = {}): Promise<SeedR
   logger.info(`   - Perfiles: ${allProfiles.length}`);
   logger.info(`   - Agentes: ${agentsResult.length}`);
   logger.info(`   - Propiedades: ${insertedProperties.length}`);
-  logger.info(`   - Imágenes: ${fakeImages.length}`);
+  logger.info(`   - Imágenes: ${insertedImagesCount}`);
   logger.info(`   - Listados: ${insertedListings.length}`);
   logger.info(`   - Favoritos: ${fakeFavorites.length}`);
   logger.info(`   - Inquiries: ${fakeInquiries.length}`);
-  
+
   if (errors.length > 0) {
     logger.warn(`⚠️ ${errors.length} errores encontrados:`);
     errors.forEach((err) => logger.error(`  - ${err}`));
