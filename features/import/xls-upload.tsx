@@ -7,7 +7,7 @@ import { useTranslation } from "react-i18next";
 import { FileSpreadsheet } from "lucide-react";
 import type { ImportData } from "./import.types";
 import { ImportTableName } from "@/domain/entities/import-job.entity";
-import { isConfidenceSufficient, detectTable } from "@/domain/utils/table-detector";
+import { detectTable } from "@/domain/utils/table-detector";
 
 interface XlsUploadProps {
   onDataLoaded: (
@@ -107,11 +107,7 @@ export function XlsUpload({
         const importData: ImportData = { headers, rows };
 
         // 5. Enviar datos parseados al padre (sin URL de archivo)
-        onDataLoaded(
-          importData,
-          detectedTable,
-          confidence
-        );
+        onDataLoaded(importData, detectedTable, confidence);
       } catch (err) {
         console.error("Parse error:", err);
         onError(t("exceptions.parse-failed"));
@@ -119,7 +115,7 @@ export function XlsUpload({
         setIsParsing(false);
       }
     },
-    [onError, onDataLoaded, maxSize, t]
+    [onError, onDataLoaded, maxSize, t],
   );
 
   const { getRootProps, getInputProps, isDragActive, isDragReject } =

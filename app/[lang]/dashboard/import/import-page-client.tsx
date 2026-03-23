@@ -1,5 +1,3 @@
-// app/[lang]/dashboard/import/import-page-client.tsx
-
 "use client";
 
 import { useState } from "react";
@@ -19,7 +17,10 @@ import { ImportProgress } from "@/features/import/import-progress";
 import { ImportHistory } from "@/features/import/import-history";
 import { ImportTableName } from "@/domain/entities/import-job.entity";
 import { useServerMutation } from "@/shared/hooks/use-server-mutation.hook";
-import { downloadTemplateAction, DownloadTemplateResult } from "@/application/actions/import";
+import {
+  downloadTemplateAction,
+  DownloadTemplateResult,
+} from "@/application/actions/import";
 import { getImportJobsAction } from "@/application/actions/import";
 import { Plus } from "lucide-react";
 
@@ -32,30 +33,31 @@ export function ImportPageClient({ lang }: ImportPageClientProps) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectedJobId, setSelectedJobId] = useState<string | null>(null);
 
-  const { action: downloadTemplate } = useServerMutation<DownloadTemplateResult>({
-    action: downloadTemplateAction,
-    onSuccess: (result) => {
-      if (result.success && result.data) {
-        const { content, filename, mimeType } = result.data;
+  const { action: downloadTemplate } =
+    useServerMutation<DownloadTemplateResult>({
+      action: downloadTemplateAction,
+      onSuccess: (result) => {
+        if (result.success && result.data) {
+          const { content, filename, mimeType } = result.data;
 
-        // Crear Blob en el cliente (navegador)
-        const blob = new Blob([content], { type: mimeType });
-        const url = URL.createObjectURL(blob);
+          // Crear Blob en el cliente (navegador)
+          const blob = new Blob([content], { type: mimeType });
+          const url = URL.createObjectURL(blob);
 
-        // Crear enlace y descargar
-        const link = document.createElement("a");
-        link.href = url;
-        link.download = filename;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        URL.revokeObjectURL(url);
-      }
-    },
-    onError: (error) => {
-      toast.error(error.message || t("exceptions.download-failed"));
-    },
-  });
+          // Crear enlace y descargar
+          const link = document.createElement("a");
+          link.href = url;
+          link.download = filename;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          URL.revokeObjectURL(url);
+        }
+      },
+      onError: (error) => {
+        toast.error(error.message || t("exceptions.download-failed"));
+      },
+    });
 
   const handleImportComplete = async () => {
     setSelectedJobId(null);
@@ -80,7 +82,7 @@ export function ImportPageClient({ lang }: ImportPageClientProps) {
           </Button>
 
           <Select onValueChange={handleDownloadTemplate}>
-            <SelectTrigger className="w-[200px]">
+            <SelectTrigger className="w-50">
               <SelectValue placeholder={t("actions.download-template")} />
             </SelectTrigger>
             <SelectContent>
@@ -105,7 +107,10 @@ export function ImportPageClient({ lang }: ImportPageClientProps) {
             <CardTitle className="text-lg">{t("labels.current-job")}</CardTitle>
           </CardHeader>
           <CardContent>
-            <ImportProgress jobId={selectedJobId} onComplete={handleImportComplete} />
+            <ImportProgress
+              jobId={selectedJobId}
+              onComplete={handleImportComplete}
+            />
           </CardContent>
         </Card>
       )}

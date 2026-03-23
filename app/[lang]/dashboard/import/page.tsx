@@ -1,5 +1,3 @@
-// app/[lang]/dashboard/import/page.tsx
-
 import { Suspense } from "react";
 import { getLangServerSide } from "@/shared/utils/lang";
 import { initI18n } from "@/i18n/server";

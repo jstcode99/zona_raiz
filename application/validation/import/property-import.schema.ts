@@ -23,10 +23,14 @@ export const propertyImportSchema = yup.object({
   property_type: yup
     .string()
     .required(t("required", { attribute: "property_type" }))
-    .test("valid-type", t("import.validations.invalid_property_type"), (value) => {
-      if (!value) return false;
-      return validPropertyTypes.includes(value as PropertyType);
-    }),
+    .test(
+      "valid-type",
+      t("import.validations.invalid_property_type"),
+      (value) => {
+        if (!value) return false;
+        return validPropertyTypes.includes(value as PropertyType);
+      },
+    ),
 
   city: yup
     .string()
@@ -135,12 +139,16 @@ export const propertyImportSchema = yup.object({
   amenities: yup
     .string()
     .optional()
-    .test("valid-amenities", t("import.validations.invalid_amenities_format"), (value) => {
-      if (!value) return true;
-      // Acepta coma-separated o pipe-separated
-      const items = value.split(/[,|]/).map((s) => s.trim());
-      return items.every((item) => item.length > 0 && item.length <= 50);
-    }),
+    .test(
+      "valid-amenities",
+      t("import.validations.invalid_amenities_format"),
+      (value) => {
+        if (!value) return true;
+        // Acepta coma-separated o pipe-separated
+        const items = value.split(/[,|]/).map((s) => s.trim());
+        return items.every((item) => item.length > 0 && item.length <= 50);
+      },
+    ),
 });
 
 export type PropertyImportInput = yup.InferType<typeof propertyImportSchema>;

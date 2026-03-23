@@ -1,5 +1,3 @@
-// domain/utils/table-detector.ts
-
 import { ImportTableName } from "@/domain/entities/import-job.entity";
 import {
   propertyImportHeaders,
@@ -195,7 +193,6 @@ function calculateMatch(
   matchedHeaders: string[];
   missingHeaders: string[];
 } {
-  const expectedSet = new Set(expectedHeaders);
   const fileSet = new Set(fileHeaders);
 
   // Headers que coinciden
