@@ -167,18 +167,52 @@ export class ImportJobService {
       }
 
       const batch = validatedData.slice(i, i + batchSize);
+      let result: { insertedIds: string[]; errors: ImportError[] } | undefined;
 
-      let result;
-      switch (tableName) {
-        case ImportTableName.PROPERTIES:
-          result = await this.port.bulkInsertProperties(batch, realEstateId, userId);
-          break;
-        case ImportTableName.LISTINGS:
-          result = await this.port.bulkInsertListings(batch, realEstateId, userId);
-          break;
-        case ImportTableName.REAL_ESTATES:
-          result = await this.port.bulkInsertRealEstates(batch, userId);
-          break;
+      try {
+        switch (tableName) {
+          case ImportTableName.PROPERTIES:
+            result = await this.port.bulkInsertProperties(
+              batch,
+              realEstateId,
+              userId
+            );
+            break;
+          case ImportTableName.LISTINGS:
+            result = await this.port.bulkInsertListings(
+              batch,
+              realEstateId,
+              userId
+            );
+            break;
+          case ImportTableName.REAL_ESTATES:
+            result = await this.port.bulkInsertRealEstates(batch, userId);
+            break;
+        }
+      } catch (err) {
+        // Convertir excepción en errores de importación para cada fila del batch
+        const batchErrors: ImportError[] = batch.map((_, idx) => {
+          const rowNumber = i + idx + 1; // 1-indexed
+          const errorMessage =
+            err instanceof Error ? err.message : "Unknown error during import";
+
+          return {
+            row: rowNumber,
+            column: "general",
+            value: null,
+            message: errorMessage,
+          };
+        });
+
+        // Agregar estos errores a allErrors
+        allErrors.push(...batchErrors);
+
+        // Actualizar progreso con los errores
+        processedRows += batch.length;
+        await this.port.updateJobProgress(jobId, processedRows, allErrors);
+
+        // Continuar con el siguiente batch
+        continue;
       }
 
       if (result) {
