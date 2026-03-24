@@ -17,7 +17,7 @@ export function withServerAction<T extends any[], D = void>(
         ? ({ success: true } as ActionResult<D>)
         : ({ success: true, data } as ActionResult<D>);
     } catch (error) {
-      return toActionResult(error);
+      return toActionResult(error) as ActionResult<D>;
     }
   };
 }

@@ -1,7 +1,10 @@
-import { inquiryStatusValues } from '@/domain/entities/inquiry.enums'
-import i18next from 'i18next'
-import * as yup from 'yup'
+import { enquiryStatusValues } from "@/domain/entities/enquiry.enums";
+import i18next from "i18next";
+import * as yup from "yup";
 
 export const inquiryStatusSchema = yup
   .string<string>()
-  .oneOf(inquiryStatusValues, i18next.t('validations.required', { attribute: 'status' }))
+  .oneOf(
+    enquiryStatusValues,
+    i18next.t("validations.required", { attribute: "status" }),
+  );

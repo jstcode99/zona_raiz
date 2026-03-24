@@ -184,18 +184,18 @@ export class ImportJobService {
             result = await this.port.bulkInsertProperties(
               batch,
               realEstateId,
-              userId
+              userId,
             );
             break;
           case ImportTableName.LISTINGS:
             result = await this.port.bulkInsertListings(
               batch,
               realEstateId,
-              userId
+              userId,
             );
             break;
           case ImportTableName.REAL_ESTATES:
-            result = await this.port.bulkInsertRealEstates(batch, userId);
+            result = await this.port.bulkInsertRealEstates(batch);
             break;
         }
       } catch (err) {

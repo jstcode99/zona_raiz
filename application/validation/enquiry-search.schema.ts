@@ -10,25 +10,25 @@ export const enquirySearchSchema = yup.object({
       100,
       i18next.t("validations.max.string", { attribute: "query", max: "100" }),
     )
-    .nullable(),
-  status: yup.string().oneOf(enquiryStatusValues).nullable(),
-  source: yup.string().oneOf(enquirySourceValues).nullable(),
+    .optional(),
+  status: yup.string().oneOf(enquiryStatusValues).optional(),
+  source: yup.string().oneOf(enquirySourceValues).optional(),
   start_date: yup
     .string()
     .matches(/^\d{4}-\d{2}-\d{2}$/, i18next.t("validations.date.format"))
-    .nullable(),
+    .optional(),
   end_date: yup
     .string()
     .matches(/^\d{4}-\d{2}-\d{2}$/, i18next.t("validations.date.format"))
-    .nullable(),
+    .optional(),
 });
 
 export type EnquirySearchFormInput = yup.InferType<typeof enquirySearchSchema>;
 
 export const defaultEnquirySearchValues: EnquirySearchFormInput = {
   search: "",
-  status: null,
-  source: null,
-  start_date: null,
-  end_date: null,
+  status: undefined,
+  source: undefined,
+  start_date: undefined,
+  end_date: undefined,
 };
