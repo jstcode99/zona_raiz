@@ -39,10 +39,6 @@ export class ProfileService {
     return this.profilePort.updateRole(userId, role);
   }
 
-  getAgentRoleInRealEstate(userId: string, realEstateId: string) {
-    return this.profilePort.getAgentRoleInRealEstate(userId, realEstateId);
-  }
-
   count(filters?: {
     start_date?: string;
     end_date?: string;

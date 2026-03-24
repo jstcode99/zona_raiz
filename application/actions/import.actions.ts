@@ -15,8 +15,10 @@ import {
   propertyImportHeaders,
   listingImportHeaders,
   realEstateImportHeaders,
+  propertyImportHeadersES,
+  listingImportHeadersES,
+  realEstateImportHeadersES,
 } from "@/application/validation/import";
-
 /**
  * Obtiene los headers esperados (en inglés) para una tabla
  */
@@ -203,37 +205,43 @@ export const processImportAction = withServerAction(
 );
 
 export interface DownloadTemplateResult {
-  url: string;
+  content: string;
   filename: string;
+  mimeType: string;
 }
-
 export const downloadTemplateAction = withServerAction(
   async (formData: FormData): Promise<DownloadTemplateResult> => {
     const tableName = formData.get("tableName") as ImportTableName;
     const lang = await getLangServerSide();
 
-    // Obtener headers según tabla
+    // Seleccionar headers según tabla e idioma
+    const isSpanish = lang === "es";
     let headers: readonly string[];
+
     switch (tableName) {
       case ImportTableName.PROPERTIES:
-        headers = propertyImportHeaders;
+        headers = isSpanish ? propertyImportHeadersES : propertyImportHeaders;
         break;
       case ImportTableName.LISTINGS:
-        headers = listingImportHeaders;
+        headers = isSpanish ? listingImportHeadersES : listingImportHeaders;
         break;
       case ImportTableName.REAL_ESTATES:
-        headers = realEstateImportHeaders;
+        headers = isSpanish
+          ? realEstateImportHeadersES
+          : realEstateImportHeaders;
         break;
       default:
         throw new Error("Invalid table name");
     }
 
-    // Crear CSV con headers
-    const csvContent = headers.join(",") + "\n";
-    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-    const url = URL.createObjectURL(blob);
+    // Crear CSV con headers en el idioma correspondiente
+    const csvContent = Array.from(headers).join(",") + "\n";
 
-    // Retornar URL para descarga
-    return { url, filename: `plantilla-${tableName}-${lang}.csv` };
+    // Retornar contenido como string, NO como Blob URL
+    return {
+      content: csvContent,
+      filename: `plantilla-${tableName}-${lang}.csv`,
+      mimeType: "text/csv;charset=utf-8;",
+    };
   },
 );
