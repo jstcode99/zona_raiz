@@ -87,9 +87,9 @@ export const processImportAction = withServerAction(
       const obj: Record<string, unknown> = {};
       mapping.forEach((map, targetIndex) => {
         const targetHeader = expectedHeaders[targetIndex];
+        console.log(targetHeader);
         if (map.sourceIndex >= 0) {
           const value = row[map.sourceIndex];
-          // Convertir strings numéricos
           if (value !== null && value !== undefined && value !== "") {
             const numValue = Number(value);
             obj[targetHeader] = isNaN(numValue) ? value : numValue;
@@ -97,11 +97,13 @@ export const processImportAction = withServerAction(
             obj[targetHeader] = value ?? "";
           }
         } else {
-          obj[targetHeader] = ""; // No hay correspondencia, dejar vacío
+          obj[targetHeader] = "";
         }
       });
       return obj;
     });
+
+    console.log(transformedRows);
 
     // Crear mapa de header esperado (inglés) -> header de display (original del archivo)
     const headerMap = new Map<string, string>();
@@ -176,6 +178,23 @@ export const processImportAction = withServerAction(
     }
     revalidateTag(CACHE_TAGS.IMPORT_JOB.ALL, { expire: 0 });
     revalidatePath(routes.dashboard());
+
+    if (summary.failedRows > 0) {
+      // Obtener los errores del job completado para mostrarlos al cliente
+      const completedJob = await importJobService.getJob(job.id);
+      const jobErrors = completedJob?.errors ?? [];
+
+      return {
+        success: false,
+        errors: jobErrors.map((err: ImportError) => ({
+          field: `${err.row}_${err.column}`,
+          message: err.message,
+          row: err.row,
+          column: err.column,
+          value: err.value,
+        })),
+      } as any;
+    }
 
     return {
       success: true,
