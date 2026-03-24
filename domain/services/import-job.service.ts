@@ -168,52 +168,70 @@ export class ImportJobService {
     const createdIds: string[] = [];
 
     // Procesar en lotes
-    try {
-      for (let i = 0; i < validatedData.length; i += batchSize) {
-        // Verificar si fue cancelado
-        const currentJob = await this.port.getJobById(jobId);
-        if (currentJob?.status === ImportJobStatus.CANCELLED) {
-          break;
-        }
+    for (let i = 0; i < validatedData.length; i += batchSize) {
+      // Verificar si fue cancelado
+      const currentJob = await this.port.getJobById(jobId);
+      if (currentJob?.status === ImportJobStatus.CANCELLED) {
+        break;
+      }
 
-        const batch = validatedData.slice(i, i + batchSize);
+      const batch = validatedData.slice(i, i + batchSize);
+      let result: { insertedIds: string[]; errors: ImportError[] } | undefined;
 
-        let result;
+      try {
         switch (tableName) {
           case ImportTableName.PROPERTIES:
             result = await this.port.bulkInsertProperties(
               batch,
               realEstateId,
-              userId,
+              userId
             );
             break;
           case ImportTableName.LISTINGS:
             result = await this.port.bulkInsertListings(
               batch,
               realEstateId,
-              userId,
+              userId
             );
             break;
           case ImportTableName.REAL_ESTATES:
             result = await this.port.bulkInsertRealEstates(batch, userId);
             break;
         }
+      } catch (err) {
+        // Convertir excepción en errores de importación para cada fila del batch
+        const batchErrors: ImportError[] = batch.map((_, idx) => {
+          const rowNumber = i + idx + 1; // 1-indexed
+          const errorMessage =
+            err instanceof Error ? err.message : "Unknown error during import";
 
-        if (result) {
-          importedRows += result.insertedIds.length;
-          createdIds.push(...result.insertedIds);
-          allErrors.push(...result.errors);
+          return {
+            row: rowNumber,
+            column: "general",
+            value: null,
+            message: errorMessage,
+          };
+        });
 
-          processedRows += batch.length;
-          await this.port.updateJobProgress(jobId, processedRows, allErrors);
-        }
+        // Agregar estos errores a allErrors
+        allErrors.push(...batchErrors);
+
+        // Actualizar progreso con los errores
+        processedRows += batch.length;
+        await this.port.updateJobProgress(jobId, processedRows, allErrors);
+
+        // Continuar con el siguiente batch
+        continue;
       }
-    } catch (error) {
-      console.error(error, "error");
 
-      throw new Error(
-        t("exceptions.unknown_table", { table: tableName, error: error }),
-      );
+      if (result) {
+        importedRows += result.insertedIds.length;
+        createdIds.push(...result.insertedIds);
+        allErrors.push(...result.errors);
+
+        processedRows += batch.length;
+        await this.port.updateJobProgress(jobId, processedRows, allErrors);
+      }
     }
 
     const duration = (Date.now() - startTime) / 1000;
