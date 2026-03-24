@@ -4,13 +4,27 @@
 
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { ImportDialog } from "@/features/import/import-dialog";
 import { ImportProgress } from "@/features/import/import-progress";
 import { ImportHistory } from "@/features/import/import-history";
-import { Download, Plus } from "lucide-react";
+import { ImportTableName } from "@/domain/entities/import-job.entity";
+import { useServerMutation } from "@/shared/hooks/use-server-mutation.hook";
+import {
+  downloadTemplateAction,
+  DownloadTemplateResult,
+} from "@/application/actions/import";
 import { getImportJobsAction } from "@/application/actions/import";
+import { Plus } from "lucide-react";
 
 interface ImportPageClientProps {
   lang: string;
@@ -21,10 +35,42 @@ export function ImportPageClient({ lang }: ImportPageClientProps) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectedJobId, setSelectedJobId] = useState<string | null>(null);
 
+  const { action: downloadTemplate } =
+    useServerMutation<DownloadTemplateResult>({
+      action: downloadTemplateAction,
+      onSuccess: (result) => {
+        if (result.success && result.data) {
+          const { content, filename, mimeType } = result.data;
+
+          // Crear Blob en el cliente (navegador)
+          const blob = new Blob([content], { type: mimeType });
+          const url = URL.createObjectURL(blob);
+
+          // Crear enlace y descargar
+          const link = document.createElement("a");
+          link.href = url;
+          link.download = filename;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          URL.revokeObjectURL(url);
+        }
+      },
+      onError: (error) => {
+        toast.error(error.message || t("exceptions.download-failed"));
+      },
+    });
+
   const handleImportComplete = async () => {
     setSelectedJobId(null);
     // Trigger re-render of ImportHistory by calling the action
     await getImportJobsAction();
+  };
+
+  const handleDownloadTemplate = (tableName: string) => {
+    const formData = new FormData();
+    formData.append("tableName", tableName);
+    downloadTemplate(formData);
   };
 
   return (
@@ -36,10 +82,23 @@ export function ImportPageClient({ lang }: ImportPageClientProps) {
             <Plus className="mr-2 h-4 w-4" />
             {t("actions.new-import")}
           </Button>
-          <Button variant="outline">
-            <Download className="mr-2 h-4 w-4" />
-            {t("actions.download-template")}
-          </Button>
+
+          <Select onValueChange={handleDownloadTemplate}>
+            <SelectTrigger className="w-[200px]">
+              <SelectValue placeholder={t("actions.download-template")} />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value={ImportTableName.PROPERTIES}>
+                {t("tables.properties")}
+              </SelectItem>
+              <SelectItem value={ImportTableName.LISTINGS}>
+                {t("tables.listings")}
+              </SelectItem>
+              <SelectItem value={ImportTableName.REAL_ESTATES}>
+                {t("tables.real-estates")}
+              </SelectItem>
+            </SelectContent>
+          </Select>
         </div>
       </div>
 
@@ -50,7 +109,10 @@ export function ImportPageClient({ lang }: ImportPageClientProps) {
             <CardTitle className="text-lg">{t("labels.current-job")}</CardTitle>
           </CardHeader>
           <CardContent>
-            <ImportProgress jobId={selectedJobId} onComplete={handleImportComplete} />
+            <ImportProgress
+              jobId={selectedJobId}
+              onComplete={handleImportComplete}
+            />
           </CardContent>
         </Card>
       )}

@@ -82,7 +82,8 @@
     "unknown-table": "Tabla desconocida: {{table}}",
     "unauthorized": "Usuario no autenticado",
     "real-estate-not-found": "No se encontró la inmobiliaria",
-    "all-rows-invalid": "Todos los registros tienen errores de validación. Revise los datos e intente nuevamente."
+    "all-rows-invalid": "Todos los registros tienen errores de validación. Revise los datos e intente nuevamente.",
+    "download-failed": "Error al descargar plantilla"
   },
   "messages": {
     "upload-success": "Archivo subido exitosamente",

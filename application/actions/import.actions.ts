@@ -11,6 +11,12 @@ import { cookies } from "next/headers";
 import { revalidatePath, revalidateTag } from "next/cache";
 import { createRouter } from "@/i18n/router";
 import { CACHE_TAGS } from "@/infrastructure/config/constants";
+import { ImportTableName } from "@/domain/entities/import-job.entity";
+import {
+  propertyImportHeaders,
+  listingImportHeaders,
+  realEstateImportHeaders,
+} from "@/application/validation/import";
 
 export const uploadAndParseImportAction = withServerAction(
   async (formData: FormData) => {
@@ -72,5 +78,41 @@ export const confirmImportAction = withServerAction(
     revalidatePath(routes.properties());
     revalidateTag(CACHE_TAGS.PROPERTY.PRINCIPAL, { expire: 0 });
     revalidateTag(CACHE_TAGS.PROPERTY.COUNT, { expire: 0 });
+  },
+);
+
+export interface DownloadTemplateResult {
+  url: string;
+  filename: string;
+}
+
+export const downloadTemplateAction = withServerAction(
+  async (formData: FormData): Promise<DownloadTemplateResult> => {
+    const tableName = formData.get("tableName") as ImportTableName;
+    const lang = await getLangServerSide();
+
+    // Obtener headers según tabla
+    let headers: readonly string[];
+    switch (tableName) {
+      case ImportTableName.PROPERTIES:
+        headers = propertyImportHeaders;
+        break;
+      case ImportTableName.LISTINGS:
+        headers = listingImportHeaders;
+        break;
+      case ImportTableName.REAL_ESTATES:
+        headers = realEstateImportHeaders;
+        break;
+      default:
+        throw new Error("Invalid table name");
+    }
+
+    // Crear CSV con headers
+    const csvContent = headers.join(",") + "\n";
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+
+    // Retornar URL para descarga
+    return { url, filename: `plantilla-${tableName}-${lang}.csv` };
   },
 );
