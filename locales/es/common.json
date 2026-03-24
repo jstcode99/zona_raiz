@@ -99,7 +99,8 @@
   },
   "exceptions": {
     "data_not_found": "No se encontraron datos...",
-    "unauthorized": "No autorizado"
+    "unauthorized": "No autorizado",
+    "not_have_access": "No tienes acceso"
   },
   "titles": {
     "app": "Arriendos y ventas de inmuebles"
