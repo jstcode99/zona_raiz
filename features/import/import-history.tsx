@@ -13,6 +13,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
 import {
   ImportJobEntity,
   ImportJobStatus,
@@ -130,9 +131,15 @@ export function ImportHistory({ lang }: ImportHistoryProps) {
               </TableCell>
               <TableCell>
                 {job.status === ImportJobStatus.PROCESSING ? (
-                  <span className="text-primary">
-                    {job.processedRows}/{job.totalRows}
-                  </span>
+                  <div className="space-y-1">
+                    <Progress
+                      value={(job.processedRows / job.totalRows) * 100}
+                      className="h-2"
+                    />
+                    <p className="text-xs text-muted-foreground text-center">
+                      {job.processedRows}/{job.totalRows}
+                    </p>
+                  </div>
                 ) : (
                   <span className="text-muted-foreground">
                     {job.resultSummary

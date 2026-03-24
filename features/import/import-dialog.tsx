@@ -71,7 +71,8 @@ export function ImportDialog({ open, onOpenChange }: ImportDialogProps) {
         message: e.message,
       }));
       setErrors(importErrors);
-      console.log(importErrors);
+      // Regresar al paso preview para mostrar los errores en la tabla
+      setStep("preview");
       toast.error(t("validation.errors_found", { count: importErrors.length }));
     },
     onError: (error) => {
