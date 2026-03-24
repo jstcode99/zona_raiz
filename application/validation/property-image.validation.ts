@@ -1,29 +1,18 @@
-import * as yup from "yup"
+import * as yup from "yup";
 
-const SUPPORTED_TYPES = [
-  "image/jpeg",
-  "image/png",
-  "image/webp",
-  "image/jpg"
-]
+const SUPPORTED_TYPES = ["image/jpeg", "image/png", "image/webp", "image/jpg"];
 
-const MAX_SIZE = 10 * 1024 * 1024 // 5MB0
-
+const MAX_SIZE = 10 * 1024 * 1024; // 5MB0
 
 function validateFile(file?: File) {
-  if (!file) return true
-  if (!SUPPORTED_TYPES.includes(file.type)) return false
-  if (file.size >MAX_SIZE) return false
-  return true
+  if (!file) return true;
+  if (!SUPPORTED_TYPES.includes(file.type)) return false;
+  if (file.size > MAX_SIZE) return false;
+  return true;
 }
 
 export const propertyImageSchema = yup.object({
-  display_order: yup
-    .number()
-    .integer()
-    .min(0)
-    .default(0)
-    .nullable(),
+  display_order: yup.number().integer().min(0).default(0).nullable(),
 
   is_primary: yup.boolean().default(false),
 
@@ -35,7 +24,7 @@ export const propertyImageSchema = yup.object({
     .mixed<File>()
     .test("fileValidation", "invalidFile", validateFile)
     .required(),
-})
+});
 
 export const propertyImageUpdateSchema = yup.object({
   display_order: yup
@@ -48,13 +37,13 @@ export const propertyImageUpdateSchema = yup.object({
   alt_text: yup.string().nullable().optional(),
 
   caption: yup.string().nullable().optional(),
-})
+});
 
-export type PropertyImageInput = yup.InferType<typeof propertyImageSchema>
+export type PropertyImageInput = yup.InferType<typeof propertyImageSchema>;
 
 export const defaultPropertyImageValues = {
   display_order: 0,
   is_primary: false,
   alt_text: "",
   caption: "",
-}
+};

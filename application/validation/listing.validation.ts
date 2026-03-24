@@ -118,7 +118,7 @@ export const createListingSchema = yup.object({
         max: "200",
       }),
     ),
-  available_from: yup.date().max(
+  available_from: yup.date().min(
     new Date(),
     i18next.t("validations.date", {
       attribute: "available_from",

@@ -78,6 +78,11 @@
     "clear_filters": "Clear",
     "any": "Any"
   },
+  "messages": {
+    "created": "Listing created successfully",
+    "updated": "Listing updated successfully",
+    "error": "Error saving listing"
+  },
   "status": {
     "no_results": "No results found",
     "try_filters": "Try with different filters..."

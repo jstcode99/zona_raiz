@@ -17,5 +17,8 @@
   "placeholders": {
     "alt_text": "Alternative text",
     "caption": "Image description"
+  },
+  "exceptions": {
+    "size_error": "resolutions size is exceded"
   }
 }

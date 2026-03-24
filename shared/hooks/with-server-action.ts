@@ -1,4 +1,4 @@
-import { ActionResult } from "./use-server-mutation.hook";
+import { ActionResult } from "./action-result";
 import { toActionResult } from "./to-action-result";
 
 export function withServerAction<T extends any[], D = void>(

@@ -1,24 +1,28 @@
-"use client"
+"use client";
 
-import { Suspense, use } from "react"
-import { UploadMultipleInput } from "./upload-multiple-input"
-import { ImageSkeleton } from "./image-skeleton"
-import { PropertyImageEntity } from "@/domain/entities/property-image.entity"
-import { PropertyImageList } from "./property-images-list"
+import { Suspense, use } from "react";
+import { useRouter } from "next/navigation";
+import { UploadMultipleInput } from "./upload-multiple-input";
+import { ImageSkeleton } from "./image-skeleton";
+import { PropertyImageEntity } from "@/domain/entities/property-image.entity";
+import { PropertyImageList } from "./property-images-list";
 
 export function PropertyImagesManager({
   propertyId,
-  fetch
+  fetch,
 }: {
-  propertyId: string,
-  fetch: Promise<PropertyImageEntity[]>
-}
-) {
-  const images = use(fetch)
+  propertyId: string;
+  fetch: Promise<PropertyImageEntity[]>;
+}) {
+  const router = useRouter();
+  const images = use(fetch);
 
   return (
     <div className="space-y-6">
-      <UploadMultipleInput propertyId={propertyId} />
+      <UploadMultipleInput
+        propertyId={propertyId}
+        onSuccessAction={() => router.refresh()}
+      />
 
       <Suspense
         fallback={
@@ -32,5 +36,5 @@ export function PropertyImagesManager({
         <PropertyImageList initialImages={images} propertyId={propertyId} />
       </Suspense>
     </div>
-  )
+  );
 }

@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import {
   useState,
@@ -8,71 +8,72 @@ import {
   isValidElement,
   cloneElement,
   forwardRef,
-  useImperativeHandle
-} from "react"
+  useImperativeHandle,
+} from "react";
 
-import { Check, ChevronLeft, ChevronRight } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { cn } from "@/lib/utils"
-import i18next from "i18next"
-import { boolean } from "yup"
+import { Check, ChevronLeft, ChevronRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+import i18next from "i18next";
 
 export interface WizardRef {
-  complete: () => void
-  reset: () => void
-  next: () => void
-  back: () => void
-  goTo: (index: number) => void
-  setBusy: (value: boolean) => void
+  complete: () => void;
+  reset: () => void;
+  next: () => void;
+  back: () => void;
+  goTo: (index: number) => void;
+  setBusy: (value: boolean) => void;
 }
 
-async () => boolean
-
 interface WizardTabProps {
-  id: string
-  title: string
-  icon?: React.ElementType
-  nextText?: string
-  canNext?: () => boolean | Promise<boolean>
-  canBack?: () => boolean | Promise<boolean>
-  canSubmit?: () => boolean | Promise<boolean>
-  children: ReactNode
+  id: string;
+  title: string;
+  icon?: React.ElementType;
+  nextText?: string;
+  canNext?: () => boolean | Promise<boolean>;
+  canBack?: () => boolean | Promise<boolean>;
+  canSubmit?: () => boolean | Promise<boolean>;
+  children: ReactNode;
 }
 
 export function WizardTab({ children }: WizardTabProps) {
-  return <>{children}</>
+  return <>{children}</>;
 }
 
 interface WizardTabsProps {
-  children: ReactNode
-  submitText?: string
-  onSubmit?: () => void
+  children: ReactNode;
+  submitText?: string;
+  onSubmit?: () => void;
 }
 
 export const WizardTabs = forwardRef<WizardRef, WizardTabsProps>(
   ({ children, submitText = i18next.t("words.save"), onSubmit }, ref) => {
-    const tabs = Children.toArray(children).filter(isValidElement) as ReactElement<WizardTabProps>[]
+    const tabs = Children.toArray(children).filter(
+      isValidElement,
+    ) as ReactElement<WizardTabProps>[];
 
-    const [currentIndex, setCurrentIndex] = useState(0)
-    const [submitted, setSubmitted] = useState(false)
-    const [busy, setBusy] = useState(false)
+    const [currentIndex, setCurrentIndex] = useState(0);
+    const [submitted, setSubmitted] = useState(false);
+    const [busy, setBusy] = useState(false);
 
-    const total = tabs.length
-    const isLast = currentIndex === total - 1
-    const currentTab = tabs[currentIndex]
+    const total = tabs.length;
+    const isLast = currentIndex === total - 1;
+    const currentTab = tabs[currentIndex];
 
     const complete = () => {
-      setSubmitted(true)
-    }
+      setSubmitted(true);
+    };
 
     const reset = () => {
-      setSubmitted(false)
-      setCurrentIndex(0)
-    }
+      setSubmitted(false);
+      setCurrentIndex(0);
+    };
 
-    const next = () => !isLast && setCurrentIndex(i => Math.min(i + 1, total - 1))
-    const back = () => currentIndex > 0 && setCurrentIndex(i => Math.max(i - 1, 0))
-    const goTo = (index: number) => !busy && setCurrentIndex(index)
+    const next = () =>
+      !isLast && setCurrentIndex((i) => Math.min(i + 1, total - 1));
+    const back = () =>
+      currentIndex > 0 && setCurrentIndex((i) => Math.max(i - 1, 0));
+    const goTo = (index: number) => !busy && setCurrentIndex(index);
 
     useImperativeHandle(ref, () => ({
       complete,
@@ -80,30 +81,30 @@ export const WizardTabs = forwardRef<WizardRef, WizardTabsProps>(
       next,
       back,
       goTo,
-      setBusy
-    }))
+      setBusy,
+    }));
 
-    const canBack = currentTab.props.canBack?.() ?? true
+    const canBack = currentTab.props.canBack?.() ?? true;
 
     const handleNext = async () => {
-      if (busy) return
+      if (busy) return;
 
       if (currentTab.props.canNext) {
-        const ok = await currentTab.props.canNext()
-        if (!ok) return
+        const ok = await currentTab.props.canNext();
+        if (!ok) return;
       }
-      next()
-    }
+      next();
+    };
 
     const handleSubmitClick = async () => {
-      if (busy) return
+      if (busy) return;
 
       if (currentTab.props.canSubmit) {
-        const ok = await currentTab.props.canSubmit()
-        if (!ok) return
+        const ok = await currentTab.props.canSubmit();
+        if (!ok) return;
       }
-      await onSubmit?.()
-    }
+      await onSubmit?.();
+    };
 
     if (submitted) {
       return (
@@ -121,7 +122,7 @@ export const WizardTabs = forwardRef<WizardRef, WizardTabsProps>(
             Start Over
           </Button>
         </div>
-      )
+      );
     }
 
     return (
@@ -129,9 +130,9 @@ export const WizardTabs = forwardRef<WizardRef, WizardTabsProps>(
         {/* Tabs Indicator (idéntico al tuyo) */}
         <div className="flex items-center justify-center gap-3">
           {tabs.map((tab, index) => {
-            const isCompleted = index < currentIndex
-            const isCurrent = index === currentIndex
-            const TabIcon = tab.props.icon
+            const isCompleted = index < currentIndex;
+            const isCurrent = index === currentIndex;
+            const TabIcon = tab.props.icon;
 
             return (
               <div
@@ -143,9 +144,12 @@ export const WizardTabs = forwardRef<WizardRef, WizardTabsProps>(
                   <div
                     className={cn(
                       "flex h-10 w-10 items-center justify-center rounded-full border-2 transition-all duration-300",
-                      isCompleted && "border-primary bg-primary text-primary-foreground",
+                      isCompleted &&
+                        "border-primary bg-primary text-primary-foreground",
                       isCurrent && "border-primary bg-background text-primary",
-                      !isCompleted && !isCurrent && "border-muted-foreground/30 bg-background text-muted-foreground/50"
+                      !isCompleted &&
+                        !isCurrent &&
+                        "border-muted-foreground/30 bg-background text-muted-foreground/50",
                     )}
                   >
                     {isCompleted ? (
@@ -160,7 +164,7 @@ export const WizardTabs = forwardRef<WizardRef, WizardTabsProps>(
                   <span
                     className={cn(
                       "text-xs font-medium transition-colors",
-                      isCurrent ? "text-foreground" : "text-muted-foreground"
+                      isCurrent ? "text-foreground" : "text-muted-foreground",
                     )}
                   >
                     {tab.props.title}
@@ -171,12 +175,14 @@ export const WizardTabs = forwardRef<WizardRef, WizardTabsProps>(
                   <div
                     className={cn(
                       "mb-5 h-0.5 w-16 rounded-full transition-colors duration-300",
-                      currentIndex > index ? "bg-primary" : "bg-muted-foreground/20"
+                      currentIndex > index
+                        ? "bg-primary"
+                        : "bg-muted-foreground/20",
                     )}
                   />
                 )}
               </div>
-            )
+            );
           })}
         </div>
 
@@ -193,7 +199,7 @@ export const WizardTabs = forwardRef<WizardRef, WizardTabsProps>(
             type="button"
           >
             <ChevronLeft className="h-4 w-4" />
-            {i18next.t("words.previous")}
+            {i18next.t("common:words.previous")}
           </Button>
 
           {!isLast ? (
@@ -203,7 +209,7 @@ export const WizardTabs = forwardRef<WizardRef, WizardTabsProps>(
               className="gap-1.5"
               type="button"
             >
-              {currentTab.props.nextText ?? i18next.t("words.next")}
+              {currentTab.props.nextText ?? i18next.t("common:words.next")}
               <ChevronRight className="h-4 w-4" />
             </Button>
           ) : (
@@ -218,6 +224,7 @@ export const WizardTabs = forwardRef<WizardRef, WizardTabsProps>(
           )}
         </div>
       </div>
-    )
-  }
-)
+    );
+  },
+);
+WizardTabs.displayName = "WizardTabs"; // ← agrega esta línea
