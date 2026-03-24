@@ -42,15 +42,15 @@ function parseSearchParams(sp: URLSearchParams | null): PropertySearchFormInput 
 
 function filtersToSearchParams(filters: PropertySearchFormInput) {
   return objectToSearchParams({
-    q: filters.search,
-    type: filters.type,
-    country: filters.country,
-    state: filters.state,
-    city: filters.city,
-    neighborhood: filters.neighborhood,
-    street: filters.street,
-    bedrooms: filters.bedrooms,
-    bathrooms: filters.bathrooms,
+    q: filters.search as string | undefined,
+    type: filters.type as string | undefined,
+    country: filters.country as string | undefined,
+    state: filters.state as string | undefined,
+    city: filters.city as string | undefined,
+    neighborhood: filters.neighborhood as string | undefined,
+    street: filters.street as string | undefined,
+    bedrooms: filters.bedrooms as number | undefined,
+    bathrooms: filters.bathrooms as number | undefined,
   })
 }
 
