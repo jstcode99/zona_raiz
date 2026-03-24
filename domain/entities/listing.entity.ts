@@ -2,7 +2,7 @@ import { Keywords, ListingStatus, ListingType } from "./listing.enums";
 import { PropertyEntity } from "./property.entity";
 import { ProfileEntity } from "./profile.entity";
 
-type KeywordsType = {
+export type KeywordsType = {
   label: string;
   value: string;
 };

@@ -1,6 +1,19 @@
 {
   "title": "Import Data",
   "subtitle": "Upload and preview your data before importing",
+  "detection": {
+    "detected_table": "Detected Table",
+    "confidence": "Confidence",
+    "confidence_low": "Confidence is low. Please select the table manually.",
+    "auto_detected": "Auto-detected",
+    "select_table_manual": "Select table manually"
+  },
+  "validation": {
+    "validation_errors": "Validation Errors",
+    "errors_found": "{{count}} errors found",
+    "validating": "Validating data...",
+    "validation_success": "All data is valid"
+  },
   "actions": {
     "cancel": "Cancel",
     "confirm": "Confirm Import",

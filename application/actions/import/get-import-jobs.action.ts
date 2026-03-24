@@ -1,5 +1,3 @@
-// application/actions/import/get-import-jobs.action.ts
-
 "use server";
 
 import { getLangServerSide } from "@/shared/utils/lang";
@@ -10,7 +8,9 @@ import { ActionResult } from "@/shared/hooks/use-server-mutation.hook";
 import { ImportJobEntity } from "@/domain/entities/import-job.entity";
 import { initI18n } from "@/i18n/server";
 
-export async function getImportJobsAction(): Promise<ActionResult<ImportJobEntity[]>> {
+export async function getImportJobsAction(): Promise<
+  ActionResult<ImportJobEntity[]>
+> {
   try {
     const lang = await getLangServerSide();
     const cookieStore = await cookies();
@@ -34,7 +34,7 @@ export async function getImportJobsAction(): Promise<ActionResult<ImportJobEntit
 }
 
 export async function getImportJobByIdAction(
-  jobId: string
+  jobId: string,
 ): Promise<ActionResult<ImportJobEntity | null>> {
   try {
     const lang = await getLangServerSide();

@@ -177,7 +177,7 @@ export function ListingSearchFilters({
           {/* Mostrar chips de lo seleccionado */}
           {(values.city || values.state || values.neighborhood) && (
             <div className="flex flex-wrap gap-1.5">
-              {values.state && (
+              {values.state && typeof values.state === "string" && (
                 <span className="text-[11px] bg-primary/10 text-primary border border-primary/20 px-2 py-0.5 rounded-full flex items-center gap-1">
                   {STATE_LABELS[values.state as keyof typeof STATE_LABELS] ?? values.state}
                   <button
@@ -191,7 +191,7 @@ export function ListingSearchFilters({
                   </button>
                 </span>
               )}
-              {values.city && (
+              {values.city && typeof values.city === "string" && (
                 <span className="text-[11px] bg-primary/10 text-primary border border-primary/20 px-2 py-0.5 rounded-full flex items-center gap-1">
                   {CITY_LABELS[values.city as keyof typeof CITY_LABELS] ?? values.city}
                   <button

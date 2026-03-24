@@ -13,6 +13,7 @@ export interface PropertySeedResult {
 
 /**
  * Inserta propiedades en la base de datos.
+ * Cada propiedad se inserta individualmente para obtener su ID generado por la BD.
  */
 export async function seedProperties(
   supabase: SupabaseClient,
@@ -30,61 +31,72 @@ export async function seedProperties(
     await supabase.from("properties").delete().neq("id", "00000000-0000-0000-0000-000000000000");
   }
 
+  // Crear un mapa de real_estate_id a profile_ids (NO agent.id)
+  // properties.created_by es una FK a profiles.id, no a real_estate_agents.id
+  const profileIdsByRealEstate = new Map<string, string>();
+  agents.forEach((agent) => {
+    if (agent.profileId && agent.realEstateId) {
+      // Usar el primer perfil disponible para cada real_estate
+      if (!profileIdsByRealEstate.has(agent.realEstateId)) {
+        profileIdsByRealEstate.set(agent.realEstateId, agent.profileId);
+      }
+    }
+  });
+
   logger.info(`Insertando ${properties.length} propiedades...`);
 
-  // Crear un mapa de real_estate_id a agentes disponibles
-  const agentsByRealEstate = new Map<string, string[]>();
-  agents.forEach((agent) => {
-    const existing = agentsByRealEstate.get(agent.realEstateId) || [];
-    existing.push(agent.profileId);
-    agentsByRealEstate.set(agent.realEstateId, existing);
-  });
+  const insertedProperties: SeedProperty[] = [];
 
-  const propertyInserts = properties.map((property) => {
-    // Asignar un agente de la misma inmobiliaria
-    const availableAgents = agentsByRealEstate.get(property.realEstateId) || [];
-    const createdBy = availableAgents[0] || null;
+  for (const property of properties) {
+    // Asignar el profile_id del agente de la misma inmobiliaria
+    const createdBy = profileIdsByRealEstate.get(property.realEstateId) || null;
 
-    return {
-      id: property.id, // ID pre-generado por Faker para mantener consistencia
-      real_estate_id: property.realEstateId,
-      title: property.title,
-      slug: property.slug,
-      description: property.description,
-      property_type: property.propertyType,
-      street: property.street || null,
-      city: property.city,
-      state: property.state,
-      postal_code: property.postalCode || null,
-      country: property.country,
-      neighborhood: property.neighborhood || null,
-      latitude: property.latitude || null,
-      longitude: property.longitude || null,
-      bedrooms: property.bedrooms || null,
-      bathrooms: property.bathrooms || null,
-      total_area: property.totalArea || null,
-      built_area: property.builtArea || null,
-      lot_area: property.lotArea || null,
-      floors: property.floors || null,
-      year_built: property.yearBuilt || null,
-      parking_spots: property.parkingSpots || null,
-      amenities: property.amenities || [],
-      created_by: createdBy,
-    };
-  });
+    const { data: inserted, error } = await supabase
+      .from("properties")
+      .insert({
+        real_estate_id: property.realEstateId,
+        title: property.title,
+        slug: property.slug,
+        description: property.description,
+        property_type: property.propertyType,
+        street: property.street || null,
+        city: property.city,
+        state: property.state,
+        postal_code: property.postalCode || null,
+        country: property.country,
+        neighborhood: property.neighborhood || null,
+        latitude: property.latitude || null,
+        longitude: property.longitude || null,
+        bedrooms: property.bedrooms || null,
+        bathrooms: property.bathrooms || null,
+        total_area: property.totalArea || null,
+        built_area: property.builtArea || null,
+        lot_area: property.lotArea || null,
+        floors: property.floors || null,
+        year_built: property.yearBuilt || null,
+        parking_spots: property.parkingSpots || null,
+        amenities: property.amenities || [],
+        created_by: createdBy, // ← profile_id (FK a profiles.id)
+      })
+      .select()
+      .single();
 
-  const { error: propError } = await supabase
-    .from("properties")
-    .upsert(propertyInserts, { onConflict: "id" });
+    if (error) {
+      logger.error("Error insertando propiedad:", error.message);
+      throw error;
+    }
 
-  if (propError) {
-    logger.error("Error insertando propiedades:", propError.message);
-    throw propError;
+    if (inserted) {
+      insertedProperties.push({
+        ...property,
+        id: inserted.id, // Usar el ID generado por la BD
+      });
+    }
   }
 
-  logger.success(`✓ ${properties.length} propiedades insertadas`);
+  logger.success(`✓ ${insertedProperties.length} propiedades insertadas`);
 
-  return { properties, propertyImages: [] };
+  return { properties: insertedProperties, propertyImages: [] };
 }
 
 /**
@@ -92,9 +104,9 @@ export async function seedProperties(
  */
 export async function seedPropertyImages(
   supabase: SupabaseClient,
-  images: SeedPropertyImage[],
+  propertyImages: SeedPropertyImage[],
   truncate: boolean
-): Promise<void> {
+): Promise<SeedPropertyImage[]> {
   const logger = SeedLogger;
 
   logger.subSection("Seed Property Images");
@@ -104,31 +116,49 @@ export async function seedPropertyImages(
     await supabase.from("property_images").delete().neq("id", "00000000-0000-0000-0000-000000000000");
   }
 
-  logger.info(`Insertando ${images.length} imágenes...`);
-
-  const imageInserts = images.map((image) => ({
-    id: image.id, // ID pre-generado por Faker para mantener consistencia
-    property_id: image.propertyId,
-    public_url: image.publicUrl,
-    filename: image.filename,
-    file_size: image.fileSize || null,
-    mime_type: image.mimeType || null,
-    width: image.width || null,
-    height: image.height || null,
-    display_order: image.displayOrder,
-    is_primary: image.isPrimary,
-    alt_text: image.altText || null,
-    caption: image.caption || null,
-  }));
-
-  const { error } = await supabase
-    .from("property_images")
-    .upsert(imageInserts, { onConflict: "id" });
-
-  if (error) {
-    logger.error("Error insertando imágenes:", error.message);
-    throw error;
+  if (propertyImages.length === 0) {
+    logger.warn("No hay imágenes para insertar");
+    return [];
   }
 
-  logger.success(`✓ ${images.length} imágenes insertadas`);
+  logger.info(`Insertando ${propertyImages.length} imágenes...`);
+
+  const insertedImages: SeedPropertyImage[] = [];
+
+  for (const image of propertyImages) {
+    // NO incluir id - la BD lo genera con gen_random_uuid()
+    const { data: inserted, error } = await supabase
+      .from("property_images")
+      .insert({
+        property_id: image.propertyId,
+        public_url: image.publicUrl,
+        filename: image.filename,
+        file_size: image.fileSize || null,
+        mime_type: image.mimeType || null,
+        width: image.width || null,
+        height: image.height || null,
+        display_order: image.displayOrder,
+        is_primary: image.isPrimary,
+        alt_text: image.altText || null,
+        caption: image.caption || null,
+      })
+      .select()
+      .single();
+
+    if (error) {
+      logger.error("Error insertando imagen:", error.message);
+      throw error;
+    }
+
+    if (inserted) {
+      insertedImages.push({
+        ...image,
+        id: inserted.id, // Usar el ID generado por la BD
+      });
+    }
+  }
+
+  logger.success(`✓ ${insertedImages.length} imágenes insertadas`);
+
+  return insertedImages;
 }

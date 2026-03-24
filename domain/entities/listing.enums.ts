@@ -6,7 +6,6 @@ export enum ListingType {
 export enum ListingStatus {
   DRAFT = "draft",
   ACTIVE = "active",
-  PAUSED = "paused",
   ARCHIVED = "archived",
 }
 
@@ -20,7 +19,7 @@ export enum Keywords {
   BALCONY = "balcony",
   AIR_CONDITIONING = "air_conditioning",
   HEATING = "heating",
-  APARTAMENT= "apartment",
+  APARTAMENT = "apartment",
   HOUSE = "house",
   CONDO = "condo",
   TOWNHOUSE = "townhouse",

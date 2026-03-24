@@ -4,7 +4,7 @@
 
 import { getSeedClient, verifySeedClient } from "./lib/supabase";
 import { SeedLogger, LogLevel } from "./lib/logger";
-import { seedProfiles, seedAuthUsers } from "./lib/seeders/profile.seeder";
+import { seedAuthUsers } from "./lib/seeders/profile.seeder";
 import { seedRealEstates } from "./lib/seeders/real-estate.seeder";
 import {
   seedProperties,
@@ -25,7 +25,12 @@ import {
   generateFakeFavorites,
   generateFakeInquiries,
 } from "./lib/faker-data";
-import type { SeedProfile, SeedAgent } from "./types";
+import type {
+  SeedProfile,
+  SeedAgent,
+  SeedProperty,
+  SeedListing,
+} from "./types";
 
 export interface SeedResult {
   success: boolean;
@@ -115,8 +120,8 @@ export async function runSeed(
     `Generados ${allProfiles.length} perfiles (${coordinatorProfiles.length} coordinadores, ${agentProfiles.length} agentes, ${clientProfiles.length} clientes)`,
   );
 
-  // 4. Crear usuarios en auth PRIMERO (required for profiles FK)
-  // Este paso es crítico: auth.users debe crearse antes de profiles
+  // 4. Crear usuarios en auth.users - los perfiles se crean automáticamente via trigger
+  const profileIdMap: Map<string, string> = new Map(); // authUserId -> profileId
   if (!opts.skipAuth) {
     try {
       const usersToCreate = allProfiles.map((profile) => ({
@@ -132,6 +137,25 @@ export async function runSeed(
       logger.info(
         `Auth users: ${authResult.success} creados, ${authResult.failed} fallidos`,
       );
+
+      // OBTENER los profile_ids creados por el trigger
+      // El trigger handle_new_user() crea perfiles con IDs diferentes a los user_id
+      const authUserIds = usersToCreate.map((u) => u.id);
+      const { data: profiles, error: profilesError } = await supabase
+        .from("profiles")
+        .select("id")
+        .in("id", authUserIds);
+
+      if (profilesError) {
+        logger.warn(`Error obteniendo perfiles: ${profilesError.message}`);
+      } else if (profiles) {
+        profiles.forEach((p) => {
+          profileIdMap.set(p.id, p.id);
+        });
+        logger.info(
+          `✓ Mapeados ${profiles.length} perfiles (auth_user_id → profile_id)`,
+        );
+      }
     } catch (err) {
       logger.warn(`Error creando auth users: ${err}`);
     }
@@ -142,21 +166,13 @@ export async function runSeed(
     );
   }
 
-  // 5. Insertar perfiles DESPUÉS de auth.users (required for profiles FK)
-  try {
-    await seedProfiles(supabase, allProfiles, opts.truncate!);
-  } catch (err) {
-    const error = `Error insertando perfiles: ${err}`;
-    logger.error(error);
-    errors.push(error);
-  }
-
   // 6. Generar inmobiliarias fake con Faker
   const fakeRealEstates = generateFakeRealEstates(opts.realEstateCount!);
   logger.info(`Generadas ${fakeRealEstates.length} inmobiliarias con Faker`);
 
-  // 7. Insertar inmobiliarias y agentes
+  // 7. Insertar inmobiliarias y agentes (obtenemos los IDs reales de la BD)
   let agentsResult: SeedAgent[] = [];
+  let realEstateIds: string[] = [];
   try {
     const reResult = await seedRealEstates(
       supabase,
@@ -168,6 +184,7 @@ export async function runSeed(
       opts.truncate!,
     );
     agentsResult = reResult.agents;
+    realEstateIds = reResult.realEstates.map((re) => re.id);
   } catch (err) {
     const error = `Error insertando inmobiliarias: ${err}`;
     logger.error(error);
@@ -175,13 +192,13 @@ export async function runSeed(
   }
 
   // 8. Generar e insertar propiedades fake con Faker
-  const realEstateIds = fakeRealEstates.map((re) => re.id);
+  // IMPORTANTE: Usar los IDs reales de las inmobiliarias
   const fakeProperties = generateFakeProperties(
     opts.propertiesPerRealEstate! * opts.realEstateCount!,
     realEstateIds,
   );
 
-  let insertedProperties = fakeProperties;
+  let insertedProperties: SeedProperty[] = [];
   try {
     const propResult = await seedProperties(
       supabase,
@@ -197,9 +214,16 @@ export async function runSeed(
   }
 
   // 9. Generar e insertar imágenes fake con Faker
-  const fakeImages = generateFakePropertyImages(0, insertedProperties); // count=0 para auto-generar por propiedad
+  // Usar las propiedades con IDs reales
+  const fakeImages = generateFakePropertyImages(0, insertedProperties);
+  let insertedImagesCount = 0;
   try {
-    await seedPropertyImages(supabase, fakeImages, opts.truncate!);
+    const imagesResult = await seedPropertyImages(
+      supabase,
+      fakeImages,
+      opts.truncate!,
+    );
+    insertedImagesCount = imagesResult.length;
   } catch (err) {
     const error = `Error insertando imágenes: ${err}`;
     logger.error(error);
@@ -207,13 +231,14 @@ export async function runSeed(
   }
 
   // 10. Generar e insertar listings fake con Faker
+  // Usar las propiedades con IDs reales
   const fakeListings = generateFakeListings(
     opts.listingsPerProperty! * insertedProperties.length,
     insertedProperties,
     fakeRealEstates[0]?.whatsapp || "+5491100000000",
   );
 
-  let insertedListings = fakeListings;
+  let insertedListings: SeedListing[] = [];
   try {
     insertedListings = await seedListings(
       supabase,
@@ -268,7 +293,7 @@ export async function runSeed(
   logger.info(`   - Perfiles: ${allProfiles.length}`);
   logger.info(`   - Agentes: ${agentsResult.length}`);
   logger.info(`   - Propiedades: ${insertedProperties.length}`);
-  logger.info(`   - Imágenes: ${fakeImages.length}`);
+  logger.info(`   - Imágenes: ${insertedImagesCount}`);
   logger.info(`   - Listados: ${insertedListings.length}`);
   logger.info(`   - Favoritos: ${fakeFavorites.length}`);
   logger.info(`   - Inquiries: ${fakeInquiries.length}`);

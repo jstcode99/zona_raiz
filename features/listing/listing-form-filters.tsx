@@ -48,21 +48,21 @@ function parseSearchParams(sp: URLSearchParams | null): ListingSearchFormInput {
 
 function filtersToSearchParams(filters: ListingSearchFormInput) {
   return objectToSearchParams({
-    q: filters.search,
-    type: filters.type,
-    country: filters.country,
-    state: filters.state,
-    city: filters.city,
-    neighborhood: filters.neighborhood,
-    street: filters.street,
-    bedrooms: filters.bedrooms,
-    bathrooms: filters.bathrooms,
+    q: filters.search as string | undefined,
+    type: filters.type as string | undefined,
+    country: filters.country as string | undefined,
+    state: filters.state as string | undefined,
+    city: filters.city as string | undefined,
+    neighborhood: filters.neighborhood as string | undefined,
+    street: filters.street as string | undefined,
+    bedrooms: filters.bedrooms as number | undefined,
+    bathrooms: filters.bathrooms as number | undefined,
 
-    real_estate_id: filters.real_estate_id ?? undefined,
-    property_id: filters.property_id ?? undefined,
-    listing_type: filters.listing_type,
-    status: filters.status,
-    price: filters.price,
+    real_estate_id: filters.real_estate_id as string | null | undefined,
+    property_id: filters.property_id as string | null | undefined,
+    listing_type: filters.listing_type as string | undefined,
+    status: filters.status as string | undefined,
+    price: filters.price as number | undefined,
   })
 }
 

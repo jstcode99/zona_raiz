@@ -51,14 +51,6 @@ export default async function DashboardLayout({
     );
   }
 
-  if (profile.role == EUserRole.Admin) {
-    return encodedRedirect(
-      "error",
-      routes.signin(),
-      t("exceptions.not_have_access"),
-    );
-  }
-
   let favorites: {
     id: string;
     listing_id: string;

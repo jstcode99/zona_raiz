@@ -14,7 +14,6 @@ export function useListingOptions() {
   const listingStatusOptions = [
     { label: t("status_labels.active"), value: ListingStatus.ACTIVE },
     { label: t("status_labels.draft"), value: ListingStatus.DRAFT },
-    { label: t("status_labels.paused"), value: ListingStatus.PAUSED },
     { label: t("status_labels.archived"), value: ListingStatus.ARCHIVED },
   ];
 
@@ -51,7 +50,6 @@ export function useListingOptions() {
     const labels: Record<ListingStatus, string> = {
       [ListingStatus.ACTIVE]: t("status_labels.active"),
       [ListingStatus.DRAFT]: t("status_labels.draft"),
-      [ListingStatus.PAUSED]: t("status_labels.paused"),
       [ListingStatus.ARCHIVED]: t("status_labels.archived"),
     };
     return labels[status];
