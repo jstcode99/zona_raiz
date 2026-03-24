@@ -1,12 +1,10 @@
-// domain/utils/table-mapper.ts
-
 import { ImportTableName } from "@/domain/entities/import-job.entity";
 import {
   propertyImportHeaders,
   listingImportHeaders,
   realEstateImportHeaders,
 } from "@/application/validation/import";
-import { normalizeHeader } from "./table-detector";
+import { fixEncoding, normalizeHeader } from "./table-detector";
 
 /**
  * Resultado de mapear headers del archivo a headers de una tabla
@@ -51,21 +49,17 @@ export function getTableHeaders(tableName: ImportTableName): string[] {
 export function mapHeadersToTable(
   sourceHeaders: string[],
   targetHeaders: string[],
-  _tableName: ImportTableName
 ): TableMapping[] {
   const mappings: TableMapping[] = [];
 
   // Normalizar headers del archivo una vez
-  const normalizedSource = sourceHeaders.map((h) => normalizeHeader(h));
-
+  const normalizedSource = sourceHeaders.map((h) =>
+    normalizeHeader(fixEncoding(h)),
+  );
   for (const targetHeader of targetHeaders) {
-    const normalizedTarget = normalizeHeader(targetHeader);
-
+    const normalizedTarget = normalizeHeader(fixEncoding(targetHeader));
     // 1. Buscar coincidencia exacta
-    let sourceIndex = normalizedSource.findIndex(
-      (s) => s === normalizedTarget
-    );
-
+    let sourceIndex = normalizedSource.findIndex((s) => s === normalizedTarget);
     // 2. Si no hay coincidencia exacta, buscar por sinonimos/parcial
     if (sourceIndex === -1) {
       sourceIndex = findBestMatch(normalizedTarget, normalizedSource);
@@ -87,6 +81,7 @@ export function mapHeadersToTable(
 function findBestMatch(target: string, sources: string[]): number {
   // Crear mapa de sinonimos comunes
   const synonyms: Record<string, string[]> = {
+    name: ["name", "nombre", "titulo", "titulo", "asunto", "subject"],
     title: ["name", "nombre", "titulo", "titulo", "asunto", "subject"],
     property_type: ["type", "tipo", "tipo_propiedad", "clase", "class"],
     city: ["ciudad", "localidad", "municipio", "location"],
@@ -111,7 +106,7 @@ function findBestMatch(target: string, sources: string[]): number {
 
   // 3. Busqueda parcial (contiene)
   const partialIndex = sources.findIndex(
-    (s) => s.includes(target) || target.includes(s)
+    (s) => s.includes(target) || target.includes(s),
   );
   if (partialIndex >= 0 && partialIndex < sources.length / 2) {
     // Solo retornar si es una coincidencia razonablemente buena
@@ -128,10 +123,9 @@ export function transformDataToTable(
   sourceHeaders: string[],
   sourceRows: (string | null)[][],
   targetHeaders: string[],
-  tableName: ImportTableName
 ): MappingResult {
   // Obtener mapeos
-  const mappings = mapHeadersToTable(sourceHeaders, targetHeaders, tableName);
+  const mappings = mapHeadersToTable(sourceHeaders, targetHeaders);
 
   // Transformar cada fila
   const rows: (string | null)[][] = sourceRows.map((sourceRow) => {
@@ -150,7 +144,7 @@ export function transformDataToTable(
 
   // Identificar columnas sin mapeo
   const mappedTargetIndices = new Set(
-    mappings.filter((m) => m.sourceIndex >= 0).map((m) => m.sourceIndex)
+    mappings.filter((m) => m.sourceIndex >= 0).map((m) => m.sourceIndex),
   );
   const unmappedColumns: string[] = [];
   sourceHeaders.forEach((header, index) => {
@@ -173,11 +167,15 @@ export function transformDataToTable(
 export function getOriginalHeaders(
   transformedHeaders: string[],
   originalHeaders: string[],
-  mappings: TableMapping[]
+  mappings: TableMapping[],
 ): string[] {
   return transformedHeaders.map((targetHeader, index) => {
     const mapping = mappings[index];
-    if (mapping && mapping.sourceIndex >= 0 && mapping.sourceIndex < originalHeaders.length) {
+    if (
+      mapping &&
+      mapping.sourceIndex >= 0 &&
+      mapping.sourceIndex < originalHeaders.length
+    ) {
       return originalHeaders[mapping.sourceIndex];
     }
     return targetHeader; // Si no hay mapeo, usar el header de la tabla

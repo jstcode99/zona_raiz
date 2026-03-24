@@ -1,10 +1,6 @@
 "use server";
 
 import { withServerAction } from "@/shared/hooks/with-server-action";
-import {
-  importDataSchema,
-  confirmImportSchema,
-} from "@/application/validation/import.schema";
 import { appModule } from "@/application/modules/app.module";
 import { getLangServerSide } from "@/shared/utils/lang";
 import { cookies } from "next/headers";
@@ -47,247 +43,6 @@ export interface ValidationResult {
   }>;
   validatedData: Record<string, unknown>[];
 }
-
-export const validateImportAction = withServerAction(
-  async (formData: FormData) => {
-    // 1. Validar input
-    const raw = Object.fromEntries(formData);
-    const validated = await importDataSchema.validate(raw, {
-      abortEarly: false,
-      stripUnknown: true,
-    });
-
-    // 2. Obtener servicios
-    const lang = await getLangServerSide();
-    const cookieStore = await cookies();
-    const { importJobService, sessionService } = await appModule(lang, {
-      cookies: cookieStore,
-    });
-
-    // 3. Obtener userId y realEstateId
-    const userId = await sessionService.getCurrentUserId();
-    if (!userId) {
-      throw new Error("Unauthorized");
-    }
-
-    // 4. Convertir rows a objetos
-    const headers = validated.headers as string[];
-    const rows = validated.rows.map((row) => {
-      if (!row) return {};
-      const rowArr = row as string[];
-      const obj: Record<string, string> = {};
-      headers.forEach((header, index) => {
-        if (header === undefined) return;
-        const value = rowArr[index];
-        obj[header] = value ?? "";
-      });
-      return obj;
-    }) as Record<string, unknown>[];
-
-    // 5. Obtener tableName del formData
-    const tableName = formData.get("tableName") as ImportTableName;
-
-    // 6. Mapear headers del archivo a headers del schema (inglés)
-    const expectedHeaders = getExpectedHeaders(tableName);
-    const mapping = mapHeadersToTable(headers, expectedHeaders, tableName);
-
-    // Transformar rows a objetos con claves en expectedHeaders (inglés)
-    const transformedRows = rows.map((row) => {
-      const obj: Record<string, unknown> = {};
-      mapping.forEach((map, targetIndex) => {
-        const targetHeader = expectedHeaders[targetIndex];
-        if (map.sourceIndex >= 0) {
-          const headerKey = headers[map.sourceIndex];
-          const value = row[headerKey];
-          // Convertir strings numéricos
-          if (value !== null && value !== undefined && value !== "") {
-            const numValue = Number(value);
-            obj[targetHeader] = isNaN(numValue) ? value : numValue;
-          } else {
-            obj[targetHeader] = value ?? "";
-          }
-        } else {
-          obj[targetHeader] = ""; // No hay correspondencia, dejar vacío
-        }
-      });
-      return obj;
-    });
-
-    // 7. Crear mapa de header esperado (inglés) -> header de display (original del archivo)
-    const headerMap = new Map<string, string>();
-    mapping.forEach((map, targetIndex) => {
-      const targetHeader = expectedHeaders[targetIndex];
-      if (map.sourceIndex >= 0) {
-        headerMap.set(targetHeader, headers[map.sourceIndex]);
-      } else {
-        headerMap.set(targetHeader, targetHeader);
-      }
-    });
-
-    // 8. Validar todas las filas
-    const validationResult = await importJobService.validateAllRows(
-      transformedRows,
-      tableName,
-      expectedHeaders,
-    );
-
-    // 9. Traducir errores a headers de display
-    const displayErrors = validationResult.errors.map((err) => ({
-      ...err,
-      column: headerMap.get(err.column) || err.column,
-    }));
-
-    return {
-      isValid: validationResult.isValid,
-      errors: displayErrors,
-      validatedData: validationResult.validatedData,
-    } as ValidationResult;
-  },
-);
-
-export const confirmImportAction = withServerAction(
-  async (formData: FormData) => {
-    // 1. Validar input
-    const raw = Object.fromEntries(formData);
-    const validated = await confirmImportSchema.validate(raw, {
-      abortEarly: false,
-      stripUnknown: true,
-    });
-
-    // 2. Obtener servicios
-    const lang = await getLangServerSide();
-    const cookieStore = await cookies();
-    const routes = createRouter(lang);
-    const { importJobService, sessionService, cookiesService } =
-      await appModule(lang, { cookies: cookieStore });
-
-    // 3. Obtener userId y realEstateId
-    const userId = await sessionService.getCurrentUserId();
-    if (!userId) {
-      throw new Error("Unauthorized");
-    }
-
-    const realEstateId = await cookiesService.getRealEstateId();
-    if (!realEstateId) {
-      throw new Error("Real estate not found");
-    }
-
-    // 4. Convertir rows a objetos
-    const headers = validated.headers as string[];
-    const rows = validated.rows.map((row) => {
-      if (!row) return {};
-      const rowArr = row as string[];
-      const obj: Record<string, string> = {};
-      headers.forEach((header, index) => {
-        if (header === undefined) return;
-        const value = rowArr[index];
-        obj[header] = value ?? "";
-      });
-      return obj;
-    });
-
-    // 5. Obtener tabla del formData
-    const tableName = formData.get("tableName") as ImportTableName;
-
-    // 6. Mapear headers del archivo a headers del schema (inglés)
-    const expectedHeaders = getExpectedHeaders(tableName);
-    const mapping = mapHeadersToTable(headers, expectedHeaders, tableName);
-
-    // Transformar rows a objetos con claves en expectedHeaders (inglés)
-    const transformedRows = rows.map((row) => {
-      const obj: Record<string, unknown> = {};
-      mapping.forEach((map, targetIndex) => {
-        const targetHeader = expectedHeaders[targetIndex];
-        if (map.sourceIndex >= 0) {
-          const headerKey = headers[map.sourceIndex];
-          const value = row[headerKey];
-          if (value !== null && value !== undefined && value !== "") {
-            const numValue = Number(value);
-            obj[targetHeader] = isNaN(numValue) ? value : numValue;
-          } else {
-            obj[targetHeader] = value ?? "";
-          }
-        } else {
-          obj[targetHeader] = "";
-        }
-      });
-      return obj;
-    });
-
-    // Crear mapa de header esperado (inglés) -> header de display (original del archivo)
-    const headerMap = new Map<string, string>();
-    mapping.forEach((map, targetIndex) => {
-      const targetHeader = expectedHeaders[targetIndex];
-      if (map.sourceIndex >= 0) {
-        headerMap.set(targetHeader, headers[map.sourceIndex]);
-      } else {
-        headerMap.set(targetHeader, targetHeader);
-      }
-    });
-
-    // 7. Validar filas antes de crear el job
-    const validationResult = await importJobService.validateAllRows(
-      transformedRows,
-      tableName,
-      expectedHeaders,
-    );
-
-    // 8. Si hay errores, lanzar excepción para que withServerAction la capture
-    if (!validationResult.isValid) {
-      const errorMessage = "Validation failed";
-
-      // Traducir errores a headers de display
-      const displayErrors = validationResult.errors.map((err) => ({
-        ...err,
-        column: headerMap.get(err.column) || err.column,
-      }));
-
-      // Crear un error que incluya los detalles de validación
-      const validationError = new Error(errorMessage);
-      // Agregar los errores específicos al error para que el cliente los pueda leer
-      (validationError as any).validationErrors = displayErrors;
-      throw validationError;
-    }
-
-    // 9. Crear el job de importación (SIN fileUrl ni originalFilename)
-    const job = await importJobService.createJob({
-      userId,
-      realEstateId,
-      tableName,
-      totalRows: rows.length,
-    });
-
-    // 10. Procesar la importación
-    const summary = await importJobService.processImport(
-      job.id,
-      validationResult.validatedData,
-      tableName,
-      realEstateId,
-      userId,
-    );
-
-    // 10. Invalidar cache
-    revalidatePath(routes.dashboard());
-    revalidatePath(routes.properties());
-    revalidatePath(routes.listings());
-    revalidatePath(routes.realEstates());
-    revalidateTag(CACHE_TAGS.PROPERTY.PRINCIPAL, { expire: 0 });
-    revalidateTag(CACHE_TAGS.PROPERTY.ALL, { expire: 0 });
-    revalidateTag(CACHE_TAGS.LISTING.PRINCIPAL, { expire: 0 });
-    revalidateTag(CACHE_TAGS.LISTING.ALL, { expire: 0 });
-    revalidateTag(CACHE_TAGS.REAL_ESTATE.PRINCIPAL, { expire: 0 });
-    revalidateTag(CACHE_TAGS.REAL_ESTATE.ALL, { expire: 0 });
-    revalidateTag(CACHE_TAGS.IMPORT_JOB.ALL, { expire: 0 });
-
-    return {
-      success: true,
-      jobId: job.id,
-      summary,
-    };
-  },
-);
-
-// processImportAction - nueva action sin upload de archivo
 export interface ProcessImportInput {
   headers: string[];
   rows: (string | null)[][];
@@ -326,8 +81,7 @@ export const processImportAction = withServerAction(
 
     // 4. Mapear headers del archivo a headers del schema (inglés)
     const expectedHeaders = getExpectedHeaders(tableName);
-    const mapping = mapHeadersToTable(headers, expectedHeaders, tableName);
-
+    const mapping = mapHeadersToTable(headers, expectedHeaders);
     // Transformar rows a objetos con claves en expectedHeaders (inglés)
     const transformedRows = rows.map((row) => {
       const obj: Record<string, unknown> = {};
@@ -359,8 +113,6 @@ export const processImportAction = withServerAction(
         headerMap.set(targetHeader, targetHeader);
       }
     });
-
-    console.log(transformedRows);
     // 5. Validar filas antes de crear el job
     const validationResult = await importJobService.validateAllRows(
       transformedRows,

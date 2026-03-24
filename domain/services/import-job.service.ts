@@ -168,44 +168,52 @@ export class ImportJobService {
     const createdIds: string[] = [];
 
     // Procesar en lotes
-    for (let i = 0; i < validatedData.length; i += batchSize) {
-      // Verificar si fue cancelado
-      const currentJob = await this.port.getJobById(jobId);
-      if (currentJob?.status === ImportJobStatus.CANCELLED) {
-        break;
-      }
-
-      const batch = validatedData.slice(i, i + batchSize);
-
-      let result;
-      switch (tableName) {
-        case ImportTableName.PROPERTIES:
-          result = await this.port.bulkInsertProperties(
-            batch,
-            realEstateId,
-            userId,
-          );
+    try {
+      for (let i = 0; i < validatedData.length; i += batchSize) {
+        // Verificar si fue cancelado
+        const currentJob = await this.port.getJobById(jobId);
+        if (currentJob?.status === ImportJobStatus.CANCELLED) {
           break;
-        case ImportTableName.LISTINGS:
-          result = await this.port.bulkInsertListings(
-            batch,
-            realEstateId,
-            userId,
-          );
-          break;
-        case ImportTableName.REAL_ESTATES:
-          result = await this.port.bulkInsertRealEstates(batch, userId);
-          break;
-      }
+        }
 
-      if (result) {
-        importedRows += result.insertedIds.length;
-        createdIds.push(...result.insertedIds);
-        allErrors.push(...result.errors);
+        const batch = validatedData.slice(i, i + batchSize);
 
-        processedRows += batch.length;
-        await this.port.updateJobProgress(jobId, processedRows, allErrors);
+        let result;
+        switch (tableName) {
+          case ImportTableName.PROPERTIES:
+            result = await this.port.bulkInsertProperties(
+              batch,
+              realEstateId,
+              userId,
+            );
+            break;
+          case ImportTableName.LISTINGS:
+            result = await this.port.bulkInsertListings(
+              batch,
+              realEstateId,
+              userId,
+            );
+            break;
+          case ImportTableName.REAL_ESTATES:
+            result = await this.port.bulkInsertRealEstates(batch, userId);
+            break;
+        }
+
+        if (result) {
+          importedRows += result.insertedIds.length;
+          createdIds.push(...result.insertedIds);
+          allErrors.push(...result.errors);
+
+          processedRows += batch.length;
+          await this.port.updateJobProgress(jobId, processedRows, allErrors);
+        }
       }
+    } catch (error) {
+      console.error(error, "error");
+
+      throw new Error(
+        t("exceptions.unknown_table", { table: tableName, error: error }),
+      );
     }
 
     const duration = (Date.now() - startTime) / 1000;

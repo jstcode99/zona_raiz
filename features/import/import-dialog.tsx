@@ -142,7 +142,6 @@ export function ImportDialog({ open, onOpenChange }: ImportDialogProps) {
         originalData.headers,
         sourceRows,
         targetHeaders,
-        table,
       );
 
       // Actualizar preview con headers de la tabla y rows transformados
