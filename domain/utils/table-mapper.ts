@@ -5,6 +5,7 @@ import {
   realEstateImportHeaders,
 } from "@/application/validation/import";
 import { fixEncoding, normalizeHeader } from "./table-detector";
+import { similarityScore } from "./levenshtein";
 
 /**
  * Resultado de mapear headers del archivo a headers de una tabla
@@ -75,45 +76,201 @@ export function mapHeadersToTable(
   return mappings;
 }
 
-/**
- * Encuentra la mejor coincidencia para un header target en los headers fuente
- */
-function findBestMatch(target: string, sources: string[]): number {
-  // Crear mapa de sinonimos comunes
-  const synonyms: Record<string, string[]> = {
-    name: ["name", "nombre", "titulo", "titulo", "asunto", "subject"],
-    title: ["name", "nombre", "titulo", "titulo", "asunto", "subject"],
-    property_type: ["type", "tipo", "tipo_propiedad", "clase", "class"],
-    city: ["ciudad", "localidad", "municipio", "location"],
-    state: ["estado", "provincia", "region", "departamento"],
-    country: ["pais", "país", "nation", "pais"],
-    street: ["calle", "direccion", "dirección", "address", "addr"],
-    phone: ["telefono", "teléfono", "tel", "mobile", "celular", "cel"],
-    whatsapp: ["whatsapp", "wa", "wapp"],
-    email: ["correo", "email", "mail", "e-mail"],
-    description: ["descripcion", "descripción", "detalle", "details", "obs"],
-    bedrooms: ["habitaciones", "rooms", "room", "dormitorios", "dorm"],
-    bathrooms: ["banos", "baños", "bath", "sanitarios", "baths"],
-    price: ["precio", "cost", "valor", "amount"],
-  };
+const synonyms: Record<string, string[]> = {
+  name: ["name", "nombre", "titulo", "asunto", "subject"],
+  title: ["name", "nombre", "titulo", "asunto", "subject"],
+  property_type: ["type", "tipo", "tipo_propiedad", "clase", "class"],
+  city: ["ciudad", "localidad", "municipio", "location"],
+  state: ["estado", "provincia", "region", "departamento"],
+  country: ["pais", "país", "nation"],
+  street: ["calle", "direccion", "dirección", "address", "addr"],
+  phone: ["telefono", "teléfono", "tel", "mobile", "celular", "cel"],
+  whatsapp: ["whatsapp", "wa", "wapp"],
+  email: ["correo", "email", "mail", "e-mail"],
+  description: ["descripcion", "descripción", "detalle", "details", "obs"],
+  bedrooms: ["habitaciones", "rooms", "room", "dormitorios", "dorm", "cuartos"],
+  bathrooms: ["banos", "baños", "bath", "sanitarios", "baths", "wc"],
+  price: ["precio", "cost", "valor", "amount"],
+  postal_code: ["zip", "código_postal", "codigo_postal", "postal", "cp"],
 
-  // Verificar sinonimos
-  const targetSynonyms = synonyms[target] || [];
+  // --- nuevos ---
+  latitude: ["lat", "latitud", "coord_lat", "geo_lat"],
+  longitude: [
+    "lng",
+    "lon",
+    "longitud",
+    "coord_lon",
+    "coord_lng",
+    "geo_lon",
+    "geo_lng",
+  ],
+  neighborhood: [
+    "barrio",
+    "colonia",
+    "sector",
+    "zona",
+    "urbanizacion",
+    "urbanización",
+  ],
+  total_area: [
+    "area_total",
+    "área_total",
+    "area",
+    "área",
+    "superficie_total",
+    "superficie",
+    "mt2",
+    "m2",
+  ],
+  built_area: [
+    "area_construida",
+    "área_construida",
+    "construccion",
+    "construcción",
+    "m2_construidos",
+  ],
+  lot_area: [
+    "area_lote",
+    "área_lote",
+    "lote",
+    "terreno",
+    "m2_terreno",
+    "superficie_lote",
+  ],
+  floors: ["pisos", "plantas", "niveles", "nivel", "floor", "num_pisos"],
+  year_built: [
+    "año_construccion",
+    "ano_construccion",
+    "año_construido",
+    "ano_construido",
+    "año",
+    "built_year",
+  ],
+  parking_spots: [
+    "parking",
+    "estacionamiento",
+    "garaje",
+    "garage",
+    "cochera",
+    "parqueadero",
+    "parqueaderos",
+    "parqueos",
+  ],
+  amenities: [
+    "amenidades",
+    "comodidades",
+    "extras",
+    "caracteristicas",
+    "características",
+    "servicios",
+    "facilities",
+  ],
+  listing_type: [
+    "tipo_listado",
+    "tipo_anuncio",
+    "tipo_publicacion",
+    "tipo_oferta",
+    "modalidad",
+    "operation_type",
+    "tipo_operacion",
+  ],
+  currency: ["moneda", "divisa", "tipo_moneda", "coin"],
+  price_negotiable: [
+    "negociable",
+    "precio_negociable",
+    "negotiable",
+    "a_convenir",
+    "flexible",
+  ],
+  status: [
+    "estado",
+    "estatus",
+    "activo",
+    "disponible",
+    "available",
+    "estado_listado",
+  ],
+  meta_title: [
+    "titulo_seo",
+    "seo_title",
+    "titulo_meta",
+    "og_title",
+    "page_title",
+  ],
+  meta_description: [
+    "descripcion_seo",
+    "seo_description",
+    "descripcion_meta",
+    "og_description",
+  ],
+  keywords: [
+    "palabras_clave",
+    "tags",
+    "etiquetas",
+    "palabras_claves",
+    "seo_keywords",
+  ],
+  virtual_tour_url: [
+    "tour_virtual",
+    "recorrido_virtual",
+    "tour_360",
+    "url_tour",
+    "virtual_tour",
+    "3d_tour",
+  ],
+  video_url: [
+    "video",
+    "url_video",
+    "link_video",
+    "youtube",
+    "vimeo",
+    "video_link",
+  ],
+  available_from: [
+    "disponible_desde",
+    "fecha_disponible",
+    "fecha_inicio",
+    "inicio_disponibilidad",
+    "from_date",
+  ],
+  minimum_contract_duration: [
+    "duracion_minima",
+    "contrato_minimo",
+    "min_contrato",
+    "plazo_minimo",
+    "min_duration",
+  ],
+  whatsapp_contact: [
+    "whatsapp",
+    "wa",
+    "wapp",
+    "telefono_wa",
+    "contacto_whatsapp",
+    "cel_whatsapp",
+  ],
+};
+
+function findBestMatch(target: string, sources: string[]): number {
+  const targetSynonyms = synonyms[target] ?? [];
   for (const synonym of targetSynonyms) {
     const index = sources.findIndex((s) => s === synonym);
     if (index >= 0) return index;
   }
 
-  // 3. Busqueda parcial (contiene)
-  const partialIndex = sources.findIndex(
-    (s) => s.includes(target) || target.includes(s),
-  );
-  if (partialIndex >= 0 && partialIndex < sources.length / 2) {
-    // Solo retornar si es una coincidencia razonablemente buena
-    return partialIndex;
+  // 2. Levenshtein para typos/variaciones estructurales
+  const THRESHOLD = 0.75;
+  let bestIndex = -1;
+  let bestScore = 0;
+
+  for (const [i, source] of sources.entries()) {
+    const score = similarityScore(target, source);
+    if (score > bestScore && score >= THRESHOLD) {
+      bestScore = score;
+      bestIndex = i;
+    }
   }
 
-  return -1;
+  return bestIndex;
 }
 
 /**

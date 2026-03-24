@@ -87,7 +87,6 @@ export interface ImportJobPort {
    */
   bulkInsertRealEstates(
     rows: Record<string, unknown>[],
-    userId: string,
   ): Promise<{ insertedIds: string[]; errors: ImportError[] }>;
 
   /**
