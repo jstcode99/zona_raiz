@@ -3,7 +3,18 @@
 // ==========================================
 
 import { faker } from "@faker-js/faker";
-import type { SeedProfile, SeedRealEstate, SeedProperty, SeedListing, SeedPropertyImage, SeedFavorite, SeedAgent } from "../types";
+import type {
+  SeedProfile,
+  SeedRealEstate,
+  SeedProperty,
+  SeedListing,
+  SeedPropertyImage,
+  SeedFavorite,
+  SeedAgent,
+} from "../types";
+import { ListingStatus, ListingType } from "@/domain/entities/listing.enums";
+import { Currency } from "@/domain/entities/currency.enums";
+import { keywordsOptions } from "@/domain/entities/listing.entity";
 
 // Seed Faker para reproducibilidad
 faker.seed(42);
@@ -39,7 +50,11 @@ export function generateFakeSlug(baseText: string): string {
 
 const ARGENTINIAN_CITIES = [
   { city: "Mar del Plata", state: "Buenos Aires", postalCode: "7600" },
-  { city: "Buenos Aires", state: "Ciudad Autónoma de Buenos Aires", postalCode: "C1425" },
+  {
+    city: "Buenos Aires",
+    state: "Ciudad Autónoma de Buenos Aires",
+    postalCode: "C1425",
+  },
   { city: "Villa Carlos Paz", state: "Córdoba", postalCode: "X5152" },
   { city: "Córdoba", state: "Córdoba", postalCode: "X5000" },
   { city: "Rosario", state: "Santa Fe", postalCode: "S2000" },
@@ -57,9 +72,26 @@ const REAL_ESTATE_NAMES = [
   "Costa Argentina Propiedades",
 ];
 
-const PROPERTY_TYPES = ["apartment", "house", "condo", "land", "commercial", "office", "warehouse"] as const;
+const PROPERTY_TYPES = [
+  "apartment",
+  "house",
+  "condo",
+  "land",
+  "commercial",
+  "office",
+  "warehouse",
+] as const;
 
-const AMENITIES = ["pool", "gym", "security", "air_conditioning", "elevator", "garden", "balcony", "heating"];
+const AMENITIES = [
+  "pool",
+  "gym",
+  "security",
+  "air_conditioning",
+  "elevator",
+  "garden",
+  "balcony",
+  "heating",
+];
 
 /**
  * Genera inmobiliarias fake.
@@ -87,7 +119,7 @@ export function generateFakeRealEstates(count: number): SeedRealEstate[] {
  */
 export function generateFakeProperties(
   count: number,
-  realEstateIds: string[]
+  realEstateIds: string[],
 ): SeedProperty[] {
   if (realEstateIds.length === 0) return [];
 
@@ -95,15 +127,16 @@ export function generateFakeProperties(
     const realEstateId = realEstateIds[i % realEstateIds.length];
     const location = faker.location;
     const propertyType = faker.helpers.arrayElement([...PROPERTY_TYPES]);
-    const bedrooms = propertyType === "land" || propertyType === "commercial" 
-      ? undefined 
-      : faker.number.int({ min: 1, max: 5 });
+    const bedrooms =
+      propertyType === "land" || propertyType === "commercial"
+        ? undefined
+        : faker.number.int({ min: 1, max: 5 });
 
     return {
       id: generateFakeUUID(),
       realEstateId,
       title: `${propertyType.charAt(0).toUpperCase() + propertyType.slice(1)} ${faker.number.int({ min: 1, max: 5 })} ambientes en ${faker.location.city()}`,
-      slug: generateFakeSlug(`${propertyType} ${faker.location.city()} ${faker.number.int(1000)}`),
+      slug: generateFakeSlug(generateFakeUUID()),
       description: faker.lorem.paragraph(3),
       propertyType,
       street: location.streetAddress(),
@@ -115,15 +148,26 @@ export function generateFakeProperties(
       latitude: location.latitude(),
       longitude: location.longitude(),
       bedrooms,
-      bathrooms: bedrooms ? faker.number.int({ min: 1, max: bedrooms + 1 }) : undefined,
+      bathrooms: bedrooms
+        ? faker.number.int({ min: 1, max: bedrooms + 1 })
+        : undefined,
       totalArea: faker.number.int({ min: 50, max: 1000 }),
       builtArea: faker.number.int({ min: 40, max: 800 }),
-      lotArea: propertyType === "house" || propertyType === "land" 
-        ? faker.number.int({ min: 200, max: 2000 }) 
-        : undefined,
-      floors: propertyType === "house" ? faker.number.int({ min: 1, max: 3 }) : propertyType === "apartment" ? 1 : undefined,
+      lotArea:
+        propertyType === "house" || propertyType === "land"
+          ? faker.number.int({ min: 200, max: 2000 })
+          : undefined,
+      floors:
+        propertyType === "house"
+          ? faker.number.int({ min: 1, max: 3 })
+          : propertyType === "apartment"
+            ? 1
+            : undefined,
       yearBuilt: faker.number.int({ min: 1970, max: 2024 }),
-      parkingSpots: propertyType !== "land" ? faker.number.int({ min: 0, max: 3 }) : undefined,
+      parkingSpots:
+        propertyType !== "land"
+          ? faker.number.int({ min: 0, max: 3 })
+          : undefined,
       amenities: faker.helpers.arrayElements(AMENITIES, { min: 1, max: 5 }),
     };
   });
@@ -135,17 +179,24 @@ export function generateFakeProperties(
 export function generateFakeListings(
   count: number,
   properties: SeedProperty[],
-  whatsappContact: string
+  whatsappContact: string,
 ): SeedListing[] {
   if (properties.length === 0) return [];
 
   return Array.from({ length: count }, (_, i) => {
     const property = properties[i % properties.length];
-    const listingType = faker.helpers.arrayElement(["sale", "rent"]);
-    const currency = listingType === "rent" ? "ARS" : faker.helpers.arrayElement(["USD", "ARS"]);
-    const price = listingType === "sale" 
-      ? faker.number.int({ min: 50000, max: 1000000 })
-      : faker.number.int({ min: 100000, max: 5000000 });
+    const listingType = faker.helpers.arrayElement([
+      ListingType.RENT,
+      ListingType.SALE,
+    ]);
+    const currency =
+      listingType === ListingType.RENT
+        ? Currency.COP
+        : faker.helpers.arrayElement([Currency.COP, Currency.USD]);
+    const price =
+      listingType === ListingType.SALE
+        ? faker.number.int({ min: 50000, max: 1000000 })
+        : faker.number.int({ min: 100000, max: 5000000 });
 
     return {
       id: generateFakeUUID(),
@@ -159,25 +210,28 @@ export function generateFakeListings(
       expensesAmount: faker.number.int({ min: 5000, max: 100000 }),
       expensesIncluded: faker.datatype.boolean(),
       status: faker.helpers.weightedArrayElement([
-        { value: "active", weight: 70 },
-        { value: "draft", weight: 10 },
-        { value: "paused", weight: 10 },
-        { value: "sold", weight: 5 },
-        { value: "rented", weight: 5 },
+        { value: ListingStatus.ACTIVE, weight: 70 },
+        { value: ListingStatus.DRAFT, weight: 10 },
       ]),
       featured: faker.datatype.boolean({ probability: 0.2 }),
-      featuredUntil: faker.datatype.boolean({ probability: 0.2 }) 
-        ? faker.date.future({ years: 0.5 }).toISOString() 
+      featuredUntil: faker.datatype.boolean({ probability: 0.2 })
+        ? faker.date.future({ years: 0.5 }).toISOString()
         : undefined,
-      metaTitle: `${property.title} - ${listingType === "sale" ? "Venta" : "Alquiler"}`,
+      metaTitle: `${property.title} - ${listingType === ListingType.SALE ? "Venta" : "Alquiler"}`,
       metaDescription: faker.lorem.sentence(),
-      keywords: faker.helpers.arrayElements(["apartment", "house", "pool", "garden", "modern", "luxury", "city", "sea"], 3),
+      keywords: faker.helpers.arrayElements(keywordsOptions, 3),
       viewsCount: faker.number.int({ min: 0, max: 1000 }),
       enquiriesCount: faker.number.int({ min: 0, max: 50 }),
       whatsappClicks: faker.number.int({ min: 0, max: 100 }),
       publishedAt: faker.date.recent({ days: 90 }).toISOString(),
-      minimumContractDuration: listingType === "rent" ? faker.number.int({ min: 6, max: 36 }) : undefined,
-      availableFrom: listingType === "rent" ? faker.date.soon({ days: 30 }).toISOString().split("T")[0] : undefined,
+      minimumContractDuration:
+        listingType === ListingType.RENT
+          ? faker.number.int({ min: 6, max: 36 })
+          : undefined,
+      availableFrom:
+        listingType === ListingType.RENT
+          ? faker.date.soon({ days: 30 }).toISOString().split("T")[0]
+          : undefined,
     };
   });
 }
@@ -187,15 +241,15 @@ export function generateFakeListings(
  */
 export function generateFakePropertyImages(
   count: number,
-  properties: SeedProperty[]
+  properties: SeedProperty[],
 ): SeedPropertyImage[] {
   if (properties.length === 0) return [];
 
   const images: SeedPropertyImage[] = [];
-  
+
   properties.forEach((property, propIndex) => {
     const imageCount = faker.number.int({ min: 2, max: 5 });
-    
+
     for (let i = 0; i < imageCount; i++) {
       images.push({
         id: generateFakeUUID(),
@@ -245,7 +299,11 @@ export function generateFakeProfiles(options: {
   }
 
   // Generar agentes
-  for (let i = 0; i < options.coordinators * options.agentsPerCoordinator; i++) {
+  for (
+    let i = 0;
+    i < options.coordinators * options.agentsPerCoordinator;
+    i++
+  ) {
     agents.push({
       id: faker.string.uuid(),
       email: `agente${i + 1}@zonaraiz.test`,
@@ -277,14 +335,17 @@ export function generateFakeProfiles(options: {
 export function generateFakeFavorites(
   count: number,
   clients: SeedProfile[],
-  listings: SeedListing[]
+  listings: SeedListing[],
 ): SeedFavorite[] {
   const favorites: SeedFavorite[] = [];
   const usedPairs = new Set<string>();
 
-  const activeListings = listings.filter(l => l.status === "active");
+  const activeListings = listings.filter((l) => l.status === "active");
 
-  while (favorites.length < count && favorites.length < clients.length * activeListings.length) {
+  while (
+    favorites.length < count &&
+    favorites.length < clients.length * activeListings.length
+  ) {
     const client = faker.helpers.arrayElement(clients);
     const listing = faker.helpers.arrayElement(activeListings);
     const pairKey = `${client.id}-${listing.id}`;
@@ -331,7 +392,8 @@ const INQUIRY_TEMPLATES = [
     name: "María González",
     email: "maria.gonzalez@email.com",
     phone: "+5491145678901",
-    message: "Me interesa esta propiedad. ¿Está disponible para visitarla este fin de semana?",
+    message:
+      "Me interesa esta propiedad. ¿Está disponible para visitarla este fin de semana?",
     source: "web",
   },
   {
@@ -411,7 +473,7 @@ const STATUS_WEIGHTS = [
 export function generateFakeInquiries(
   listings: SeedListing[],
   agents: SeedAgent[],
-  count: number
+  count: number,
 ): GeneratedInquiry[] {
   if (listings.length === 0 || agents.length === 0) return [];
 
@@ -436,7 +498,9 @@ export function generateFakeInquiries(
     let notes: string | undefined;
 
     if (status !== "new") {
-      contactedAt = faker.date.recent({ days: Math.max(1, daysAgo - 1) }).toISOString();
+      contactedAt = faker.date
+        .recent({ days: Math.max(1, daysAgo - 1) })
+        .toISOString();
     }
 
     if (status === "qualified") {
@@ -444,7 +508,9 @@ export function generateFakeInquiries(
     }
 
     if (status === "converted") {
-      convertedAt = faker.date.recent({ days: Math.max(1, daysAgo - 5) }).toISOString();
+      convertedAt = faker.date
+        .recent({ days: Math.max(1, daysAgo - 5) })
+        .toISOString();
       notes = "Cliente convirtió. Firmó boleto de compra.";
     }
 

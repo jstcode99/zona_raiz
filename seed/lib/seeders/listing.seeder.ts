@@ -5,6 +5,7 @@
 import { SupabaseClient } from "@supabase/supabase-js";
 import type { SeedListing, SeedProperty, SeedAgent } from "../../types";
 import { SeedLogger } from "../logger";
+import { ListingStatus, ListingType } from "@/domain/entities/listing.enums";
 
 /**
  * Inserta listings (listados) en la base de datos.
@@ -15,7 +16,7 @@ export async function seedListings(
   listings: SeedListing[],
   properties: SeedProperty[],
   agents: SeedAgent[],
-  truncate: boolean
+  truncate: boolean,
 ): Promise<SeedListing[]> {
   const logger = SeedLogger;
 
@@ -23,7 +24,10 @@ export async function seedListings(
 
   if (truncate) {
     logger.info("Truncando listings...");
-    await supabase.from("listings").delete().neq("id", "00000000-0000-0000-0000-000000000000");
+    await supabase
+      .from("listings")
+      .delete()
+      .neq("id", "00000000-0000-0000-0000-000000000000");
   }
 
   // Crear mapa de property -> real_estate_id
@@ -49,10 +53,14 @@ export async function seedListings(
   for (const listing of listings) {
     // Asignar el agente de la misma inmobiliaria
     const realEstateId = propertyToRealEstate.get(listing.propertyId);
-    const agentId = realEstateId ? agentIdsByRealEstate.get(realEstateId) || null : null;
+    const agentId = realEstateId
+      ? agentIdsByRealEstate.get(realEstateId) || null
+      : null;
 
     if (!agentId) {
-      throw new Error(`No hay agente disponible para la inmobiliaria ${realEstateId}. No se puede crear el listing.`);
+      throw new Error(
+        `No hay agente disponible para la inmobiliaria ${realEstateId}. No se puede crear el listing.`,
+      );
     }
 
     const { data: inserted, error } = await supabase
@@ -117,10 +125,10 @@ export function getListingStats(listings: SeedListing[]): {
 } {
   return {
     total: listings.length,
-    active: listings.filter((l) => l.status === "active").length,
-    draft: listings.filter((l) => l.status === "draft").length,
+    active: listings.filter((l) => l.status === ListingStatus.ACTIVE).length,
+    draft: listings.filter((l) => l.status === ListingStatus.DRAFT).length,
     featured: listings.filter((l) => l.featured).length,
-    sale: listings.filter((l) => l.listingType === "sale").length,
-    rent: listings.filter((l) => l.listingType === "rent").length,
+    sale: listings.filter((l) => l.listingType === ListingType.SALE).length,
+    rent: listings.filter((l) => l.listingType === ListingType.RENT).length,
   };
 }

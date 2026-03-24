@@ -154,7 +154,6 @@ export async function seedRealEstates(
       }
     }
   });
-
   // Insertar agentes en real_estate_agents SIN ID - la BD lo genera
   logger.info(`Insertando ${agents.length} relaciones agente-inmobiliaria...`);
 
@@ -164,8 +163,8 @@ export async function seedRealEstates(
     const { data: inserted, error } = await supabase
       .from("real_estate_agents")
       .insert({
-        profile_id: agent.profileId,
         real_estate_id: agent.realEstateId,
+        profile_id: agent.id,
         role: agent.role,
       })
       .select()

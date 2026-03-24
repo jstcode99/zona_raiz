@@ -1,7 +1,11 @@
 import { mapListingRowToEntity } from "@/application/mappers/listing.mapper";
 import { ListingEntity } from "@/domain/entities/listing.entity";
 import { ProfileEntity } from "@/domain/entities/profile.entity";
-import { ListingPort, ListingCountFilters, ListingSearchFilters } from "@/domain/ports/listing.port";
+import {
+  ListingPort,
+  ListingCountFilters,
+  ListingSearchFilters,
+} from "@/domain/ports/listing.port";
 import { LandingCity, LandingStats } from "@/domain/types/landing.types";
 import { SupabaseClient } from "@supabase/supabase-js";
 
@@ -351,7 +355,7 @@ export class SupabaseListingAdapter implements ListingPort {
     ];
 
     months.forEach((month) => {
-      result[month] = { draft: 0, active: 0, paused: 0, archived: 0 };
+      result[month] = { draft: 0, active: 0, archived: 0 };
     });
 
     (data || []).forEach((item: ListingRow) => {
@@ -401,13 +405,15 @@ export class SupabaseListingAdapter implements ListingPort {
     // Query listings with their properties to get cities
     const { data, error } = await this.supabase
       .from("listings")
-      .select(`
+      .select(
+        `
         status,
         property:properties!inner(
           city,
           property_images(public_url)
         )
-      `)
+      `,
+      )
       .eq("status", "active")
       .not("properties.city", "is", null);
 
@@ -417,7 +423,10 @@ export class SupabaseListingAdapter implements ListingPort {
     const cityMap = new Map<string, { count: number; image?: string }>();
 
     for (const row of data || []) {
-      const prop = row.property as unknown as { city: string; property_images?: Array<{ public_url: string }> } | null;
+      const prop = row.property as unknown as {
+        city: string;
+        property_images?: Array<{ public_url: string }>;
+      } | null;
       if (!prop?.city) continue;
 
       const city = prop.city;
@@ -464,7 +473,7 @@ export class SupabaseListingAdapter implements ListingPort {
     const uniqueCities = new Set(
       (listingsWithCities || [])
         .map((l) => (l.property as unknown as { city: string } | null)?.city)
-        .filter(Boolean) as string[]
+        .filter(Boolean) as string[],
     );
 
     return {

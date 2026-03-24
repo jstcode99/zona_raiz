@@ -2,6 +2,9 @@
 // Seed Types - zona_raiz
 // ==========================================
 
+import { KeywordsType } from "@/domain/entities/listing.entity";
+import { ListingStatus, ListingType } from "@/domain/entities/listing.enums";
+
 // Usamos strings directamente ya que la BD almacena valores de enums como strings
 
 export interface SeedUser {
@@ -74,19 +77,19 @@ export interface SeedListing {
   id: string;
   propertyId: string;
   agentId: string;
-  listingType: string;
+  listingType: ListingType;
   price: number;
   currency: string;
   priceNegotiable: boolean;
   whatsappContact: string;
   expensesAmount?: number;
   expensesIncluded: boolean;
-  status: string;
+  status: ListingStatus;
   featured: boolean;
   featuredUntil?: string;
   metaTitle?: string;
   metaDescription?: string;
-  keywords?: string[];
+  keywords?: KeywordsType[];
   virtualTourUrl?: string;
   videoUrl?: string;
   availableFrom?: string;

@@ -1,13 +1,13 @@
 -- Tipos enumerados
 create type property_type as enum (
-    'house', 
-    'apartment', 
-    'condo', 
-    'townhouse', 
-    'land', 
-    'commercial', 
-    'office', 
-    'warehouse', 
+    'house',
+    'apartment',
+    'condo',
+    'townhouse',
+    'land',
+    'commercial',
+    'office',
+    'warehouse',
     'other'
 );
 

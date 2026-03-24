@@ -4,26 +4,50 @@
 
 import { describe, it, expect, beforeAll } from "vitest";
 import { faker } from "@faker-js/faker";
-import type { SeedRealEstate, SeedProperty, SeedListing, SeedPropertyImage, SeedFavorite, SeedProfile, SeedAgent } from "../types";
-import { generateFakeRealEstates, generateFakeProperties, generateFakeListings, generateFakePropertyImages, generateFakeProfiles, generateFakeFavorites } from "../lib/faker-data";
+import type {
+  SeedRealEstate,
+  SeedProperty,
+  SeedListing,
+  SeedPropertyImage,
+  SeedFavorite,
+  SeedProfile,
+  SeedAgent,
+} from "../types";
+import {
+  generateFakeRealEstates,
+  generateFakeProperties,
+  generateFakeListings,
+  generateFakePropertyImages,
+  generateFakeProfiles,
+  generateFakeFavorites,
+} from "../lib/faker-data";
 import { generateInquiries } from "../lib/seeders/inquiry.seeder";
-import { formatNumber, formatBytes, generateSlug, generateUUID } from "../lib/logger";
+import {
+  formatNumber,
+  formatBytes,
+  generateSlug,
+  generateUUID,
+} from "../lib/logger";
 
 // Seed Faker para reproducibilidad en tests
 faker.seed(42);
 
 // Generar datos fake para los tests
 const TEST_REAL_ESTATES = generateFakeRealEstates(3);
-const TEST_PROPERTIES = generateFakeProperties(15, TEST_REAL_ESTATES.map((re) => re.id));
+const TEST_PROPERTIES = generateFakeProperties(
+  15,
+  TEST_REAL_ESTATES.map((re) => re.id),
+);
 const TEST_LISTINGS = generateFakeListings(
   TEST_PROPERTIES.length,
   TEST_PROPERTIES,
-  TEST_REAL_ESTATES[0]?.whatsapp || "+5491100000000"
+  TEST_REAL_ESTATES[0]?.whatsapp || "+5491100000000",
 );
 const TEST_IMAGES = generateFakePropertyImages(0, TEST_PROPERTIES);
 
 // UUID v4 validation regex pattern
-const UUID_V4_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+const UUID_V4_PATTERN =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
 describe("Seed Data Integrity - Real Estates (Faker)", () => {
   it("should have at least 2 real estates", () => {
@@ -115,15 +139,23 @@ describe("Seed Data Integrity - Properties (Faker)", () => {
 
   it("should have at least one property per real estate", () => {
     TEST_REAL_ESTATES.forEach((re) => {
-      const count = TEST_PROPERTIES.filter((p) => p.realEstateId === re.id).length;
+      const count = TEST_PROPERTIES.filter(
+        (p) => p.realEstateId === re.id,
+      ).length;
       expect(count).toBeGreaterThan(0);
     });
   });
 
   it("should have valid property types", () => {
     const validTypes = [
-      "apartment", "house", "condo", "land",
-      "commercial", "office", "warehouse", "other",
+      "apartment",
+      "house",
+      "condo",
+      "land",
+      "commercial",
+      "office",
+      "warehouse",
+      "other",
     ];
     TEST_PROPERTIES.forEach((p) => {
       expect(validTypes).toContain(p.propertyType);
@@ -132,8 +164,10 @@ describe("Seed Data Integrity - Properties (Faker)", () => {
 
   it("should have valid numeric fields (bedrooms, bathrooms, areas)", () => {
     TEST_PROPERTIES.forEach((p) => {
-      if (p.bedrooms !== undefined) expect(p.bedrooms).toBeGreaterThanOrEqual(0);
-      if (p.bathrooms !== undefined) expect(p.bathrooms).toBeGreaterThanOrEqual(0);
+      if (p.bedrooms !== undefined)
+        expect(p.bedrooms).toBeGreaterThanOrEqual(0);
+      if (p.bathrooms !== undefined)
+        expect(p.bathrooms).toBeGreaterThanOrEqual(0);
       if (p.totalArea !== undefined) expect(p.totalArea).toBeGreaterThan(0);
       if (p.builtArea !== undefined) expect(p.builtArea).toBeGreaterThan(0);
       if (p.yearBuilt !== undefined) {
@@ -192,7 +226,7 @@ describe("Seed Data Integrity - Listings (Faker)", () => {
   });
 
   it("should have valid statuses", () => {
-    const validStatuses = ["active", "draft", "paused", "sold", "rented", "expired"];
+    const validStatuses = ["active", "draft", "sold", "rented", "expired"];
     TEST_LISTINGS.forEach((l) => {
       expect(validStatuses).toContain(l.status);
     });
@@ -263,7 +297,7 @@ describe("Seed Data Integrity - Property Images (Faker)", () => {
 
     propIdsWithImages.forEach((propId) => {
       const primaryCount = TEST_IMAGES.filter(
-        (img) => img.propertyId === propId && img.isPrimary
+        (img) => img.propertyId === propId && img.isPrimary,
       ).length;
       expect(primaryCount).toBe(1);
     });
@@ -372,13 +406,11 @@ describe("Profile Generator (Faker)", () => {
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-    [
-      ...result.coordinators,
-      ...result.agents,
-      ...result.clients,
-    ].forEach((p) => {
-      expect(p.email).toMatch(emailRegex);
-    });
+    [...result.coordinators, ...result.agents, ...result.clients].forEach(
+      (p) => {
+        expect(p.email).toMatch(emailRegex);
+      },
+    );
   });
 
   it("should assign 'real-estate' role to coordinators and agents", () => {
@@ -415,13 +447,11 @@ describe("Profile Generator (Faker)", () => {
       clients: 3,
     });
 
-    [
-      ...result.coordinators,
-      ...result.agents,
-      ...result.clients,
-    ].forEach((p) => {
-      expect(p.phone).toMatch(/^\+549/);
-    });
+    [...result.coordinators, ...result.agents, ...result.clients].forEach(
+      (p) => {
+        expect(p.phone).toMatch(/^\+549/);
+      },
+    );
   });
 
   it("should handle zero counts gracefully", () => {
@@ -440,14 +470,71 @@ describe("Profile Generator (Faker)", () => {
 describe("Favorite Generator", () => {
   it("should generate unique favorites (no duplicate client-listing pairs)", () => {
     const clients = [
-      { id: "client-1", email: "c1@test.com", fullName: "Client 1", phone: "+54911", role: "client" as const },
-      { id: "client-2", email: "c2@test.com", fullName: "Client 2", phone: "+54911", role: "client" as const },
+      {
+        id: "client-1",
+        email: "c1@test.com",
+        fullName: "Client 1",
+        phone: "+54911",
+        role: "client" as const,
+      },
+      {
+        id: "client-2",
+        email: "c2@test.com",
+        fullName: "Client 2",
+        phone: "+54911",
+        role: "client" as const,
+      },
     ];
 
     const listings = [
-      { id: "li-1", propertyId: "pr-1", agentId: "ag-1", listingType: "sale" as const, price: 100000, currency: "USD" as const, priceNegotiable: true, whatsappContact: "+54911", expensesIncluded: true, status: "active" as const, featured: false, viewsCount: 0, enquiriesCount: 0, whatsappClicks: 0 },
-      { id: "li-2", propertyId: "pr-2", agentId: "ag-1", listingType: "sale" as const, price: 100000, currency: "USD" as const, priceNegotiable: true, whatsappContact: "+54911", expensesIncluded: true, status: "active" as const, featured: false, viewsCount: 0, enquiriesCount: 0, whatsappClicks: 0 },
-      { id: "li-3", propertyId: "pr-3", agentId: "ag-1", listingType: "sale" as const, price: 100000, currency: "USD" as const, priceNegotiable: true, whatsappContact: "+54911", expensesIncluded: true, status: "active" as const, featured: false, viewsCount: 0, enquiriesCount: 0, whatsappClicks: 0 },
+      {
+        id: "li-1",
+        propertyId: "pr-1",
+        agentId: "ag-1",
+        listingType: "sale" as const,
+        price: 100000,
+        currency: "USD" as const,
+        priceNegotiable: true,
+        whatsappContact: "+54911",
+        expensesIncluded: true,
+        status: "active" as const,
+        featured: false,
+        viewsCount: 0,
+        enquiriesCount: 0,
+        whatsappClicks: 0,
+      },
+      {
+        id: "li-2",
+        propertyId: "pr-2",
+        agentId: "ag-1",
+        listingType: "sale" as const,
+        price: 100000,
+        currency: "USD" as const,
+        priceNegotiable: true,
+        whatsappContact: "+54911",
+        expensesIncluded: true,
+        status: "active" as const,
+        featured: false,
+        viewsCount: 0,
+        enquiriesCount: 0,
+        whatsappClicks: 0,
+      },
+      {
+        id: "li-3",
+        propertyId: "pr-3",
+        agentId: "ag-1",
+        listingType: "sale" as const,
+        price: 100000,
+        currency: "USD" as const,
+        priceNegotiable: true,
+        whatsappContact: "+54911",
+        expensesIncluded: true,
+        status: "active" as const,
+        featured: false,
+        viewsCount: 0,
+        enquiriesCount: 0,
+        whatsappClicks: 0,
+      },
     ];
 
     const favorites = generateFakeFavorites(5, clients, listings);
@@ -459,10 +546,31 @@ describe("Favorite Generator", () => {
 
   it("should not generate more favorites than possible combinations", () => {
     const clients = [
-      { id: "client-1", email: "c@test.com", fullName: "C", phone: "+54911", role: "client" as const },
+      {
+        id: "client-1",
+        email: "c@test.com",
+        fullName: "C",
+        phone: "+54911",
+        role: "client" as const,
+      },
     ];
     const listings = [
-      { id: "li-1", propertyId: "pr-1", agentId: "ag-1", listingType: "sale" as const, price: 100, currency: "USD" as const, priceNegotiable: true, whatsappContact: "+54911", expensesIncluded: true, status: "active" as const, featured: false, viewsCount: 0, enquiriesCount: 0, whatsappClicks: 0 },
+      {
+        id: "li-1",
+        propertyId: "pr-1",
+        agentId: "ag-1",
+        listingType: "sale" as const,
+        price: 100,
+        currency: "USD" as const,
+        priceNegotiable: true,
+        whatsappContact: "+54911",
+        expensesIncluded: true,
+        status: "active" as const,
+        featured: false,
+        viewsCount: 0,
+        enquiriesCount: 0,
+        whatsappClicks: 0,
+      },
     ];
 
     const favorites = generateFakeFavorites(100, clients, listings);
@@ -476,13 +584,61 @@ describe("Favorite Generator", () => {
 
   it("should respect count parameter", () => {
     const clients = [
-      { id: "client-1", email: "c1@test.com", fullName: "C1", phone: "+54911", role: "client" as const },
-      { id: "client-2", email: "c2@test.com", fullName: "C2", phone: "+54911", role: "client" as const },
-      { id: "client-3", email: "c3@test.com", fullName: "C3", phone: "+54911", role: "client" as const },
+      {
+        id: "client-1",
+        email: "c1@test.com",
+        fullName: "C1",
+        phone: "+54911",
+        role: "client" as const,
+      },
+      {
+        id: "client-2",
+        email: "c2@test.com",
+        fullName: "C2",
+        phone: "+54911",
+        role: "client" as const,
+      },
+      {
+        id: "client-3",
+        email: "c3@test.com",
+        fullName: "C3",
+        phone: "+54911",
+        role: "client" as const,
+      },
     ];
     const listings = [
-      { id: "li-1", propertyId: "pr-1", agentId: "ag-1", listingType: "sale" as const, price: 100, currency: "USD" as const, priceNegotiable: true, whatsappContact: "+54911", expensesIncluded: true, status: "active" as const, featured: false, viewsCount: 0, enquiriesCount: 0, whatsappClicks: 0 },
-      { id: "li-2", propertyId: "pr-2", agentId: "ag-1", listingType: "sale" as const, price: 100, currency: "USD" as const, priceNegotiable: true, whatsappContact: "+54911", expensesIncluded: true, status: "active" as const, featured: false, viewsCount: 0, enquiriesCount: 0, whatsappClicks: 0 },
+      {
+        id: "li-1",
+        propertyId: "pr-1",
+        agentId: "ag-1",
+        listingType: "sale" as const,
+        price: 100,
+        currency: "USD" as const,
+        priceNegotiable: true,
+        whatsappContact: "+54911",
+        expensesIncluded: true,
+        status: "active" as const,
+        featured: false,
+        viewsCount: 0,
+        enquiriesCount: 0,
+        whatsappClicks: 0,
+      },
+      {
+        id: "li-2",
+        propertyId: "pr-2",
+        agentId: "ag-1",
+        listingType: "sale" as const,
+        price: 100,
+        currency: "USD" as const,
+        priceNegotiable: true,
+        whatsappContact: "+54911",
+        expensesIncluded: true,
+        status: "active" as const,
+        featured: false,
+        viewsCount: 0,
+        enquiriesCount: 0,
+        whatsappClicks: 0,
+      },
     ];
 
     const favorites = generateFakeFavorites(3, clients, listings);
@@ -493,9 +649,26 @@ describe("Favorite Generator", () => {
 describe("Inquiry Generator", () => {
   it("should generate correct number of inquiries", () => {
     const listings = [
-      { id: "li-1", propertyId: "pr-1", agentId: "ag-1", listingType: "sale" as const, price: 100, currency: "USD" as const, priceNegotiable: true, whatsappContact: "+54911", expensesIncluded: true, status: "active" as const, featured: false, viewsCount: 0, enquiriesCount: 0, whatsappClicks: 0 },
+      {
+        id: "li-1",
+        propertyId: "pr-1",
+        agentId: "ag-1",
+        listingType: "sale" as const,
+        price: 100,
+        currency: "USD" as const,
+        priceNegotiable: true,
+        whatsappContact: "+54911",
+        expensesIncluded: true,
+        status: "active" as const,
+        featured: false,
+        viewsCount: 0,
+        enquiriesCount: 0,
+        whatsappClicks: 0,
+      },
     ];
-    const agents = [{ profileId: "agent-1", realEstateId: "re-1", role: "agent" as const }];
+    const agents = [
+      { profileId: "agent-1", realEstateId: "re-1", role: "agent" as const },
+    ];
 
     const inquiries = generateInquiries(listings, agents, 10);
     expect(inquiries).toHaveLength(10);
@@ -503,11 +676,34 @@ describe("Inquiry Generator", () => {
 
   it("should assign valid statuses", () => {
     const listings = [
-      { id: "li-1", propertyId: "pr-1", agentId: "ag-1", listingType: "sale" as const, price: 100, currency: "USD" as const, priceNegotiable: true, whatsappContact: "+54911", expensesIncluded: true, status: "active" as const, featured: false, viewsCount: 0, enquiriesCount: 0, whatsappClicks: 0 },
+      {
+        id: "li-1",
+        propertyId: "pr-1",
+        agentId: "ag-1",
+        listingType: "sale" as const,
+        price: 100,
+        currency: "USD" as const,
+        priceNegotiable: true,
+        whatsappContact: "+54911",
+        expensesIncluded: true,
+        status: "active" as const,
+        featured: false,
+        viewsCount: 0,
+        enquiriesCount: 0,
+        whatsappClicks: 0,
+      },
     ];
-    const agents = [{ profileId: "agent-1", realEstateId: "re-1", role: "agent" as const }];
+    const agents = [
+      { profileId: "agent-1", realEstateId: "re-1", role: "agent" as const },
+    ];
 
-    const validStatuses = ["new", "contacted", "qualified", "converted", "lost"];
+    const validStatuses = [
+      "new",
+      "contacted",
+      "qualified",
+      "converted",
+      "lost",
+    ];
     const inquiries = generateInquiries(listings, agents, 50);
 
     inquiries.forEach((inq) => {
@@ -517,9 +713,26 @@ describe("Inquiry Generator", () => {
 
   it("should assign valid sources", () => {
     const listings = [
-      { id: "li-1", propertyId: "pr-1", agentId: "ag-1", listingType: "sale" as const, price: 100, currency: "USD" as const, priceNegotiable: true, whatsappContact: "+54911", expensesIncluded: true, status: "active" as const, featured: false, viewsCount: 0, enquiriesCount: 0, whatsappClicks: 0 },
+      {
+        id: "li-1",
+        propertyId: "pr-1",
+        agentId: "ag-1",
+        listingType: "sale" as const,
+        price: 100,
+        currency: "USD" as const,
+        priceNegotiable: true,
+        whatsappContact: "+54911",
+        expensesIncluded: true,
+        status: "active" as const,
+        featured: false,
+        viewsCount: 0,
+        enquiriesCount: 0,
+        whatsappClicks: 0,
+      },
     ];
-    const agents = [{ profileId: "agent-1", realEstateId: "re-1", role: "agent" as const }];
+    const agents = [
+      { profileId: "agent-1", realEstateId: "re-1", role: "agent" as const },
+    ];
 
     const validSources = ["web", "whatsapp", "phone", "email", "referral"];
     const inquiries = generateInquiries(listings, agents, 50);
@@ -531,9 +744,26 @@ describe("Inquiry Generator", () => {
 
   it("should distribute status across different values", () => {
     const listings = [
-      { id: "li-1", propertyId: "pr-1", agentId: "ag-1", listingType: "sale" as const, price: 100, currency: "USD" as const, priceNegotiable: true, whatsappContact: "+54911", expensesIncluded: true, status: "active" as const, featured: false, viewsCount: 0, enquiriesCount: 0, whatsappClicks: 0 },
+      {
+        id: "li-1",
+        propertyId: "pr-1",
+        agentId: "ag-1",
+        listingType: "sale" as const,
+        price: 100,
+        currency: "USD" as const,
+        priceNegotiable: true,
+        whatsappContact: "+54911",
+        expensesIncluded: true,
+        status: "active" as const,
+        featured: false,
+        viewsCount: 0,
+        enquiriesCount: 0,
+        whatsappClicks: 0,
+      },
     ];
-    const agents = [{ profileId: "agent-1", realEstateId: "re-1", role: "agent" as const }];
+    const agents = [
+      { profileId: "agent-1", realEstateId: "re-1", role: "agent" as const },
+    ];
 
     const inquiries = generateInquiries(listings, agents, 100);
 
@@ -542,7 +772,7 @@ describe("Inquiry Generator", () => {
         acc[inq.status] = (acc[inq.status] || 0) + 1;
         return acc;
       },
-      {}
+      {},
     );
 
     expect(Object.keys(statusCounts).length).toBeGreaterThanOrEqual(2);
@@ -550,10 +780,42 @@ describe("Inquiry Generator", () => {
 
   it("should reference active listings only", () => {
     const listings = [
-      { id: "li-1", propertyId: "pr-1", agentId: "ag-1", listingType: "sale" as const, price: 100, currency: "USD" as const, priceNegotiable: true, whatsappContact: "+54911", expensesIncluded: true, status: "active" as const, featured: false, viewsCount: 0, enquiriesCount: 0, whatsappClicks: 0 },
-      { id: "li-2", propertyId: "pr-2", agentId: "ag-1", listingType: "sale" as const, price: 100, currency: "USD" as const, priceNegotiable: true, whatsappContact: "+54911", expensesIncluded: true, status: "draft" as const, featured: false, viewsCount: 0, enquiriesCount: 0, whatsappClicks: 0 },
+      {
+        id: "li-1",
+        propertyId: "pr-1",
+        agentId: "ag-1",
+        listingType: "sale" as const,
+        price: 100,
+        currency: "USD" as const,
+        priceNegotiable: true,
+        whatsappContact: "+54911",
+        expensesIncluded: true,
+        status: "active" as const,
+        featured: false,
+        viewsCount: 0,
+        enquiriesCount: 0,
+        whatsappClicks: 0,
+      },
+      {
+        id: "li-2",
+        propertyId: "pr-2",
+        agentId: "ag-1",
+        listingType: "sale" as const,
+        price: 100,
+        currency: "USD" as const,
+        priceNegotiable: true,
+        whatsappContact: "+54911",
+        expensesIncluded: true,
+        status: "draft" as const,
+        featured: false,
+        viewsCount: 0,
+        enquiriesCount: 0,
+        whatsappClicks: 0,
+      },
     ];
-    const agents = [{ profileId: "agent-1", realEstateId: "re-1", role: "agent" as const }];
+    const agents = [
+      { profileId: "agent-1", realEstateId: "re-1", role: "agent" as const },
+    ];
 
     const inquiries = generateInquiries(listings, agents, 20);
 
@@ -564,7 +826,22 @@ describe("Inquiry Generator", () => {
 
   it("should assign agents from the provided list", () => {
     const listings = [
-      { id: "li-1", propertyId: "pr-1", agentId: "ag-1", listingType: "sale" as const, price: 100, currency: "USD" as const, priceNegotiable: true, whatsappContact: "+54911", expensesIncluded: true, status: "active" as const, featured: false, viewsCount: 0, enquiriesCount: 0, whatsappClicks: 0 },
+      {
+        id: "li-1",
+        propertyId: "pr-1",
+        agentId: "ag-1",
+        listingType: "sale" as const,
+        price: 100,
+        currency: "USD" as const,
+        priceNegotiable: true,
+        whatsappContact: "+54911",
+        expensesIncluded: true,
+        status: "active" as const,
+        featured: false,
+        viewsCount: 0,
+        enquiriesCount: 0,
+        whatsappClicks: 0,
+      },
     ];
     const agents = [
       { profileId: "agent-1", realEstateId: "re-1", role: "agent" as const },
@@ -595,7 +872,9 @@ describe("Logger Utilities", () => {
 
   it("should generate URL-safe slugs", () => {
     expect(generateSlug("Casa en Venta")).toBe("casa-en-venta");
-    expect(generateSlug("Departamento 3 ambientes!!!")).toBe("departamento-3-ambientes");
+    expect(generateSlug("Departamento 3 ambientes!!!")).toBe(
+      "departamento-3-ambientes",
+    );
     expect(generateSlug("  Multiple   Spaces  ")).toBe("multiple-spaces");
     expect(generateSlug("Calle-Avenida_123")).toBe("calle-avenida_123");
   });
@@ -608,7 +887,7 @@ describe("Logger Utilities", () => {
   it("should generate valid UUIDs", () => {
     const uuid = generateUUID();
     expect(uuid).toMatch(
-      /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
+      /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i,
     );
   });
 
@@ -637,7 +916,9 @@ describe("Seed Acceptance Criteria (Faker)", () => {
 
   it("should have properties distributed across all real estates", () => {
     TEST_REAL_ESTATES.forEach((re) => {
-      const count = TEST_PROPERTIES.filter((p) => p.realEstateId === re.id).length;
+      const count = TEST_PROPERTIES.filter(
+        (p) => p.realEstateId === re.id,
+      ).length;
       expect(count).toBeGreaterThan(0);
     });
   });
@@ -699,10 +980,10 @@ describe("Faker.js Reproducibility", () => {
     // Generar datos dos veces con el mismo seed
     faker.seed(42);
     const realEstates1 = generateFakeRealEstates(3);
-    
+
     faker.seed(42);
     const realEstates2 = generateFakeRealEstates(3);
-    
+
     // Los datos deben ser idénticos
     expect(realEstates1).toEqual(realEstates2);
   });
@@ -710,14 +991,14 @@ describe("Faker.js Reproducibility", () => {
   it("should generate different data with different seeds", () => {
     faker.seed(42);
     const realEstates1 = generateFakeRealEstates(3);
-    
+
     faker.seed(123);
     const realEstates2 = generateFakeRealEstates(3);
-    
+
     // Los IDs de UUID deben ser diferentes entre seeds
     const ids1 = realEstates1.map((re) => re.id);
     const ids2 = realEstates2.map((re) => re.id);
-    
+
     // Verificar que al menos algunos IDs sean diferentes
     const allSame = ids1.every((id, i) => id === ids2[i]);
     expect(allSame).toBe(false);

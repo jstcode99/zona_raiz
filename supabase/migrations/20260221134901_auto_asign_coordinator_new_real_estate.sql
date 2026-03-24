@@ -2,20 +2,24 @@
 create or replace function public.handle_new_real_estate()
 returns trigger as $$
 begin
+    -- Skip if called from service role (no authenticated user)
+    if auth.uid() is null then
+    return new;
+    end if;
   -- Verificar que no sea coordinator en otra inmobiliaria (límite de 1)
   if exists (
-    select 1 from public.real_estate_agents 
-    where profile_id = auth.uid() 
+    select 1 from public.real_estate_agents
+    where profile_id = auth.uid()
     and role = 'coordinator'
   ) then
     raise exception 'Ya eres coordinador de otra inmobiliaria';
   end if;
-  
+
   -- Insertar al creador como coordinador de la nueva inmobiliaria
   -- Usamos security definer implícito de la función
   insert into public.real_estate_agents (real_estate_id, profile_id, role)
   values (new.id, auth.uid(), 'coordinator');
-  
+
   return new;
 end;
 $$ language plpgsql security definer;

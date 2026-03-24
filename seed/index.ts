@@ -25,7 +25,12 @@ import {
   generateFakeFavorites,
   generateFakeInquiries,
 } from "./lib/faker-data";
-import type { SeedProfile, SeedAgent, SeedProperty, SeedListing } from "./types";
+import type {
+  SeedProfile,
+  SeedAgent,
+  SeedProperty,
+  SeedListing,
+} from "./types";
 
 export interface SeedResult {
   success: boolean;
@@ -116,7 +121,7 @@ export async function runSeed(
   );
 
   // 4. Crear usuarios en auth.users - los perfiles se crean automáticamente via trigger
-  let profileIdMap: Map<string, string> = new Map(); // authUserId -> profileId
+  const profileIdMap: Map<string, string> = new Map(); // authUserId -> profileId
   if (!opts.skipAuth) {
     try {
       const usersToCreate = allProfiles.map((profile) => ({
@@ -135,19 +140,21 @@ export async function runSeed(
 
       // OBTENER los profile_ids creados por el trigger
       // El trigger handle_new_user() crea perfiles con IDs diferentes a los user_id
-      const authUserIds = usersToCreate.map(u => u.id);
+      const authUserIds = usersToCreate.map((u) => u.id);
       const { data: profiles, error: profilesError } = await supabase
-        .from('profiles')
-        .select('id, user_id')
-        .in('user_id', authUserIds);
+        .from("profiles")
+        .select("id")
+        .in("id", authUserIds);
 
       if (profilesError) {
         logger.warn(`Error obteniendo perfiles: ${profilesError.message}`);
       } else if (profiles) {
-        profiles.forEach(p => {
-          profileIdMap.set(p.user_id, p.id);
+        profiles.forEach((p) => {
+          profileIdMap.set(p.id, p.id);
         });
-        logger.info(`✓ Mapeados ${profiles.length} perfiles (auth_user_id → profile_id)`);
+        logger.info(
+          `✓ Mapeados ${profiles.length} perfiles (auth_user_id → profile_id)`,
+        );
       }
     } catch (err) {
       logger.warn(`Error creando auth users: ${err}`);
@@ -158,20 +165,6 @@ export async function runSeed(
       "   Esto puede causar FK violations si los usuarios no existen",
     );
   }
-
-  // 5. Actualizar los perfiles con los profile_ids correctos
-  coordinatorProfiles.forEach(p => {
-    const profileId = profileIdMap.get(p.id);
-    if (profileId) p.id = profileId;
-  });
-  agentProfiles.forEach(p => {
-    const profileId = profileIdMap.get(p.id);
-    if (profileId) p.id = profileId;
-  });
-  clientProfiles.forEach(p => {
-    const profileId = profileIdMap.get(p.id);
-    if (profileId) p.id = profileId;
-  });
 
   // 6. Generar inmobiliarias fake con Faker
   const fakeRealEstates = generateFakeRealEstates(opts.realEstateCount!);
@@ -225,7 +218,11 @@ export async function runSeed(
   const fakeImages = generateFakePropertyImages(0, insertedProperties);
   let insertedImagesCount = 0;
   try {
-    const imagesResult = await seedPropertyImages(supabase, fakeImages, opts.truncate!);
+    const imagesResult = await seedPropertyImages(
+      supabase,
+      fakeImages,
+      opts.truncate!,
+    );
     insertedImagesCount = imagesResult.length;
   } catch (err) {
     const error = `Error insertando imágenes: ${err}`;
