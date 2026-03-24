@@ -12,3 +12,4 @@ export const bedroomsSchema = yup
         attribute: 'bedrooms',
         max: '50'
     }))
+    .optional();

@@ -7,7 +7,7 @@ type ValidationErrorLike = {
   inner?: Array<{ path: string; message: string }>;
 };
 
-export function toActionResult(error: unknown): ActionResult {
+export function toActionResult<D>(error: unknown): ActionResult<D> {
   if (error && typeof error === "object" && "name" in error) {
     const err = error as ValidationErrorLike;
 
@@ -19,7 +19,7 @@ export function toActionResult(error: unknown): ActionResult {
             field: e.path,
             message: e.message,
           })),
-        };
+        } as ActionResult<D>;
       }
 
       return {
@@ -28,7 +28,7 @@ export function toActionResult(error: unknown): ActionResult {
           field: err.path,
           message: err.message,
         },
-      };
+      } as ActionResult<D>;
     }
   }
 
@@ -38,5 +38,5 @@ export function toActionResult(error: unknown): ActionResult {
   return {
     success: false,
     error: { message },
-  };
+  } as ActionResult<D>;
 }

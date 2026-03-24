@@ -70,7 +70,7 @@ export function SearchPageClient({
           newFilters.type,
       );
     }
-    if (newFilters.city) parts.push(newFilters.city);
+    if (newFilters.city) parts.push(newFilters.city as string);
 
     const newBasePath = `/${lang}${parts.length ? `/${parts.join("/")}` : ""}`;
     window.location.href = buildUrl(
@@ -116,7 +116,7 @@ export function SearchPageClient({
             <div className="flex items-center justify-between mb-4">
               <div>
                 <h1 className="text-2xl font-bold capitalize">
-                  {filters.city || filters.state || t("words:properties")}
+                  {(filters.city as string) || (filters.state as string) || (t("common:properties") as string)}
                 </h1>
                 <p className="text-sm text-muted-foreground capitalize">
                   {total} {total === 1 ? t("words:result") : t("words:results")}

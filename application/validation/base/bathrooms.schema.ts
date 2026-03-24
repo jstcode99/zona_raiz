@@ -12,3 +12,4 @@ export const bathroomsSchema = yup
       attribute: 'bathrooms',
       max: '50'
     }))
+    .optional();

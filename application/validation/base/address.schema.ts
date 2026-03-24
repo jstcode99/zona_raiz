@@ -27,11 +27,11 @@ export const countryField = yup
 
 
 export const addressSchema = yup.object({
-  street: streetField,
-  city: cityField,
-  state: stateField,
-  postal_code: postalCodeField,
-  country: countryField,
+  street: streetField.optional(),
+  city: cityField.optional(),
+  state: stateField.optional(),
+  postal_code: postalCodeField.optional(),
+  country: countryField.optional(),
 })
 
 

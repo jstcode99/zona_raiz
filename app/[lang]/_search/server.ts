@@ -16,20 +16,20 @@ export async function getListings(
   const { listingService } = await appModule(lang, { cookies: cookieStore });
 
   const searchFilters: ListingSearchFilters = {
-    listing_type: filters.listing_type,
-    type: filters.type,
-    state: filters.state,
-    city: filters.city,
-    neighborhood: filters.neighborhood,
-    min_price: filters.min_price,
-    max_price: filters.max_price,
-    min_bedrooms: filters.min_bedrooms,
-    min_bathrooms: filters.min_bathrooms,
-    amenities: filters.amenities,
-    q: filters.q,
-    sort_by: filters.sort_by,
-    page: filters.page,
-    limit: filters.limit,
+    listing_type: filters.listing_type as string | undefined,
+    type: filters.type as string | undefined,
+    state: filters.state as string | undefined,
+    city: filters.city as string | undefined,
+    neighborhood: filters.neighborhood as string | undefined,
+    min_price: filters.min_price as number | undefined,
+    max_price: filters.max_price as number | undefined,
+    min_bedrooms: filters.min_bedrooms as number | undefined,
+    min_bathrooms: filters.min_bathrooms as number | undefined,
+    amenities: filters.amenities as string[] | undefined,
+    q: filters.q as string | undefined,
+    sort_by: filters.sort_by as string | undefined,
+    page: filters.page as number | undefined,
+    limit: filters.limit as number | undefined,
   };
 
   const clean = pickDefined(searchFilters);
