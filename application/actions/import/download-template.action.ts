@@ -7,6 +7,9 @@ import {
   propertyImportHeaders,
   listingImportHeaders,
   realEstateImportHeaders,
+  propertyImportHeadersES,
+  listingImportHeadersES,
+  realEstateImportHeadersES,
 } from "@/application/validation/import";
 
 export interface DownloadTemplateResult {
@@ -20,24 +23,28 @@ export const downloadTemplateAction = withServerAction(
     const tableName = formData.get("tableName") as ImportTableName;
     const lang = await getLangServerSide();
 
-    // Obtener headers según tabla
+    // Seleccionar headers según tabla e idioma
+    const isSpanish = lang === "es";
     let headers: readonly string[];
+
     switch (tableName) {
       case ImportTableName.PROPERTIES:
-        headers = propertyImportHeaders;
+        headers = isSpanish ? propertyImportHeadersES : propertyImportHeaders;
         break;
       case ImportTableName.LISTINGS:
-        headers = listingImportHeaders;
+        headers = isSpanish ? listingImportHeadersES : listingImportHeaders;
         break;
       case ImportTableName.REAL_ESTATES:
-        headers = realEstateImportHeaders;
+        headers = isSpanish
+          ? realEstateImportHeadersES
+          : realEstateImportHeaders;
         break;
       default:
         throw new Error("Invalid table name");
     }
 
-    // Crear CSV con headers (solo headers, sin datos)
-    const csvContent = headers.join(",") + "\n";
+    // Crear CSV con headers en el idioma correspondiente
+    const csvContent = Array.from(headers).join(",") + "\n";
 
     // Retornar contenido como string, NO como Blob URL
     return {

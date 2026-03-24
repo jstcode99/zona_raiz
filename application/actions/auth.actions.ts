@@ -78,7 +78,7 @@ export const signInAction = withServerAction(async (formData: FormData) => {
   const role = await authService.signIn(input.email, input.password);
   cookiesService.setSession(COOKIE_NAMES.ROLE, role);
 
-  if (role === EUserRole.RealEstate) {
+  if (role === EUserRole.RealEstate || role === EUserRole.Admin) {
     const realEstates = await sessionService.getRealEstatesForUser();
 
     if (realEstates.length === 1) {
@@ -91,10 +91,6 @@ export const signInAction = withServerAction(async (formData: FormData) => {
     }
 
     return { redirectTo: routes.onboarding() }; // ✅ faltaba este return
-  }
-
-  if (role === EUserRole.Admin) {
-    return { redirectTo: routes.dashboard() };
   }
 
   return { redirectTo: routes.home() };

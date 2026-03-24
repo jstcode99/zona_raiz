@@ -1,5 +1,3 @@
-// app/[lang]/dashboard/import/import-page-client.tsx
-
 "use client";
 
 import { useState } from "react";
@@ -84,7 +82,7 @@ export function ImportPageClient({ lang }: ImportPageClientProps) {
           </Button>
 
           <Select onValueChange={handleDownloadTemplate}>
-            <SelectTrigger className="w-[200px]">
+            <SelectTrigger className="w-50">
               <SelectValue placeholder={t("actions.download-template")} />
             </SelectTrigger>
             <SelectContent>

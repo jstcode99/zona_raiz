@@ -26,7 +26,6 @@ import { SupabasePropertyImageAdapter } from "@/infrastructure/adapters/supabase
 import { PropertyImageService } from "@/domain/services/property-image.service";
 import { SupabaseFavoriteAdapter } from "@/infrastructure/adapters/supabase/supabase-favorite.adapter";
 import { FavoriteService } from "@/domain/services/favorite.service";
-import { SupabaseImportAdapter } from "@/infrastructure/adapters/supabase/supabase-import.adapter";
 import { SupabaseImportJobAdapter } from "@/infrastructure/adapters/supabase/supabase-import-job.adapter";
 import { ImportJobService } from "@/domain/services/import-job.service";
 
@@ -72,7 +71,6 @@ export async function appModule(lang: Lang = "es", ctx: CookieContext) {
     lang,
   );
   const favoriteService = new FavoriteService(favoriteAdapter);
-  const importAdapter = new SupabaseImportAdapter(supabase);
   const importJobAdapter = new SupabaseImportJobAdapter(supabase);
   const importJobService = new ImportJobService(importJobAdapter, lang);
 
@@ -91,7 +89,6 @@ export async function appModule(lang: Lang = "es", ctx: CookieContext) {
     propertyService,
     propertyImageService,
     favoriteService,
-    importAdapter,
     importJobService,
   };
 }

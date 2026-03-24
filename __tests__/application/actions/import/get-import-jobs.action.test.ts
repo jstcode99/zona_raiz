@@ -43,10 +43,6 @@ beforeAll(async () => {
       importJobService: mocks.importJobService,
     }),
   }));
-
-  const module = await import("@/application/actions/import/get-import-jobs.action");
-  getImportJobsAction = module.getImportJobsAction;
-  getImportJobByIdAction = module.getImportJobByIdAction;
 });
 
 describe("getImportJobsAction", () => {
@@ -80,7 +76,10 @@ describe("getImportJobsAction", () => {
 
       expect(result.success).toBe(true);
       expect(result.data).toEqual(mockJobs);
-      expect(mocks.importJobService.getUserJobs).toHaveBeenCalledWith("user-123", 10);
+      expect(mocks.importJobService.getUserJobs).toHaveBeenCalledWith(
+        "user-123",
+        10,
+      );
     });
 
     it("should return empty array if no jobs exist", async () => {
@@ -125,7 +124,9 @@ describe("getImportJobByIdAction", () => {
 
   describe("error handling", () => {
     it("should return error result on exception", async () => {
-      mocks.importJobService.getJob.mockRejectedValue(new Error("Database error"));
+      mocks.importJobService.getJob.mockRejectedValue(
+        new Error("Database error"),
+      );
 
       const result = await getImportJobByIdAction("job-123");
 

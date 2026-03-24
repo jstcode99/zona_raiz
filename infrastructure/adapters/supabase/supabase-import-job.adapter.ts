@@ -9,7 +9,10 @@ import {
   ImportError,
   ImportResultSummary,
 } from "@/domain/entities/import-job.entity";
-import { SupabaseAdminClient } from "@/infrastructure/db/supabase.server-admin";
+import { AmenitiesType, PropertyType } from "@/domain/entities/property.enums";
+import { amenitiesOptions } from "@/domain/entities/property.entity";
+import { PropertyStatus } from "@/domain/entities/property-listing.entity";
+import { Currency } from "@/domain/entities/currency.enums";
 
 export class SupabaseImportJobAdapter implements ImportJobPort {
   constructor(private supabase: SupabaseClient) {}
@@ -20,8 +23,6 @@ export class SupabaseImportJobAdapter implements ImportJobPort {
     tableName: ImportTableName;
     totalRows: number;
     batchSize: number;
-    fileUrl?: string;
-    originalFilename?: string;
   }): Promise<ImportJobEntity> {
     const { data, error } = await this.supabase
       .from("import_jobs")
@@ -31,8 +32,6 @@ export class SupabaseImportJobAdapter implements ImportJobPort {
         table_name: params.tableName,
         total_rows: params.totalRows,
         batch_size: params.batchSize,
-        file_url: params.fileUrl,
-        original_filename: params.originalFilename,
         status: ImportJobStatus.PENDING,
       })
       .select()
@@ -58,7 +57,10 @@ export class SupabaseImportJobAdapter implements ImportJobPort {
     return this.mapRowToEntity(data);
   }
 
-  async getJobsByUserId(userId: string, limit?: number): Promise<ImportJobEntity[]> {
+  async getJobsByUserId(
+    userId: string,
+    limit?: number,
+  ): Promise<ImportJobEntity[]> {
     let query = this.supabase
       .from("import_jobs")
       .select("*")
@@ -76,7 +78,10 @@ export class SupabaseImportJobAdapter implements ImportJobPort {
     return (data || []).map((row) => this.mapRowToEntity(row));
   }
 
-  async updateJobStatus(id: string, status: ImportJobStatus): Promise<ImportJobEntity> {
+  async updateJobStatus(
+    id: string,
+    status: ImportJobStatus,
+  ): Promise<ImportJobEntity> {
     const { data, error } = await this.supabase
       .from("import_jobs")
       .update({ status })
@@ -92,7 +97,7 @@ export class SupabaseImportJobAdapter implements ImportJobPort {
   async updateJobProgress(
     id: string,
     processedRows: number,
-    errors?: ImportError[]
+    errors?: ImportError[],
   ): Promise<ImportJobEntity> {
     const { data, error } = await this.supabase
       .from("import_jobs")
@@ -112,7 +117,7 @@ export class SupabaseImportJobAdapter implements ImportJobPort {
   async completeJob(
     id: string,
     summary: ImportResultSummary,
-    errors?: ImportError[]
+    errors?: ImportError[],
   ): Promise<ImportJobEntity> {
     const { data, error } = await this.supabase
       .from("import_jobs")
@@ -148,7 +153,10 @@ export class SupabaseImportJobAdapter implements ImportJobPort {
     return this.mapRowToEntity(data);
   }
 
-  async addJobErrors(id: string, errors: ImportError[]): Promise<ImportJobEntity> {
+  async addJobErrors(
+    id: string,
+    errors: ImportError[],
+  ): Promise<ImportJobEntity> {
     const { data, error } = await this.supabase
       .from("import_jobs")
       .update({ errors })
@@ -164,13 +172,10 @@ export class SupabaseImportJobAdapter implements ImportJobPort {
   async bulkInsertProperties(
     rows: Record<string, unknown>[],
     realEstateId: string,
-    userId: string
+    userId: string,
   ): Promise<{ insertedIds: string[]; errors: ImportError[] }> {
     const insertedIds: string[] = [];
     const errors: ImportError[] = [];
-
-    // Use admin client for bulk insert to bypass RLS
-    const admin = await SupabaseAdminClient();
 
     for (let i = 0; i < rows.length; i++) {
       const row = rows[i];
@@ -186,12 +191,20 @@ export class SupabaseImportJobAdapter implements ImportJobPort {
           `property-${Date.now()}`;
 
         // Parse amenities if string
-        let amenities: string[] = [];
+        let amenities: {
+          label: string;
+          value: AmenitiesType;
+        }[] = [];
+
         if (row.amenities && typeof row.amenities === "string") {
           amenities = (row.amenities as string)
             .split(",")
             .map((a) => a.trim())
-            .filter(Boolean);
+            .filter(Boolean)
+            .map((a) => {
+              const v = amenitiesOptions.find((v) => v.value === a);
+              return v ? v : amenitiesOptions[0];
+            });
         }
 
         const insertData = {
@@ -199,15 +212,17 @@ export class SupabaseImportJobAdapter implements ImportJobPort {
           title,
           slug: `${baseSlug}-${Date.now()}`,
           description: row.description || null,
-          property_type: row.property_type || "house",
+          property_type: row.property_type || PropertyType.Other,
+
           street: row.street || null,
           city: String(row.city || ""),
           state: String(row.state || ""),
           country: String(row.country || "Colombia"),
           postal_code: row.postal_code || null,
-          neighborhood: row.neighborhood || null,
           latitude: row.latitude ? Number(row.latitude) : null,
           longitude: row.longitude ? Number(row.longitude) : null,
+          neighborhood: row.neighborhood || null,
+
           bedrooms: row.bedrooms ? parseInt(String(row.bedrooms)) : null,
           bathrooms: row.bathrooms ? parseInt(String(row.bathrooms)) : null,
           total_area: row.total_area ? Number(row.total_area) : null,
@@ -215,12 +230,15 @@ export class SupabaseImportJobAdapter implements ImportJobPort {
           lot_area: row.lot_area ? Number(row.lot_area) : null,
           floors: row.floors ? parseInt(String(row.floors)) : null,
           year_built: row.year_built ? parseInt(String(row.year_built)) : null,
-          parking_spots: row.parking_spots ? parseInt(String(row.parking_spots)) : null,
+
+          parking_spots: row.parking_spots
+            ? parseInt(String(row.parking_spots))
+            : null,
           amenities,
           created_by: userId,
         };
 
-        const { data: inserted, error: insertError } = await admin
+        const { data: inserted, error: insertError } = await this.supabase
           .from("properties")
           .insert(insertData)
           .select("id")
@@ -252,7 +270,7 @@ export class SupabaseImportJobAdapter implements ImportJobPort {
   async bulkInsertListings(
     rows: Record<string, unknown>[],
     realEstateId: string,
-    userId: string
+    userId: string,
   ): Promise<{ insertedIds: string[]; errors: ImportError[] }> {
     const insertedIds: string[] = [];
     const errors: ImportError[] = [];
@@ -268,11 +286,16 @@ export class SupabaseImportJobAdapter implements ImportJobPort {
     if (!agentData) {
       return {
         insertedIds: [],
-        errors: [{ row: 0, column: "agent_id", value: null, message: "Agent not found" }],
+        errors: [
+          {
+            row: 0,
+            column: "agent_id",
+            value: null,
+            message: "Agent not found",
+          },
+        ],
       };
     }
-
-    const admin = await SupabaseAdminClient();
 
     for (let i = 0; i < rows.length; i++) {
       const row = rows[i];
@@ -282,20 +305,21 @@ export class SupabaseImportJobAdapter implements ImportJobPort {
 
         if (!propertyId) {
           // Create a placeholder property
-          const { data: newProperty, error: propertyError } = await admin
-            .from("properties")
-            .insert({
-              real_estate_id: realEstateId,
-              title: `Imported Property ${Date.now()}-${i}`,
-              slug: `imported-property-${Date.now()}-${i}`,
-              property_type: "house",
-              city: String(row.city || "Unknown"),
-              state: String(row.state || "Unknown"),
-              country: "Colombia",
-              created_by: userId,
-            })
-            .select("id")
-            .single();
+          const { data: newProperty, error: propertyError } =
+            await this.supabase
+              .from("properties")
+              .insert({
+                real_estate_id: realEstateId,
+                title: `Imported Property ${Date.now()}-${i}`,
+                slug: `imported-property-${Date.now()}-${i}`,
+                property_type: "house",
+                city: String(row.city || "Unknown"),
+                state: String(row.state || "Unknown"),
+                country: "Colombia",
+                created_by: userId,
+              })
+              .select("id")
+              .single();
 
           if (propertyError || !newProperty) {
             errors.push({
@@ -324,14 +348,16 @@ export class SupabaseImportJobAdapter implements ImportJobPort {
           agent_id: agentData.id,
           listing_type: row.listing_type || "sale",
           price: Number(row.price) || 0,
-          currency: String(row.currency || "COP"),
+          currency: String(row.currency || Currency.COP),
           price_negotiable: Boolean(row.price_negotiable),
-          status: row.status || "draft",
+          status: row.status || PropertyStatus.Draft,
           meta_title: row.meta_title || null,
           meta_description: row.meta_description || null,
           keywords,
           whatsapp_contact: String(row.whatsapp_contact || ""),
-          expenses_amount: row.expenses_amount ? Number(row.expenses_amount) : null,
+          expenses_amount: row.expenses_amount
+            ? Number(row.expenses_amount)
+            : null,
           expenses_included: Boolean(row.expenses_included),
           virtual_tour_url: row.virtual_tour_url || null,
           video_url: row.video_url || null,
@@ -341,7 +367,7 @@ export class SupabaseImportJobAdapter implements ImportJobPort {
             : null,
         };
 
-        const { data: inserted, error: insertError } = await admin
+        const { data: inserted, error: insertError } = await this.supabase
           .from("listings")
           .insert(insertData)
           .select("id")
@@ -372,12 +398,9 @@ export class SupabaseImportJobAdapter implements ImportJobPort {
 
   async bulkInsertRealEstates(
     rows: Record<string, unknown>[],
-    userId: string
   ): Promise<{ insertedIds: string[]; errors: ImportError[] }> {
     const insertedIds: string[] = [];
     const errors: ImportError[] = [];
-
-    const admin = await SupabaseAdminClient();
 
     for (let i = 0; i < rows.length; i++) {
       const row = rows[i];
@@ -386,16 +409,14 @@ export class SupabaseImportJobAdapter implements ImportJobPort {
           name: String(row.name || ""),
           description: row.description || null,
           whatsapp: String(row.whatsapp || ""),
-          email: row.email || null,
-          phone: row.phone || null,
           street: row.street || null,
           city: String(row.city || ""),
-          state: String(row.state || ""),
           country: String(row.country || "Colombia"),
+          state: String(row.state || ""),
           postal_code: row.postal_code || null,
         };
 
-        const { data: inserted, error: insertError } = await admin
+        const { data: inserted, error: insertError } = await this.supabase
           .from("real_estates")
           .insert(insertData)
           .select("id")
@@ -410,13 +431,6 @@ export class SupabaseImportJobAdapter implements ImportJobPort {
           });
         } else if (inserted) {
           insertedIds.push(inserted.id);
-
-          // Assign the creating user as coordinator
-          await admin.from("real_estate_agents").insert({
-            profile_id: userId,
-            real_estate_id: inserted.id,
-            role: "coordinator",
-          });
         }
       } catch (err) {
         errors.push({
@@ -427,11 +441,13 @@ export class SupabaseImportJobAdapter implements ImportJobPort {
         });
       }
     }
-
     return { insertedIds, errors };
   }
 
-  async verifyRealEstateAccess(userId: string, realEstateId: string): Promise<boolean> {
+  async verifyRealEstateAccess(
+    userId: string,
+    realEstateId: string,
+  ): Promise<boolean> {
     const { data, error } = await this.supabase
       .from("real_estate_agents")
       .select("id")
@@ -455,8 +471,6 @@ export class SupabaseImportJobAdapter implements ImportJobPort {
       batchSize: row.batch_size as number,
       errors: (row.errors as ImportError[]) || [],
       resultSummary: row.result_summary as ImportResultSummary | null,
-      fileUrl: row.file_url as string | null,
-      originalFilename: row.original_filename as string | null,
       createdAt: row.created_at as string,
       updatedAt: row.updated_at as string,
       completedAt: row.completed_at as string | null,

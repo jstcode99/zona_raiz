@@ -1,11 +1,13 @@
 "use client";
-
 import { useState, useRef, useCallback, startTransition } from "react";
 import { UseFormSetError } from "react-hook-form";
 
 export type FieldError = {
   field?: string;
   message: string;
+  row?: number;
+  column?: string;
+  value?: string | number | null;
 };
 
 export type ActionResult<T = void> =
@@ -13,7 +15,6 @@ export type ActionResult<T = void> =
   | { success: false; error?: FieldError; errors?: FieldError[] };
 
 type Status = "idle" | "pending" | "success" | "error";
-
 type ServerAction<T> = (formData: FormData) => Promise<ActionResult<T>>;
 
 type Options<T> = {
@@ -21,6 +22,7 @@ type Options<T> = {
   setError?: UseFormSetError<any>;
   onSuccess?: (state: ActionResult<T>) => void;
   onError?: (error: FieldError) => void;
+  onErrors?: (errors: FieldError[]) => void; // 👈 para múltiples errores (validación)
 };
 
 export function useServerMutation<T>({
@@ -28,6 +30,7 @@ export function useServerMutation<T>({
   setError,
   onSuccess,
   onError,
+  onErrors,
 }: Options<T>) {
   const [state, setState] = useState<ActionResult<T> | null>(null);
   const [status, setStatus] = useState<Status>("idle");
@@ -53,20 +56,24 @@ export function useServerMutation<T>({
             }
 
             setStatus("error");
-
             const errors =
               result.errors ?? (result.error ? [result.error] : []);
 
-            errors.forEach((err) => {
-              onError?.(err);
-
-              if (setError && err.field) {
-                setError(err.field, {
-                  type: "server",
-                  message: err.message,
-                });
-              }
-            });
+            // Si hay onErrors y múltiples errores, notifica todos juntos
+            if (onErrors && errors.length > 0) {
+              onErrors(errors);
+            } else {
+              // fallback: notifica uno a uno
+              errors.forEach((err) => {
+                onError?.(err);
+                if (setError && err.field) {
+                  setError(err.field, {
+                    type: "server",
+                    message: err.message,
+                  });
+                }
+              });
+            }
           })
           .catch((error: any) => {
             setIsPending(false);
@@ -88,7 +95,7 @@ export function useServerMutation<T>({
           });
       });
     },
-    [action, setError, onSuccess, onError],
+    [action, setError, onSuccess, onError, onErrors],
   );
 
   const reset = useCallback(() => {

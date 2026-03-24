@@ -1,13 +1,19 @@
 -- Función que se ejecuta después de insertar una real_estate
 create or replace function public.handle_new_real_estate()
-returns trigger as $$
+returns trigger
+security definer
+set search_path = public
+language plpgsql
+as $$
+declare
+  v_is_admin boolean;
 begin
-    -- Skip if called from service role (no authenticated user)
-    if auth.uid() is null then
-    return new;
-    end if;
-  -- Verificar que no sea coordinator en otra inmobiliaria (límite de 1)
-  if exists (
+  -- Guardamos el resultado en variable para poder debuggear
+  v_is_admin := public.is_admin(auth.uid());
+
+  raise log 'handle_new_real_estate: uid=%, is_admin=%', auth.uid(), v_is_admin;
+
+  if not v_is_admin and exists (
     select 1 from public.real_estate_agents
     where profile_id = auth.uid()
     and role = 'coordinator'
@@ -15,14 +21,19 @@ begin
     raise exception 'Ya eres coordinador de otra inmobiliaria';
   end if;
 
-  -- Insertar al creador como coordinador de la nueva inmobiliaria
-  -- Usamos security definer implícito de la función
-  insert into public.real_estate_agents (real_estate_id, profile_id, role)
-  values (new.id, auth.uid(), 'coordinator');
+  if not exists (
+    select 1 from public.real_estate_agents
+    where profile_id = auth.uid()
+    and real_estate_id = new.id
+    and role = 'coordinator'
+  ) then
+    insert into public.real_estate_agents (real_estate_id, profile_id, role)
+    values (new.id, auth.uid(), 'coordinator');
+  end if;
 
   return new;
 end;
-$$ language plpgsql security definer;
+$$;
 
 drop trigger if exists on_real_estate_created on public.real_estates;
 

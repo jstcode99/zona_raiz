@@ -215,6 +215,22 @@ export const STORAGE_BUCKETS = {
 } as const;
 
 // ==========================================
+// IMPORT CONFIG
+// ==========================================
+
+export const IMPORT_CONFIG = {
+  MAX_FILE_SIZE: 10 * 1024 * 1024, // 10MB
+  MAX_ROWS_PER_FILE: 10000,
+  DEFAULT_BATCH_SIZE: 100,
+  MIN_CONFIDENCE_THRESHOLD: 0.8, // 80%
+  ALLOWED_FILE_TYPES: [
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", // .xlsx
+    "application/vnd.ms-excel", // .xls
+    "text/csv", // .csv
+  ] as const,
+} as const;
+
+// ==========================================
 // VALIDATION
 // ==========================================
 

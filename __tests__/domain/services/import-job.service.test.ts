@@ -38,8 +38,6 @@ describe("ImportJobService", () => {
     batchSize: 100,
     errors: [],
     resultSummary: null,
-    fileUrl: "https://storage.example.com/file.xlsx",
-    originalFilename: "properties.xlsx",
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
     completedAt: null,
@@ -82,8 +80,6 @@ describe("ImportJobService", () => {
         tableName: ImportTableName.PROPERTIES,
         totalRows: 100,
         batchSize: 100,
-        fileUrl: undefined,
-        originalFilename: undefined,
       });
       expect(result).toEqual(mockJob);
     });

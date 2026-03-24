@@ -32,7 +32,7 @@ import {
   defaultListingSearchFiltersValues,
   defaultFilters,
 } from "@/application/validation/listing-search-full.schema";
-import { PlaceSearch } from "../places/place-search";
+import { PlaceSearch, ParsedPlace } from "../places/place-search";
 import { useParams } from "next/navigation";
 import { CITY_LABELS, STATE_LABELS } from "@/lib/locations";
 
@@ -177,7 +177,7 @@ export function ListingSearchFilters({
           {/* Mostrar chips de lo seleccionado */}
           {(values.city || values.state || values.neighborhood) && (
             <div className="flex flex-wrap gap-1.5">
-              {values.state && (
+              {values.state && typeof values.state === "string" && (
                 <span className="text-[11px] bg-primary/10 text-primary border border-primary/20 px-2 py-0.5 rounded-full flex items-center gap-1">
                   {STATE_LABELS[values.state] ?? values.state}
                   <button
@@ -191,7 +191,7 @@ export function ListingSearchFilters({
                   </button>
                 </span>
               )}
-              {values.city && (
+              {values.city && typeof values.city === "string" && (
                 <span className="text-[11px] bg-primary/10 text-primary border border-primary/20 px-2 py-0.5 rounded-full flex items-center gap-1">
                   {CITY_LABELS[values.city] ?? values.city}
                   <button

@@ -1,6 +1,19 @@
 {
   "title": "Importar Datos",
   "subtitle": "Sube y previsualiza tus datos antes de importar",
+  "detection": {
+    "detected_table": "Tabla detectada",
+    "confidence": "Confianza",
+    "confidence_low": "La confianza es baja. Por favor selecciona la tabla manualmente.",
+    "auto_detected": "Auto-detectado",
+    "select_table_manual": "Seleccionar tabla manualmente"
+  },
+  "validation": {
+    "validation_errors": "Errores de validación",
+    "errors_found": "{{count}} errores encontrados",
+    "validating": "Validando datos...",
+    "validation_success": "Todos los datos son válidos"
+  },
   "actions": {
     "cancel": "Cancelar",
     "confirm": "Confirmar Importación",

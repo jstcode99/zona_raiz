@@ -1,5 +1,3 @@
-// domain/ports/import-job.port.ts
-
 import type {
   ImportJobEntity,
   ImportJobStatus,
@@ -18,8 +16,6 @@ export interface ImportJobPort {
     tableName: ImportTableName;
     totalRows: number;
     batchSize: number;
-    fileUrl?: string;
-    originalFilename?: string;
   }): Promise<ImportJobEntity>;
 
   /**
@@ -37,7 +33,7 @@ export interface ImportJobPort {
    */
   updateJobStatus(
     id: string,
-    status: ImportJobStatus
+    status: ImportJobStatus,
   ): Promise<ImportJobEntity>;
 
   /**
@@ -46,7 +42,7 @@ export interface ImportJobPort {
   updateJobProgress(
     id: string,
     processedRows: number,
-    errors?: ImportError[]
+    errors?: ImportError[],
   ): Promise<ImportJobEntity>;
 
   /**
@@ -55,7 +51,7 @@ export interface ImportJobPort {
   completeJob(
     id: string,
     summary: ImportResultSummary,
-    errors?: ImportError[]
+    errors?: ImportError[],
   ): Promise<ImportJobEntity>;
 
   /**
@@ -74,7 +70,7 @@ export interface ImportJobPort {
   bulkInsertProperties(
     rows: Record<string, unknown>[],
     realEstateId: string,
-    userId: string
+    userId: string,
   ): Promise<{ insertedIds: string[]; errors: ImportError[] }>;
 
   /**
@@ -83,7 +79,7 @@ export interface ImportJobPort {
   bulkInsertListings(
     rows: Record<string, unknown>[],
     realEstateId: string,
-    userId: string
+    userId: string,
   ): Promise<{ insertedIds: string[]; errors: ImportError[] }>;
 
   /**
@@ -91,7 +87,6 @@ export interface ImportJobPort {
    */
   bulkInsertRealEstates(
     rows: Record<string, unknown>[],
-    userId: string
   ): Promise<{ insertedIds: string[]; errors: ImportError[] }>;
 
   /**
@@ -99,6 +94,6 @@ export interface ImportJobPort {
    */
   verifyRealEstateAccess(
     userId: string,
-    realEstateId: string
+    realEstateId: string,
   ): Promise<boolean>;
 }

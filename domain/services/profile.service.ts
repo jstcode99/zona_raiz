@@ -109,4 +109,8 @@ export class ProfileService {
       },
     )();
   }
+
+  getAgentRoleInRealEstate(userId: string, realEstateId: string) {
+    return this.profilePort.getAgentRoleInRealEstate(userId, realEstateId);
+  }
 }
