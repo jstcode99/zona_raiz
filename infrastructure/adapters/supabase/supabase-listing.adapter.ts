@@ -369,7 +369,7 @@ export class SupabaseListingAdapter implements ListingPort {
   }
 
   async findSimplePublished(limit: number = 10): Promise<ListingEntity[]> {
-    let query = this.supabase
+    const query = this.supabase
       .from("listings")
       .select(
         `

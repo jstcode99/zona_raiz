@@ -23,6 +23,8 @@ import SimpleListingTable from "@/features/listing/simple-listing-table";
 import { getSimpleListingColumns } from "@/features/listing/simple-listing-columns";
 import { Spinner } from "@/components/ui/spinner";
 import { appModule } from "@/application/modules/app.module";
+import { encodedRedirect } from "@/shared/redirect";
+import { createRouter } from "@/i18n/router";
 
 function getMonthDateRange(date: Date): {
   start_date: string;
@@ -52,6 +54,7 @@ export default async function page({ params }: props) {
   const { lang } = await params;
   const { t } = await getTranslation(lang);
   const cookieStore = await cookies();
+  const routes = createRouter(lang);
 
   const {
     cookiesService,
@@ -63,6 +66,14 @@ export default async function page({ params }: props) {
   } = await appModule(lang, { cookies: cookieStore });
 
   const realEstateId = (await cookiesService.getRealEstateId()) as string;
+
+  if (!realEstateId) {
+    return encodedRedirect(
+      "error",
+      routes.signin(),
+      t("common:exceptions.data_not_found"),
+    );
+  }
 
   const now = new Date();
   const currentMonthRange = getMonthDateRange(now);

@@ -83,6 +83,7 @@ export async function seedRealEstates(
     .upsert(realEstateInserts, { onConflict: "id" });
 
   if (reError) {
+    console.log(reError.message, "message.............");
     logger.error("Error insertando inmobiliarias:", reError.message);
     throw reError;
   }

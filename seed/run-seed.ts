@@ -4,25 +4,32 @@
  * ==========================================
  * ZONA_RAIZ - Database Seed Script
  * ==========================================
- * 
+ *
  * Script para populate la base de datos con datos de prueba generados con Faker.js.
- * 
+ *
  * Uso:
  *   pnpm seed              # Ejecutar con opciones por defecto
  *   pnpm seed --dry-run    # Solo mostrar qué se insertaría
  *   pnpm seed --skip-auth  # Omitir creación de auth users
- * 
+ *
  * Variables de entorno necesarias:
  *   NEXT_PUBLIC_SUPABASE_URL=https://tu-proyecto.supabase.co
  *   SUPABASE_SERVICE_ROLE_KEY=tu-service-role-key
- * 
+ *
  */
 
-import "dotenv/config";
+import * as dotenv from "dotenv";
 import { runSeed, SeedLogger, LogLevel } from "./index";
 import { faker } from "@faker-js/faker";
-import { generateFakeRealEstates, generateFakeProperties, generateFakeListings, generateFakePropertyImages, generateFakeProfiles } from "./lib/faker-data";
+import {
+  generateFakeRealEstates,
+  generateFakeProperties,
+  generateFakeListings,
+  generateFakePropertyImages,
+  generateFakeProfiles,
+} from "./lib/faker-data";
 
+dotenv.config({ path: ".env.local" });
 // Seed Faker para reproducibilidad en dry-run
 faker.seed(42);
 
@@ -85,30 +92,32 @@ Ejemplo:
 
 async function main() {
   logger.section("🌱 ZONA_RAIZ SEED (Faker.js)");
-  
+
   if (options.dryRun) {
-    logger.warn("⚠️  Modo DRY-RUN: Solo se mostrarán los datos que se insertarían");
-    
+    logger.warn(
+      "⚠️  Modo DRY-RUN: Solo se mostrarán los datos que se insertarían",
+    );
+
     console.log("\n📊 Datos que se insertarían (generados con Faker.js):");
-    
+
     // Generar datos fake para mostrar en dry-run
     const fakeRealEstates = generateFakeRealEstates(3);
     console.log(`   - Real Estates: ${fakeRealEstates.length}`);
-    
+
     const realEstateIds = fakeRealEstates.map((re) => re.id);
     const fakeProperties = generateFakeProperties(15, realEstateIds);
     console.log(`   - Properties: ${fakeProperties.length}`);
-    
+
     const fakeListings = generateFakeListings(
       fakeProperties.length,
       fakeProperties,
-      fakeRealEstates[0]?.whatsapp || "+5491100000000"
+      fakeRealEstates[0]?.whatsapp || "+5491100000000",
     );
     console.log(`   - Listings: ${fakeListings.length}`);
-    
+
     const fakeImages = generateFakePropertyImages(0, fakeProperties);
     console.log(`   - Property Images: ${fakeImages.length}`);
-    
+
     const { coordinators, agents, clients } = generateFakeProfiles({
       coordinators: 3,
       agentsPerCoordinator: 3,
@@ -117,16 +126,21 @@ async function main() {
     console.log(`   - Coordinators: ${coordinators.length}`);
     console.log(`   - Agents: ${agents.length}`);
     console.log(`   - Clients: ${clients.length}`);
-    
+
     const totalProfiles = coordinators.length + agents.length + clients.length;
-    const favoritesCount = Math.min(5, clients.length * fakeListings.filter((l) => l.status === "active").length);
+    const favoritesCount = Math.min(
+      5,
+      clients.length * fakeListings.filter((l) => l.status === "active").length,
+    );
     const inquiriesCount = 8;
-    
+
     console.log(`   - Total Profiles: ${totalProfiles}`);
     console.log(`   - Favorites: ~${favoritesCount}`);
     console.log(`   - Inquiries: ~${inquiriesCount}`);
-    
-    console.log("\n✅ Dry-run completado. Datos generados con Faker.js (seed=42).");
+
+    console.log(
+      "\n✅ Dry-run completado. Datos generados con Faker.js (seed=42).",
+    );
     console.log("   Usa 'pnpm seed' para ejecutar la inserción real.");
     return;
   }

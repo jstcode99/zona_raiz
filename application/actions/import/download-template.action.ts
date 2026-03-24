@@ -35,7 +35,9 @@ export const downloadTemplateAction = withServerAction(
         headers = isSpanish ? listingImportHeadersES : listingImportHeaders;
         break;
       case ImportTableName.REAL_ESTATES:
-        headers = isSpanish ? realEstateImportHeadersES : realEstateImportHeaders;
+        headers = isSpanish
+          ? realEstateImportHeadersES
+          : realEstateImportHeaders;
         break;
       default:
         throw new Error("Invalid table name");

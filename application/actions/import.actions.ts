@@ -103,8 +103,6 @@ export const processImportAction = withServerAction(
       return obj;
     });
 
-    console.log(transformedRows);
-
     // Crear mapa de header esperado (inglés) -> header de display (original del archivo)
     const headerMap = new Map<string, string>();
     mapping.forEach((map, targetIndex) => {
@@ -201,5 +199,41 @@ export const processImportAction = withServerAction(
       jobId: job.id,
       summary,
     };
+  },
+);
+
+export interface DownloadTemplateResult {
+  url: string;
+  filename: string;
+}
+
+export const downloadTemplateAction = withServerAction(
+  async (formData: FormData): Promise<DownloadTemplateResult> => {
+    const tableName = formData.get("tableName") as ImportTableName;
+    const lang = await getLangServerSide();
+
+    // Obtener headers según tabla
+    let headers: readonly string[];
+    switch (tableName) {
+      case ImportTableName.PROPERTIES:
+        headers = propertyImportHeaders;
+        break;
+      case ImportTableName.LISTINGS:
+        headers = listingImportHeaders;
+        break;
+      case ImportTableName.REAL_ESTATES:
+        headers = realEstateImportHeaders;
+        break;
+      default:
+        throw new Error("Invalid table name");
+    }
+
+    // Crear CSV con headers
+    const csvContent = headers.join(",") + "\n";
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+
+    // Retornar URL para descarga
+    return { url, filename: `plantilla-${tableName}-${lang}.csv` };
   },
 );
