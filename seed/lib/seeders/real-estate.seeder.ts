@@ -164,7 +164,7 @@ export async function seedRealEstates(
       .from("real_estate_agents")
       .insert({
         real_estate_id: agent.realEstateId,
-        profile_id: agent.id,
+        profile_id: agent.profileId,
         role: agent.role,
       })
       .select()
