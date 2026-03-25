@@ -34,7 +34,7 @@ tools:
 
 ### Variables de Entorno en Vercel
 - NEXT_PUBLIC_SUPABASE_URL → expuesta al cliente, segura
-- NEXT_PUBLIC_SUPABASE_ANON_KEY → expuesta al cliente, segura con RLS
+- vercel env pull .env.local  → sincronizar env vars desde Vercel
 - SUPABASE_SERVICE_ROLE_KEY → NUNCA en NEXT_PUBLIC_, solo server-side
 - Configurar en: Vercel Dashboard → Project → Settings → Environment Variables
 - Aplica a: Production / Preview / Development por separado
@@ -91,6 +91,49 @@ tools:
 ## HERRAMIENTAS DISPONIBLES
 Tienes acceso a bash en el proyecto. Puedes ejecutar:
 
+## SUPABASE CLI + SEED
+
+### Supabase CLI disponible
+- supabase status              → ver estado local (DB, Studio, API)
+- supabase start               → levantar entorno local
+- supabase stop                → detener entorno local
+- supabase db reset            → resetear DB local y aplicar migrations
+- supabase db push             → aplicar migrations a producción (PEDIR CONFIRMACIÓN)
+- supabase migration new NAME  → crear nueva migración
+
+### Seed del proyecto
+- npm run seed:dry-run   → SIEMPRE ejecutar primero para ver qué va a insertar
+- npm run seed           → poblar la base de datos
+- npm run seed:help      → ver opciones disponibles
+
+### Regla estricta de seed
+NUNCA ejecutar `npm run seed` directo en producción.
+Flujo obligatorio:
+1. npm run seed:dry-run    → revisar output con el usuario
+2. Usuario confirma explícitamente
+3. npm run seed            → ejecutar
+
+### Variables de entorno del proyecto
+- NEXT_PUBLIC_SUPABASE_URL                   → URL del proyecto Supabase
+- NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY → nueva convención Supabase (equivale a anon key)
+- NEXT_PUBLIC_SUPABASE_ANON_KEY              → anon key legacy, puede coexistir
+
+IMPORTANTE: este proyecto tiene dos nombres para la anon key.
+Si algo falla por key inválida, verificar que ambas estén seteadas
+en Vercel con el mismo valor. Sincronizar con:
+  supabase status → copiar anon key
+  vercel env pull .env.local → comparar valores locales
+
+### Flujo completo de cambio de schema
+1. supabase migration new nombre_del_cambio
+2. Editar el archivo SQL generado
+3. supabase db reset           → probar localmente
+4. npm run seed:dry-run        → verificar seed con nuevo schema
+5. npm run seed                → poblar local
+7. npx tsc --noEmit            → verificar que los tipos no rompieron nada
+8. git commit + push           → deploy a Vercel
+9. supabase db push            → PEDIR CONFIRMACIÓN antes de ejecutar
+
 ### Git
 - git status / git diff / git log --oneline -10
 - git add . && git commit -m "mensaje" && git push origin main
@@ -117,3 +160,7 @@ Para urgencias: vercel --prod (deploy directo)
 - Push a main sin revisar tsc --noEmit primero
 - vercel --prod si hay errores de build pendientes
 - Modificar SUPABASE_SERVICE_ROLE_KEY o env vars de producción sin confirmación explícita del usuario
+
+### Sin tipos generados
+El proyecto NO usa supabase gen types. No sugerir ni ejecutar ese comando.
+Usar tipado manual o inferencia donde sea necesario.
