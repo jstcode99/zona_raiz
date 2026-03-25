@@ -179,7 +179,7 @@ export function ListingSearchFilters({
             <div className="flex flex-wrap gap-1.5">
               {values.state && typeof values.state === "string" && (
                 <span className="text-[11px] bg-primary/10 text-primary border border-primary/20 px-2 py-0.5 rounded-full flex items-center gap-1">
-                  {STATE_LABELS[values.state] ?? values.state}
+                  {STATE_LABELS[values.state as keyof typeof STATE_LABELS] ?? values.state}
                   <button
                     type="button"
                     onClick={() => {
@@ -193,7 +193,7 @@ export function ListingSearchFilters({
               )}
               {values.city && typeof values.city === "string" && (
                 <span className="text-[11px] bg-primary/10 text-primary border border-primary/20 px-2 py-0.5 rounded-full flex items-center gap-1">
-                  {CITY_LABELS[values.city] ?? values.city}
+                  {CITY_LABELS[values.city as keyof typeof CITY_LABELS] ?? values.city}
                   <button
                     type="button"
                     onClick={() => setValue("city", undefined)}

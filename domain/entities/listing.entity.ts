@@ -56,7 +56,6 @@ export const listingTypeLabels: Record<ListingType, string> = {
 export const listingStatusOptions = [
   { label: "Activa", value: ListingStatus.ACTIVE },
   { label: "Borrador", value: ListingStatus.DRAFT },
-  { label: "Pausada", value: ListingStatus.PAUSED },
   { label: "Archivada", value: ListingStatus.ARCHIVED },
 ];
 

@@ -15,6 +15,7 @@ permission:
     "implementation-tester": allow
     "pr-manager": allow
     "linear-planning-agent": allow
+    "deploy": allow
 tools:
   "linear_*": true
   "supabase_*": false
@@ -40,7 +41,8 @@ iniciar issue → @issue-starter → @builder → @implementation-tester → @pr
 | "crea el PR" / "abre PR" / builder terminó | `@pr-manager` (Fase 1) |
 | "aprobado" / "merge KRO-X" / "cierra el issue" | `@pr-manager` (Fase 2) |
 | "planifica" / "crea issue" / "descompón feature" | `@linear-planning-agent` |
- 
+| "despliega" / "desplegar cambios" / "valida despligue" | `@deploy` |
+
 ## Flujo estándar — "inicia issue KRO-X"
  
 1. `@issue-starter` — prepara worktree y entorno
@@ -50,8 +52,11 @@ iniciar issue → @issue-starter → @builder → @implementation-tester → @pr
    - Si BLOQUEADO → informa al usuario antes de continuar
 4. `@pr-manager` (Fase 1) — push + crea PR + Linear: In Review
 5. **Pausa**: informa al usuario que el PR está listo para revisar
-6. Usuario confirma → `@pr-manager` (Fase 2) — merge + cierra issue + elimina worktree
- 
+6. Usuario confirma → `@pr-manager` (Fase 2) — despliegue
+5. Informa al usuario el estado del despliegue si se inicio o debe inciarse con `@pr-manager`
+5. Valida erres y estado general e informa error con `@pr-manager`
+6. Si hay error se comenta el issue  y se pasa al paso 3 para validar y al 2 sin hay que corregir
+7. Si el despligue es correto confirma → `@pr-manager` (Fase 2) — merge + cierra issue + elimina worktree
 
 ## Agentes disponibles
 
@@ -62,6 +67,7 @@ iniciar issue → @issue-starter → @builder → @implementation-tester → @pr
 | `@implementation-tester` | Validar implementaciones, correr tests, verificar calidad |
 | `@linear-planning-agent` | Crear/actualizar/organizar issues en Linear |
 | `@pr-manager` | Termine test |
+| `@deploy` | Despliegue previo al merge |
 
 ## Tu proceso
 

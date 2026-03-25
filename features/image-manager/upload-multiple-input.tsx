@@ -7,6 +7,7 @@ import { ImageProgress } from "./image-progress";
 import { Button } from "@/components/ui/button";
 import { createPropertyImageAction } from "@/application/actions/property-image.action";
 import { useTranslation } from "react-i18next";
+import { toast } from "sonner";
 
 export interface LocalFile {
   id: string;
@@ -16,7 +17,13 @@ export interface LocalFile {
   order: number;
 }
 
-export function UploadMultipleInput({ propertyId }: { propertyId: string }) {
+export function UploadMultipleInput({
+  propertyId,
+  onSuccessAction,
+}: {
+  propertyId: string;
+  onSuccessAction?: () => void;
+}) {
   const [files, setFiles] = useState<LocalFile[]>([]);
   const [pending, startTransition] = useTransition();
   const { t } = useTranslation("images");
@@ -62,8 +69,8 @@ export function UploadMultipleInput({ propertyId }: { propertyId: string }) {
     if (!files.length) return;
 
     startTransition(async () => {
-      await Promise.all(
-        files.map((item) => {
+      const results = await Promise.all(
+        files.map(async (item) => {
           const formData = new FormData();
           formData.append("file", item.file);
           formData.append("display_order", String(item.order));
@@ -71,11 +78,29 @@ export function UploadMultipleInput({ propertyId }: { propertyId: string }) {
           formData.append("alt_text", item.file.name);
           formData.append("caption", item.file.name);
 
-          return createPropertyImageAction(propertyId, formData);
+          const response = await createPropertyImageAction(
+            propertyId,
+            formData,
+          );
+
+          if (!response.success) {
+            const message =
+              response.error?.message ??
+              response.errors?.[0]?.message ??
+              t("validation.errors_found");
+            toast.error(message);
+            return false;
+          }
+
+          toast.success(t("messages.import-success"));
+          return true;
         }),
       );
 
       setFiles([]);
+      if (results.some(Boolean)) {
+        onSuccessAction?.();
+      }
     });
   }
 

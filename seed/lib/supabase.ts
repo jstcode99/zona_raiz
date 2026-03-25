@@ -21,14 +21,14 @@ export function getSeedClient(): SupabaseClient {
   if (!supabaseUrl || !serviceRoleKey) {
     throw new Error(
       "❌ Error: Variables de entorno faltantes.\n" +
-      "\n" +
-      "Por favor configura las siguientes variables:\n" +
-      "  - NEXT_PUBLIC_SUPABASE_URL\n" +
-      "  - SUPABASE_SERVICE_ROLE_KEY\n" +
-      "\n" +
-      "Puedes crear un archivo .env.local en la raíz del proyecto:\n" +
-      "  NEXT_PUBLIC_SUPABASE_URL=https://tu-proyecto.supabase.co\n" +
-      "  SUPABASE_SERVICE_ROLE_KEY=tu-service-role-key"
+        "\n" +
+        "Por favor configura las siguientes variables:\n" +
+        "  - NEXT_PUBLIC_SUPABASE_URL\n" +
+        "  - SUPABASE_SERVICE_ROLE_KEY\n" +
+        "\n" +
+        "Puedes crear un archivo .env.local en la raíz del proyecto:\n" +
+        "  NEXT_PUBLIC_SUPABASE_URL=https://tu-proyecto.supabase.co\n" +
+        "  SUPABASE_SERVICE_ROLE_KEY=tu-service-role-key",
     );
   }
 
@@ -47,16 +47,16 @@ export function getSeedClient(): SupabaseClient {
  */
 export async function verifySeedClient(): Promise<boolean> {
   const client = getSeedClient();
-  
+
   try {
     // Intentar hacer una consulta simple para verificar la conexión
-    const { error } = await client
-      .from("profiles")
-      .select("id")
-      .limit(1);
+    const { error } = await client.from("profiles").select("id").limit(1);
 
     if (error) {
-      console.error("❌ Error al verificar conexión con Supabase:", error.message);
+      console.error(
+        "❌ Error al verificar conexión con Supabase:",
+        error.message,
+      );
       return false;
     }
 

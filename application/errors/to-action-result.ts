@@ -1,5 +1,5 @@
-import { ActionResult } from "@/shared/hooks/use-server-mutation.hook"
-import { AppError } from "../errors/app.error"
+import { ActionResult } from "@/shared/hooks/action-result";
+import { AppError } from "../errors/app.error";
 
 export function toActionResult(error: unknown): ActionResult {
   if (error instanceof AppError) {
@@ -7,18 +7,18 @@ export function toActionResult(error: unknown): ActionResult {
       return {
         success: false,
         errors: error.issues,
-      }
+      };
     }
 
     return {
       success: false,
       error: { message: error.message },
-    }
+    };
   }
 
   // fallback Yup legacy
   if (error && typeof error === "object" && "name" in error) {
-    const err: any = error
+    const err: any = error;
 
     if (err.name === "ValidationError") {
       return {
@@ -27,7 +27,7 @@ export function toActionResult(error: unknown): ActionResult {
           field: err.path,
           message: err.message,
         },
-      }
+      };
     }
   }
 
@@ -35,9 +35,7 @@ export function toActionResult(error: unknown): ActionResult {
     success: false,
     error: {
       message:
-        error instanceof Error
-          ? error.message
-          : "Unexpected error occurred",
+        error instanceof Error ? error.message : "Unexpected error occurred",
     },
-  }
+  };
 }

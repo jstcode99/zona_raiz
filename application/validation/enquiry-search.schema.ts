@@ -26,7 +26,7 @@ export const enquirySearchSchema = yup.object({
 export type EnquirySearchFormInput = yup.InferType<typeof enquirySearchSchema>;
 
 export const defaultEnquirySearchValues: EnquirySearchFormInput = {
-  search: "",
+  search: undefined,
   status: undefined,
   source: undefined,
   start_date: undefined,

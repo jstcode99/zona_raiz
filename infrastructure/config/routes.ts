@@ -1,4 +1,9 @@
 export const ROUTES = {
+  base: {
+    es: "/",
+    en: "/",
+  },
+
   home: {
     es: "/es",
     en: "/en",

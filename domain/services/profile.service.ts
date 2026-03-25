@@ -1,5 +1,6 @@
 import { ProfilePort } from "@/domain/ports/profile.port";
 import { EUserRole, ProfileEntity } from "@/domain/entities/profile.entity";
+import { EAgentRole } from "@/domain/entities/real-estate-agent.entity";
 import { unstable_cache } from "next/cache";
 import { Lang } from "@/i18n/settings";
 import { CACHE_TAGS } from "@/infrastructure/config/constants";

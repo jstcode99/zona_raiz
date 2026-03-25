@@ -1,18 +1,8 @@
 "use client";
+
 import { useState, useRef, useCallback, startTransition } from "react";
 import { UseFormSetError } from "react-hook-form";
-
-export type FieldError = {
-  field?: string;
-  message: string;
-  row?: number;
-  column?: string;
-  value?: string | number | null;
-};
-
-export type ActionResult<T = void> =
-  | (T extends void ? { success: true } : { success: true; data: T })
-  | { success: false; error?: FieldError; errors?: FieldError[] };
+import { ActionResult, FieldError } from "./action-result"; // ← neutro ✅
 
 type Status = "idle" | "pending" | "success" | "error";
 type ServerAction<T> = (formData: FormData) => Promise<ActionResult<T>>;

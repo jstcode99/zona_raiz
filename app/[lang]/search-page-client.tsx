@@ -13,9 +13,17 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
+import {
   IconChevronLeft,
   IconChevronRight,
   IconMapPin,
+  IconAdjustmentsHorizontal,
 } from "@tabler/icons-react";
 import Link from "next/link";
 import { useTranslation } from "react-i18next";
@@ -70,7 +78,7 @@ export function SearchPageClient({
           newFilters.type,
       );
     }
-    if (newFilters.city) parts.push(newFilters.city);
+    if (newFilters.city) parts.push(newFilters.city as string);
 
     const newBasePath = `/${lang}${parts.length ? `/${parts.join("/")}` : ""}`;
     window.location.href = buildUrl(
@@ -86,52 +94,88 @@ export function SearchPageClient({
     });
   };
 
+  const FiltersContent = () => (
+    <ListingSearchFilters
+      initialFilters={filters}
+      onFiltersChange={handleFiltersChange}
+    />
+  );
+
   return (
     <div className="min-h-screen bg-background">
       <LandingNav isAuth={isAuth} />
+
+      {/* Breadcrumb */}
       <div className="bg-primary border-y">
         <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center gap-2 text-sm  text-primary-foreground">
-            <IconMapPin className="size-4" />
-            <span className="capitalize">{breadcrumb}</span>
+          <div className="flex items-center gap-2 text-sm text-primary-foreground">
+            <IconMapPin className="size-4 shrink-0" />
+            <span className="capitalize truncate">{breadcrumb}</span>
           </div>
         </div>
       </div>
 
       <div className="container mx-auto px-4 py-6">
         <div className="flex flex-col lg:flex-row gap-6">
-          <aside className="w-full lg:w-80 shrink-0">
+          {/* ── Desktop sidebar ── */}
+          <aside className="hidden lg:block w-80 shrink-0">
             <div className="sticky top-4 bg-card rounded-lg border p-4">
               <h2 className="font-semibold mb-4 capitalize">
                 {t("common:sections.filters")}
               </h2>
-              <ListingSearchFilters
-                initialFilters={filters}
-                onFiltersChange={handleFiltersChange}
-              />
+              <FiltersContent />
             </div>
           </aside>
 
-          <main className="flex-1">
-            <div className="flex items-center justify-between mb-4">
-              <div>
-                <h1 className="text-2xl font-bold capitalize">
-                  {filters.city || filters.state || t("words:properties")}
+          {/* ── Main content ── */}
+          <main className="flex-1 min-w-0">
+            {/* Header row */}
+            <div className="flex items-center justify-between mb-4 gap-3">
+              <div className="min-w-0">
+                <h1 className="text-xl sm:text-2xl font-bold capitalize truncate">
+                  {(filters.city as string) ||
+                    (filters.state as string) ||
+                    (t("common:properties") as string)}
                 </h1>
                 <p className="text-sm text-muted-foreground capitalize">
                   {total} {total === 1 ? t("words:result") : t("words:results")}
                 </p>
               </div>
 
-              <div className="flex items-center gap-2">
-                <span className="text-sm text-muted-foreground capitalize">
-                  {t("words:order")}:
-                </span>
+              <div className="flex items-center gap-2 shrink-0">
+                {/* Filter trigger — mobile only */}
+                <Sheet>
+                  <SheetTrigger asChild>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="lg:hidden flex items-center gap-1.5"
+                    >
+                      <IconAdjustmentsHorizontal className="size-4" />
+                      <span>{t("common:sections.filters")}</span>
+                    </Button>
+                  </SheetTrigger>
+                  <SheetContent
+                    side="left"
+                    className="w-80 max-w-[85vw] flex flex-col p-0"
+                  >
+                    <SheetHeader className="px-4 py-4 border-b shrink-0">
+                      <SheetTitle className="capitalize text-left">
+                        {t("common:sections.filters")}
+                      </SheetTitle>
+                    </SheetHeader>
+                    <div className="flex-1 overflow-y-auto p-4">
+                      <FiltersContent />
+                    </div>
+                  </SheetContent>
+                </Sheet>
+
+                {/* Sort */}
                 <Select
                   value={filters.sort_by || "created_at_desc"}
                   onValueChange={handleSortChange}
                 >
-                  <SelectTrigger className="w-50">
+                  <SelectTrigger className="w-40 sm:w-50">
                     <SelectValue
                       placeholder={t("properties:placeholders.order_by")}
                     />

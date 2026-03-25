@@ -11,3 +11,4 @@ export const priceSchema = yup
       attribute: 'price',
       max: '9999999999.9'
     }))
+    .optional();

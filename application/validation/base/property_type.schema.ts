@@ -5,3 +5,4 @@ import * as yup from 'yup'
 export const propertyTypeSchema = yup
     .string<string>()
     .oneOf(propertyTypeValues, i18next.t('validations.required', { attribute: 'property_type' }))
+    .optional();
