@@ -4,9 +4,9 @@ import { getLangServerSide } from "@/shared/utils/lang";
 import { cookies } from "next/headers";
 import { appModule } from "@/application/modules/app.module";
 import { toActionResult } from "@/shared/hooks/to-action-result";
-import { ActionResult } from "@/shared/hooks/use-server-mutation.hook";
 import { ImportJobEntity } from "@/domain/entities/import-job.entity";
 import { initI18n } from "@/i18n/server";
+import { ActionResult } from "@/shared/hooks/action-result";
 
 export async function getImportJobsAction(): Promise<
   ActionResult<ImportJobEntity[]>
