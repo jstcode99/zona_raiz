@@ -124,19 +124,20 @@ export function LandingHero({ lang = "es" }: LandingHeroProps) {
           className="object-cover"
           priority
         />
-        <div className="absolute inset-0 bg-linear-to-r from-black/5 via-black/8 to-black/0" />
-        <div className="absolute inset-0 bg-linear-to-t from-black/8 via-black/10 to-black/0" />
+        {/* Overlay más oscuro en mobile para que el texto sea legible */}
+        <div className="absolute inset-0 bg-linear-to-r from-black/30 via-black/20 to-black/10 lg:from-black/5 lg:via-black/8 lg:to-black/0" />
+        <div className="absolute inset-0 bg-linear-to-t from-black/50 via-black/20 to-black/0 lg:from-black/8 lg:via-black/10 lg:to-black/0" />
       </div>
 
       {/* Content */}
-      <div className="relative z-10 max-w-6xl mx-auto px-6 min-h-[calc(100vh-64px)] flex items-center">
-        <div className="flex items-center justify-between w-full gap-12">
-          {/* Left */}
-          <div className="flex-1 max-w-lg">
-            <div
-              className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-4 py-1.5 mb-6"
-              style={{ animation: "fadeSlideUp 0.6s ease both" }}
-            >
+      <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 min-h-[calc(100vh-64px)] flex items-center py-8 lg:py-0">
+        <div className="flex flex-col lg:flex-row items-center lg:justify-between w-full gap-8 lg:gap-12">
+          {/* Left — texto hero */}
+          <div
+            className="flex-1 max-w-lg w-full text-center lg:text-left"
+            style={{ animation: "fadeSlideUp 0.6s ease both" }}
+          >
+            <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-4 py-1.5 mb-4 lg:mb-6">
               <span className="size-2 rounded-full bg-primary animate-pulse" />
               <span className="text-white/90 text-xs font-medium tracking-wide">
                 {t("hero.badge")}
@@ -144,9 +145,9 @@ export function LandingHero({ lang = "es" }: LandingHeroProps) {
             </div>
 
             <h1
-              className="text-white font-bold leading-none mb-6"
+              className="text-white font-bold leading-none mb-4 lg:mb-6"
               style={{
-                fontSize: "clamp(2.5rem, 5vw, 4.5rem)",
+                fontSize: "clamp(2rem, 6vw, 4.5rem)",
                 animation: "fadeSlideUp 0.7s ease 0.1s both",
               }}
             >
@@ -156,7 +157,7 @@ export function LandingHero({ lang = "es" }: LandingHeroProps) {
             </h1>
 
             <p
-              className="text-white text-xl font-semibold mb-8 max-w-sm leading-relaxed"
+              className="text-white text-base sm:text-xl font-semibold mb-6 lg:mb-8 max-w-sm mx-auto lg:mx-0 leading-relaxed"
               style={{ animation: "fadeSlideUp 0.7s ease 0.2s both" }}
             >
               {t("hero.subtitle")}
@@ -170,13 +171,13 @@ export function LandingHero({ lang = "es" }: LandingHeroProps) {
             />
           </div>
 
-          {/* Right - Search Card */}
+          {/* Right — Search Card */}
           <div
-            className="w-full max-w-sm shrink-0"
+            className="w-full max-w-sm lg:shrink-0"
             style={{ animation: "fadeSlideUp 0.8s ease 0.2s both" }}
           >
             <Card className="overflow-hidden shadow-2xl">
-              {/* Listing type tabs — dentro del header sin padding extra */}
+              {/* Listing type tabs */}
               <CardHeader className="p-0">
                 <div className="flex border-b">
                   {LISTING_TYPES.map((lt) => (
@@ -197,7 +198,7 @@ export function LandingHero({ lang = "es" }: LandingHeroProps) {
                 </div>
               </CardHeader>
 
-              <CardContent className="p-5 space-y-4">
+              <CardContent className="p-4 sm:p-5 space-y-4">
                 {/* Property type pills */}
                 <div>
                   <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2.5">
@@ -325,6 +326,13 @@ export function LandingHero({ lang = "es" }: LandingHeroProps) {
                     )}
                   </Button>
                 </Form>
+
+                {/* CTA visible solo en mobile, debajo de la card */}
+                <CtaButton
+                  href={routes.search()}
+                  className="lg:hidden w-full justify-center"
+                  text={t("hero.see_all")}
+                />
               </CardContent>
             </Card>
           </div>

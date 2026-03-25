@@ -149,6 +149,7 @@ function SupabaseServerClient(request: NextRequest, response: NextResponse) {
 
 function isPublicRoute(pathname: string, lang: Lang) {
   const publicKeys: (keyof typeof ROUTES)[] = [
+    "base",
     "home",
     "contact",
     "about",

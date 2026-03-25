@@ -1,6 +1,5 @@
 "use client";
 import { useTranslation } from "react-i18next";
-import { useParams } from "next/navigation";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -9,6 +8,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import {
   NavigationMenu,
+  NavigationMenuContent,
   NavigationMenuItem,
   NavigationMenuLink,
   NavigationMenuList,
@@ -123,12 +123,11 @@ export function LandingNav({ isAuth }: LandingNavProps) {
                 <NavigationMenuList className="flex gap-0">
                   {navigationData.map((navItem, key) => (
                     <NavigationMenuItem key={key}>
-                      <NavigationMenuLink
-                        asChild
-                        className={navigationMenuTriggerStyle()}
-                      >
-                        <Link href={navItem.href}>{navItem.title}</Link>
-                      </NavigationMenuLink>
+                      <NavigationMenuContent>
+                        <NavigationMenuLink>
+                          <Link href={navItem.href}>{navItem.title}</Link>
+                        </NavigationMenuLink>
+                      </NavigationMenuContent>
                     </NavigationMenuItem>
                   ))}
                 </NavigationMenuList>
@@ -156,17 +155,12 @@ export function LandingNav({ isAuth }: LandingNavProps) {
                 <DropdownMenuContent align="end" className="w-56 mt-2">
                   {navigationData.map((item) => (
                     <DropdownMenuItem key={item.title}>
-                      <NavigationMenuLink
-                        asChild
-                        className={navigationMenuTriggerStyle()}
+                      <Link
+                        href={item.href}
+                        className="w-full cursor-pointer text-sm font-medium"
                       >
-                        <Link
-                          href={item.href}
-                          className="w-full cursor-pointer text-sm font-medium"
-                        >
-                          {item.title}
-                        </Link>
-                      </NavigationMenuLink>
+                        {item.title}
+                      </Link>
                     </DropdownMenuItem>
                   ))}
                 </DropdownMenuContent>
