@@ -69,6 +69,7 @@ export const createPropertyImageAction = withServerAction(
 
     revalidatePath(routes.properties());
     revalidatePath(routes.property(propertyId));
+    revalidatePath(routes.propertyImages(propertyId));
 
     // Invalidar tags específicos del cache
     revalidateTag(CACHE_TAGS.PROPERTY.PRINCIPAL, { expire: 0 });
@@ -85,8 +86,6 @@ export const updatePropertyImageAction = withServerAction(
     const lang = await getLangServerSide();
     const cookieStore = await cookies();
     const routes = createRouter(lang);
-    const i18n = await initI18n(lang);
-    const t = i18n.getFixedT(lang);
 
     const { propertyImageService } = await appModule(lang, {
       cookies: cookieStore,
@@ -120,8 +119,6 @@ export const deletePropertyImageAction = withServerAction(
     const lang = await getLangServerSide();
     const cookieStore = await cookies();
     const routes = createRouter(lang);
-    const i18n = await initI18n(lang);
-    const t = i18n.getFixedT(lang);
 
     const { propertyImageService } = await appModule(lang, {
       cookies: cookieStore,

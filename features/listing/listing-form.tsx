@@ -4,13 +4,11 @@ import { useEffect } from "react";
 import { Resolver, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { toast } from "sonner";
-import type { ActionResult } from "@/shared/hooks/use-server-mutation.hook";
 import {
   CreateListingInput,
   createListingSchema,
   defaultPropertyValues,
 } from "@/application/validation/listing.validation";
-import { ListingEntity } from "@/domain/entities/listing.entity";
 import { Form } from "@/components/ui/form";
 import { currencyOptions } from "@/domain/entities/currency.enums";
 import { useServerMutation } from "@/shared/hooks/use-server-mutation.hook";
@@ -52,22 +50,22 @@ export function ListingForm({
   const type = watch("listing_type");
 
   const mutation = useServerMutation({
-    action: ((formData: FormData) => {
+    action: (formData: FormData) => {
       if (isUpdateMode && id) {
         return updateListingAction(id, formData);
       }
       return createListingAction(formData);
-    }) as unknown as (formData: FormData) => Promise<ActionResult>,
+    },
     setError,
     onSuccess: (result) => {
       if (result.success) {
-        toast.success(t(`labels${isUpdateMode} ? "updated" : "created"}`));
+        toast.success(t(`messages.${isUpdateMode} ? "updated" : "created"}`));
         if (!isUpdateMode) reset();
       }
     },
     onError: (error) => {
       console.error("listing error:", error);
-      toast.error(t("labels"));
+      toast.error(error.message);
     },
   });
 
@@ -81,14 +79,14 @@ export function ListingForm({
         property_id,
       }));
     }
-  }, [id, defaultValues, reset]);
+  }, [id, defaultValues, reset, isUpdateMode, property_id]);
 
   useEffect(() => {
-    const subscription = form.watch(() => {
+    const subscription = watch(() => {
       if (mutation.isError) mutation.reset();
     });
     return () => subscription.unsubscribe();
-  }, [form, mutation]);
+  }, [form, mutation, watch]);
 
   async function handleSubmit(values: CreateListingInput) {
     try {

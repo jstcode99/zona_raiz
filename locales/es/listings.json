@@ -65,6 +65,11 @@
     "clear_filters": "Limpiar",
     "any": "Cualquiera"
   },
+  "messages": {
+    "created": "Publicación creada exitosamente",
+    "updated": "Publicación actualizada exitosamente",
+    "error": "Error al guardar la publicación"
+  },
   "status": {
     "no_results": "No se encontraron resultados",
     "try_filters": "Intenta con otros filtros..."

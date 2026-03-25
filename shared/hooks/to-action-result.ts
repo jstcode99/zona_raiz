@@ -1,4 +1,4 @@
-import { ActionResult } from "./use-server-mutation.hook";
+import { ActionResult } from "./action-result";
 
 type ValidationErrorLike = {
   name: string;
