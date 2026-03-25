@@ -22,5 +22,3 @@ export enum AmenitiesType {
   AirConditioning = "air_conditioning",
   Heating = "heating",
 }
-
-export const amenitiesTypeValues: string[] = Object.values(AmenitiesType);

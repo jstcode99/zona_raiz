@@ -1,6 +1,10 @@
-import { OptionType } from "./option.entity";
 import { PropertyImageEntity } from "./property-image.entity";
 import { AmenitiesType, PropertyType } from "./property.enums";
+
+export interface AmenitieType {
+  label: string;
+  value: AmenitiesType;
+}
 
 export interface PropertyEntity {
   id: string;
@@ -10,11 +14,11 @@ export interface PropertyEntity {
   description: string | null;
   property_type: PropertyType;
 
-  street: string,
-  city: string,
-  state: string,
-  country: string,
-  postal_code: string,
+  street: string;
+  city: string;
+  state: string;
+  country: string;
+  postal_code: string;
   latitude: number | null;
   longitude: number | null;
   neighborhood: string | null;
@@ -27,7 +31,7 @@ export interface PropertyEntity {
   floors: number | null;
   year_built: number | null;
   parking_spots: number | null;
-  amenities: OptionType[];
+  amenities: AmenitieType[];
   created_by: string | null;
   created_at: string;
   updated_at: string;
@@ -35,7 +39,7 @@ export interface PropertyEntity {
   real_estate?: {
     id: string;
     name: string;
-  }
+  };
 }
 
 export const propertyTypeOptions = [
@@ -48,7 +52,7 @@ export const propertyTypeOptions = [
   { label: "Oficina", value: PropertyType.Office },
   { label: "Bodega", value: PropertyType.Warehouse },
   { label: "Otro", value: PropertyType.Other },
-]
+];
 
 export const propertyTypeLabels: Record<PropertyType, string> = {
   [PropertyType.House]: "Casa",
@@ -60,7 +64,7 @@ export const propertyTypeLabels: Record<PropertyType, string> = {
   [PropertyType.Office]: "Oficina",
   [PropertyType.Warehouse]: "Bodega",
   [PropertyType.Other]: "Otro",
-}
+};
 
 export const amenitiesOptions = [
   { label: "Piscina", value: AmenitiesType.Pool },
@@ -72,4 +76,4 @@ export const amenitiesOptions = [
   { label: "Balcón", value: AmenitiesType.Balcony },
   { label: "Aire acondicionado", value: AmenitiesType.AirConditioning },
   { label: "Calefacción", value: AmenitiesType.Heating },
-]
+];

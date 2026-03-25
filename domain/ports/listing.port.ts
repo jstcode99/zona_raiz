@@ -1,5 +1,6 @@
 import { ListingEntity } from "../entities/listing.entity";
 import { LandingCity, LandingStats } from "@/domain/types/landing.types";
+import { AmenitiesType } from "../entities/property.enums";
 
 export interface ListingCountFilters {
   agent_id?: string;
@@ -26,7 +27,7 @@ export interface ListingSearchFilters {
   max_price?: number;
   min_bedrooms?: number;
   min_bathrooms?: number;
-  amenities?: string[];
+  amenities?: AmenitiesType[];
   sort_by?: string;
   search_query?: string;
   page?: number;
