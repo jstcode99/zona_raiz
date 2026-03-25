@@ -125,15 +125,14 @@ export async function runSeed(
   if (!opts.skipAuth) {
     try {
       const usersToCreate = allProfiles.map((profile) => ({
-        id: profile.id,
-        email: profile.email,
+        ...profile,
         password: "Test123456!",
-        fullName: profile.fullName,
-        phone: profile.phone,
-        role: profile.role,
-        avatarUrl: profile.avatarUrl,
       }));
-      const authResult = await seedAuthUsers(supabase, usersToCreate);
+      const authResult = await seedAuthUsers(
+        supabase,
+        usersToCreate,
+        opts.truncate!,
+      );
       logger.info(
         `Auth users: ${authResult.success} creados, ${authResult.failed} fallidos`,
       );

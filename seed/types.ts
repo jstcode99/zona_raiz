@@ -2,144 +2,51 @@
 // Seed Types - zona_raiz
 // ==========================================
 
-import { KeywordsType } from "@/domain/entities/listing.entity";
-import { ListingStatus, ListingType } from "@/domain/entities/listing.enums";
+import { EnquiryEntity } from "@/domain/entities/enquiry.entity";
+import { FavoriteEntity } from "@/domain/entities/favorite.entity";
+import { ListingEntity } from "@/domain/entities/listing.entity";
+import { ProfileEntity } from "@/domain/entities/profile.entity";
+import { PropertyImageEntity } from "@/domain/entities/property-image.entity";
+import { PropertyEntity } from "@/domain/entities/property.entity";
+import { RealEstateAgentEntity } from "@/domain/entities/real-estate-agent.entity";
+import { RealEstateEntity } from "@/domain/entities/real-estate.entity";
+import { UserEntity } from "@/domain/entities/user.entity";
 
-// Usamos strings directamente ya que la BD almacena valores de enums como strings
-
-export interface SeedUser {
-  id: string;
-  email: string;
+export type SeedUser = Omit<UserEntity, "created_at" | "updated_at"> & {
   password: string;
-  fullName: string;
-  phone: string;
-  role: "admin" | "client" | "real-estate";
-  avatarUrl?: string;
-}
+};
 
-export interface SeedProfile {
-  id: string;
-  email: string;
-  fullName: string;
-  phone: string;
-  role: "admin" | "client" | "real-estate";
-  avatarUrl?: string;
-}
+export type SeedProfile = Omit<ProfileEntity, "created_at" | "profile">;
 
-export interface SeedRealEstate {
-  id: string;
-  name: string;
-  description: string;
-  whatsapp: string;
-  street: string;
-  city: string;
-  state: string;
-  postalCode: string;
-  country: string;
-  logoUrl?: string;
-}
+export type SeedRealEstate = Omit<
+  RealEstateEntity,
+  "created_at" | "updated_at"
+>;
 
-export interface SeedAgent {
-  id?: string; // ID del registro en real_estate_agents (generado por la BD)
-  profileId: string;
-  realEstateId: string;
-  role: "agent" | "coordinator";
-}
+export type SeedAgent = Omit<RealEstateAgentEntity, "created_at" | "profile">;
 
-export interface SeedProperty {
-  id: string;
-  realEstateId: string;
-  createdBy?: string;
-  title: string;
-  slug: string;
-  description: string;
-  propertyType: string;
-  street: string;
-  city: string;
-  state: string;
-  country: string;
-  postalCode: string;
-  neighborhood?: string;
-  latitude?: number;
-  longitude?: number;
-  bedrooms?: number;
-  bathrooms?: number;
-  totalArea?: number;
-  builtArea?: number;
-  lotArea?: number;
-  floors?: number;
-  yearBuilt?: number;
-  parkingSpots?: number;
-  amenities?: string[];
-}
+export type SeedProperty = Omit<
+  PropertyEntity,
+  "created_by" | "created_at" | "updated_at" | "real_estate" | "property_images"
+>;
 
-export interface SeedListing {
-  id: string;
-  propertyId: string;
-  agentId: string;
-  listingType: ListingType;
-  price: number;
-  currency: string;
-  priceNegotiable: boolean;
-  whatsappContact: string;
-  expensesAmount?: number;
-  expensesIncluded: boolean;
-  status: ListingStatus;
-  featured: boolean;
-  featuredUntil?: string;
-  metaTitle?: string;
-  metaDescription?: string;
-  keywords?: KeywordsType[];
-  virtualTourUrl?: string;
-  videoUrl?: string;
-  availableFrom?: string;
-  minimumContractDuration?: number;
-  viewsCount: number;
-  enquiriesCount: number;
-  whatsappClicks: number;
-  publishedAt?: string;
-}
+export type SeedListing = Omit<
+  ListingEntity,
+  "property" | "agent" | "updated_at" | "created_at"
+>;
 
-export interface SeedPropertyImage {
-  id: string;
-  propertyId: string;
-  publicUrl: string;
-  filename: string;
-  fileSize?: number;
-  mimeType?: string;
-  width?: number;
-  height?: number;
-  displayOrder: number;
-  isPrimary: boolean;
-  altText?: string;
-  caption?: string;
-}
+export type SeedPropertyImage = Omit<PropertyImageEntity, "created_at">;
 
-export interface SeedFavorite {
-  id?: string; // Se autogenera con gen_random_uuid() en la BD
-  profileId: string;
-  listingId: string;
-}
+export type SeedFavorite = Omit<FavoriteEntity, "created_at">;
 
-export interface SeedInquiry {
-  id?: string; // Se autogenera con gen_random_uuid() en la BD
-  listingId: string;
-  name: string;
-  email?: string;
-  phone?: string;
-  message?: string;
-  source: string;
-  utmSource?: string;
-  utmMedium?: string;
-  utmCampaign?: string;
-  referrer?: string;
-  status: string;
-  notes?: string;
-  assignedTo?: string;
-  contactedAt?: string;
-  convertedAt?: string;
-  createdAt?: string;
-}
+export type SeedInquiry = Omit<
+  EnquiryEntity,
+  | "assigned_to_profile"
+  | "listing"
+  | "created_at"
+  | "contacted_at"
+  | "converted_at"
+>;
 
 export interface SeedContext {
   realEstates: SeedRealEstate[];

@@ -5,6 +5,7 @@
 import { SupabaseClient } from "@supabase/supabase-js";
 import type { SeedRealEstate, SeedProfile, SeedAgent } from "../../types";
 import { SeedLogger } from "../logger";
+import { EAgentRole } from "@/domain/entities/real-estate-agent.entity";
 
 export interface RealEstateSeedResult {
   realEstates: SeedRealEstate[];
@@ -18,9 +19,37 @@ export interface RealEstateSeedResult {
 async function execSql(supabase: SupabaseClient, sql: string): Promise<void> {
   const { error } = await supabase.rpc("exec_sql", { sql });
   if (error) {
-    // Si la función no existe, intentar de otra forma
     console.warn("exec_sql no disponible, intentando método alternativo");
   }
+}
+
+/**
+ * Espera hasta que handle_new_user haya registrado el profile en la BD.
+ * Reintenta con backoff exponencial hasta maxRetries veces.
+ */
+async function waitForProfile(
+  supabase: SupabaseClient,
+  profileId: string,
+  maxRetries = 8,
+  baseDelayMs = 300,
+): Promise<boolean> {
+  for (let attempt = 0; attempt < maxRetries; attempt++) {
+    const { data } = await supabase
+      .from("profiles")
+      .select("id")
+      .eq("id", profileId)
+      .maybeSingle();
+
+    if (data) return true;
+
+    const delay = baseDelayMs * Math.pow(2, attempt); // 300, 600, 1200, 2400…ms
+    SeedLogger.warn(
+      `Profile ${profileId} aún no existe, reintentando en ${delay}ms ` +
+        `(intento ${attempt + 1}/${maxRetries})...`,
+    );
+    await new Promise((resolve) => setTimeout(resolve, delay));
+  }
+  return false;
 }
 
 export async function seedRealEstates(
@@ -37,8 +66,6 @@ export async function seedRealEstates(
 
   logger.subSection("Seed Real Estates");
 
-  // Intentar deshabilitar el trigger on_real_estate_created durante el seed
-  // El trigger usa auth.uid() que es nulo con service role
   try {
     await execSql(
       supabase,
@@ -49,11 +76,8 @@ export async function seedRealEstates(
     logger.warn("No se pudo deshabilitar el trigger, continuando...");
   }
 
-  // Truncar tablas relacionadas si se solicita
   if (truncate) {
     logger.info("Truncando tablas relacionadas...");
-
-    // Primero eliminar en orden inverso de dependencias
     await supabase
       .from("favorites")
       .delete()
@@ -82,29 +106,18 @@ export async function seedRealEstates(
       .from("real_estates")
       .delete()
       .neq("id", "00000000-0000-0000-0000-000000000000");
-
     logger.success("Tablas truncadas correctamente");
   }
 
-  // Insertar Real Estates SIN ID - la BD lo genera con gen_random_uuid()
+  // ── 1. Insertar Real Estates ──────────────────────────────────────────────
   logger.info(`Insertando ${realEstates.length} inmobiliarias...`);
 
   const insertedRealEstates: SeedRealEstate[] = [];
 
-  for (const re of realEstates) {
+  for (const realEstate of realEstates) {
     const { data: inserted, error } = await supabase
       .from("real_estates")
-      .insert({
-        name: re.name,
-        description: re.description,
-        whatsapp: re.whatsapp,
-        street: re.street,
-        city: re.city,
-        state: re.state,
-        postal_code: re.postalCode,
-        country: re.country,
-        logo_url: re.logoUrl || null,
-      })
+      .insert(realEstate)
       .select()
       .single();
 
@@ -114,72 +127,104 @@ export async function seedRealEstates(
     }
 
     if (inserted) {
-      insertedRealEstates.push({
-        ...re,
-        id: inserted.id, // Usar el ID generado por la BD
-      });
+      insertedRealEstates.push({ ...realEstate, id: inserted.id });
     }
   }
 
   logger.success(`✓ ${insertedRealEstates.length} inmobiliarias insertadas`);
 
-  // Crear relaciones agente-perfil
-  // Para cada inmobiliaria: 1 coordinador + agentes
-  const agents: SeedAgent[] = [];
+  // ── 2. Insertar agentes ───────────────────────────────────────────────────
+  // IMPORTANTE: el array insertedAgents se construye siempre DESPUÉS del
+  // insert para garantizar que agent.id sea el ID real de real_estate_agents
+  // y no el profile_id. El listing seeder depende de este id para la FK.
+  logger.info("Insertando relaciones agente-inmobiliaria...");
 
-  insertedRealEstates.forEach((re, index) => {
-    // El coordinador para esta inmobiliaria está en el índice correspondiente
+  const insertedAgents: SeedAgent[] = [];
+  const agentsPerRealEstate = 3;
+
+  for (let index = 0; index < insertedRealEstates.length; index++) {
+    const realEstate = insertedRealEstates[index];
     const coordinator = coordinatorProfiles[index];
 
+    // ── Coordinador ──────────────────────────────────────────────────────
     if (coordinator) {
-      agents.push({
-        profileId: coordinator.id,
-        realEstateId: re.id,
-        role: "coordinator",
-      });
+      const profileReady = await waitForProfile(supabase, coordinator.id);
+      if (!profileReady) {
+        throw new Error(
+          `Timeout esperando el profile del coordinador ${coordinator.id}. ` +
+            `Verifica que el trigger handle_new_user esté activo.`,
+        );
+      }
+
+      const { data: insertedCoord, error: coordError } = await supabase
+        .from("real_estate_agents")
+        .insert({
+          real_estate_id: realEstate.id,
+          profile_id: coordinator.id,
+          role: EAgentRole.Coordinator,
+        })
+        .select()
+        .single();
+
+      if (coordError) {
+        logger.error(
+          `Error insertando coordinador (profile_id:${coordinator.id})`,
+          coordError.message,
+        );
+        throw coordError;
+      }
+
+      if (insertedCoord) {
+        insertedAgents.push({
+          id: insertedCoord.id, // ✅ ID real de real_estate_agents
+          profile_id: coordinator.id,
+          real_estate_id: realEstate.id,
+          role: EAgentRole.Coordinator,
+        });
+      }
     }
 
-    // Agregar agentes (3 por inmobiliaria)
-    const agentsPerRealEstate = 3;
+    // ── Agentes ──────────────────────────────────────────────────────────
     for (let i = 0; i < agentsPerRealEstate; i++) {
       const agentIndex = index * agentsPerRealEstate + i;
       const agentProfile = agentProfiles[agentIndex];
 
-      if (agentProfile && agentProfile.id !== coordinator?.id) {
-        agents.push({
-          profileId: agentProfile.id,
-          realEstateId: re.id,
-          role: "agent",
+      if (!agentProfile || agentProfile.id === coordinator?.id) continue;
+
+      const profileReady = await waitForProfile(supabase, agentProfile.id);
+      if (!profileReady) {
+        throw new Error(
+          `Timeout esperando el profile del agente ${agentProfile.id}. ` +
+            `Verifica que el trigger handle_new_user esté activo.`,
+        );
+      }
+
+      const { data: insertedAgent, error: agentError } = await supabase
+        .from("real_estate_agents")
+        .insert({
+          real_estate_id: realEstate.id,
+          profile_id: agentProfile.id,
+          role: EAgentRole.Agent,
+        })
+        .select()
+        .single();
+
+      if (agentError) {
+        logger.error(
+          `Error insertando agente (profile_id:${agentProfile.id})`,
+          agentError.message,
+        );
+        throw agentError;
+      }
+
+      if (insertedAgent) {
+        insertedAgents.push({
+          id: insertedAgent.id, // ✅ ID real de real_estate_agents
+          profile_id: agentProfile.id,
+          real_estate_id: realEstate.id,
+          role: EAgentRole.Agent,
         });
       }
-    }
-  });
-  // Insertar agentes en real_estate_agents SIN ID - la BD lo genera
-  logger.info(`Insertando ${agents.length} relaciones agente-inmobiliaria...`);
-
-  const insertedAgents: SeedAgent[] = [];
-
-  for (const agent of agents) {
-    const { data: inserted, error } = await supabase
-      .from("real_estate_agents")
-      .insert({
-        real_estate_id: agent.realEstateId,
-        profile_id: agent.profileId,
-        role: agent.role,
-      })
-      .select()
-      .single();
-
-    if (error) {
-      logger.error("Error insertando agente:", error.message);
-      throw error;
-    }
-
-    if (inserted) {
-      insertedAgents.push({
-        ...agent,
-        id: inserted.id, // Capturar el ID generado por la BD
-      });
     }
   }
 
@@ -187,16 +232,13 @@ export async function seedRealEstates(
     `✓ ${insertedAgents.length} relaciones agente-inmobiliaria insertadas`,
   );
 
-  // Recrear el trigger después del seed con el nombre correcto de la función
   try {
     await execSql(
       supabase,
-      `
-      CREATE TRIGGER on_real_estate_created
-        AFTER INSERT ON real_estates
-        FOR EACH ROW
-        EXECUTE FUNCTION handle_new_real_estate()
-    `,
+      `CREATE TRIGGER on_real_estate_created
+         AFTER INSERT ON real_estates
+         FOR EACH ROW
+         EXECUTE FUNCTION handle_new_real_estate()`,
     );
     logger.info("Trigger on_real_estate_created recreado");
   } catch (e) {
@@ -206,6 +248,6 @@ export async function seedRealEstates(
   return {
     realEstates: insertedRealEstates,
     profiles: [...coordinatorProfiles, ...agentProfiles],
-    agents: insertedAgents,
+    agents: insertedAgents, // agent.id siempre = real_estate_agents.id
   };
 }

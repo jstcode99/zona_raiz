@@ -43,7 +43,9 @@ const options: {
   dryRun?: boolean;
   skipAuth?: boolean;
   truncate?: boolean;
-} = {};
+} = {
+  truncate: true,
+};
 
 for (const arg of args) {
   switch (arg) {

@@ -1,13 +1,13 @@
 create table if not exists public.properties (
   id uuid primary key default gen_random_uuid(),
   real_estate_id uuid not null references public.real_estates on delete cascade,
-  
+
   -- Identificación y contenido
   title text not null,
   slug text unique not null,
   description text,
   property_type property_type not null default 'other',
-  
+
   -- Ubicación
   street text,
   city text not null,
@@ -17,7 +17,7 @@ create table if not exists public.properties (
   neighborhood text,
   latitude decimal(10, 8),
   longitude decimal(11, 8),
-  
+
   -- Características físicas
   bedrooms integer,
   bathrooms integer,
@@ -27,15 +27,15 @@ create table if not exists public.properties (
   floors integer,
   year_built integer,
   parking_spots integer,
-  
+
   -- Amenities (array flexible)
   amenities jsonb default '[]'::jsonb,
-  
+
   -- Metadata
   created_by uuid references public.profiles on delete set null,
   created_at timestamptz default now() not null,
   updated_at timestamptz default now() not null,
-  
+
   -- Búsqueda full-text para SEO
   search_vector tsvector generated always as (
     setweight(to_tsvector('spanish', coalesce(title, '')), 'A') ||
@@ -53,5 +53,5 @@ create index idx_properties_location on public.properties(state, city);
 create index idx_properties_search on public.properties using gin(search_vector);
 create index idx_properties_slug on public.properties(slug);
 create index idx_properties_neighborhood on public.properties(neighborhood);
-create index idx_properties_coords on public.properties(latitude, longitude) 
+create index idx_properties_coords on public.properties(latitude, longitude)
   where latitude is not null and longitude is not null;

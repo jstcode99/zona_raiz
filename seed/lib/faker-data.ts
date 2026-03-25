@@ -13,8 +13,18 @@ import type {
   SeedAgent,
 } from "../types";
 import { ListingStatus, ListingType } from "@/domain/entities/listing.enums";
-import { Currency } from "@/domain/entities/currency.enums";
-import { keywordsOptions } from "@/domain/entities/listing.entity";
+import { currencyOptions } from "@/domain/entities/currency.enums";
+import {
+  keywordsOptions,
+  listingTypeOptions,
+} from "@/domain/entities/listing.entity";
+import { generateSlug } from "@/lib/utils";
+import { PropertyType } from "@/domain/entities/property.enums";
+import {
+  amenitiesOptions,
+  propertyTypeOptions,
+} from "@/domain/entities/property.entity";
+import { EUserRole } from "@/domain/entities/profile.entity";
 
 // Seed Faker para reproducibilidad
 faker.seed(42);
@@ -36,32 +46,9 @@ export function generateUniqueUUIDs(count: number): string[] {
   }
   return Array.from(uuids);
 }
-
-/**
- * Genera un slug único basado en texto.
- */
-export function generateFakeSlug(baseText: string): string {
-  return faker.helpers.slugify(baseText).toLowerCase().substring(0, 50);
-}
-
 // ==========================================
 // Generadores específicos para zona_raiz
 // ==========================================
-
-const ARGENTINIAN_CITIES = [
-  { city: "Mar del Plata", state: "Buenos Aires", postalCode: "7600" },
-  {
-    city: "Buenos Aires",
-    state: "Ciudad Autónoma de Buenos Aires",
-    postalCode: "C1425",
-  },
-  { city: "Villa Carlos Paz", state: "Córdoba", postalCode: "X5152" },
-  { city: "Córdoba", state: "Córdoba", postalCode: "X5000" },
-  { city: "Rosario", state: "Santa Fe", postalCode: "S2000" },
-  { city: "Mendoza", state: "Mendoza", postalCode: "M5500" },
-  { city: "Salta", state: "Salta", postalCode: "A4400" },
-  { city: "Bariloche", state: "Río Negro", postalCode: "8400" },
-];
 
 const REAL_ESTATE_NAMES = [
   "Inmobiliaria Costa del Plata",
@@ -72,44 +59,24 @@ const REAL_ESTATE_NAMES = [
   "Costa Argentina Propiedades",
 ];
 
-const PROPERTY_TYPES = [
-  "apartment",
-  "house",
-  "condo",
-  "land",
-  "commercial",
-  "office",
-  "warehouse",
-] as const;
-
-const AMENITIES = [
-  "pool",
-  "gym",
-  "security",
-  "air_conditioning",
-  "elevator",
-  "garden",
-  "balcony",
-  "heating",
-];
-
 /**
  * Genera inmobiliarias fake.
  */
 export function generateFakeRealEstates(count: number): SeedRealEstate[] {
   return Array.from({ length: count }, (_, i) => {
-    const location = ARGENTINIAN_CITIES[i % ARGENTINIAN_CITIES.length];
+    const location = faker.location;
+
     return {
       id: generateFakeUUID(),
       name: REAL_ESTATE_NAMES[i] || `Inmobiliaria ${faker.company.name()}`,
       description: faker.lorem.paragraph(2),
       whatsapp: faker.helpers.replaceSymbols("+54911########"),
       street: faker.location.streetAddress(),
-      city: location.city,
-      state: location.state,
-      postalCode: location.postalCode,
-      country: "Argentina",
-      logoUrl: faker.image.url({ width: 200, height: 200 }),
+      city: location.city(),
+      state: location.city(),
+      postal_code: location.city(),
+      country: location.county(),
+      logo_url: faker.image.url({ width: 200, height: 200 }),
     };
   });
 }
@@ -126,49 +93,66 @@ export function generateFakeProperties(
   return Array.from({ length: count }, (_, i) => {
     const realEstateId = realEstateIds[i % realEstateIds.length];
     const location = faker.location;
-    const propertyType = faker.helpers.arrayElement([...PROPERTY_TYPES]);
+    const propertyTypes = propertyTypeOptions.map((v) => v.value);
+
+    const propertyType = faker.helpers.arrayElement(propertyTypes);
     const bedrooms =
       propertyType === "land" || propertyType === "commercial"
-        ? undefined
+        ? 0
         : faker.number.int({ min: 1, max: 5 });
+
+    const bathrooms =
+      propertyType === "land" || propertyType === "commercial"
+        ? 0
+        : faker.number.int({ min: 1, max: 5 });
+
+    const totalArea = faker.number.int({ min: 50, max: 1000 });
+    const builtArea = faker.number.int({ min: 40, max: 800 });
+    const lotArea =
+      propertyType === PropertyType.House || propertyType === PropertyType.Land
+        ? faker.number.int({ min: 200, max: 2000 })
+        : 0;
+    const floors =
+      propertyType === PropertyType.House
+        ? faker.number.int({ min: 1, max: 3 })
+        : propertyType === PropertyType.Apartment
+          ? 1
+          : 0;
+    const yearBuilt = faker.number.int({ min: 1970, max: 2024 });
+    const parkingSpots =
+      propertyType !== PropertyType.Land
+        ? faker.number.int({ min: 0, max: 3 })
+        : 0;
+    const amenities = faker.helpers.arrayElements(amenitiesOptions, {
+      min: 1,
+      max: 5,
+    });
+    const title = `${propertyType.charAt(0).toUpperCase() + propertyType.slice(1)} ${faker.number.int({ min: 1, max: 5 })} ambientes en ${faker.location.city()}`;
 
     return {
       id: generateFakeUUID(),
-      realEstateId,
-      title: `${propertyType.charAt(0).toUpperCase() + propertyType.slice(1)} ${faker.number.int({ min: 1, max: 5 })} ambientes en ${faker.location.city()}`,
-      slug: generateFakeSlug(generateFakeUUID()),
+      real_estate_id: realEstateId,
+      title,
+      slug: generateSlug(title),
       description: faker.lorem.paragraph(3),
-      propertyType,
+      property_type: propertyType,
       street: location.streetAddress(),
       city: location.city(),
       state: location.state(),
-      country: "Argentina",
-      postalCode: location.zipCode(),
+      country: "Colombia",
+      postal_code: location.zipCode(),
       neighborhood: location.county(),
       latitude: location.latitude(),
       longitude: location.longitude(),
       bedrooms,
-      bathrooms: bedrooms
-        ? faker.number.int({ min: 1, max: bedrooms + 1 })
-        : undefined,
-      totalArea: faker.number.int({ min: 50, max: 1000 }),
-      builtArea: faker.number.int({ min: 40, max: 800 }),
-      lotArea:
-        propertyType === "house" || propertyType === "land"
-          ? faker.number.int({ min: 200, max: 2000 })
-          : undefined,
-      floors:
-        propertyType === "house"
-          ? faker.number.int({ min: 1, max: 3 })
-          : propertyType === "apartment"
-            ? 1
-            : undefined,
-      yearBuilt: faker.number.int({ min: 1970, max: 2024 }),
-      parkingSpots:
-        propertyType !== "land"
-          ? faker.number.int({ min: 0, max: 3 })
-          : undefined,
-      amenities: faker.helpers.arrayElements(AMENITIES, { min: 1, max: 5 }),
+      bathrooms,
+      total_area: totalArea,
+      built_area: builtArea,
+      lot_area: lotArea,
+      floors: floors,
+      year_built: yearBuilt,
+      parking_spots: parkingSpots,
+      amenities,
     };
   });
 }
@@ -185,53 +169,75 @@ export function generateFakeListings(
 
   return Array.from({ length: count }, (_, i) => {
     const property = properties[i % properties.length];
-    const listingType = faker.helpers.arrayElement([
-      ListingType.RENT,
-      ListingType.SALE,
+    const id = generateFakeUUID();
+    const listingType = faker.helpers.arrayElement(
+      listingTypeOptions.map((v) => v.value),
+    );
+    const price = faker.number.int({ min: 50000, max: 1000000 });
+    const currency = faker.helpers.arrayElement(
+      currencyOptions.map((v) => v.value),
+    );
+    const priceNegotiable = faker.datatype.boolean();
+    const expensesAmount = faker.number.int({ min: 5000, max: 100000 });
+    const expensesIncluded = faker.datatype.boolean();
+
+    const status = faker.helpers.weightedArrayElement([
+      { value: ListingStatus.ACTIVE, weight: 70 },
+      { value: ListingStatus.DRAFT, weight: 10 },
     ]);
-    const currency =
+
+    const featured = faker.datatype.boolean({ probability: 0.2 });
+    const keywords = faker.helpers.arrayElements(keywordsOptions, 3);
+
+    const featuredUntil = faker.datatype.boolean({ probability: 0.2 })
+      ? faker.date.future({ years: 0.5 }).toISOString()
+      : undefined;
+
+    const metaTitle = `${property.title} - ${
+      listingType === ListingType.SALE ? "Venta" : "Alquiler"
+    }`;
+
+    const metaDescription = faker.lorem.sentence();
+
+    const viewsCount = faker.number.int({ min: 0, max: 1000 });
+    const enquiriesCount = faker.number.int({ min: 0, max: 50 });
+    const whatsappClicks = faker.number.int({ min: 0, max: 100 });
+
+    const publishedAt = faker.date.recent({ days: 90 }).toISOString();
+
+    const minimumContractDuration =
       listingType === ListingType.RENT
-        ? Currency.COP
-        : faker.helpers.arrayElement([Currency.COP, Currency.USD]);
-    const price =
-      listingType === ListingType.SALE
-        ? faker.number.int({ min: 50000, max: 1000000 })
-        : faker.number.int({ min: 100000, max: 5000000 });
+        ? faker.number.int({ min: 6, max: 36 })
+        : undefined;
+
+    const availableFrom =
+      listingType === ListingType.RENT
+        ? faker.date.soon({ days: 30 }).toISOString().split("T")[0]
+        : undefined;
 
     return {
-      id: generateFakeUUID(),
-      propertyId: property.id,
-      agentId: "",
-      listingType,
+      id,
+      property_id: property.id,
+      agent_id: "",
+      listing_type: listingType,
       price,
       currency,
-      priceNegotiable: faker.datatype.boolean(),
-      whatsappContact,
-      expensesAmount: faker.number.int({ min: 5000, max: 100000 }),
-      expensesIncluded: faker.datatype.boolean(),
-      status: faker.helpers.weightedArrayElement([
-        { value: ListingStatus.ACTIVE, weight: 70 },
-        { value: ListingStatus.DRAFT, weight: 10 },
-      ]),
-      featured: faker.datatype.boolean({ probability: 0.2 }),
-      featuredUntil: faker.datatype.boolean({ probability: 0.2 })
-        ? faker.date.future({ years: 0.5 }).toISOString()
-        : undefined,
-      metaTitle: `${property.title} - ${listingType === ListingType.SALE ? "Venta" : "Alquiler"}`,
-      metaDescription: faker.lorem.sentence(),
-      keywords: faker.helpers.arrayElements(keywordsOptions, 3),
-      viewsCount: faker.number.int({ min: 0, max: 1000 }),
-      enquiriesCount: faker.number.int({ min: 0, max: 50 }),
-      whatsappClicks: faker.number.int({ min: 0, max: 100 }),
-      publishedAt: faker.date.recent({ days: 90 }).toISOString(),
-      minimumContractDuration:
-        listingType === ListingType.RENT
-          ? faker.number.int({ min: 6, max: 36 })
-          : undefined,
-      availableFrom:
-        listingType === ListingType.RENT
-          ? faker.date.soon({ days: 30 }).toISOString().split("T")[0]
-          : undefined,
+      price_negotiable: priceNegotiable,
+      whatsapp_contact: whatsappContact,
+      expenses_amount: expensesAmount,
+      expenses_included: expensesIncluded,
+      status,
+      featured,
+      keywords,
+      featured_until: featuredUntil,
+      meta_title: metaTitle,
+      meta_description: metaDescription,
+      views_count: viewsCount,
+      enquiries_count: enquiriesCount,
+      whatsapp_clicks: whatsappClicks,
+      published_at: publishedAt,
+      minimum_contract_duration: minimumContractDuration,
+      available_from: availableFrom,
     };
   });
 }
@@ -253,16 +259,16 @@ export function generateFakePropertyImages(
     for (let i = 0; i < imageCount; i++) {
       images.push({
         id: generateFakeUUID(),
-        propertyId: property.id,
-        publicUrl: faker.image.url({ width: 1200, height: 800 }),
+        property_id: property.id,
+        public_url: faker.image.url({ width: 1200, height: 800 }),
         filename: `image-${propIndex}-${i}.jpg`,
-        fileSize: faker.number.int({ min: 100000, max: 500000 }),
-        mimeType: "image/jpeg",
+        file_size: faker.number.int({ min: 100000, max: 500000 }),
+        mime_type: "image/jpeg",
         width: 1200,
         height: 800,
-        displayOrder: i,
-        isPrimary: i === 0,
-        altText: `Imagen ${i + 1} de ${property.title}`,
+        display_order: i,
+        is_primary: i === 0,
+        alt_text: `Imagen ${i + 1} de ${property.title}`,
       });
     }
   });
@@ -291,10 +297,10 @@ export function generateFakeProfiles(options: {
     coordinators.push({
       id: faker.string.uuid(),
       email: `coordinador${i + 1}@zonaraiz.test`,
-      fullName: faker.person.fullName(),
-      phone: `+54911${faker.number.int({ min: 10000000, max: 99999999 })}`,
-      role: "real-estate",
-      avatarUrl: faker.image.url({ width: 200, height: 200 }),
+      full_name: faker.person.fullName(),
+      phone: `+57 ${faker.number.int({ min: 10000000, max: 99999999 })}`,
+      role: EUserRole.RealEstate,
+      avatar_url: faker.image.url({ width: 200, height: 200 }),
     });
   }
 
@@ -307,10 +313,10 @@ export function generateFakeProfiles(options: {
     agents.push({
       id: faker.string.uuid(),
       email: `agente${i + 1}@zonaraiz.test`,
-      fullName: faker.person.fullName(),
-      phone: `+54911${faker.number.int({ min: 10000000, max: 99999999 })}`,
-      role: "real-estate",
-      avatarUrl: faker.image.url({ width: 200, height: 200 }),
+      full_name: faker.person.fullName(),
+      phone: `+57 ${faker.number.int({ min: 10000000, max: 99999999 })}`,
+      role: EUserRole.RealEstate,
+      avatar_url: faker.image.url({ width: 200, height: 200 }),
     });
   }
 
@@ -319,10 +325,10 @@ export function generateFakeProfiles(options: {
     clients.push({
       id: faker.string.uuid(),
       email: `cliente${i + 1}@zonaraiz.test`,
-      fullName: faker.person.fullName(),
-      phone: `+54911${faker.number.int({ min: 10000000, max: 99999999 })}`,
-      role: "client",
-      avatarUrl: faker.image.url({ width: 200, height: 200 }),
+      full_name: faker.person.fullName(),
+      phone: `+57 ${faker.number.int({ min: 10000000, max: 99999999 })}`,
+      role: EUserRole.RealEstate,
+      avatar_url: faker.image.url({ width: 200, height: 200 }),
     });
   }
 
@@ -354,8 +360,8 @@ export function generateFakeFavorites(
       usedPairs.add(pairKey);
       favorites.push({
         id: generateFakeUUID(),
-        profileId: client.id,
-        listingId: listing.id,
+        profile_id: client.id,
+        listing_id: listing.id,
       });
     }
   }
@@ -391,7 +397,7 @@ const INQUIRY_TEMPLATES = [
   {
     name: "María González",
     email: "maria.gonzalez@email.com",
-    phone: "+5491145678901",
+    phone: "+57 45678901",
     message:
       "Me interesa esta propiedad. ¿Está disponible para visitarla este fin de semana?",
     source: "web",
@@ -479,7 +485,7 @@ export function generateFakeInquiries(
 
   const inquiries: GeneratedInquiry[] = [];
   const activeListings = listings.filter((l) => l.status === "active");
-  const agentIds = agents.map((a) => a.profileId);
+  const agentIds = agents.map((a) => a.profile_id);
 
   for (let i = 0; i < count; i++) {
     const template = INQUIRY_TEMPLATES[i % INQUIRY_TEMPLATES.length];
