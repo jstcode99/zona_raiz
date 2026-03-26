@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslation } from "react-i18next";
 import { IconMapPin, IconLoader2, IconX } from "@tabler/icons-react";
 import {
   Command,
@@ -106,12 +107,13 @@ function parsePredictionTerms(prediction: Prediction): ParsedPlace {
 
 export function PlaceSearch({
   lang,
-  placeholder = "Buscar ciudad, barrio...",
+  placeholder = "",
   className,
   navigate = true,
   onSelect,
 }: PlaceSearchProps) {
   const router = useRouter();
+  const { t } = useTranslation("places");
   const ready = useGooglePlaces();
   const serviceRef = useRef<google.maps.places.AutocompleteService | null>(
     null,
@@ -254,7 +256,8 @@ export function PlaceSearch({
           }),
         );
       }
-    } catch {
+    } catch (error) {
+      console.warn("Place Details failed:", error);
       // Si falla Place Details, usar datos de términos como fallback
       setSelected(basePlace);
       setLoading(false);
@@ -318,11 +321,11 @@ export function PlaceSearch({
             <CommandList>
               {predictions.length === 0 && !loading && (
                 <CommandEmpty className="py-4 text-center text-sm text-muted-foreground">
-                  Sin resultados
+                  {t("no_results")}
                 </CommandEmpty>
               )}
               {predictions.length > 0 && (
-                <CommandGroup heading="Lugares">
+                <CommandGroup heading={t("results_heading")}>
                   {predictions.map((p) => (
                     <CommandItem
                       key={p.place_id}
