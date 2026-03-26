@@ -1,12 +1,12 @@
 "use client"
 
-import { useEffect, useRef } from "react"
+import { useEffect, useRef, useState } from "react"
 import { Resolver, useForm, useWatch } from "react-hook-form"
 import { yupResolver } from "@hookform/resolvers/yup"
 import { Form } from "@/components/ui/form"
 import { propertyTypeOptions } from "@/domain/entities/property.entity"
 import { IconMapPin, IconHome, IconClearAll } from "@tabler/icons-react"
-import { useRouter, usePathname, useSearchParams } from "next/navigation"
+import { useRouter, usePathname, useSearchParams, useParams } from "next/navigation"
 import countries from '@/lib/countries.json'
 import { PropertyType } from "@/domain/entities/property.enums"
 import { objectToSearchParams, toNumber } from "@/lib/utils"
@@ -17,6 +17,7 @@ import {
   defaultPropertySearchValues,
 } from "@/application/validation/property-search.schema"
 import { useTranslation } from "react-i18next"
+import { PlaceSearch, ParsedPlace } from "../places/place-search"
 
 interface PropertyFiltersFormProps {
   onFiltersChange?: (filters: PropertySearchFormInput) => void
@@ -65,9 +66,11 @@ export function PropertyFiltersForm({
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
+  const { lang } = useParams<{ lang: string }>()
 
   const lastQueryRef = useRef("")
   const isSyncingFromUrl = useRef(false)
+  const [usePlaceSearch, setUsePlaceSearch] = useState(true)
 
   const form = useForm<PropertySearchFormInput>({
     resolver: yupResolver(propertySearchSchema) as Resolver<PropertySearchFormInput>,
@@ -75,8 +78,24 @@ export function PropertyFiltersForm({
     mode: "onChange",
   })
 
-  const { control } = form
+  const { control, setValue } = form
   const values = useWatch({ control: form.control })
+
+  const handlePlaceSelect = (place: ParsedPlace) => {
+    if (place.country) {
+      setValue("country", place.country, { shouldValidate: false })
+    }
+    if (place.state) {
+      setValue("state", place.state, { shouldValidate: false })
+    }
+    if (place.city) {
+      setValue("city", place.city, { shouldValidate: false })
+    }
+  }
+
+  const handleModeChange = (mode: "search" | "manual") => {
+    setUsePlaceSearch(mode === "search")
+  }
 
   // ---------- URL → FORM ----------
   useEffect(() => {
@@ -150,17 +169,50 @@ export function PropertyFiltersForm({
           </span>
         }
       >
+        {/* Switch between PlaceSearch and Manual input */}
+        <div className="flex gap-2 mb-3">
+          <Button
+            type="button"
+            variant={usePlaceSearch ? "default" : "outline"}
+            size="sm"
+            onClick={() => handleModeChange("search")}
+            className="text-xs h-7"
+          >
+            📍 {t("words.search") || "Búsqueda"}
+          </Button>
+          <Button
+            type="button"
+            variant={!usePlaceSearch ? "default" : "outline"}
+            size="sm"
+            onClick={() => handleModeChange("manual")}
+            className="text-xs h-7"
+          >
+            ✏️ Manual
+          </Button>
+        </div>
+
         <div className="grid grid-cols-2 gap-2">
-          <div className="col-span-2">
-            <Form.CountryStateCity
-              countryName="country"
-              stateName="state"
-              cityName="city"
-              countries={countries}
-              control={control}
-              label={t('words.location')}
-            />
-          </div>
+          {usePlaceSearch ? (
+            <div className="col-span-2">
+              <PlaceSearch
+                lang={lang as "es" | "en"}
+                navigate={false}
+                placeholder={t("placeholders.search_location") || "Ciudad o barrio..."}
+                onSelect={handlePlaceSelect}
+              />
+            </div>
+          ) : (
+            <div className="col-span-2">
+              <Form.CountryStateCity
+                countryName="country"
+                stateName="state"
+                cityName="city"
+                countries={countries}
+                control={control}
+                label={t('words.location')}
+              />
+            </div>
+          )}
           <Form.Input
             name="street"
             label={t('labels.street')}
