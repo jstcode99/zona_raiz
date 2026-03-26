@@ -40,4 +40,4 @@ yarn-error.log*
 next-env.d.ts
 
 # seed generated files
-seed/seed.sql
+supabase/seed.sql
