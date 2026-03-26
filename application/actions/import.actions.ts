@@ -2,7 +2,7 @@
 
 import { withServerAction } from "@/shared/hooks/with-server-action";
 import { appModule } from "@/application/modules/app.module";
-import { getLangServerSide } from "@/shared/utils/lang";
+import { getLangServerSide } from "@/infrastructure/shared/utils/lang";
 import { cookies } from "next/headers";
 import { revalidatePath, revalidateTag } from "next/cache";
 import { createRouter } from "@/i18n/router";

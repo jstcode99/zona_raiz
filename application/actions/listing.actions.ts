@@ -3,7 +3,7 @@
 import { withServerAction } from "@/shared/hooks/with-server-action";
 import { createListingSchema } from "@/application/validation/listing.validation";
 import { revalidatePath, revalidateTag } from "next/cache";
-import { getLangServerSide } from "@/shared/utils/lang";
+import { getLangServerSide } from "@/infrastructure/shared/utils/lang";
 import { cookies } from "next/headers";
 import { createRouter } from "@/i18n/router";
 import { initI18n } from "@/i18n/server";

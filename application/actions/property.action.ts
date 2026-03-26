@@ -5,7 +5,7 @@ import { cookies } from "next/headers";
 import { propertySchema } from "@/application/validation/property.schema";
 import { PropertyType } from "@/domain/entities/property.enums";
 import { withServerAction } from "@/shared/hooks/with-server-action";
-import { getLangServerSide } from "@/shared/utils/lang";
+import { getLangServerSide } from "@/infrastructure/shared/utils/lang";
 import { createRouter } from "@/i18n/router";
 import { initI18n } from "@/i18n/server";
 import { appModule } from "../modules/app.module";

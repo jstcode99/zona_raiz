@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 import { withServerAction } from "@/shared/hooks/with-server-action";
-import { getLangServerSide } from "@/shared/utils/lang";
+import { getLangServerSide } from "@/infrastructure/shared/utils/lang";
 import { createRouter } from "@/i18n/router";
 import { initI18n } from "@/i18n/server";
 import { appModule } from "@/application/modules/app.module";

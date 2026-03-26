@@ -6,9 +6,9 @@ import {
   propertyImageUpdateSchema,
 } from "@/application/validation/property-image.validation";
 import sizeOf from "image-size";
-import { pickDefined } from "@/lib/utils";
+import { pickDefined } from "@/shared/utils/object";
 import { withServerAction } from "@/shared/hooks/with-server-action";
-import { getLangServerSide } from "@/shared/utils/lang";
+import { getLangServerSide } from "@/infrastructure/shared/utils/lang";
 import { cookies } from "next/headers";
 import { createRouter } from "@/i18n/router";
 import { initI18n } from "@/i18n/server";
