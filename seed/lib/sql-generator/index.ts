@@ -8,7 +8,6 @@ import { SeedLogger } from "../logger";
 import { SeedOptions, DEFAULT_SEED_OPTIONS } from "../../types";
 import {
   generateFakeRealEstates,
-  generateFakeProfiles,
   generateFakeProperties,
   generateFakePropertyImages,
   generateFakeListings,
@@ -18,7 +17,6 @@ import {
 import { toSeedInquiry } from "../faker-data/inquiries";
 
 import { generateRealEstatesSQL } from "./real-estates";
-import { generateProfilesSQL } from "./profiles";
 import { generateRealEstateAgentsSQL } from "./real-estate-agents";
 import { generatePropertiesSQL } from "./properties";
 import { generatePropertyImagesSQL } from "./property-images";
@@ -29,6 +27,11 @@ import { buildTruncate } from "./sql-builder";
 import { EAgentRole } from "@/domain/entities/real-estate-agent.entity";
 
 import type { SeedAgent, SeedListing } from "../../types";
+import { generateFakeUsers } from "../faker-data/users";
+import { EUserRole } from "@/domain/entities/profile.entity";
+import { splitByRatio } from "@/lib/utils";
+import { generateUsersSQL } from "./user";
+import { generateIdentitiesSQL } from "./identities";
 
 const TABLES_TO_TRUNCATE = [
   "enquiries",
@@ -58,9 +61,9 @@ export function generateAllSQL(
   SeedLogger.info(`Opciones: ${JSON.stringify(options)}`);
 
   const {
+    clientsCount = 3,
     realEstateCount = 2,
     agentsPerRealEstate = 3,
-    clientsCount = 3,
     propertiesPerRealEstate = 5,
     listingsPerProperty = 1,
     favoritesCount = 5,
@@ -76,7 +79,40 @@ export function generateAllSQL(
     sql += "-- TRUNCATE TABLES (para datos limpios)\n";
     sql += "-- ==========================================\n\n";
     sql += buildTruncate(TABLES_TO_TRUNCATE) + "\n\n";
+    sql += `TRUNCATE auth.identities, auth.users CASCADE;` + "\n\n";
   }
+
+  // 1. Generar usuarios (coordinadores, agentes, clientes)
+  SeedLogger.info("Usarios...");
+
+  const { p1: CoordinatorsCount, p2: AgentsCount } =
+    splitByRatio(agentsPerRealEstate);
+
+  SeedLogger.info(
+    `Generando ${clientsCount + agentsPerRealEstate + 1} usuarios...`,
+  );
+
+  const admim = generateFakeUsers(1, EUserRole.Admin);
+  const clients = generateFakeUsers(clientsCount, EUserRole.Client);
+  const coordinators = generateFakeUsers(
+    CoordinatorsCount,
+    EUserRole.RealEstate,
+  );
+  const agents = generateFakeUsers(AgentsCount, EUserRole.RealEstate);
+
+  const idUsers = [admim, clients, agents, coordinators]
+    .flat()
+    .map((u) => u.id);
+
+  sql += generateUsersSQL(admim);
+  sql += generateUsersSQL(clients);
+  sql += generateUsersSQL(agents);
+  sql += generateUsersSQL(coordinators);
+  sql += generateIdentitiesSQL(idUsers);
+
+  SeedLogger.success(
+    `✓ 1 Admin, ${coordinators.length} coordinadores, ${agents.length} agentes, ${clients.length} clientes`,
+  );
 
   // 2. Generar inmobiliarias
   SeedLogger.info(`Generando ${realEstateCount} inmobiliarias...`);
@@ -84,21 +120,11 @@ export function generateAllSQL(
   sql += generateRealEstatesSQL(realEstates);
   SeedLogger.success(`✓ ${realEstates.length} inmobiliarias`);
 
-  // 3. Generar perfiles (coordinadores, agentes, clientes)
-  SeedLogger.info("Generando perfiles...");
-  const { coordinators, agents, clients } = generateFakeProfiles({
-    coordinators: realEstateCount,
-    agentsPerCoordinator: agentsPerRealEstate,
-    clients: clientsCount,
-  });
-  sql += generateProfilesSQL(coordinators, agents, clients);
-  SeedLogger.success(`✓ ${coordinators.length} coordinadores, ${agents.length} agentes, ${clients.length} clientes`);
-
   // 4. Generar relaciones real_estate_agents
   SeedLogger.info("Generando relaciones agente-inmobiliaria...");
   const realEstateAgents: SeedAgent[] = [];
   const realEstateIds = realEstates.map((re) => re.id);
-  
+
   // Asignar cada coordinator a una inmobiliaria
   coordinators.forEach((coordinator, index) => {
     realEstateAgents.push({
@@ -120,10 +146,14 @@ export function generateAllSQL(
   });
 
   sql += generateRealEstateAgentsSQL(realEstateAgents);
-  SeedLogger.success(`✓ ${realEstateAgents.length} relaciones agente-inmobiliaria`);
+  SeedLogger.success(
+    `✓ ${realEstateAgents.length} relaciones agente-inmobiliaria`,
+  );
 
   // 5. Generar propiedades
-  SeedLogger.info(`Generando ${realEstateCount * propertiesPerRealEstate} propiedades...`);
+  SeedLogger.info(
+    `Generando ${realEstateCount * propertiesPerRealEstate} propiedades...`,
+  );
   const propertyCount = realEstateCount * propertiesPerRealEstate;
   const properties = generateFakeProperties(propertyCount, realEstateIds);
   sql += generatePropertiesSQL(properties);
@@ -139,7 +169,9 @@ export function generateAllSQL(
   SeedLogger.success(`✓ ${propertyImages.length} imágenes`);
 
   // 7. Generar listados
-  SeedLogger.info(`Generando ${properties.length * listingsPerProperty} listados...`);
+  SeedLogger.info(
+    `Generando ${properties.length * listingsPerProperty} listados...`,
+  );
   const whatsappContact = "+5491112345678";
   const listings: SeedListing[] = generateFakeListings(
     properties.length * listingsPerProperty,

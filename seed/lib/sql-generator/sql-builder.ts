@@ -6,7 +6,19 @@
  * Escapa un valor para uso seguro en SQL de PostgreSQL.
  * Maneja strings, números, booleanos, arrays, fechas y null.
  */
+export class RawSQL {
+  constructor(public readonly value: string) {}
+}
+
+export function raw(value: string): RawSQL {
+  return new RawSQL(value);
+}
+
 export function escapeValue(value: unknown): string {
+  if (value instanceof RawSQL) {
+    return value.value;
+  }
+
   if (value === null || value === undefined) {
     return "NULL";
   }
@@ -27,9 +39,20 @@ export function escapeValue(value: unknown): string {
 
   if (Array.isArray(value)) {
     // Convertir arrays a JSON string y escapar
+    const isStringArray = value.every((item) => typeof item === "string");
+
+    if (isStringArray) {
+      // Formato array nativo de PostgreSQL: ARRAY['a','b','c']
+      const items = value.map(
+        (item) => `'${String(item).replace(/'/g, "''")}'`,
+      );
+      return `ARRAY[${items.join(", ")}]`;
+    }
+
+    // Si contiene objetos → jsonb
     const jsonStr = JSON.stringify(value);
     const escaped = jsonStr.replace(/'/g, "''");
-    return `'${escaped}'`;
+    return `'${escaped}'::jsonb`;
   }
 
   if (value instanceof Date) {
@@ -53,11 +76,12 @@ export function escapeValue(value: unknown): string {
 export function buildInsert(
   table: string,
   data: Record<string, unknown>,
+  prefixTable: string = "",
 ): string {
   const columns = Object.keys(data);
   const values = Object.values(data).map(escapeValue);
 
-  return `INSERT INTO ${table} (${columns.join(", ")}) VALUES (${values.join(", ")});`;
+  return `INSERT INTO ${prefixTable}${table} (${columns.join(", ")}) VALUES (${values.join(", ")});`;
 }
 
 /**
@@ -69,6 +93,7 @@ export function buildInsert(
 export function buildMultipleInserts(
   table: string,
   dataArray: Record<string, unknown>[],
+  prefixTable: string = "",
 ): string {
   if (dataArray.length === 0) {
     return "";
@@ -81,7 +106,16 @@ export function buildMultipleInserts(
     return `(${values.join(", ")})`;
   });
 
-  return `INSERT INTO ${table} (${columns.join(", ")})\n  VALUES ${valueLines.join(",\n")};`;
+  return `INSERT INTO ${prefixTable}${table} (${columns.join(", ")})\n  VALUES ${valueLines.join(",\n")};`;
+}
+
+export function buildInsertSelect(
+  table: string,
+  columns: string[],
+  select: string,
+  prefixTable: string = "",
+): string {
+  return `INSERT INTO ${prefixTable ?? ""}${table} (${columns.join(", ")})\n  ${select};`;
 }
 
 /**

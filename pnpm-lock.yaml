@@ -249,12 +249,15 @@ importers:
       playwright:
         specifier: ^1.58.2
         version: 1.58.2
+      postgres:
+        specifier: ^3.4.8
+        version: 3.4.8
       shadcn:
         specifier: ^3.8.4
         version: 3.8.5(@types/node@20.19.37)(typescript@5.9.3)
       supabase:
-        specifier: ^2.76.9
-        version: 2.81.3
+        specifier: ^2.84.4
+        version: 2.84.4
       tailwindcss:
         specifier: ^4.1.18
         version: 4.2.1
@@ -2714,6 +2717,10 @@ packages:
     resolution: {integrity: sha512-MnA+YT8fwfJPgBx3m60MNqakm30XOkyIoH1y6huTQvC0PwZG7ki8NacLBcrPbNoo8vEZy7Jpuk7+jMO+CUovTQ==}
     engines: {node: '>= 14'}
 
+  agent-base@8.0.0:
+    resolution: {integrity: sha512-QT8i0hCz6C/KQ+KTAbSNwCHDGdmUJl2tp2ZpNlGSWCfhUNVbYG2WLE3MdZGBAgXPV4GAvjGMxo+C1hroyxmZEg==}
+    engines: {node: '>= 14'}
+
   ajv-formats@3.0.1:
     resolution: {integrity: sha512-8iUql50EUR+uUcdRQ3HDqa6EVyo3docL8g5WJ3FNcWmu62IbkGUue/pEyLBW8VGKKucTPgqeks4fIU1DA4yowQ==}
     peerDependencies:
@@ -3870,6 +3877,10 @@ packages:
     resolution: {integrity: sha512-vK9P5/iUfdl95AI+JVyUuIcVtd4ofvtrOr3HNtM2yxC9bnMbEdp3x01OhQNnjb8IJYi38VlTE3mBXwcfvywuSw==}
     engines: {node: '>= 14'}
 
+  https-proxy-agent@8.0.0:
+    resolution: {integrity: sha512-YYeW+iCnAS3xhvj2dvVoWgsbca3RfQy/IlaNHHOtDmU0jMqPI9euIq3Y9BJETdxk16h9NHHCKqp/KB9nIMStCQ==}
+    engines: {node: '>= 14'}
+
   human-signals@2.1.0:
     resolution: {integrity: sha512-B4FFZ6q/T2jhhksgkbEW3HBvWIfDW85snkQgawt07S7J5QXTk6BkNV+0yAeZrM5QpMAdYlocGoljn0sJ/WQkFw==}
     engines: {node: '>=10.17.0'}
@@ -4759,6 +4770,10 @@ packages:
     resolution: {integrity: sha512-OW/rX8O/jXnm82Ey1k44pObPtdblfiuWnrd8X7GJ7emImCOstunGbXUpp7HdBrFQX6rJzn3sPT397Wp5aCwCHg==}
     engines: {node: ^10 || ^12 || >=14}
 
+  postgres@3.4.8:
+    resolution: {integrity: sha512-d+JFcLM17njZaOLkv6SCev7uoLaBtfK86vMUXhW1Z4glPWh4jozno9APvW/XKFJ3CCxVoC7OL38BqRydtu5nGg==}
+    engines: {node: '>=12'}
+
   potpack@2.1.0:
     resolution: {integrity: sha512-pcaShQc1Shq0y+E7GqJqvZj8DTthWV1KeHGdi0Z6IAin2Oi3JnLCOfwnCo84qc+HAp52wT9nK9H7FAJp5a44GQ==}
 
@@ -5296,8 +5311,8 @@ packages:
       babel-plugin-macros:
         optional: true
 
-  supabase@2.81.3:
-    resolution: {integrity: sha512-0bpO7xnlcvEfqh0ViGUuv4v1t4tVrFQvaO5Sx3JWrBX/dovSvx/DNZpLdp+/POM4QDXZ2VgZChXHJTPWc4/w8w==}
+  supabase@2.84.4:
+    resolution: {integrity: sha512-+WSe/7FFMuEOa1LJr1tZh12WDwW6lpKSmBjiEmf7m9j/ialf2oxeUMlsJCdYpST5kQ7PN0XDyvqnjE0tv/AB2w==}
     engines: {npm: '>=8'}
     hasBin: true
 
@@ -5341,8 +5356,8 @@ packages:
     resolution: {integrity: sha512-g9ljZiwki/LfxmQADO3dEY1CbpmXT5Hm2fJ+QaGKwSXUylMybePR7/67YW7jOrrvjEgL1Fmz5kzyAjWVWLlucg==}
     engines: {node: '>=6'}
 
-  tar@7.5.11:
-    resolution: {integrity: sha512-ChjMH33/KetonMTAtpYdgUFr0tbz69Fp2v7zWxQfYZX4g5ZN2nOBXm1R2xyA+lMIKrLKIoKAwFj93jE/avX9cQ==}
+  tar@7.5.13:
+    resolution: {integrity: sha512-tOG/7GyXpFevhXVh8jOPJrmtRpOTsYqUIkVdVooZYJS/z8WhfQUX8RJILmeuJNinGAMSu1veBr4asSHFt5/hng==}
     engines: {node: '>=18'}
 
   tiny-case@1.0.3:
@@ -8176,6 +8191,8 @@ snapshots:
 
   agent-base@7.1.4: {}
 
+  agent-base@8.0.0: {}
+
   ajv-formats@3.0.1(ajv@8.18.0):
     optionalDependencies:
       ajv: 8.18.0
@@ -9520,6 +9537,13 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
+  https-proxy-agent@8.0.0:
+    dependencies:
+      agent-base: 8.0.0
+      debug: 4.4.3
+    transitivePeerDependencies:
+      - supports-color
+
   human-signals@2.1.0: {}
 
   human-signals@8.0.1: {}
@@ -10363,6 +10387,8 @@ snapshots:
       picocolors: 1.1.1
       source-map-js: 1.2.1
 
+  postgres@3.4.8: {}
+
   potpack@2.1.0: {}
 
   powershell-utils@0.1.0: {}
@@ -11094,12 +11120,12 @@ snapshots:
     optionalDependencies:
       '@babel/core': 7.29.0
 
-  supabase@2.81.3:
+  supabase@2.84.4:
     dependencies:
       bin-links: 6.0.0
-      https-proxy-agent: 7.0.6
+      https-proxy-agent: 8.0.0
       node-fetch: 3.3.2
-      tar: 7.5.11
+      tar: 7.5.13
     transitivePeerDependencies:
       - supports-color
 
@@ -11131,7 +11157,7 @@ snapshots:
 
   tapable@2.3.0: {}
 
-  tar@7.5.11:
+  tar@7.5.13:
     dependencies:
       '@isaacs/fs-minipass': 4.0.1
       chownr: 3.0.0

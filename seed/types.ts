@@ -11,9 +11,42 @@ import { PropertyEntity } from "@/domain/entities/property.entity";
 import { RealEstateAgentEntity } from "@/domain/entities/real-estate-agent.entity";
 import { RealEstateEntity } from "@/domain/entities/real-estate.entity";
 import { UserEntity } from "@/domain/entities/user.entity";
+import { RawSQL } from "./lib/sql-generator/sql-builder";
 
-export type SeedUser = Omit<UserEntity, "created_at" | "updated_at"> & {
-  password: string;
+export type SeedUser = Omit<
+  UserEntity & {
+    instance_id: string;
+    encrypted_password: RawSQL;
+    email_confirmed_at: RawSQL;
+    recovery_sent_at: RawSQL;
+    last_sign_in_at: RawSQL;
+    raw_app_meta_data: {
+      provider: string;
+      providers: string[];
+    };
+    raw_user_meta_data: Record<string, unknown>;
+    created_at: RawSQL;
+    updated_at: RawSQL;
+    confirmation_token: string;
+    email_change: string;
+    email_change_token_new: string;
+    recovery_token: string;
+  },
+  "created_at" | "updated_at" | "full_name" | "phone"
+>;
+
+export type SeedIdentity = {
+  id: string; // uuid de la identity
+  provider_id: string; // uuid generado
+  user_id: string; // referencia al auth.users.id
+  identity_data: {
+    sub: string;
+    email: string;
+  };
+  provider: string; // "email"
+  last_sign_in_at: string;
+  created_at: string;
+  updated_at: string;
 };
 
 export type SeedProfile = Omit<ProfileEntity, "created_at" | "profile">;
@@ -61,9 +94,8 @@ export interface SeedContext {
 
 export interface SeedOptions {
   truncate?: boolean; // Truncar tablas antes de seed (default: true)
-  skipAuth?: boolean; // Saltar creación de usuarios auth (default: false)
   realEstateCount?: number; // Cantidad de inmobiliarias (default: 2)
-  agentsPerRealEstate?: number; // Agentes por inmobiliaria (default: 3)
+  agentsPerRealEstate?: number; // Agentes por inmobiliaria (default: 3) 1 coordinator / 2 agentes
   clientsCount?: number; // Clientes (default: 3)
   propertiesPerRealEstate?: number; // Propiedades por inmobiliaria (default: 5)
   listingsPerProperty?: number; // Listados por propiedad (default: 1)
@@ -73,7 +105,6 @@ export interface SeedOptions {
 
 export const DEFAULT_SEED_OPTIONS: SeedOptions = {
   truncate: true,
-  skipAuth: false,
   realEstateCount: 2,
   agentsPerRealEstate: 3,
   clientsCount: 3,

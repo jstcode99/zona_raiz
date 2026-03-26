@@ -18,14 +18,14 @@ interface CLIOptions {
 function parseArgs(args: string[]): CLIOptions {
   const options: CLIOptions = {
     truncate: false,
-    output: "seed.sql",
+    output: "supabase/seed.sql",
     dryRun: false,
     help: false,
   };
 
   for (let i = 0; i < args.length; i++) {
     const arg = args[i];
-    
+
     switch (arg) {
       case "--truncate":
       case "-t":
@@ -33,7 +33,7 @@ function parseArgs(args: string[]): CLIOptions {
         break;
       case "--output":
       case "-o":
-        options.output = args[++i] || "seed.sql";
+        options.output = args[++i] || "supabase/seed.sql";
         break;
       case "--dry-run":
       case "-d":
@@ -96,10 +96,12 @@ async function main() {
       const outputPath = path.resolve(process.cwd(), options.output);
       fs.writeFileSync(outputPath, sql, "utf-8");
       SeedLogger.success(`✅ SQL guardado en: ${outputPath}`);
-      
+
       // Info de uso
       console.log("\n📝 Para ejecutar en Supabase:");
-      console.log(`   psql -h <host> -U <user> -d <database> -f ${options.output}`);
+      console.log(
+        `   psql -h <host> -U <user> -d <database> -f ${options.output}`,
+      );
       console.log("   o copiar y pegar en el SQL Editor de Supabase");
     }
 
