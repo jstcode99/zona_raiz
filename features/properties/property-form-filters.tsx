@@ -17,7 +17,7 @@ import {
   defaultPropertySearchValues,
 } from "@/application/validation/property-search.schema"
 import { useTranslation } from "react-i18next"
-import { PlaceSearch, ParsedPlace } from "../places/place-search"
+import { PlaceSearch, ParsedPlace } from "@/features/places/place-search"
 
 interface PropertyFiltersFormProps {
   onFiltersChange?: (filters: PropertySearchFormInput) => void
@@ -170,24 +170,26 @@ export function PropertyFiltersForm({
         }
       >
         {/* Switch between PlaceSearch and Manual input */}
-        <div className="flex gap-2 mb-3">
+        <div role="group" aria-label={t("common:location_input_mode")} className="flex gap-2 mb-3">
           <Button
             type="button"
             variant={usePlaceSearch ? "default" : "outline"}
             size="sm"
             onClick={() => handleModeChange("search")}
+            aria-pressed={usePlaceSearch}
             className="text-xs h-7"
           >
-            📍 {t("words.search") || "Búsqueda"}
+            📍 {t("common:search_place")}
           </Button>
           <Button
             type="button"
             variant={!usePlaceSearch ? "default" : "outline"}
             size="sm"
             onClick={() => handleModeChange("manual")}
+            aria-pressed={!usePlaceSearch}
             className="text-xs h-7"
           >
-            ✏️ Manual
+            ✏️ {t("common:manual")}
           </Button>
         </div>
 
