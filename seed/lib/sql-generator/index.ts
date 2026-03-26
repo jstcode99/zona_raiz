@@ -179,11 +179,22 @@ export function generateAllSQL(
     whatsappContact,
   );
 
-  // Asignar agentes a listados (asignar aleatorio)
-  const agentIds = agents.map((a) => a.id);
-  listings.forEach((listing, index) => {
-    listing.agent_id = agentIds[index % agentIds.length];
+  realEstateIds.forEach((id) => {
+    const agentsRealEstate = realEstateAgents
+      .filter((realEstateAgent) => realEstateAgent.real_estate_id == id)
+      .map((a) => a.id);
+    const propertiesRealEstate = properties
+      .filter((p) => p.real_estate_id == id)
+      .map((p) => p.id);
+
+    listings
+      .filter((l) => propertiesRealEstate.some((v) => v === l.property_id))
+      .forEach((listing, index) => {
+        listing.agent_id = agentsRealEstate[index % agentsRealEstate.length];
+      });
   });
+  // Asignar agentes a listados (asignar aleatorio)
+  const agentIds = realEstateAgents.map((a) => a.id);
 
   sql += generateListingsSQL(listings);
   SeedLogger.success(`✓ ${listings.length} listados`);
