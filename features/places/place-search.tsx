@@ -28,6 +28,7 @@ type Prediction = {
 export type ParsedPlace = {
   city?: string;
   state?: string;
+  country?: string;
   neighborhood?: string;
   label?: string;
 };
@@ -161,29 +162,114 @@ export function PlaceSearch({
     fetchPredictions(value);
   };
 
-  const handleSelect = (prediction: Prediction) => {
+  const handleSelect = async (prediction: Prediction) => {
     setOpen(false);
     setPredictions([]);
+    setLoading(true);
 
-    // Parsear directo desde los terms — sin Geocoder
-    const parsed = parsePredictionTerms(prediction);
-    const place = {
-      ...parsed,
+    // Parsear fallback desde los terms
+    const parsedFromTerms = parsePredictionTerms(prediction);
+    const basePlace = {
+      ...parsedFromTerms,
       label: prediction.structured_formatting.main_text,
     };
 
-    setSelected(place);
-    setQuery("");
-    onSelect?.(place);
+    // Intentar obtener detalles completos del lugar
+    try {
+      // Crear un elemento dummy para el servicio
+      const dummyDiv = document.createElement("div");
+      const placesService = new google.maps.places.PlacesService(dummyDiv);
 
-    if (navigate) {
-      router.push(
-        buildSearchUrl({
-          lang,
-          city: parsed.city,
-          neighborhood: parsed.neighborhood,
-        }),
+      // Una sola llamada a getDetails para obtener address_components
+      const details = await new Promise<google.maps.places.PlaceResult>(
+        (resolve, reject) => {
+          placesService.getDetails(
+            {
+              placeId: prediction.place_id,
+              fields: ["address_components"],
+            },
+            (result, status) => {
+              if (
+                status === google.maps.places.PlacesServiceStatus.OK &&
+                result
+              ) {
+                resolve(result);
+              } else {
+                reject(new Error(`Places API status: ${status}`));
+              }
+            },
+          );
+        },
       );
+
+      const addressComponents = details.address_components || [];
+
+      // Extraer country
+      const countryComponent = addressComponents.find((comp) =>
+        comp.types.includes("country"),
+      );
+      const country = countryComponent?.short_name?.toLowerCase();
+
+      // Extraer state
+      const stateComponent = addressComponents.find((comp) =>
+        comp.types.includes("administrative_area_level_1"),
+      );
+      const state = stateComponent?.long_name;
+
+      // Extraer city
+      const cityComponent = addressComponents.find(
+        (comp) =>
+          comp.types.includes("locality") ||
+          comp.types.includes("administrative_area_level_2"),
+      );
+      const city = cityComponent?.long_name;
+
+      // Extraer neighborhood
+      const neighborhoodComponent = addressComponents.find(
+        (comp) =>
+          comp.types.includes("sublocality_level_1") ||
+          comp.types.includes("neighborhood"),
+      );
+      const neighborhood = neighborhoodComponent?.long_name;
+
+      const place: ParsedPlace = {
+        ...(country && { country }),
+        ...(state && { state }),
+        ...(city && { city }),
+        ...(neighborhood && { neighborhood }),
+        label: prediction.structured_formatting.main_text,
+      };
+
+      setSelected(place);
+      setLoading(false);
+      setQuery("");
+      onSelect?.(place);
+
+      if (navigate) {
+        router.push(
+          buildSearchUrl({
+            lang,
+            city: place.city,
+            neighborhood: place.neighborhood,
+          }),
+        );
+      }
+    } catch {
+      // Si falla Place Details, usar datos de términos como fallback
+      setSelected(basePlace);
+      setLoading(false);
+      setQuery("");
+      onSelect?.(basePlace);
+
+      if (navigate) {
+        router.push(
+          buildSearchUrl({
+            lang,
+            city: parsedFromTerms.city,
+            neighborhood: parsedFromTerms.neighborhood,
+          }),
+        );
+      }
     }
   };
 
