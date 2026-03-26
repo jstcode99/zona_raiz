@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { getLangServerSide } from "@/shared/utils/lang";
+import { getLangServerSide } from "@/infrastructure/shared/utils/lang";
 import { initI18n } from "@/i18n/server";
 import { ImportPageClient } from "./import-page-client";
 
