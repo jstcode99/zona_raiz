@@ -38,6 +38,10 @@
     "updated": "Inmobiliaria actualizada exitosamente",
     "error": "Error al guardar la inmobiliaria"
   },
+  "exceptions": {
+    "real_estate_agents": "Hubo un error auto asignando el profil",
+    "register_error": "Hubo un error registrando la inmobiliaria"
+  },
   "titles": {
     "onboarding": "No tienes inmobiliaria",
     "selection": "Selecciona tu inmobiliaria"

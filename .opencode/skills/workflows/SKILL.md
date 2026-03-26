@@ -154,8 +154,8 @@ MY_ENTITY: {
 ```typescript
 // __tests__/domain/services/my-entity.service.test.ts
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { MyEntityService } from "../../../domain/services/my-entity.service";
-import { MyEntityPort } from "../../../domain/ports/my-entity.port";
+import { MyEntityService } from "@/domain/services/my-entity.service";
+import { MyEntityPort } from "@/domain/ports/my-entity.port";
 
 describe("MyEntityService", () => {
   let service: MyEntityService;

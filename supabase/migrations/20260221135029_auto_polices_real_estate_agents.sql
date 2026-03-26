@@ -7,7 +7,7 @@ create policy "Agents: Add agents" on public.real_estate_agents for
 insert
 with
     check (
-        public.can_manage_real_estate (real_estate_id, auth.uid ())
+        public.can_manage_real_estate (real_estate_id, auth.uid())
         and not( -- <-- AGREGADO: previene auto-asignación como coordinador si ya lo es
             role = 'coordinator'
             and profile_id = auth.uid ()

@@ -13,15 +13,15 @@ export class SupabaseAgentAdapter implements AgentPort {
     profile_id: string,
     role: EAgentRole = EAgentRole.Agent,
   ): Promise<void> {
-    const { error } = await this.supabase
-      .from("real_estate_agents")
-      .insert({
-        real_estate_id: realEstateId,
-        profile_id: profile_id,
-        role: role,
-      });
-
-    if (error) throw new Error(error.message);
+    const { error } = await this.supabase.from("real_estate_agents").insert({
+      real_estate_id: realEstateId,
+      profile_id: profile_id,
+      role: role,
+    });
+    if (error) {
+      console.warn(error);
+      throw new Error(error.message);
+    }
   }
 
   async removeAgent(realEstateId: string, profile_id: string): Promise<void> {
