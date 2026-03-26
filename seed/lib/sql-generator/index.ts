@@ -135,6 +135,8 @@ export function generateAllSQL(
     properties.length * 3,
     properties.map((p) => ({ id: p.id, title: p.title })) as any,
   );
+  sql += generatePropertyImagesSQL(propertyImages);
+  SeedLogger.success(`✓ ${propertyImages.length} imágenes`);
 
   // 7. Generar listados
   SeedLogger.info(`Generando ${properties.length * listingsPerProperty} listados...`);
@@ -161,6 +163,8 @@ export function generateAllSQL(
     clients.map((c) => ({ id: c.id })) as any,
     listings.map((l) => ({ id: l.id, status: l.status })) as any,
   );
+  sql += generateFavoritesSQL(favorites);
+  SeedLogger.success(`✓ ${favorites.length} favoritos`);
 
   // 9. Generar inquiries
   SeedLogger.info(`Generando ${inquiriesCount} inquiries...`);
