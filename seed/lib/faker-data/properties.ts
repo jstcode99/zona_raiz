@@ -6,8 +6,19 @@ import { faker } from "@faker-js/faker";
 import type { SeedProperty } from "../../types";
 import { PropertyType } from "@/domain/entities/property.enums";
 import { amenitiesOptions } from "@/domain/entities/property.entity";
-import { generateSlug } from "@/app/lib/utils";
 import { generateFakeUUID } from "./uuid";
+
+/**
+ * Simple slugify function to generate URL-safe slugs
+ */
+function slugify(text: string): string {
+  return text
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
+}
 
 /**
  * Genera propiedades fake.
@@ -62,7 +73,7 @@ export function generateFakeProperties(
       id: generateFakeUUID(),
       real_estate_id: realEstateId,
       title,
-      slug: generateSlug(title),
+      slug: slugify(title),
       description: faker.lorem.paragraph(3),
       property_type: propertyType,
       street: location.streetAddress(),
