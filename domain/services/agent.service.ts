@@ -3,6 +3,7 @@ import { unstable_cache } from "next/cache";
 import { Lang } from "@/i18n/settings";
 import { LandingAgent } from "@/domain/types/landing.types";
 import { CACHE_TAGS } from "@/infrastructure/config/constants";
+import { EAgentRole } from "../entities/real-estate-agent.entity";
 
 export class AgentService {
   constructor(
@@ -10,8 +11,8 @@ export class AgentService {
     private lang: Lang = "es",
   ) {}
 
-  addAgent(realEstateId: string, profileId: string) {
-    return this.agentPort.addAgent(realEstateId, profileId);
+  addAgent(realEstateId: string, profileId: string, role?: EAgentRole) {
+    return this.agentPort.addAgent(realEstateId, profileId, role);
   }
 
   removeAgent(realEstateId: string, profileId: string) {

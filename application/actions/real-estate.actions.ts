@@ -22,17 +22,24 @@ export const createRealEstateAction = withServerAction(
     const lang = await getLangServerSide();
     const cookieStore = await cookies();
     const routes = createRouter(lang);
+    const i18n = await initI18n(lang);
+    const t = i18n.getFixedT(lang);
 
-    const { realEstateService, cookiesService } = await appModule(lang, {
-      cookies: cookieStore,
-    });
+    const { realEstateService, cookiesService, agentService, sessionService } =
+      await appModule(lang, {
+        cookies: cookieStore,
+      });
 
     const input = await realEstateSchema.validate(
       Object.fromEntries(formData),
       { abortEarly: false, stripUnknown: true },
     );
+    const profileId = await sessionService.getCurrentUserId(); // user->id si same profile->id
+
+    if (!profileId) throw new Error(t("common:exceptions.unauthorized"));
 
     const id = await realEstateService.create(mapRealEstateRowToDomain(input));
+    await agentService.addAgent(id, profileId, EAgentRole.Coordinator);
 
     cookiesService.setSession(COOKIE_NAMES.REAL_ESTATE, id);
     cookiesService.setSession(
