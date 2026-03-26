@@ -23,7 +23,7 @@ import { defaultRealEstateValues, RealEstateInput, realEstateSchema } from "@/ap
 import { createRealEstateAction } from "@/application/actions/real-estate.actions"
 import countries from '@/lib/countries.json'
 import { useRoutes } from "@/i18n/client-router"
-import { PlaceSearch, ParsedPlace } from "../places/place-search"
+import { PlaceSearch, ParsedPlace } from "@/features/places/place-search"
 
 export function RealEstateRegistrationForm() {
   const { t } = useTranslation('real-estates')
@@ -122,24 +122,26 @@ export function RealEstateRegistrationForm() {
             />
 
             {/* Switch between PlaceSearch and Manual input */}
-            <div className="flex gap-2 mb-2">
+            <div role="group" aria-label={t("common:location_input_mode")} className="flex gap-2 mb-2">
               <Button
                 type="button"
                 variant={usePlaceSearch ? "default" : "outline"}
                 size="sm"
                 onClick={() => handleModeChange("search")}
+                aria-pressed={usePlaceSearch}
                 className="text-xs"
               >
-                📍 {t("words.search") || "Búsqueda"}
+                📍 {t("common:search_place")}
               </Button>
               <Button
                 type="button"
                 variant={!usePlaceSearch ? "default" : "outline"}
                 size="sm"
                 onClick={() => handleModeChange("manual")}
+                aria-pressed={!usePlaceSearch}
                 className="text-xs"
               >
-                ✏️ Manual
+                ✏️ {t("common:manual")}
               </Button>
             </div>
 
