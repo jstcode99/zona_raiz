@@ -1,13 +1,10 @@
 # 🌱 Database Seed - Zona Raíz
 
-Este directorio contiene dos sistemas de seed:
+Sistema de generación de datos de prueba para desarrollo y testing.
 
-1. **Generador SQL (nuevo)** - Genera `seed.sql` sin conexión a Supabase
-2. **Seed directo (legacy)** - Inserta directamente en Supabase
+**Este sistema genera un archivo SQL** sin necesidad de conexión a Supabase. El SQL puede ejecutarse en cualquier cliente PostgreSQL.
 
-## 🎯 Uso Recomendado: Generador SQL
-
-El nuevo sistema genera un archivo SQL listo para ejecutar en cualquier cliente PostgreSQL.
+## 🎯 Uso
 
 ### Comandos
 
@@ -36,8 +33,6 @@ pnpm seed:sql -o mi-seed.sql
 
 ### Ejecutar el SQL
 
-Una vez generado `seed.sql`:
-
 ```bash
 # En Supabase local
 psql -h localhost -U postgres -d postgres -f seed/seed.sql
@@ -51,34 +46,25 @@ npx supabase db execute --file seed/seed.sql
 
 ## 📊 Datos que se Generan
 
-### Inmobiliarias (2 por defecto)
-- **Inmobiliaria Costa del Plata** - Mar del Plata
-- **Urban Living Argentina** - Buenos Aires
-- **Sierra Propiedades** - Córdoba
-
-### Perfiles
-- Coordinadores (1 por inmobiliaria)
-- Agentes (3 por inmobiliaria)
-- Clientes (3 por defecto)
-
-### Propiedades (~10)
-Distribuidas entre las inmobiliarias con diferentes tipos:
-- Departamentos, Casas, Condominios, Terrenos, Comercial
-
-### Listados, Imágenes, Favoritos, Inquiries
-Relaciones completas entre todas las entidades.
+- **Inmobiliarias** - 2 por defecto
+- **Perfiles** - Coordinadores, agentes, clientes
+- **Propiedades** - 10 por defecto
+- **Imágenes** - 3-5 por propiedad
+- **Listados** - 1 por propiedad
+- **Favoritos** - 5 por defecto
+- **Inquiries** - 8 por defecto
 
 ## 📁 Estructura
 
 ```
 seed/
-├── generate-sql.ts           # Script CLI principal
-├── seed.sql                   # Archivo generado (no commiteado)
+├── generate-sql.ts           # Script CLI
+├── seed.sql                   # Archivo generado (en .gitignore)
 ├── types.ts                   # Tipos TypeScript
+├── README.md                  # Este archivo
 ├── lib/
 │   ├── logger.ts             # Utilidades de logging
 │   ├── faker-data/           # Generadores de datos fake
-│   │   ├── index.ts
 │   │   ├── uuid.ts
 │   │   ├── real-estates.ts
 │   │   ├── profiles.ts
@@ -86,7 +72,8 @@ seed/
 │   │   ├── listings.ts
 │   │   ├── property-images.ts
 │   │   ├── favorites.ts
-│   │   └── inquiries.ts
+│   │   ├── inquiries.ts
+│   │   └── index.ts
 │   └── sql-generator/        # Generadores SQL
 │       ├── index.ts          # Orquestador principal
 │       ├── sql-builder.ts    # Utilidades SQL
@@ -98,50 +85,29 @@ seed/
 │       ├── listings.ts
 │       ├── favorites.ts
 │       └── inquiries.ts
-├── run-seed.ts               # DEPRECATED: Seed directo a Supabase
-└── lib/supabase.ts           # DEPRECATED: Cliente Supabase
+└── __tests__/
+    └── seed-sql-generator.test.ts
 ```
 
-## 🔧 Personalización
+## ⚙️ Personalización
 
 Edita `types.ts` → `DEFAULT_SEED_OPTIONS` para cambiar cantidades:
 
 ```typescript
 export const DEFAULT_SEED_OPTIONS: SeedOptions = {
-  realEstateCount: 2,        // Cantidad de inmobiliarias
-  agentsPerRealEstate: 3,     // Agentes por inmobiliaria
-  clientsCount: 3,            // Clientes
-  propertiesPerRealEstate: 5, // Propiedades por inmobiliaria
-  listingsPerProperty: 1,     // Listados por propiedad
-  favoritesCount: 5,          // Favoritos
-  inquiriesCount: 8,           // Inquiries/consultas
+  realEstateCount: 2,           // Inmobiliarias
+  agentsPerRealEstate: 3,      // Agentes por inmobiliaria
+  clientsCount: 3,              // Clientes
+  propertiesPerRealEstate: 5,   // Propiedades por inmobiliaria
+  listingsPerProperty: 1,        // Listados por propiedad
+  favoritesCount: 5,             // Favoritos
+  inquiriesCount: 8,            // Inquiries
 };
 ```
 
-## ⚠️ Notas
+## ℹ️ Notas
 
-### seed.sql no está en git
-El archivo `seed.sql` está en `.gitignore` ya que es generado automáticamente.
-
-### Faker seed para reproducibilidad
-El sistema usa `faker.seed(42)` para garantizar datos consistentes entre ejecuciones.
-
-### No incluye auth.users
-Los usuarios de autenticación deben crearse manualmente o desde otro proceso.
-
----
-
-## Legacy: Seed Directo (Deprecated)
-
-**⚠️ Este método está deprecated. Usar el generador SQL.**
-
-El script `run-seed.ts` inserta datos directamente en Supabase. Requiere:
-- Variables de entorno configuradas
-- Conexión a Supabase
-
-```bash
-pnpm seed           # Seed completo
-pnpm seed:dry-run   # Ver qué se insertaría
-```
-
-Este método ya no se mantiene y será eliminado en una versión futura.
+- El archivo `seed.sql` está en `.gitignore` (es generado automáticamente)
+- Usa `faker.seed(42)` para reproducibilidad
+- No incluye `auth.users` (crear manualmente)
+- El orden de inserciones respeta las FKs
