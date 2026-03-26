@@ -3,7 +3,7 @@
 import { withServerAction } from "@/shared/hooks/with-server-action";
 import { agentToggleSchema } from "@/application/validation/agent.validation";
 import { revalidatePath, revalidateTag } from "next/cache";
-import { getLangServerSide } from "@/shared/utils/lang";
+import { getLangServerSide } from "@/infrastructure/shared/utils/lang";
 import { cookies } from "next/headers";
 import { appModule } from "../modules/app.module";
 import { createRouter } from "@/i18n/router";

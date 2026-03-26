@@ -29,7 +29,7 @@ import { EAgentRole } from "@/domain/entities/real-estate-agent.entity";
 import type { SeedAgent, SeedListing } from "../../types";
 import { generateFakeUsers } from "../faker-data/users";
 import { EUserRole } from "@/domain/entities/profile.entity";
-import { splitByRatio } from "@/lib/utils";
+import { splitByRatio } from "@/shared/utils/number";
 import { generateUsersSQL } from "./user";
 import { generateIdentitiesSQL } from "./identities";
 

@@ -3,7 +3,7 @@
 import { cookies } from "next/headers";
 import { ListingSearchFiltersInput as ListingSearchFiltersType } from "@/application/validation/listing-search-full.schema";
 import { ListingEntity } from "@/domain/entities/listing.entity";
-import { pickDefined } from "@/lib/utils";
+import { pickDefined } from "@/shared/utils/object";
 import { ListingSearchFilters } from "@/domain/ports/listing.port";
 import { appModule } from "@/application/modules/app.module";
 import { Lang } from "@/i18n/settings";

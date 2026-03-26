@@ -6,7 +6,7 @@ import {
   profileSchema,
 } from "@/application/validation/profile.validation";
 import { revalidatePath } from "next/cache";
-import { getLangServerSide } from "@/shared/utils/lang";
+import { getLangServerSide } from "@/infrastructure/shared/utils/lang";
 import { cookies } from "next/headers";
 import { createRouter } from "@/i18n/router";
 import { initI18n } from "@/i18n/server";

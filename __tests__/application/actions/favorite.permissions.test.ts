@@ -13,7 +13,7 @@ vi.mock("@/shared/hooks/with-server-action", () => ({
   withServerAction: (fn: Function) => fn,
 }));
 
-vi.mock("@/shared/utils/lang", () => ({
+vi.mock("@/infrastructure/shared/utils/lang", () => ({
   getLangServerSide: vi.fn(() => Promise.resolve("es")),
 }));
 

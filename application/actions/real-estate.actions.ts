@@ -10,7 +10,7 @@ import { cookies } from "next/headers";
 import { COOKIE_NAMES } from "@/infrastructure/config/constants";
 import { mapRealEstateRowToDomain } from "../mappers/real-estate.mapper";
 import { revalidatePath, revalidateTag } from "next/cache";
-import { getLangServerSide } from "@/shared/utils/lang";
+import { getLangServerSide } from "@/infrastructure/shared/utils/lang";
 import { appModule } from "../modules/app.module";
 import { createRouter } from "@/i18n/router";
 import { initI18n } from "@/i18n/server";
