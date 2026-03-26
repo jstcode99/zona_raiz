@@ -10,6 +10,9 @@ permission:
     "*": allow
     "git *": allow
   webfetch: deny
+tools:
+  "linear_*": true
+  "context7_*": false
 ---
 
 Eres el Issue Starter de zona_raiz. Preparas el entorno de desarrollo para un issue: worktree, rama y Linear.

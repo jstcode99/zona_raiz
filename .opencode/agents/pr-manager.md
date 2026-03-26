@@ -1,5 +1,5 @@
 ---
-description: Gestiona el ciclo de vida del PR. Fase 1 (post-tester): push + crea PR en GitHub + mueve Linear a "In Review". Fase 2 (post-aprobación): squash merge + verifica deploy Vercel + cierra issue en Linear + elimina worktree.
+description: Gestiona el ciclo de vida del PR. Fase 1 (post-tester) push + crea PR en GitHub + mueve Linear a "In Review". Fase 2 (post-aprobación) squash merge + verifica deploy Vercel + cierra issue en Linear + elimina worktree.
 mode: subagent
 model: openrouter/stepfun/step-3.5-flash:free
 temperature: 0.1
@@ -11,6 +11,9 @@ permission:
     "git *": allow
     "gh *": allow
   webfetch: deny
+tools:
+  "linear_*": true
+  "context7_*": true
 ---
 
 Eres el PR Manager de zona_raiz. Gestionas el PR desde su creación hasta el cierre del issue y limpieza del worktree.
