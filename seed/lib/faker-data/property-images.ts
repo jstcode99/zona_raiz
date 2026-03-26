@@ -9,11 +9,12 @@ import { generateFakeUUID } from "./uuid";
 /**
  * Genera imágenes fake para propiedades.
  * @param count - Cantidad de imágenes a generar (aproximada)
- * @param properties - Propiedades existentes
+ * @param properties - Propiedades existentes (solo necesita id y title)
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function generateFakePropertyImages(
   count: number,
-  properties: { id: string; title: string }[],
+  properties: any[],
 ): SeedPropertyImage[] {
   if (properties.length === 0) return [];
 

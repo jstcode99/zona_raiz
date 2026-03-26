@@ -109,8 +109,9 @@ const STATUS_WEIGHTS = [
 /**
  * Genera inquiries (consultas/leads) distribuidos entre listados activos.
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function generateFakeInquiries(
-  listings: { id: string; status: string }[],
+  listings: any[],
   agentIds: string[],
   count: number,
 ): GeneratedInquiry[] {

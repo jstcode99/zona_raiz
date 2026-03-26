@@ -132,18 +132,16 @@ export function generateAllSQL(
   // 6. Generar imágenes de propiedades
   SeedLogger.info("Generando imágenes de propiedades...");
   const propertyImages = generateFakePropertyImages(
-    properties.length * 3, // ~3-5 imágenes por propiedad
-    properties.map((p) => ({ id: p.id, title: p.title })),
+    properties.length * 3,
+    properties.map((p) => ({ id: p.id, title: p.title })) as any,
   );
-  sql += generatePropertyImagesSQL(propertyImages);
-  SeedLogger.success(`✓ ${propertyImages.length} imágenes`);
 
   // 7. Generar listados
   SeedLogger.info(`Generando ${properties.length * listingsPerProperty} listados...`);
   const whatsappContact = "+5491112345678";
   const listings: SeedListing[] = generateFakeListings(
     properties.length * listingsPerProperty,
-    properties.map((p) => ({ id: p.id, title: p.title })),
+    properties.map((p) => ({ id: p.id, title: p.title })) as any,
     whatsappContact,
   );
 
@@ -160,17 +158,15 @@ export function generateAllSQL(
   SeedLogger.info(`Generando ${favoritesCount} favoritos...`);
   const favorites = generateFakeFavorites(
     favoritesCount,
-    clients.map((c) => ({ id: c.id })),
-    listings.map((l) => ({ id: l.id, status: l.status })),
+    clients.map((c) => ({ id: c.id })) as any,
+    listings.map((l) => ({ id: l.id, status: l.status })) as any,
   );
-  sql += generateFavoritesSQL(favorites);
-  SeedLogger.success(`✓ ${favorites.length} favoritos`);
 
   // 9. Generar inquiries
   SeedLogger.info(`Generando ${inquiriesCount} inquiries...`);
   const generatedInquiries = generateFakeInquiries(
-    listings.map((l) => ({ id: l.id, status: l.status })),
-    agentIds,
+    listings.map((l) => ({ id: l.id, status: l.status })) as any,
+    agentIds as any,
     inquiriesCount,
   );
   const inquiries = generatedInquiries.map((gi) =>

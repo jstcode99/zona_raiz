@@ -9,10 +9,11 @@ import { generateFakeUUID } from "./uuid";
 /**
  * Genera favoritos fake.
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function generateFakeFavorites(
   count: number,
-  clients: { id: string }[],
-  listings: { id: string; status: string }[],
+  clients: any[],
+  listings: any[],
 ): SeedFavorite[] {
   const favorites: SeedFavorite[] = [];
   const usedPairs = new Set<string>();

@@ -11,9 +11,10 @@ import { keywordsOptions, listingTypeOptions } from "@/domain/entities/listing.e
 /**
  * Genera listados fake.
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function generateFakeListings(
   count: number,
-  properties: { id: string; title: string }[],
+  properties: any[],
   whatsappContact: string,
 ): SeedListing[] {
   if (properties.length === 0) return [];
