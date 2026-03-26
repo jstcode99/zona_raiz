@@ -39,7 +39,8 @@ export const createRealEstateAction = withServerAction(
     if (!profileId) throw new Error(t("common:exceptions.unauthorized"));
 
     const id = await realEstateService.create(mapRealEstateRowToDomain(input));
-    await agentService.addAgent(id, profileId, EAgentRole.Coordinator);
+
+    if (!id) throw new Error(t("real-estates:exceptions.register_error"));
 
     cookiesService.setSession(COOKIE_NAMES.REAL_ESTATE, id);
     cookiesService.setSession(

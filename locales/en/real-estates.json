@@ -38,6 +38,10 @@
     "updated": "Real estate updated successfully",
     "error": "Error saving real estate"
   },
+  "exceptions": {
+    "real_estate_agents": "Has error on auto assingmet profile",
+    "register_error": "Has error on register real estate"
+  },
   "titles": {
     "onboarding": "You have no real estate",
     "selection": "Select your real estate"
