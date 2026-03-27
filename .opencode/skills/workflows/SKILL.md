@@ -221,7 +221,7 @@ GOOGLE_MAPS_API_KEY=
 NEXT_PUBLIC_HCAPTCHA_SITE_KEY=
 
 # Google OAuth
-NEXT_PUBLIC_GOOGLE_CLIENT_ID=
+GOOGLE_CLIENT_ID=
 ```
 
 ## Checklist antes de hacer commit

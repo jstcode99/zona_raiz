@@ -144,7 +144,7 @@ Para selectores de dirección, usar el componente existente `PlaceSelectorGoogle
 ```typescript
 // features/auth/google-auth.tsx
 // Usa @react-oauth/google
-// Variable: NEXT_PUBLIC_GOOGLE_CLIENT_ID
+// Variable: GOOGLE_CLIENT_ID
 // Callback manejado en app/[lang]/auth/callback/route.ts
 ```
 
