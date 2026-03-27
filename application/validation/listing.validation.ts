@@ -26,20 +26,20 @@ export const createListingSchema = yup.object({
   meta_title: yup
     .string()
     .required(
-      i18next.t("validations.required", {
+      i18next.t("validations:required", {
         attribute: "meta_title",
       }),
     )
     .min(
       10,
-      i18next.t("validations.min.string", {
+      i18next.t("validations:min.string", {
         attribute: "meta_title",
         min: "10",
       }),
     )
     .max(
       100,
-      i18next.t("validations.max.string", {
+      i18next.t("validations:max.string", {
         attribute: "meta_title",
         max: "100",
       }),
@@ -47,20 +47,20 @@ export const createListingSchema = yup.object({
   meta_description: yup
     .string()
     .required(
-      i18next.t("validations.required", {
+      i18next.t("validations:required", {
         attribute: "meta_description",
       }),
     )
     .min(
       10,
-      i18next.t("validations.min.string", {
+      i18next.t("validations:min.string", {
         attribute: "meta_description",
         min: "10",
       }),
     )
     .max(
       500,
-      i18next.t("validations.max.string", {
+      i18next.t("validations:max.string", {
         attribute: "meta_description",
         max: "500",
       }),
@@ -85,20 +85,20 @@ export const createListingSchema = yup.object({
     })
     .default([])
     .required(
-      i18next.t("validations.required", {
+      i18next.t("validations:required", {
         attribute: "keywords",
       }),
     ),
   virtual_tour_url: yup
     .string()
     .url(
-      i18next.t("validations.url", {
+      i18next.t("validations:url", {
         attribute: "virtual_tour_url",
       }),
     )
     .max(
       200,
-      i18next.t("validations.max.string", {
+      i18next.t("validations:max.string", {
         attribute: "virtual_tour_url",
         max: "200",
       }),
@@ -107,33 +107,33 @@ export const createListingSchema = yup.object({
   video_url: yup
     .string()
     .url(
-      i18next.t("validations.url", {
+      i18next.t("validations:url", {
         attribute: "video_url",
       }),
     )
     .max(
       200,
-      i18next.t("validations.max.string", {
+      i18next.t("validations:max.string", {
         attribute: "video_url",
         max: "200",
       }),
     ),
   available_from: yup.date().min(
     new Date(),
-    i18next.t("validations.date", {
+    i18next.t("validations:date", {
       attribute: "available_from",
     }),
   ),
   minimum_contract_duration: yup
     .number()
     .integer(
-      i18next.t("validations.integer", {
+      i18next.t("validations:integer", {
         attribute: "minimum_contract_duration",
       }),
     )
     .max(
       120,
-      i18next.t("validations.max.numeric", {
+      i18next.t("validations:max.numeric", {
         attribute: "minimum_contract_duration",
         max: "120",
       }),
@@ -141,13 +141,13 @@ export const createListingSchema = yup.object({
   whatsapp_contact: yup
     .string()
     .required(
-      i18next.t("validations.required", {
+      i18next.t("validations:required", {
         attribute: "whatsapp_contact",
       }),
     )
     .max(
       120,
-      i18next.t("validations.max.string", {
+      i18next.t("validations:max.string", {
         attribute: "whatsapp_contact",
         max: "120",
       }),

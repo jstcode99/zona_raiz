@@ -21,47 +21,49 @@ export const enquirySchema = yup.object({
   // real_estate_id del formulario público (NO se guarda en BD, se usa para WhatsApp)
   real_estate_id: yup
     .string()
-    .uuid(i18next.t("validations.uuid", { attribute: "real_estate_id" }))
-    .required(i18next.t("validations.required", { attribute: "real_estate_id" })),
+    .uuid(i18next.t("validations:uuid", { attribute: "real_estate_id" }))
+    .required(
+      i18next.t("validations:required", { attribute: "real_estate_id" }),
+    ),
   listing_id: yup
     .string()
-    .uuid(i18next.t("validations.uuid", { attribute: "listing_id" }))
-    .required(i18next.t("validations.required", { attribute: "listing_id" })),
+    .uuid(i18next.t("validations:uuid", { attribute: "listing_id" }))
+    .required(i18next.t("validations:required", { attribute: "listing_id" })),
   name: yup
     .string()
-    .required(i18next.t("validations.required", { attribute: "name" }))
+    .required(i18next.t("validations:required", { attribute: "name" }))
     .min(
       2,
-      i18next.t("validations.min.string", { attribute: "name", min: "2" }),
+      i18next.t("validations:min.string", { attribute: "name", min: "2" }),
     )
     .max(
       100,
-      i18next.t("validations.max.string", { attribute: "name", max: "100" }),
+      i18next.t("validations:max.string", { attribute: "name", max: "100" }),
     ),
   email: yup
     .string()
-    .email(i18next.t("validations.email", { attribute: "email" }))
+    .email(i18next.t("validations:email", { attribute: "email" }))
     .max(
       100,
-      i18next.t("validations.max.string", { attribute: "email", max: "100" }),
+      i18next.t("validations:max.string", { attribute: "email", max: "100" }),
     )
     .nullable(),
   phone: yup
     .string()
     .matches(
       /^[\d\s\-\+\(\)]+$/,
-      i18next.t("validations.phone", { attribute: "phone" }),
+      i18next.t("validations:phone", { attribute: "phone" }),
     )
     .max(
       30,
-      i18next.t("validations.max.string", { attribute: "phone", max: "30" }),
+      i18next.t("validations:max.string", { attribute: "phone", max: "30" }),
     )
     .nullable(),
   message: yup
     .string()
     .max(
       2000,
-      i18next.t("validations.max.string", {
+      i18next.t("validations:max.string", {
         attribute: "message",
         max: "2000",
       }),
@@ -75,7 +77,7 @@ export const enquirySchema = yup.object({
     .string()
     .max(
       100,
-      i18next.t("validations.max.string", {
+      i18next.t("validations:max.string", {
         attribute: "utm_source",
         max: "100",
       }),
@@ -85,7 +87,7 @@ export const enquirySchema = yup.object({
     .string()
     .max(
       100,
-      i18next.t("validations.max.string", {
+      i18next.t("validations:max.string", {
         attribute: "utm_medium",
         max: "100",
       }),
@@ -95,7 +97,7 @@ export const enquirySchema = yup.object({
     .string()
     .max(
       100,
-      i18next.t("validations.max.string", {
+      i18next.t("validations:max.string", {
         attribute: "utm_campaign",
         max: "100",
       }),
@@ -105,7 +107,7 @@ export const enquirySchema = yup.object({
     .string()
     .max(
       500,
-      i18next.t("validations.max.string", {
+      i18next.t("validations:max.string", {
         attribute: "referrer",
         max: "500",
       }),
@@ -119,12 +121,12 @@ export const enquirySchema = yup.object({
     .string()
     .max(
       2000,
-      i18next.t("validations.max.string", { attribute: "notes", max: "2000" }),
+      i18next.t("validations:max.string", { attribute: "notes", max: "2000" }),
     )
     .nullable(),
   assigned_to: yup
     .string()
-    .uuid(i18next.t("validations.uuid", { attribute: "assigned_to" }))
+    .uuid(i18next.t("validations:uuid", { attribute: "assigned_to" }))
     .nullable(),
 });
 

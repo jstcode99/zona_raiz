@@ -22,11 +22,11 @@ import { requiredAddressSchema } from "../base/address.schema";
 export const propertyImportSchema = yup
   .object({
     title: titleSchema.required(
-      i18next.t("validations.required", { attribute: "title" }),
+      i18next.t("validations:required", { attribute: "title" }),
     ),
     description: descriptionSchema,
     property_type: propertyTypeSchema.required(
-      i18next.t("validations.required", { attribute: "property_type" }),
+      i18next.t("validations:required", { attribute: "property_type" }),
     ),
     latitude: latitudeSchema.nullable(),
     longitude: longitudeSchema.nullable(),

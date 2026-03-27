@@ -19,7 +19,7 @@ export const realEstateSchema = yup
 
 export const logoRealEstateSchema = yup.object({
   logo: avatarSchema.required(
-    i18next.t("validations.required", {
+    i18next.t("validations:required", {
       attribute: "logo",
     }),
   ),

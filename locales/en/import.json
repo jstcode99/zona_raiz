@@ -9,6 +9,7 @@
     "select_table_manual": "Select table manually"
   },
   "validation": {
+    "row": "Error on row {{row}}",
     "validation_errors": "Validation Errors",
     "errors_found": "{{count}} errors found",
     "validating": "Validating data...",

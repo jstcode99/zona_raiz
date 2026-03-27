@@ -6,5 +6,5 @@ export const enquirySourceSchema = yup
   .string<string>()
   .oneOf(
     enquirySourceValues,
-    i18next.t("validations.required", { attribute: "source" }),
+    i18next.t("validations:required", { attribute: "source" }),
   );

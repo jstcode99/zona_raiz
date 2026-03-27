@@ -6,5 +6,5 @@ export const inquiryStatusSchema = yup
   .string<string>()
   .oneOf(
     enquiryStatusValues,
-    i18next.t("validations.required", { attribute: "status" }),
+    i18next.t("validations:required", { attribute: "status" }),
   );

@@ -112,6 +112,7 @@ export class ImportJobService {
           abortEarly: false,
           stripUnknown: false,
         });
+        console.log(validated);
         validatedData.push(validated as Record<string, unknown>);
       } catch (err) {
         if (err instanceof yup.ValidationError) {

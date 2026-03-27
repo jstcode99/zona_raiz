@@ -9,6 +9,7 @@
     "select_table_manual": "Seleccionar tabla manualmente"
   },
   "validation": {
+    "row": "Error en la fila {{row}}",
     "validation_errors": "Errores de validación",
     "errors_found": "{{count}} errores encontrados",
     "validating": "Validando datos...",
