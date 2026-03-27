@@ -7,6 +7,7 @@ import { pickDefined } from "@/shared/utils/object";
 import { ListingSearchFilters } from "@/domain/ports/listing.port";
 import { appModule } from "@/application/modules/app.module";
 import { Lang } from "@/i18n/settings";
+import { AmenitiesType } from "@/domain/entities/property.enums";
 
 export async function getListings(
   filters: ListingSearchFiltersType,
@@ -25,7 +26,7 @@ export async function getListings(
     max_price: filters.max_price as number | undefined,
     min_bedrooms: filters.min_bedrooms as number | undefined,
     min_bathrooms: filters.min_bathrooms as number | undefined,
-    amenities: filters.amenities as string[] | undefined,
+    amenities: filters.amenities as AmenitiesType[] | undefined,
     q: filters.q as string | undefined,
     sort_by: filters.sort_by as string | undefined,
     page: filters.page as number | undefined,
