@@ -10,6 +10,7 @@ import { createRouter } from "@/i18n/router";
 import { initI18n } from "@/i18n/server";
 import { appModule } from "../modules/app.module";
 import { CACHE_TAGS } from "@/infrastructure/config/constants";
+import { AmenitieType } from "@/domain/entities/property.entity";
 
 export const createPropertyAction = withServerAction(
   async (realEstateId: string, formData: FormData) => {
@@ -34,9 +35,13 @@ export const createPropertyAction = withServerAction(
 
     if (!userId) throw new Error(t("common:exceptions.unauthorized"));
 
+    const property_type = input.property_type as PropertyType;
+    const amenities = input.amenities.map((a) => a as AmenitieType);
+
     await propertyService.create(realEstateId, {
       ...input,
-      property_type: input.property_type as PropertyType,
+      property_type,
+      amenities,
       created_by: userId,
     });
 
@@ -69,11 +74,16 @@ export const updatePropertyAction = withServerAction(
     });
 
     const currentProperty = await propertyService.getById(id);
-    if (!currentProperty) throw new Error(t("common:exceptions.data_not_found"));
+    if (!currentProperty)
+      throw new Error(t("common:exceptions.data_not_found"));
+
+    const property_type = input.property_type as PropertyType;
+    const amenities = input.amenities.map((a) => a as AmenitieType);
 
     await propertyService.update(id, {
       ...input,
-      property_type: input.property_type as PropertyType,
+      property_type,
+      amenities,
     });
 
     revalidatePath(routes.dashboard());
