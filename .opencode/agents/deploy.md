@@ -115,7 +115,7 @@ Flujo obligatorio:
 
 ### Variables de entorno del proyecto
 - NEXT_PUBLIC_SUPABASE_URL                   → URL del proyecto Supabase
-- NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY → nueva convención Supabase (equivale a anon key)
+- SUPABASE_PUBLISHABLE_DEFAULT_KEY → nueva convención Supabase (equivale a anon key)
 - NEXT_PUBLIC_SUPABASE_ANON_KEY              → anon key legacy, puede coexistir
 
 IMPORTANTE: este proyecto tiene dos nombres para la anon key.

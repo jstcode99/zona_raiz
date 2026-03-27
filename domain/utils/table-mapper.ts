@@ -5,7 +5,7 @@ import {
   realEstateImportHeaders,
 } from "@/application/validation/import";
 import { fixEncoding, normalizeHeader } from "./table-detector";
-import { similarityScore } from "./levenshtein";
+import { similarityScore } from "@/shared/utils/string";
 
 /**
  * Resultado de mapear headers del archivo a headers de una tabla

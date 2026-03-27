@@ -11,6 +11,8 @@ permission:
     "pnpm test*": allow
     "pnpm tsc*": allow
     "pnpm lint*": allow
+    "git *": allow
+    "gh *": allow
   webfetch: deny
 tools:
   "linear_*": true

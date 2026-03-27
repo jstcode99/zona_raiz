@@ -3,7 +3,7 @@ import { ProfilePort } from "@/domain/ports/profile.port";
 import { EUserRole } from "@/domain/entities/profile.entity";
 import { RealEstateWithRoleEntity } from "@/domain/entities/real-estate.entity";
 import { Lang } from "@/i18n/settings";
-import { getLangServerSide } from "@/shared/utils/lang";
+import { getLangServerSide } from "@/infrastructure/shared/utils/lang";
 import { createRouter } from "@/i18n/router";
 
 export type OnboardingState =

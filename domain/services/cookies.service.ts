@@ -3,9 +3,7 @@ import { EAgentRole } from "../entities/real-estate-agent.entity";
 import { CookiesPort } from "../ports/cookies.port";
 
 export class CookiesService {
-  constructor(
-    private readonly cookies: CookiesPort
-  ) { }
+  constructor(private readonly cookies: CookiesPort) {}
 
   getProfileRole(): Promise<EUserRole | null> {
     return this.cookies.getProfileRole();
@@ -26,5 +24,4 @@ export class CookiesService {
   setSession(name: string, value: string): void {
     this.cookies.setSession(name, value);
   }
-
 }

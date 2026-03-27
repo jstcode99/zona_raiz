@@ -4,7 +4,7 @@ import { redirect, RedirectType } from "next/navigation";
 import { withServerAction } from "@/shared/hooks/with-server-action";
 import { searchListingsSchema } from "@/application/validation/landing.validation";
 import { appModule } from "@/application/modules/app.module";
-import { getLangServerSide } from "@/shared/utils/lang";
+import { getLangServerSide } from "@/infrastructure/shared/utils/lang";
 import { cookies } from "next/headers";
 import { buildSearchUrl } from "@/i18n/router";
 import { Lang } from "@/i18n/settings";

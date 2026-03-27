@@ -1,4 +1,6 @@
-// shared/utils/lang.ts
+// infrastructure/shared/utils/lang.ts
+// Language utilities that use Next.js server APIs (next/headers, cookies)
+
 import { cookies } from "next/headers";
 import { Lang } from "@/i18n/settings";
 

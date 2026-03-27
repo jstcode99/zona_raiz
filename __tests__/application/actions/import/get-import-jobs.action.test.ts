@@ -5,7 +5,7 @@ vi.mock("next/headers", () => ({
   cookies: vi.fn(() => Promise.resolve({})),
 }));
 
-vi.mock("@/shared/utils/lang", () => ({
+vi.mock("@/infrastructure/shared/utils/lang", () => ({
   getLangServerSide: vi.fn(() => Promise.resolve("es")),
 }));
 

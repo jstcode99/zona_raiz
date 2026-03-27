@@ -22,7 +22,7 @@ create table if not exists public.listings (
   -- SEO y Marketing
   meta_title text,
   meta_description text,
-  keywords text[],
+  keywords jsonb default '[]'::jsonb,
   virtual_tour_url text,
   video_url text,
 

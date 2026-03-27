@@ -1,6 +1,6 @@
 "use server";
 
-import { getLangServerSide } from "@/shared/utils/lang";
+import { getLangServerSide } from "@/infrastructure/shared/utils/lang";
 import { cookies } from "next/headers";
 import { appModule } from "@/application/modules/app.module";
 import { toActionResult } from "@/shared/hooks/to-action-result";

@@ -1,3 +1,27 @@
+// shared/utils/string.ts
+// String utilities
+
+export function slugify(text: string): string {
+  return text
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
+}
+
+export function generateSlug(text: string): string {
+  return text
+    .toLowerCase()
+    .trim()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "") // Remove acentos
+    .replace(/[^\w\s-]/g, "") // Remove caracteres especiales
+    .replace(/\s+/g, "-") // Reemplaza espacios con guiones
+    .substring(0, 50);
+}
+
+// Levenshtein distance
 export function levenshtein(a: string, b: string): number {
   const dp: number[][] = Array.from({ length: a.length + 1 }, (_, i) =>
     Array.from({ length: b.length + 1 }, (_, j) =>
@@ -17,6 +41,7 @@ export function levenshtein(a: string, b: string): number {
   return dp[a.length][b.length];
 }
 
+// Similarity score (0-1)
 export function similarityScore(a: string, b: string): number {
   const dist = levenshtein(a, b);
   const maxLen = Math.max(a.length, b.length);

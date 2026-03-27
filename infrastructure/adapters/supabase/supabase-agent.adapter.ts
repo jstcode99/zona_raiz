@@ -1,5 +1,6 @@
 import { mapRealEstateAgentRowToEntity } from "@/application/mappers/real-estate-agent.mapper";
 import { ProfileEntity } from "@/domain/entities/profile.entity";
+import { EAgentRole } from "@/domain/entities/real-estate-agent.entity";
 import { AgentPort } from "@/domain/ports/agent.port";
 import { LandingAgent } from "@/domain/types/landing.types";
 import { SupabaseClient } from "@supabase/supabase-js";
@@ -7,12 +8,20 @@ import { SupabaseClient } from "@supabase/supabase-js";
 export class SupabaseAgentAdapter implements AgentPort {
   constructor(private readonly supabase: SupabaseClient) {}
 
-  async addAgent(realEstateId: string, profile_id: string): Promise<void> {
-    const { error } = await this.supabase
-      .from("real_estate_agents")
-      .insert({ real_estate_id: realEstateId, profile_id: profile_id });
-
-    if (error) throw new Error(error.message);
+  async addAgent(
+    realEstateId: string,
+    profile_id: string,
+    role: EAgentRole = EAgentRole.Agent,
+  ): Promise<void> {
+    const { error } = await this.supabase.from("real_estate_agents").insert({
+      real_estate_id: realEstateId,
+      profile_id: profile_id,
+      role: role,
+    });
+    if (error) {
+      console.warn(error);
+      throw new Error(error.message);
+    }
   }
 
   async removeAgent(realEstateId: string, profile_id: string): Promise<void> {

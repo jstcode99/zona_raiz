@@ -9,6 +9,10 @@ declare
   v_property_real_estate uuid;
   v_agent_real_estate uuid;
 begin
+  -- Si agent_id ya viene asignado (seed/admin), no hacer nada
+  if new.agent_id is not null then
+    return new;
+  end if;
 
   -- Obtener el agente del usuario autenticado
   select id, real_estate_id
@@ -21,7 +25,6 @@ begin
     raise exception 'User is not registered as real estate agent';
   end if;
 
-  -- Obtener real_estate de la propiedad
   select real_estate_id
   into v_property_real_estate
   from public.properties
@@ -31,40 +34,11 @@ begin
     raise exception 'Property not found';
   end if;
 
-  -- Validar que el agente pertenezca a la misma real_estate
   if v_property_real_estate <> v_agent_real_estate then
     raise exception 'Agent cannot create listing for this property';
   end if;
 
-  -- Asignar automáticamente el agent_id
   new.agent_id := v_agent_id;
-
   return new;
 end;
 $$;
-
-alter function public.set_listing_agent() owner to postgres;
-
-drop trigger if exists trg_set_listing_agent on public.listings;
-
-create trigger trg_set_listing_agent
-before insert on public.listings
-for each row
-execute function public.set_listing_agent();
-
-create or replace function public.set_updated_at()
-returns trigger
-language plpgsql
-as $$
-begin
-  new.updated_at := now();
-  return new;
-end;
-$$;
-
-drop trigger if exists trg_set_listing_updated_at on public.listings;
-
-create trigger trg_set_listing_updated_at
-before update on public.listings
-for each row
-execute function public.set_updated_at();

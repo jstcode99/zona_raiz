@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import { useState } from "react"
 import { Resolver, useForm } from "react-hook-form"
@@ -36,7 +36,7 @@ export function RealEstateRegistrationForm() {
     resolver: yupResolver(realEstateSchema) as Resolver<RealEstateInput>,
     defaultValues: defaultRealEstateValues,
     mode: "onBlur",
-  })
+  });
 
   const { control, setError, reset, setValue, watch, formState: { isSubmitting } } = form
 
@@ -65,23 +65,23 @@ export function RealEstateRegistrationForm() {
     action: createRealEstateAction,
     setError,
     onSuccess: () => {
-      toast.success(t("messages.created"))
-      reset()
-      router.push(routes.dashboard())
+      toast.success(t("messages.created"));
+      reset();
+      router.push(routes.dashboard());
     },
     onError: (error) => {
-      console.error("Create real estate error:", error)
+      toast.error(error.message);
+      console.error("Create real estate error:", error);
     },
-  })
+  });
 
-  const isLoading = isSubmitting || mutation.isPending
+  const isLoading = isSubmitting || mutation.isPending;
 
   const onSubmit = async (values: RealEstateInput) => {
-    const formData = new FormData()
-    flatten(values, '', formData)
-    mutation.action(formData)
-  }
-
+    const formData = new FormData();
+    flatten(values, "", formData);
+    mutation.action(formData);
+  };
 
   return (
     <Card className="w-full max-w-lg">
@@ -89,19 +89,13 @@ export function RealEstateRegistrationForm() {
         <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
           <Building2 className="h-6 w-6 text-primary" />
         </div>
-        <CardTitle className="text-2xl text-center">
-          {t("title")}
-        </CardTitle>
+        <CardTitle className="text-2xl text-center">{t("title")}</CardTitle>
         <CardDescription className="text-center">
           {t("subtitle")}
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <Form
-          form={form}
-          onSubmit={onSubmit}
-          className="space-y-6"
-        >
+        <Form form={form} onSubmit={onSubmit} className="space-y-6">
           <Form.Set legend={t("sections.basic_info")}>
             <Form.Input
               name="name"
@@ -187,12 +181,17 @@ export function RealEstateRegistrationForm() {
             />
           </Form.Set>
 
-          <Button type="submit" className="w-full" size="lg" disabled={isLoading}>
+          <Button
+            type="submit"
+            className="w-full"
+            size="lg"
+            disabled={isLoading}
+          >
             {isLoading && <Spinner className="mr-2 h-4 w-4 animate-spin" />}
             {t("actions.create")}
           </Button>
         </Form>
       </CardContent>
     </Card>
-  )
+  );
 }

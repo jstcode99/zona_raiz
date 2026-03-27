@@ -154,8 +154,8 @@ MY_ENTITY: {
 ```typescript
 // __tests__/domain/services/my-entity.service.test.ts
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { MyEntityService } from "../../../domain/services/my-entity.service";
-import { MyEntityPort } from "../../../domain/ports/my-entity.port";
+import { MyEntityService } from "@/domain/services/my-entity.service";
+import { MyEntityPort } from "@/domain/ports/my-entity.port";
 
 describe("MyEntityService", () => {
   let service: MyEntityService;
@@ -215,7 +215,7 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=
 SUPABASE_SERVICE_ROLE_KEY=    # solo server-side
 
 # Google Maps
-NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=
+GOOGLE_MAPS_API_KEY=
 
 # hCaptcha
 NEXT_PUBLIC_HCAPTCHA_SITE_KEY=
