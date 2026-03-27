@@ -8,7 +8,7 @@ import { I18nProvider } from "@/i18n/provider";
 import { TooltipProvider } from "@/components/ui/tooltip";
 
 export function Providers({ children }: { children: ReactNode }) {
-  const clientIdGoogle = process.env.GOOGLE_CLIENT_ID;
+  const clientIdGoogle = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
 
   if (!clientIdGoogle) {
     throw new Error("GOOGLE_CLIENT_ID is not defined");

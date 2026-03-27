@@ -25,15 +25,20 @@ export const createRealEstateAction = withServerAction(
     const i18n = await initI18n(lang);
     const t = i18n.getFixedT(lang);
 
-    const { realEstateService, cookiesService, agentService, sessionService } =
+    const { realEstateService, cookiesService, sessionService } =
       await appModule(lang, {
         cookies: cookieStore,
       });
 
-    const input = await realEstateSchema.validate(
-      Object.fromEntries(formData),
-      { abortEarly: false, stripUnknown: true },
-    );
+    const input = await realEstateSchema
+      .validate(Object.fromEntries(formData), {
+        abortEarly: false,
+        stripUnknown: true,
+      })
+      .catch((error) => {
+        throw new Error(error.message);
+      });
+
     const profileId = await sessionService.getCurrentUserId(); // user->id si same profile->id
 
     if (!profileId) throw new Error(t("common:exceptions.unauthorized"));
@@ -42,6 +47,7 @@ export const createRealEstateAction = withServerAction(
 
     if (!id) throw new Error(t("real-estates:exceptions.register_error"));
 
+    console.log(id);
     cookiesService.setSession(COOKIE_NAMES.REAL_ESTATE, id);
     cookiesService.setSession(
       COOKIE_NAMES.REAL_ESTATE_ROLE,

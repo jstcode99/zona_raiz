@@ -10,35 +10,35 @@ declare
 begin
   v_uid := auth.uid();
 
-  -- 🟢 CASO SEED / SQL DIRECTO
+  -- 🟢 CASO SEED / SQL DIRECTO: no hay sesión, saltar todo
   if v_uid is null then
-    raise log 'Seed mode detected - skipping agent auto assignment';
+    raise log 'Seed mode detected - skipping coordinator auto assignment';
     return new;
   end if;
 
-  -- Lógica normal
   v_is_admin := public.is_admin(v_uid);
 
   raise log 'handle_new_real_estate: uid=%, is_admin=%', v_uid, v_is_admin;
 
+  -- Solo usuarios normales tienen restricción de una sola inmobiliaria
   if not v_is_admin and exists (
     select 1 from public.real_estate_agents
     where profile_id = v_uid
-    and role = 'coordinator'
+      and role = 'coordinator'
   ) then
     raise exception 'Ya eres coordinador de otra inmobiliaria';
   end if;
 
-  if not exists (
-    select 1 from public.real_estate_agents
-    where profile_id = v_uid
-    and real_estate_id = new.id
-    and role = 'coordinator'
-  ) then
-    insert into public.real_estate_agents (real_estate_id, profile_id, role)
-    values (new.id, v_uid, 'coordinator');
-  end if;
+  -- Asignar como coordinador de la nueva inmobiliaria
+  insert into public.real_estate_agents (real_estate_id, profile_id, role)
+  values (new.id, v_uid, 'coordinator');
 
   return new;
 end;
 $$;
+
+-- Trigger
+create trigger on_real_estate_created
+  after insert on public.real_estates
+  for each row
+  execute function public.handle_new_real_estate();

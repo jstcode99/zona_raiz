@@ -134,7 +134,7 @@ CREATE POLICY "tenant_isolation_v2"
 ```typescript
 // features/places/place-selector-google.tsx
 // Usa @googlemaps/js-api-loader y use-places-autocomplete
-// Variable: GOOGLE_MAPS_API_KEY
+// Variable: NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
 ```
 
 Para selectores de dirección, usar el componente existente `PlaceSelectorGoogle` de `features/places/`.

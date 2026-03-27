@@ -1,3 +1,4 @@
+import { mapAgentsTopRowToEntity } from "@/application/mappers/agents-top.mapper";
 import { mapRealEstateAgentRowToEntity } from "@/application/mappers/real-estate-agent.mapper";
 import { ProfileEntity } from "@/domain/entities/profile.entity";
 import { EAgentRole } from "@/domain/entities/real-estate-agent.entity";
@@ -69,15 +70,11 @@ export class SupabaseAgentAdapter implements AgentPort {
       `,
       )
       .eq("role", "agent")
-      .not("profile.avatar_url", "is", null)
       .limit(limit);
 
     if (error) throw new Error(error.message);
 
-    return data.map((item: any) => ({
-      id: item.profile.id,
-      full_name: item.profile.full_name ?? "Agente",
-      avatar_url: item.profile.avatar_url,
-    }));
+    const profiles = data.filter((a) => a.profile);
+    return profiles ? profiles.map((p) => mapAgentsTopRowToEntity(p)) : [];
   }
 }

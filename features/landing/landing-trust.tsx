@@ -61,6 +61,7 @@ export function LandingTrust({ stats, agentAvatars = [] }: LandingTrustProps) {
   const count = useCountUp(stats.totalListings ?? 0, inView);
   const displayAvatars = agentAvatars.slice(0, 3);
 
+  console.log(displayAvatars);
   return (
     <section className="py-12" ref={ref}>
       <div className="max-w-6xl mx-auto px-6">
@@ -101,7 +102,7 @@ export function LandingTrust({ stats, agentAvatars = [] }: LandingTrustProps) {
                   <Image
                     key={agent.id}
                     src={
-                      agent.avatar_url ||
+                      agent?.avatar_url ||
                       "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=48&q=70"
                     }
                     className="size-8 rounded-full border-2 object-cover"
@@ -111,7 +112,7 @@ export function LandingTrust({ stats, agentAvatars = [] }: LandingTrustProps) {
                       transform: inView ? "scale(1)" : "scale(0.8)",
                       transition: `opacity 0.4s ease ${0.5 + i * 0.1}s, transform 0.4s ease ${0.5 + i * 0.1}s`,
                     }}
-                    alt={agent.full_name}
+                    alt={agent?.full_name}
                     width={32}
                     height={32}
                   />
