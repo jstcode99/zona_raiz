@@ -3,38 +3,38 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Form } from "@/components/ui/form";
-import countries from '@/lib/countries.json'
+import countries from "@/lib/countries.json";
 import { useFormContext } from "react-hook-form";
 import { useParams } from "next/navigation";
 import { PlaceSearch, ParsedPlace } from "../places/place-search";
 import { Button } from "@/components/ui/button";
 
 export function PropertyLocationForm() {
-  const { t } = useTranslation('properties');
-  const { control, setValue, watch } = useFormContext()
-  const { lang } = useParams<{ lang: string }>()
-  const [usePlaceSearch, setUsePlaceSearch] = useState(true)
+  const { t } = useTranslation("properties");
+  const { control, setValue, watch } = useFormContext();
+  const { lang } = useParams<{ lang: string }>();
+  const [usePlaceSearch, setUsePlaceSearch] = useState(true);
 
   // Watch current values for manual mode
-  const currentCountry = watch("country")
-  const currentState = watch("state")
-  const currentCity = watch("city")
+  const currentCountry = watch("country");
+  const currentState = watch("state");
+  const currentCity = watch("city");
 
   const handlePlaceSelect = (place: ParsedPlace) => {
     if (place.country) {
-      setValue("country", place.country, { shouldValidate: true })
+      setValue("country", place.country, { shouldValidate: true });
     }
     if (place.state) {
-      setValue("state", place.state, { shouldValidate: true })
+      setValue("state", place.state, { shouldValidate: true });
     }
     if (place.city) {
-      setValue("city", place.city, { shouldValidate: true })
+      setValue("city", place.city, { shouldValidate: true });
     }
-  }
+  };
 
   const handleModeChange = (mode: "search" | "manual") => {
-    setUsePlaceSearch(mode === "search")
-  }
+    setUsePlaceSearch(mode === "search");
+  };
 
   return (
     <Form.Set legend={t("sections.location")}>
@@ -47,7 +47,7 @@ export function PropertyLocationForm() {
           onClick={() => handleModeChange("search")}
           className="text-xs"
         >
-          📍 {t("words.search") || "Búsqueda"}
+          📍
         </Button>
         <Button
           type="button"
@@ -56,7 +56,7 @@ export function PropertyLocationForm() {
           onClick={() => handleModeChange("manual")}
           className="text-xs"
         >
-          ✏️ Manual
+          ✏️
         </Button>
       </div>
 
@@ -65,15 +65,27 @@ export function PropertyLocationForm() {
           <PlaceSearch
             lang={lang as "es" | "en"}
             navigate={false}
-            placeholder={t("placeholders.search_location") || "Ciudad o barrio..."}
+            placeholder={t("common:words.search") || "Ciudad o barrio..."}
             onSelect={handlePlaceSelect}
           />
           {/* Display selected values */}
           {(currentCountry || currentState || currentCity) && (
             <div className="flex flex-wrap gap-1.5 text-xs text-muted-foreground">
-              {currentCountry && <span className="bg-primary/10 px-2 py-0.5 rounded">{currentCountry.toUpperCase()}</span>}
-              {currentState && <span className="bg-primary/10 px-2 py-0.5 rounded">{currentState}</span>}
-              {currentCity && <span className="bg-primary/10 px-2 py-0.5 rounded">{currentCity}</span>}
+              {currentCountry && (
+                <span className="bg-primary/10 px-2 py-0.5 rounded">
+                  {currentCountry.toUpperCase()}
+                </span>
+              )}
+              {currentState && (
+                <span className="bg-primary/10 px-2 py-0.5 rounded">
+                  {currentState}
+                </span>
+              )}
+              {currentCity && (
+                <span className="bg-primary/10 px-2 py-0.5 rounded">
+                  {currentCity}
+                </span>
+              )}
             </div>
           )}
         </div>

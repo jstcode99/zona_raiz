@@ -1,35 +1,41 @@
-"use client"
+"use client";
 
-import { useEffect, useRef, useState } from "react"
-import { Resolver, useForm, useWatch } from "react-hook-form"
-import { yupResolver } from "@hookform/resolvers/yup"
-import { Form } from "@/components/ui/form"
-import { propertyTypeOptions } from "@/domain/entities/property.entity"
-import { IconMapPin, IconHome, IconClearAll } from "@tabler/icons-react"
-import { useRouter, usePathname, useSearchParams, useParams } from "next/navigation"
-import countries from '@/lib/countries.json'
-import { PropertyType } from "@/domain/entities/property.enums"
-import { objectToSearchParams, toNumber } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
+import { useEffect, useRef, useState } from "react";
+import { Resolver, useForm, useWatch } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { Form } from "@/components/ui/form";
+import { propertyTypeOptions } from "@/domain/entities/property.entity";
+import { IconMapPin, IconHome, IconClearAll } from "@tabler/icons-react";
+import {
+  useRouter,
+  usePathname,
+  useSearchParams,
+  useParams,
+} from "next/navigation";
+import countries from "@/lib/countries.json";
+import { PropertyType } from "@/domain/entities/property.enums";
+import { objectToSearchParams, toNumber } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 import {
   propertySearchSchema,
   PropertySearchFormInput,
   defaultPropertySearchValues,
-} from "@/application/validation/property-search.schema"
-import { useTranslation } from "react-i18next"
-import { PlaceSearch, ParsedPlace } from "@/features/places/place-search"
+} from "@/application/validation/property-search.schema";
+import { useTranslation } from "react-i18next";
+import { PlaceSearch, ParsedPlace } from "@/features/places/place-search";
 
 interface PropertyFiltersFormProps {
-  onFiltersChange?: (filters: PropertySearchFormInput) => void
-  debounceMs?: number
+  onFiltersChange?: (filters: PropertySearchFormInput) => void;
+  debounceMs?: number;
 }
 
-
-function parseSearchParams(sp: URLSearchParams | null): PropertySearchFormInput {
-  if (!sp) return defaultPropertySearchValues
+function parseSearchParams(
+  sp: URLSearchParams | null,
+): PropertySearchFormInput {
+  if (!sp) return defaultPropertySearchValues;
   return {
     search: sp.get("q") ?? undefined,
-    type: sp.get("type") as PropertyType ?? undefined,
+    type: (sp.get("type") as PropertyType) ?? undefined,
     country: sp.get("country") ?? undefined,
     state: sp.get("state") ?? undefined,
     neighborhood: sp.get("neighborhood") ?? undefined,
@@ -38,7 +44,7 @@ function parseSearchParams(sp: URLSearchParams | null): PropertySearchFormInput 
     bathrooms: toNumber(sp.get("bathrooms")),
     bedrooms: toNumber(sp.get("bedrooms")),
     real_estate_id: sp.get("real_estate_id") ?? null,
-  }
+  };
 }
 
 function filtersToSearchParams(filters: PropertySearchFormInput) {
@@ -52,7 +58,7 @@ function filtersToSearchParams(filters: PropertySearchFormInput) {
     street: filters.street as string | undefined,
     bedrooms: filters.bedrooms as number | undefined,
     bathrooms: filters.bathrooms as number | undefined,
-  })
+  });
 }
 
 // ---------- component ----------
@@ -61,102 +67,111 @@ export function PropertyFiltersForm({
   onFiltersChange,
   debounceMs = 300,
 }: PropertyFiltersFormProps) {
-  const { t } = useTranslation("properties")
+  const { t } = useTranslation("properties");
 
-  const router = useRouter()
-  const pathname = usePathname()
-  const searchParams = useSearchParams()
-  const { lang } = useParams<{ lang: string }>()
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const { lang } = useParams<{ lang: string }>();
 
-  const lastQueryRef = useRef("")
-  const isSyncingFromUrl = useRef(false)
-  const [usePlaceSearch, setUsePlaceSearch] = useState(true)
+  const lastQueryRef = useRef("");
+  const isSyncingFromUrl = useRef(false);
+  const [usePlaceSearch, setUsePlaceSearch] = useState(true);
 
   const form = useForm<PropertySearchFormInput>({
-    resolver: yupResolver(propertySearchSchema) as Resolver<PropertySearchFormInput>,
+    resolver: yupResolver(
+      propertySearchSchema,
+    ) as Resolver<PropertySearchFormInput>,
     defaultValues: parseSearchParams(searchParams),
     mode: "onChange",
-  })
+  });
 
-  const { control, setValue } = form
-  const values = useWatch({ control: form.control })
+  const { control, setValue } = form;
+  const values = useWatch({ control: form.control });
 
   const handlePlaceSelect = (place: ParsedPlace) => {
     if (place.country) {
-      setValue("country", place.country, { shouldValidate: false })
+      setValue("country", place.country, { shouldValidate: false });
     }
     if (place.state) {
-      setValue("state", place.state, { shouldValidate: false })
+      setValue("state", place.state, { shouldValidate: false });
     }
     if (place.city) {
-      setValue("city", place.city, { shouldValidate: false })
+      setValue("city", place.city, { shouldValidate: false });
     }
-  }
+  };
 
   const handleModeChange = (mode: "search" | "manual") => {
-    setUsePlaceSearch(mode === "search")
-  }
+    setUsePlaceSearch(mode === "search");
+  };
 
   // ---------- URL → FORM ----------
   useEffect(() => {
-    const params = new URLSearchParams(searchParams?.toString())
-    const incomingQuery = params.toString()
+    const params = new URLSearchParams(searchParams?.toString());
+    const incomingQuery = params.toString();
 
-    if (incomingQuery === lastQueryRef.current) return
+    if (incomingQuery === lastQueryRef.current) return;
 
-    const filters = parseSearchParams(params)
+    const filters = parseSearchParams(params);
 
-    isSyncingFromUrl.current = true
-    lastQueryRef.current = incomingQuery
+    isSyncingFromUrl.current = true;
+    lastQueryRef.current = incomingQuery;
 
-    form.reset(filters)
-    onFiltersChange?.(filters)
-
-  }, [searchParams, form, onFiltersChange])
+    form.reset(filters);
+    onFiltersChange?.(filters);
+  }, [searchParams, form, onFiltersChange]);
 
   // ---------- FORM → URL ----------
   useEffect(() => {
     if (isSyncingFromUrl.current) {
-      isSyncingFromUrl.current = false
-      return
+      isSyncingFromUrl.current = false;
+      return;
     }
 
     const timeout = setTimeout(() => {
-      const params = filtersToSearchParams(values as PropertySearchFormInput)
-      const queryString = params.toString()
+      const params = filtersToSearchParams(values as PropertySearchFormInput);
+      const queryString = params.toString();
 
-      if (queryString === lastQueryRef.current) return
+      if (queryString === lastQueryRef.current) return;
 
-      lastQueryRef.current = queryString
+      lastQueryRef.current = queryString;
 
-      const newUrl = queryString ? `${pathname}?${queryString}` : pathname
-      router.replace(newUrl, { scroll: false })
-      onFiltersChange?.(values as PropertySearchFormInput)
+      const newUrl = queryString ? `${pathname}?${queryString}` : pathname;
+      router.replace(newUrl, { scroll: false });
+      onFiltersChange?.(values as PropertySearchFormInput);
+    }, debounceMs);
 
-    }, debounceMs)
-
-    return () => clearTimeout(timeout)
-  }, [values, pathname, router, debounceMs, onFiltersChange])
+    return () => clearTimeout(timeout);
+  }, [values, pathname, router, debounceMs, onFiltersChange]);
 
   const handleReset = () => {
-    lastQueryRef.current = ""
-    form.reset(defaultPropertySearchValues)
-    router.replace(pathname, { scroll: false })
-    onFiltersChange?.(defaultPropertySearchValues)
-  }
+    lastQueryRef.current = "";
+    form.reset(defaultPropertySearchValues);
+    router.replace(pathname, { scroll: false });
+    onFiltersChange?.(defaultPropertySearchValues);
+  };
 
-  const onSubmit = () => {}
+  const onSubmit = () => {};
 
   return (
-    <Form form={form} className="space-y-3 bg-gray-500/10 p-4 rounded-md" onSubmit={onSubmit}>
+    <Form
+      form={form}
+      className="space-y-3 bg-gray-500/10 p-4 rounded-md"
+      onSubmit={onSubmit}
+    >
       {/* Búsqueda rápida */}
       <div className="flex gap-2 items-center">
         <Form.Input
           name="search"
-          label={t('words.search')}
-          placeholder={t('words.search')}
+          label={t("words.search")}
+          placeholder={t("words.search")}
         />
-        <Button type="button" size="sm" onClick={handleReset} className="px-2 mt-8">
+        <Button
+          type="button"
+          size="sm"
+          onClick={handleReset}
+          className="px-2 mt-8"
+        >
           <IconClearAll className="size-4 mr-1" />
           {t("actions.clear_filters")}
         </Button>
@@ -165,12 +180,16 @@ export function PropertyFiltersForm({
       <Form.Set
         legend={
           <span className="flex items-center gap-1 text-xs font-medium text-muted-foreground capitalize">
-            <IconMapPin className="size-3" /> {t('sections.location')}
+            <IconMapPin className="size-3" /> {t("sections.location")}
           </span>
         }
       >
         {/* Switch between PlaceSearch and Manual input */}
-        <div role="group" aria-label={t("common:location_input_mode")} className="flex gap-2 mb-3">
+        <div
+          role="group"
+          aria-label={t("common:location_input_mode")}
+          className="flex gap-2 mb-3"
+        >
           <Button
             type="button"
             variant={usePlaceSearch ? "default" : "outline"}
@@ -179,7 +198,7 @@ export function PropertyFiltersForm({
             aria-pressed={usePlaceSearch}
             className="text-xs h-7"
           >
-            📍 {t("common:search_place")}
+            📍
           </Button>
           <Button
             type="button"
@@ -189,7 +208,7 @@ export function PropertyFiltersForm({
             aria-pressed={!usePlaceSearch}
             className="text-xs h-7"
           >
-            ✏️ {t("common:manual")}
+            ✏️
           </Button>
         </div>
 
@@ -199,7 +218,7 @@ export function PropertyFiltersForm({
               <PlaceSearch
                 lang={lang as "es" | "en"}
                 navigate={false}
-                placeholder={t("placeholders.search_location") || "Ciudad o barrio..."}
+                placeholder={t("common:words.search") || "Ciudad o barrio..."}
                 onSelect={handlePlaceSelect}
               />
             </div>
@@ -211,19 +230,19 @@ export function PropertyFiltersForm({
                 cityName="city"
                 countries={countries}
                 control={control}
-                label={t('words.location')}
+                label={t("words.location")}
               />
             </div>
           )}
           <Form.Input
             name="street"
-            label={t('labels.street')}
-            placeholder={t('placeholders.street')}
+            label={t("labels.street")}
+            placeholder={t("placeholders.street")}
           />
           <Form.Input
             name="neighborhood"
-            label={t('labels.neighborhood')}
-            placeholder={t('placeholders.neighborhood')}
+            label={t("labels.neighborhood")}
+            placeholder={t("placeholders.neighborhood")}
           />
         </div>
       </Form.Set>
@@ -231,31 +250,31 @@ export function PropertyFiltersForm({
       <Form.Set
         legend={
           <span className="flex items-center gap-1 text-xs font-medium text-muted-foreground">
-            <IconHome className="size-3" /> {t('sections.features')}
+            <IconHome className="size-3" /> {t("sections.features")}
           </span>
         }
       >
         <div className="grid grid-cols-3 gap-2">
           <Form.Select
             name="type"
-            label={t('labels.property_type')}
-            placeholder={t('placeholders.select_property_type')}
+            label={t("labels.property_type")}
+            placeholder={t("placeholders.select_property_type")}
             options={propertyTypeOptions}
           />
           <Form.Input
             name="minBedrooms"
             type="number"
-            label={t('labels.bedrooms')}
-            placeholder={t('placeholders.bedrooms')}
+            label={t("labels.bedrooms")}
+            placeholder={t("placeholders.bedrooms")}
           />
           <Form.Input
             name="min_bathrooms"
             type="number"
-            label={t('labels.bathrooms')}
-            placeholder={t('placeholders.bathrooms')}
+            label={t("labels.bathrooms")}
+            placeholder={t("placeholders.bathrooms")}
           />
         </div>
       </Form.Set>
-    </Form >
-  )
+    </Form>
+  );
 }

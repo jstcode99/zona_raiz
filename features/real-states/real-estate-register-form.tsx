@@ -158,9 +158,7 @@ export function RealEstateRegistrationForm() {
                 <PlaceSearch
                   lang={lang as "es" | "en"}
                   navigate={false}
-                  placeholder={
-                    t("placeholders.search_location") || "Ciudad o barrio..."
-                  }
+                  placeholder={t("common:words.search") || "Ciudad o barrio..."}
                   onSelect={handlePlaceSelect}
                 />
                 {/* Display selected values */}
