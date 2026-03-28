@@ -69,7 +69,7 @@ export const CACHE_TAGS = {
       COUNT_STATUS_MONTH: (year: number, realEstateId?: string) =>
         `listing-count:status-month:${year}:${realEstateId || "all"}`,
       SIMPLE_PUBLISHED: (limit: number) => `listing:simple-published:${limit}`,
-      SIMPLE_PUBLISHED_BY_REAL_ESTATE: (realEstateId: number, limit: number) =>
+      SIMPLE_PUBLISHED_BY_REAL_ESTATE: (limit: number, realEstateId: string) =>
         `listing:simple-published:${limit}:real-estate-id:${realEstateId}`,
       SEARCH: (key: string) => `listing-search:${key}`,
       SEARCH_WITH_COUNT: (key: string) => `listing-search:with-count:${key}`,

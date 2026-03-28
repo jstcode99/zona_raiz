@@ -86,10 +86,6 @@ export class ListingService {
     return this.listingPort.findSimplePublished(limit, realEstateId);
   }
 
-  findSimplePublishedByRealEstate(limit: number = 10, realEstateId: string) {
-    return this.listingPort.findSimplePublished(limit, realEstateId);
-  }
-
   private buildCacheKey(filters?: ListingSearchFilters): string {
     const parts =
       filters &&
@@ -316,16 +312,15 @@ export class ListingService {
   }
 
   getCachedSimplePublishedByRealEstate(
-    realEstateId: string,
     limit: number = 10,
+    realEstateId: string,
   ) {
     return unstable_cache(
-      async () =>
-        this.listingPort.findSimplePublishedByRealEstate(realEstateId, limit),
+      async () => this.listingPort.findSimplePublished(limit, realEstateId),
       [
         CACHE_TAGS.LISTING.KEYS.SIMPLE_PUBLISHED_BY_REAL_ESTATE(
-          realEstateId,
           limit,
+          realEstateId,
         ),
       ],
       {

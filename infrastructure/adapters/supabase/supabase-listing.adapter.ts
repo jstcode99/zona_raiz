@@ -400,7 +400,7 @@ export class SupabaseListingAdapter implements ListingPort {
     if (error) throw new Error(error.message);
 
     return (data || []).map((item: ListingRowWithAgent) => {
-      const entity = mapListingRowToEntity(item);
+      const entity = mapListingRowToEntity(item as unknown as ListingEntity);
       if (entity && item.real_estate_agent?.profile) {
         entity.agent = item.real_estate_agent.profile as ProfileEntity;
       }

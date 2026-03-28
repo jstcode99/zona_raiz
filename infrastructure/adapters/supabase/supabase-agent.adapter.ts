@@ -55,7 +55,9 @@ export class SupabaseAgentAdapter implements AgentPort {
 
     if (error) throw new Error(error.message);
 
-    return data.map((p) => mapRealEstateAgentRowToEntity(p.profile));
+    return data.map((p) =>
+      mapRealEstateAgentRowToEntity(p.profile as unknown as ProfileEntity),
+    );
   }
 
   async getTopAgents(limit: number): Promise<LandingAgent[]> {
@@ -76,6 +78,10 @@ export class SupabaseAgentAdapter implements AgentPort {
     if (error) throw new Error(error.message);
 
     const profiles = data.filter((a) => !isEmpty(a));
-    return profiles ? profiles.map((p) => mapAgentsTopRowToEntity(p)) : [];
+    return profiles
+      ? profiles.map((p) =>
+          mapAgentsTopRowToEntity(p as unknown as LandingAgent),
+        )
+      : [];
   }
 }
