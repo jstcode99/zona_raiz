@@ -10,6 +10,8 @@ import { bedroomsSchema } from "./base/bedrooms.schema";
 import { bathroomsSchema } from "./base/bathrooms.schema";
 import { propertyTypeSchema } from "./base/property_type.schema";
 import { listingTypeSchema } from "./base/listing_type.schema";
+import { ListingType } from "@/domain/entities/listing.enums";
+import { PropertyType } from "@/domain/entities/property.enums";
 
 export const listingSearchFiltersSchema = yup.object({
   q: searchSchema.optional(),
@@ -34,8 +36,8 @@ export type ListingSearchFiltersInput = yup.InferType<
 
 export const defaultListingSearchFiltersValues: ListingSearchFiltersInput = {
   q: undefined,
-  listing_type: undefined,
-  type: undefined,
+  listing_type: ListingType.RENT,
+  type: PropertyType.Apartment,
   country: undefined,
   state: undefined,
   city: undefined,

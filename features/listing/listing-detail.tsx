@@ -4,14 +4,9 @@ import { PropertyDetail } from "@/features/properties/property-details";
 import { ListingDetailDTO } from "@/application/mappers/listing.mapper";
 import PropertyCarouselGallery from "../properties/property-carousel-gallery";
 import { LandingNav } from "../landing/landing-nav";
-import { Share2 } from "lucide-react";
 import { ListingBreadcrumb } from "./listing-breadcrumb";
 import { ListingDetailInfo } from "./listing-detail-info";
 import { EnquiryForm } from "./enquiry-form";
-import { FavoriteToggleButton } from "../favorites/favorite-toggle-button";
-import { useTranslation } from "react-i18next";
-import { Button } from "@/components/ui/button";
-import { IconBrandWhatsapp } from "@tabler/icons-react";
 import { ListingPricing } from "./listing-pricing";
 import { ListingActions } from "./listing-actions";
 
@@ -27,9 +22,6 @@ export function ListingDetail({
   isAuth = false,
 }: ListingDetailProps) {
   if (!data) return null;
-
-  const { t } = useTranslation("listings");
-
   const { propertyDetail, listing } = data;
   const { imageUrls, property } = propertyDetail;
 
@@ -45,7 +37,7 @@ export function ListingDetail({
           <div className="lg:col-span-6 order-last w-full overflow-hidden">
             <div className="space-y-2">
               <ListingPricing listing={listing} />
-              <ListingActions listing={listing} />
+              <ListingActions listing={listing} isFavInitial={isFavInitial} />
             </div>
             {property.real_estate_id && (
               <EnquiryForm
