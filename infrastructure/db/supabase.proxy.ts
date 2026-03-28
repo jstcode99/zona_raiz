@@ -152,6 +152,7 @@ function isPublicRoute(pathname: string, lang: Lang) {
     "base",
     "home",
     "contact",
+    "listings_public",
     "about",
     "signin",
     "signup",
