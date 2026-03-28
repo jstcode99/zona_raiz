@@ -16,6 +16,7 @@ import Image from "next/image";
 interface ListingCardProps {
   listing: ListingEntity;
   isFavInitial?: boolean;
+  isPublic?: boolean;
   index?: number; // para stagger delay
 }
 
@@ -43,6 +44,7 @@ export function ListingCard({
   listing,
   isFavInitial = false,
   index = 0,
+  isPublic = false,
 }: ListingCardProps) {
   const { t } = useTranslation("listings");
   const { getListingTypeLabel } = useListingOptions();
@@ -56,6 +58,10 @@ export function ListingCard({
   // Stagger delay basado en el index (máx 5 para no esperar demasiado)
   const delay = Math.min(index % 6, 5) * 80;
 
+  const url = isPublic
+    ? `${routes.listings_public(listing.property.slug)}`
+    : `${routes.listing(listing.id)}`;
+
   return (
     <div
       ref={ref}
@@ -67,7 +73,7 @@ export function ListingCard({
         transition: `opacity 0.5s ease ${delay}ms, transform 0.5s ease ${delay}ms`,
       }}
     >
-      <Link href={`${routes.listings()}/${listing.id}`}>
+      <Link href={url}>
         <Card className="overflow-hidden pt-0 cursor-pointer hover:shadow-lg transition-all group h-full flex flex-col">
           {/* Image */}
           <div className="relative h-48 overflow-hidden">
