@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useRoutes } from "@/i18n/client-router";
 import { ListingCard } from "@/features/listing/listing-card";
 import { ListingEntity } from "@/domain/entities/listing.entity";
-import { CtaButton } from "./buttn-cta";
+import { CtaButton } from "./button-cta";
 
 interface LandingListingsProps {
   listings: ListingEntity[];

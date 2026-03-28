@@ -29,14 +29,10 @@ export {
   toNumber,
   removeNullish,
   pickDefined,
+  flatten,
 } from "@/shared/utils/object";
 
-export {
-  objectToSearchParams,
-  flatten,
-} from "@/shared/utils/http";
+export { objectToSearchParams } from "@/shared/utils/http";
 
 // Infrastructure utilities (only when DOM is available)
-export {
-  optimizeImage,
-} from "@/infrastructure/shared/utils/image";
+export { optimizeImage } from "@/infrastructure/shared/utils/image";

@@ -12,7 +12,6 @@ import {
   NavigationMenuItem,
   NavigationMenuLink,
   NavigationMenuList,
-  navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
 import { cn } from "@/lib/utils";
 import { Lock, TextAlignJustify, Unlock } from "lucide-react";
@@ -21,7 +20,7 @@ import { useRoutes } from "@/i18n/client-router";
 import Logo from "../navigation/logo";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { CtaButton } from "./buttn-cta";
+import { CtaButton } from "./button-cta";
 
 interface LandingNavProps {
   isAuth: boolean;
@@ -105,7 +104,7 @@ export function LandingNav({ isAuth }: LandingNavProps) {
 
   return (
     <div>
-      <header className="bg-background">
+      <header className="bg-background border-b-2 border-primary">
         <div className="max-w-7xl mx-auto w-full px-4 py-4 sm:px-6">
           <nav
             className={cn(

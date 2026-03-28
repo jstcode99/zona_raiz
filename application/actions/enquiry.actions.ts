@@ -35,7 +35,6 @@ export const createEnquiryAction = withServerAction(
     const hasIP = await cookiesService.hasIP();
     if (!hasIP && realIp?.value) {
       cookiesService.setSession(COOKIE_NAMES.IP_CLIENT, realIp?.value);
-      raw.ip_address = realIp?.value;
     }
 
     const input = await enquirySchema.validate(raw, {
@@ -62,6 +61,7 @@ export const createEnquiryAction = withServerAction(
       phone: input.phone as string | null,
       message: input.message as string | null,
       source: input.source as EnquirySource,
+      ip_address: realIp?.value ?? null,
     });
 
     // Consultar WhatsApp y redirigir si existe

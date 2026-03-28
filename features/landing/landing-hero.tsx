@@ -34,7 +34,7 @@ import {
   IconCurrencyDollar,
   IconMapPin,
 } from "@tabler/icons-react";
-import { CtaButton } from "./buttn-cta";
+import { CtaButton } from "./button-cta";
 
 interface LandingHeroProps {
   cities?: LandingCity[];

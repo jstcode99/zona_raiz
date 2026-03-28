@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Field, FieldDescription, FieldGroup } from "@/components/ui/field";
-import { cn } from "@/lib/utils";
+import { cn, flatten } from "@/lib/utils";
 import { Resolver, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { ComponentProps, useEffect } from "react";
@@ -61,11 +61,8 @@ export function SignUpForm({ className, ...props }: ComponentProps<"form">) {
 
   const onSubmit = async (values: SignUpFormInput) => {
     const formData = new FormData();
-    Object.entries(values).forEach(([key, value]) => {
-      if (value !== undefined && value !== null)
-        formData.append(key, String(value));
-    });
-    mutation.action(formData);
+    const data = flatten(values, "", formData);
+    mutation.action(data);
   };
 
   const isLoading = isSubmitting || mutation.isPending;

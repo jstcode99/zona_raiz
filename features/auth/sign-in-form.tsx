@@ -12,7 +12,7 @@ import { Spinner } from "@/components/ui/spinner";
 import { useServerMutation } from "@/shared/hooks/use-server-mutation.hook";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { cn } from "@/lib/utils";
+import { cn, flatten } from "@/lib/utils";
 import {
   defaultSignInValues,
   SignInFormInput,
@@ -68,11 +68,8 @@ export function SignInForm({ className, ...props }: ComponentProps<"form">) {
 
   const onSubmit = (values: SignInFormInput) => {
     const formData = new FormData();
-    Object.entries(values).forEach(([key, value]) => {
-      if (value !== undefined && value !== null)
-        formData.append(key, String(value));
-    });
-    mutation.action(formData);
+    const data = flatten(values, "", formData);
+    mutation.action(data);
   };
 
   const isLoading = isSubmitting || mutation.isPending;

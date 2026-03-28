@@ -8,7 +8,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 import { Spinner } from "@/components/ui/spinner";
-import { cn } from "@/lib/utils";
+import { cn, flatten } from "@/lib/utils";
 import { useServerMutation } from "@/shared/hooks/use-server-mutation.hook";
 import {
   defaultUserValues,
@@ -68,11 +68,9 @@ export function UserForm({
   }, [defaultValues, reset]);
 
   const onSubmit = (values: UserInput) => {
-    const data = new FormData();
-    if (id) data.append("id", id);
-    data.append("email", values.email);
-    data.append("full_name", values.full_name ?? "");
-    data.append("role", String(values.role));
+    const formData = new FormData();
+    if (id) formData.append("id", id);
+    const data = flatten(values, "", formData);
     mutation.action(data);
   };
 

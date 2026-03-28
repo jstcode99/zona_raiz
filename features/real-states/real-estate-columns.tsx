@@ -1,42 +1,40 @@
-"use client"
+"use client";
 
-import { BaseRow } from "@/components/ui/data-table"
-import { RealEstateEntity } from "@/domain/entities/real-estate.entity"
-import { type ColumnDef } from "@tanstack/react-table"
+import { BaseRow } from "@/components/ui/data-table";
+import { RealEstateEntity } from "@/domain/entities/real-estate.entity";
+import { type ColumnDef } from "@tanstack/react-table";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { Button } from "@/components/ui/button"
+} from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
 import {
   IconBrandWhatsapp,
   IconDotsVertical,
   IconBuilding,
-} from "@tabler/icons-react"
-import Link from "next/link"
-import { useTranslation } from "react-i18next"
-import { useRoutes } from "@/i18n/client-router"
-
+} from "@tabler/icons-react";
+import Link from "next/link";
+import { useTranslation } from "react-i18next";
+import { useRoutes } from "@/i18n/client-router";
 
 export type RealEstateRow = BaseRow & {
-  created_at: string
-} & RealEstateEntity
+  created_at: string;
+} & RealEstateEntity;
 
 export const RealEstateColumns: ColumnDef<RealEstateRow>[] = [
   {
     id: "logo",
     header: "",
     cell: ({ row }) => {
-      const logo = row.original.logo_url
+      const logo = row.original.logo_url;
       if (!logo) {
         return (
           <div className="size-10 rounded-lg bg-muted flex items-center justify-center">
             <IconBuilding size={18} />
           </div>
-        )
+        );
       }
 
       return (
@@ -45,15 +43,15 @@ export const RealEstateColumns: ColumnDef<RealEstateRow>[] = [
           alt={row.original.name}
           className="size-10 rounded-lg object-cover border"
         />
-      )
+      );
     },
   },
 
   {
     accessorKey: "name",
     header: () => {
-      const { t } = useTranslation("real-estates")
-      return t("real-estates:columns.headers.name")
+      const { t } = useTranslation("real-estates");
+      return t("real-estates:columns.headers.name");
     },
     cell: ({ row }) => (
       <div className="flex flex-col">
@@ -68,12 +66,12 @@ export const RealEstateColumns: ColumnDef<RealEstateRow>[] = [
   {
     id: "location",
     header: () => {
-      const { t } = useTranslation("real-estates")
-      return t("real-estates:columns.headers.location")
+      const { t } = useTranslation("real-estates");
+      return t("real-estates:columns.headers.location");
     },
     cell: ({ row }) => {
-      const r = row.original
-      if (!r.city && !r.country) return "—"
+      const r = row.original;
+      if (!r.city && !r.country) return "—";
 
       return (
         <div className="flex flex-col text-sm">
@@ -84,15 +82,15 @@ export const RealEstateColumns: ColumnDef<RealEstateRow>[] = [
             {r.country || "—"}
           </span>
         </div>
-      )
+      );
     },
   },
 
   {
     accessorKey: "address",
     header: () => {
-      const { t } = useTranslation("real-estates")
-      return t("real-estates:columns.headers.address")
+      const { t } = useTranslation("real-estates");
+      return t("real-estates:columns.headers.address");
     },
     cell: ({ row }) => row.original.city || "—",
   },
@@ -100,11 +98,11 @@ export const RealEstateColumns: ColumnDef<RealEstateRow>[] = [
   {
     id: "contact",
     header: () => {
-      const { t } = useTranslation("real-estates")
-      return t("real-estates:columns.headers.contact")
+      const { t } = useTranslation("real-estates");
+      return t("real-estates:columns.headers.contact");
     },
     cell: ({ row }) => {
-      const r = row.original
+      const r = row.original;
 
       return (
         <div className="flex items-center gap-3">
@@ -119,24 +117,23 @@ export const RealEstateColumns: ColumnDef<RealEstateRow>[] = [
             </a>
           )}
         </div>
-      )
+      );
     },
   },
   {
     accessorKey: "created_at",
     header: () => {
-      const { t } = useTranslation("real-estates")
-      return t("real-estates:columns.headers.created_at")
+      const { t } = useTranslation("real-estates");
+      return t("real-estates:columns.headers.created_at");
     },
-    cell: ({ row }) =>
-      new Date(row.original.created_at).toLocaleDateString(),
+    cell: ({ row }) => new Date(row.original.created_at).toLocaleDateString(),
   },
 
   {
     id: "actions",
     cell: ({ row }) => {
-      const { t } = useTranslation("real-estates")
-      const routes = useRoutes()
+      const { t } = useTranslation("real-estates");
+      const routes = useRoutes();
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -146,17 +143,21 @@ export const RealEstateColumns: ColumnDef<RealEstateRow>[] = [
               size="icon"
             >
               <IconDotsVertical />
-              <span className="sr-only">{t("real-estates:columns.actions.open_menu")}</span>
+              <span className="sr-only">
+                {t("real-estates:columns.actions.open_menu")}
+              </span>
             </Button>
           </DropdownMenuTrigger>
 
           <DropdownMenuContent align="end" className="w-36">
             <Link href={routes.realEstate(row.original.id)}>
-              <DropdownMenuItem>{t("real-estates:columns.actions.edit")}</DropdownMenuItem>
+              <DropdownMenuItem>
+                {t("real-estates:columns.actions.edit")}
+              </DropdownMenuItem>
             </Link>
           </DropdownMenuContent>
         </DropdownMenu>
-      )
+      );
     },
   },
-]
+];
