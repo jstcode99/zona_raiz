@@ -3,6 +3,7 @@ import { PropertyEntity } from "@/domain/entities/property.entity";
 import { unstable_cache } from "next/cache";
 import { Lang } from "@/i18n/settings";
 import { CACHE_TAGS } from "@/infrastructure/config/constants";
+import { PropertySearchFormInput } from "@/application/validation/property-search.schema";
 
 export class PropertyService {
   constructor(
@@ -10,11 +11,11 @@ export class PropertyService {
     private lang: Lang = "es",
   ) {}
 
-  all(filters?: any) {
+  all(filters?: PropertySearchFormInput) {
     return this.propertyPort.all(filters);
   }
 
-  getCachedAll(filters?: any) {
+  getCachedAll(filters?: PropertySearchFormInput) {
     return unstable_cache(
       async () => this.propertyPort.all(filters),
       [CACHE_TAGS.PROPERTY.KEYS.ALL(filters)],
