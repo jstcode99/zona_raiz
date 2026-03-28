@@ -17,6 +17,10 @@ export class CookiesService {
     return this.cookies.getRealEstateId();
   }
 
+  hasIP(): Promise<boolean> {
+    return this.cookies.hasIP();
+  }
+
   clearSession(): void {
     this.cookies.clearSession();
   }

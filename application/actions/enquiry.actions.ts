@@ -8,8 +8,8 @@ import { createRouter } from "@/i18n/router";
 import { appModule } from "@/application/modules/app.module";
 import { initI18n } from "@/i18n/server";
 import { enquirySchema } from "@/application/validation/enquiry.schema";
-import { CACHE_TAGS } from "@/infrastructure/config/constants";
-import { EnquiryStatus } from "@/domain/entities/enquiry.enums";
+import { CACHE_TAGS, COOKIE_NAMES } from "@/infrastructure/config/constants";
+import { EnquirySource, EnquiryStatus } from "@/domain/entities/enquiry.enums";
 
 export const createEnquiryAction = withServerAction(
   async (formData: FormData) => {
@@ -17,12 +17,27 @@ export const createEnquiryAction = withServerAction(
     const cookieStore = await cookies();
     const i18n = await initI18n(lang);
     const t = i18n.getFixedT(lang);
+    const routes = createRouter(lang);
 
-    const { enquiryService, realEstateService } = await appModule(lang, {
+    const {
+      listingService,
+      enquiryService,
+      realEstateService,
+      cookiesService,
+    } = await appModule(lang, {
       cookies: cookieStore,
     });
 
     const raw = Object.fromEntries(formData);
+
+    const realIp = cookieStore.get("x-forwarded-for") ?? cookieStore.get("ip");
+
+    const hasIP = await cookiesService.hasIP();
+    if (!hasIP && realIp?.value) {
+      cookiesService.setSession(COOKIE_NAMES.IP_CLIENT, realIp?.value);
+      raw.ip_address = realIp?.value;
+    }
+
     const input = await enquirySchema.validate(raw, {
       abortEarly: false,
       stripUnknown: true,
@@ -31,15 +46,22 @@ export const createEnquiryAction = withServerAction(
     // real_estate_id viene del formulario (property.real_estate_id)
     // Se usa SOLO para consultar el WhatsApp, NO se guarda en BD
     const realEstateId = input.real_estate_id;
+    const listingId = input.listing_id;
+    const listing = await listingService.getCachedById(listingId);
 
+    if (!listing) {
+      return { success: false, error: "Listing not found" };
+    }
+
+    const urlListing = routes.listings_public(listing.property.slug);
     // Create the inquiry (sin real_estate_id - no se guarda en la tabla)
     await enquiryService.create({
       listing_id: input.listing_id,
-      name: input.name,
-      email: input.email || null,
-      phone: input.phone || null,
-      message: input.message || null,
-      source: input.source as any,
+      name: input.name as string,
+      email: input.email as string | null,
+      phone: input.phone as string | null,
+      message: input.message as string | null,
+      source: input.source as EnquirySource,
     });
 
     // Consultar WhatsApp y redirigir si existe
@@ -53,16 +75,16 @@ export const createEnquiryAction = withServerAction(
               name: input.name,
             }) || `Hola, me interesa esta propiedad`,
           );
-          // Throw to signal success with WhatsApp redirect (caught by useServerMutation)
-          const whatsappError = new Error(
-            `__WHATSAPP__:${`https://wa.me/${cleanNumber}?text=${encodeMessage}`}`,
-          );
-          (whatsappError as any)._whatsappUrl = `https://wa.me/${cleanNumber}?text=${encodeMessage}`;
-          throw whatsappError;
+
+          /**
+           * INTEGRAR MODULOS DE shor_url
+           */
+
+          const whatsappUrl = `https://wa.me/${cleanNumber}?text=${encodeMessage}`;
+          return { success: true, data: { whatsappUrl } };
         }
-      } catch (err: any) {
-        // Re-throw WhatsApp errors, ignore others
-        if (err?._whatsappUrl) throw err;
+      } catch (err) {
+        throw err;
       }
     }
 

@@ -1,12 +1,8 @@
 "use client";
 
-import { useState } from "react";
-import { MapPin, Bed, Bath, Maximize2 } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { cn } from "@/lib/utils";
+import { MapPin, Bed, Bath, Maximize2, Car } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { PropertyDetailDTO } from "@/application/mappers/property.mapper";
-import Image from "next/image";
 
 interface PropertyDetailProps {
   data: PropertyDetailDTO | null | undefined;
@@ -14,129 +10,84 @@ interface PropertyDetailProps {
 
 export const PropertyDetail = ({ data }: PropertyDetailProps) => {
   const { t } = useTranslation("properties");
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   if (!data) return null;
 
-  const { property, imageUrls, formattedState } = data;
+  const { property, formattedState } = data;
 
   return (
-    <div className="bg-background">
-      {/* Content */}
-      <div className="pt-2">
-        {/* Image Gallery */}
-        <div className="relative h-72">
-          <Image
-            src={imageUrls[currentImageIndex]}
-            alt={property.title}
-            fill
-            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-            className="object-cover transition-transform duration-500 group-hover:scale-105"
-          />
-
-          {/* Image indicators */}
-          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-1.5">
-            {imageUrls.map((_, idx) => (
-              <button
-                key={idx}
-                onClick={() => setCurrentImageIndex(idx)}
-                className={cn(
-                  "w-2 h-2 rounded-full transition-all",
-                  idx === currentImageIndex ? "bg-white w-4" : "bg-white/50",
-                )}
-              />
-            ))}
+    <div className="bg-background mx-auto">
+      <div className="px-6 pb-6 space-y-8">
+        <header className="space-y-2">
+          <h2 className="text-3xl text-foreground">{property.title}</h2>
+          <div className="flex items-center gap-2 text-xs uppercase text-muted-foreground">
+            <MapPin className="w-3 h-3" />
+            <span>
+              {property.city} · {formattedState}
+            </span>
           </div>
-        </div>
+        </header>
 
-        <div className="px-4 py-6 space-y-6">
-          {/* Title & Price */}
-          <div>
-            <h2 className="text-2xl font-bold text-foreground uppercase">
-              {property.title}
-            </h2>
-            <div className="flex items-center gap-1 mt-2 text-muted-foreground">
-              <MapPin className="w-4 h-4" />
-              <span className="uppercase">
-                {property.country} | {formattedState} - {property.city}
+        {/* Features: Iconografía lineal sin fondos pesados */}
+        <div className="flex flex-wrap gap-x-10 gap-y-6 border-y border-border/50 py-2">
+          {property.bedrooms! > 0 && (
+            <div className="flex items-center gap-3">
+              <Bed className="w-5 h-5 stroke-[1.25] text-muted-foreground" />
+              <span className="text-sm font-medium">
+                {property.bedrooms} {t("properties:detail.labels.bedrooms")}
               </span>
             </div>
-          </div>
-
-          {/* Features Grid */}
-          <div className="grid grid-cols-4 gap-4">
-            {property.bedrooms !== null && property.bedrooms > 0 && (
-              <div className="text-center p-3 rounded-xl bg-secondary">
-                <Bed className="w-5 h-5 mx-auto mb-1 text-muted-foreground" />
-                <p className="font-semibold">{property.bedrooms}</p>
-                <p className="text-xs text-muted-foreground">
-                  {t("properties:detail.labels.bedrooms")}
-                </p>
-              </div>
-            )}
-            {property.bathrooms !== null && property.bathrooms > 0 && (
-              <div className="text-center p-3 rounded-xl bg-secondary">
-                <Bath className="w-5 h-5 mx-auto mb-1 text-muted-foreground" />
-                <p className="font-semibold">{property.bathrooms}</p>
-                <p className="text-xs text-muted-foreground">
-                  {t("properties:detail.labels.bathrooms")}
-                </p>
-              </div>
-            )}
-            {property.total_area && (
-              <div className="text-center p-3 rounded-xl bg-secondary">
-                <Maximize2 className="w-5 h-5 mx-auto mb-1 text-muted-foreground" />
-                <p className="font-semibold">{property.total_area}</p>
-                <p className="text-xs text-muted-foreground">
-                  {t("properties:detail.labels.total_area")}
-                </p>
-              </div>
-            )}
-            {property.parking_spots !== null && property.parking_spots > 0 && (
-              <div className="text-center p-3 rounded-xl bg-secondary">
-                <div className="w-5 h-5 mx-auto mb-1 text-muted-foreground flex items-center justify-center font-bold text-sm">
-                  P
-                </div>
-                <p className="font-semibold">{property.parking_spots}</p>
-                <p className="text-xs text-muted-foreground">
-                  {t("properties:detail.labels.parking")}
-                </p>
-              </div>
-            )}
-          </div>
-
-          {/* Description */}
-          {property.description && (
-            <div>
-              <h3 className="font-semibold mb-2">
-                {t("properties:detail.labels.description")}
-              </h3>
-              <p className="text-muted-foreground text-sm leading-relaxed">
-                {property.description}
-              </p>
+          )}
+          {property.bathrooms! > 0 && (
+            <div className="flex items-center gap-3">
+              <Bath className="w-5 h-5 stroke-[1.25] text-muted-foreground" />
+              <span className="text-sm font-medium">
+                {property.bathrooms} {t("properties:detail.labels.bathrooms")}
+              </span>
             </div>
           )}
-
-          {/* Amenities */}
-          {property.amenities.length > 0 && (
-            <div>
-              <h3 className="font-semibold mb-3">
-                {t("properties:detail.labels.amenities")}
-              </h3>
-              <div className="flex flex-wrap gap-2">
-                {property.amenities.map((amenity) => (
-                  <Badge
-                    key={amenity.label}
-                    variant="secondary"
-                    className="px-3 py-1.5"
-                  >
-                    {amenity.label}
-                  </Badge>
-                ))}
-              </div>
+          {property.total_area && (
+            <div className="flex items-center gap-3">
+              <Maximize2 className="w-5 h-5 stroke-[1.25] text-muted-foreground" />
+              <span className="text-sm font-medium">
+                {property.total_area} m²
+              </span>
+            </div>
+          )}
+          {property.parking_spots! > 0 && (
+            <div className="flex items-center gap-3">
+              <Car className="w-5 h-5 stroke-[1.25] text-muted-foreground" />
+              <span className="text-sm font-medium">
+                {property.parking_spots} {t("properties:detail.labels.parking")}
+              </span>
             </div>
           )}
         </div>
+
+        {/* Description: Enfoque en la lectura */}
+        {property.description && (
+          <section className="space-y-4">
+            <p className="text-base text-muted-foreground leading-relaxed">
+              {property.description}
+            </p>
+          </section>
+        )}
+
+        {/* Amenities: Etiquetas ultra-discretas */}
+        {property.amenities.length > 0 && (
+          <section className="pt-4">
+            <div className="flex flex-wrap gap-x-4 gap-y-2">
+              {property.amenities.map((amenity) => (
+                <span
+                  key={amenity.label}
+                  className="text-[10px] uppercase tracking-wider text-muted-foreground border-b border-transparent hover:border-muted-foreground transition-all cursor-default"
+                >
+                  {amenity.label}
+                </span>
+              ))}
+            </div>
+          </section>
+        )}
       </div>
     </div>
   );

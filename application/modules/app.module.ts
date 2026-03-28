@@ -28,9 +28,12 @@ import { SupabaseFavoriteAdapter } from "@/infrastructure/adapters/supabase/supa
 import { FavoriteService } from "@/domain/services/favorite.service";
 import { SupabaseImportJobAdapter } from "@/infrastructure/adapters/supabase/supabase-import-job.adapter";
 import { ImportJobService } from "@/domain/services/import-job.service";
+import { SupabaseAdminClient } from "@/infrastructure/db/supabase.server-admin";
 
 export async function appModule(lang: Lang = "es", ctx: CookieContext) {
   const supabase = await SupabaseServerClient();
+  const supabaseAdmin = await SupabaseAdminClient();
+
   const authAdapter = new SupabaseAuthAdapter(supabase);
   const profileAdapter = new SupabaseProfileAdapter(supabase);
   const agentAdapter = new SupabaseAgentAdapter(supabase);
@@ -38,10 +41,10 @@ export async function appModule(lang: Lang = "es", ctx: CookieContext) {
   const propertyAdapter = new SupabasePropertyAdapter(supabase);
   const propertyImageAdapter = new SupabasePropertyImageAdapter(supabase);
 
-  const enquiryAdapter = new SupabaseEnquiryAdapter(supabase);
+  const enquiryAdapter = new SupabaseEnquiryAdapter(supabaseAdmin);
   const sessionAdapter = new SupabaseSessionAdapter(supabase, profileAdapter);
   const listingAdapter = new SupabaseListingAdapter(supabase);
-  const userAdapter = new SupabaseUserAdapter(supabase);
+  const userAdapter = new SupabaseUserAdapter(supabaseAdmin);
   const realEstateAdapter = new SupabaseRealEstateAdapter(supabase);
   const favoriteAdapter = new SupabaseFavoriteAdapter(supabase);
 

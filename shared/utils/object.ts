@@ -16,6 +16,24 @@ export function removeNullish<T extends Record<string, any>>(obj: T) {
   ) as Partial<T>;
 }
 
+export const flatten = (obj: any, prefix = "", formData: FormData) => {
+  Object.entries(obj).forEach(([key, value]) => {
+    const fullKey = prefix ? `${prefix}.${key}` : key;
+    if (value instanceof File) {
+      formData.append(fullKey, value);
+    } else if (
+      typeof value === "object" &&
+      value !== null &&
+      !(value instanceof Date)
+    ) {
+      formData.append(fullKey, JSON.stringify(value));
+    } else if (value !== undefined && value !== null) {
+      formData.append(fullKey, String(value));
+    }
+  });
+  return formData;
+};
+
 export function pickDefined<T extends object>(
   obj: T,
 ): {

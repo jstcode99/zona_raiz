@@ -9,6 +9,7 @@ import { createRouter } from "@/i18n/router";
 import { Lang } from "@/i18n/settings";
 
 export async function updateSession(request: NextRequest) {
+  const realIp = request.headers.get("x-forwarded-for") ?? request.ip;
   const { pathname } = request.nextUrl;
   const lang = detectLang(request);
   const routes = createRouter(lang);
@@ -25,6 +26,14 @@ export async function updateSession(request: NextRequest) {
     request,
     response,
   });
+
+  // =========================
+  // IP CLIENT
+  // =========================
+  const hasIP = await cookiesService.hasIP();
+  if (!hasIP) {
+    cookiesService.setSession(COOKIE_NAMES.IP_CLIENT, realIp);
+  }
 
   // =========================
   // AUTH

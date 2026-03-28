@@ -31,7 +31,6 @@ export const enquirySchema = yup.object({
     .required(i18next.t("validations:required", { attribute: "listing_id" })),
   name: yup
     .string()
-    .required(i18next.t("validations:required", { attribute: "name" }))
     .min(
       2,
       i18next.t("validations:min.string", { attribute: "name", min: "2" }),
@@ -136,13 +135,13 @@ export const defaultEnquiryValues: Partial<EnquiryFormValues> = {
   real_estate_id: undefined, // Requerido en formulario público
   source: "web",
   status: "new",
-  email: null,
-  phone: null,
-  message: null,
-  utm_source: null,
-  utm_medium: null,
-  utm_campaign: null,
-  referrer: null,
-  notes: null,
-  assigned_to: null,
+  email: "",
+  phone: "",
+  message: "",
+  utm_source: undefined,
+  utm_medium: undefined,
+  utm_campaign: undefined,
+  referrer: undefined,
+  notes: undefined,
+  assigned_to: undefined,
 };

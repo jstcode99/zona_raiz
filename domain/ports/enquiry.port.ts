@@ -12,7 +12,7 @@ export interface EnquiryFilters {
 
 export interface EnquiryPort {
   all(filters?: EnquiryFilters): Promise<EnquiryEntity[]>;
-  create(data: Partial<EnquiryEntity>): Promise<EnquiryEntity>;
+  create(data: Partial<EnquiryEntity>): Promise<boolean>;
   update(id: string, data: Partial<EnquiryEntity>): Promise<EnquiryEntity>;
   findById(id: string): Promise<EnquiryEntity | null>;
   findByListingId(listingId: string): Promise<EnquiryEntity[]>;

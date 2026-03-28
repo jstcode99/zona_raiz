@@ -2,6 +2,44 @@
 // COOKIES
 // ==========================================
 
+export type CountryOption = {
+  code: string; // ISO code (US, ES, MX...)
+  dial: string; // +1, +34...
+  label: string;
+  flag: string; // emoji bandera
+};
+
+export const DEFAULT_COUNTRIES: CountryOption[] = [
+  { code: "COL", dial: "+57", label: "Colombia", flag: "🇨🇴" },
+  { code: "US", dial: "+1", label: "United States", flag: "🇺🇸" },
+  { code: "ES", dial: "+34", label: "España", flag: "🇪🇸" },
+  { code: "MX", dial: "+52", label: "México", flag: "🇲🇽" },
+  { code: "AR", dial: "+54", label: "Argentina", flag: "🇦🇷" },
+  { code: "BR", dial: "+55", label: "Brasil", flag: "🇧🇷" },
+  { code: "CL", dial: "+56", label: "Chile", flag: "🇨🇱" },
+  { code: "PE", dial: "+51", label: "Perú", flag: "🇵🇪" },
+  { code: "EC", dial: "+593", label: "Ecuador", flag: "🇪🇨" },
+  { code: "VE", dial: "+58", label: "Venezuela", flag: "🇻🇪" },
+  { code: "BO", dial: "+591", label: "Bolivia", flag: "🇧🇴" },
+  { code: "PY", dial: "+595", label: "Paraguay", flag: "🇵🇾" },
+  { code: "UY", dial: "+598", label: "Uruguay", flag: "🇺🇾" },
+  { code: "CR", dial: "+506", label: "Costa Rica", flag: "🇨🇷" },
+  { code: "PA", dial: "+507", label: "Panamá", flag: "🇵🇦" },
+  { code: "GT", dial: "+502", label: "Guatemala", flag: "🇬🇹" },
+  { code: "CU", dial: "+53", label: "Cuba", flag: "🇨🇺" },
+  { code: "DO", dial: "+1", label: "República Dominicana", flag: "🇩🇴" },
+  { code: "FR", dial: "+33", label: "Francia", flag: "🇫🇷" },
+  { code: "DE", dial: "+49", label: "Alemania", flag: "🇩🇪" },
+  { code: "IT", dial: "+39", label: "Italia", flag: "🇮🇹" },
+  { code: "GB", dial: "+44", label: "Reino Unido", flag: "🇬🇧" },
+  { code: "CA", dial: "+1", label: "Canadá", flag: "🇨🇦" },
+  { code: "AU", dial: "+61", label: "Australia", flag: "🇦🇺" },
+  { code: "JP", dial: "+81", label: "Japón", flag: "🇯🇵" },
+  { code: "CN", dial: "+86", label: "China", flag: "🇨🇳" },
+  { code: "IN", dial: "+91", label: "India", flag: "🇮🇳" },
+  { code: "ZA", dial: "+27", label: "Sudáfrica", flag: "🇿🇦" },
+];
+
 export const COOKIE_OPTIONS = {
   httpOnly: true,
   secure: process.env.NODE_ENV === "production",
@@ -14,6 +52,7 @@ export const COOKIE_NAMES = {
   ROLE: "user_role",
   REAL_ESTATE: "real_estate_id",
   REAL_ESTATE_ROLE: "real_estate_role",
+  IP_CLIENT: "ip_client",
 } as const;
 
 // ==========================================

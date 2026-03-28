@@ -1,6 +1,5 @@
 import { mapEnquiryRowToEntity } from "@/application/mappers/enquiry.mapper";
 import { EnquiryEntity } from "@/domain/entities/enquiry.entity";
-import { EnquiryStatus } from "@/domain/entities/enquiry.enums";
 import { EnquiryFilters, EnquiryPort } from "@/domain/ports/enquiry.port";
 import { SupabaseClient } from "@supabase/supabase-js";
 
@@ -50,18 +49,21 @@ export class SupabaseEnquiryAdapter implements EnquiryPort {
     return (data || []).map(mapEnquiryRowToEntity);
   }
 
-  async create(data: Partial<EnquiryEntity>): Promise<EnquiryEntity> {
-    const { data: row, error } = await this.supabase
-      .from("enquiries")
-      .insert({
-        ...data,
-        status: EnquiryStatus.NEW,
-      })
-      .select()
-      .single();
+  async create(data: Partial<EnquiryEntity>): Promise<boolean> {
+    const { error } = await this.supabase.from("enquiries").insert({
+      listing_id: data.listing_id,
+      name: data.name,
+      email: data.email,
+      phone: data.phone,
+      message: data.message,
+
+      source: data.source,
+      referrer: data.referrer,
+      ip_address: data.ip_address,
+    });
 
     if (error) throw new Error(error.message);
-    return mapEnquiryRowToEntity(row);
+    return true;
   }
 
   async update(

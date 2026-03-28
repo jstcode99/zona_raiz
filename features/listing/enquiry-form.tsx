@@ -15,6 +15,7 @@ import {
   EnquiryFormValues,
   enquirySchema,
 } from "@/application/validation/enquiry.schema";
+import { flatten } from "@/lib/utils";
 
 interface EnquiryFormProps {
   listingId: string;
@@ -40,53 +41,42 @@ export function EnquiryForm({ listingId, realEstateId }: EnquiryFormProps) {
   } = form;
 
   const mutation = useServerMutation({
-    action: createEnquiryAction as any,
+    action: createEnquiryAction,
     setError,
-    onSuccess: () => {
+    onSuccess: (response) => {
       toast.success(t("detail.contact.success"));
       form.reset({
         ...defaultEnquiryValues,
         listing_id: listingId,
         real_estate_id: realEstateId,
       });
+      const { whatsappUrl } = response?.data ?? {};
+      if (whatsappUrl) {
+        window.location.href = whatsappUrl as string;
+      }
     },
     onError: (error) => {
-      // Check if this is a WhatsApp redirect error (thrown from action with _whatsappUrl)
-      const whatsappUrl = (error as any)?._whatsappUrl;
-      if (whatsappUrl) {
-        toast.success(t("detail.contact.success"));
-        form.reset({
-          ...defaultEnquiryValues,
-          listing_id: listingId,
-          real_estate_id: realEstateId,
-        });
-        // Redirect to WhatsApp
-        window.location.href = whatsappUrl as string;
-      } else {
-        toast.error(t("detail.contact.error"));
-        console.error("Enquiry error:", error);
-      }
+      toast.error(t("detail.contact.error"));
+      console.error("Enquiry error:", error);
     },
   });
 
-  const onSubmit = (_values: EnquiryFormValues) => {
-    const formData = new FormData();
-    formData.append("listing_id", listingId);
-    formData.append("real_estate_id", realEstateId);
-    formData.append("name", form.getValues("name") || "");
-    formData.append("email", form.getValues("email") || "");
-    formData.append("phone", form.getValues("phone") || "");
-    formData.append("message", form.getValues("message") || "");
-    formData.append("source", "web");
-
-    mutation.action(formData);
+  const onSubmit = (values: EnquiryFormValues) => {
+    try {
+      const formData = new FormData();
+      const data = flatten(values, "", formData);
+      mutation.action(data);
+    } catch (error) {
+      console.error(error);
+      toast.error(t("labels"));
+    }
   };
 
   const isLoading = isSubmitting || mutation.isPending;
 
   return (
     <Card>
-      <CardHeader className="pb-4">
+      <CardHeader className="py-1">
         <CardTitle className="text-lg">{t("detail.contact.title")}</CardTitle>
         <p className="text-sm text-muted-foreground">
           {t("detail.contact.subtitle")}

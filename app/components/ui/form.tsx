@@ -73,6 +73,10 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { es } from "react-day-picker/locale/es";
+import {
+  CountryOption,
+  DEFAULT_COUNTRIES,
+} from "@/infrastructure/config/constants";
 
 /* =========================
    ROOT
@@ -576,20 +580,6 @@ function AutocompleteField({
    PHONE
 ========================= */
 
-type CountryOption = {
-  code: string; // US, ES, MX...
-  dial: string; // +1, +34...
-  label: string;
-};
-
-const DEFAULT_COUNTRIES: CountryOption[] = [
-  { code: "COL", dial: "+57", label: "Colombia" },
-  { code: "US", dial: "+1", label: "United States" },
-  { code: "ES", dial: "+34", label: "España" },
-  { code: "MX", dial: "+52", label: "México" },
-  { code: "AR", dial: "+54", label: "Argentina" },
-];
-
 function guessCountry(countries: CountryOption[]) {
   if (typeof navigator === "undefined") return countries[0];
   const lang = navigator.language?.toUpperCase() || "";
@@ -634,13 +624,13 @@ function PhoneField({
                 field.onChange(`${dial} ${number}`.trim());
               }}
             >
-              <SelectTrigger className="w-36">
+              <SelectTrigger className="w-25 rounded-r-none">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
                 {countries.map((c) => (
                   <SelectItem key={c.code} value={c.dial}>
-                    {c.label} {c.dial}
+                    {c.flag} {c.dial}
                   </SelectItem>
                 ))}
               </SelectContent>
