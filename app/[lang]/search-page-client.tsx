@@ -48,6 +48,21 @@ interface SearchPageClientProps {
   isAuth: boolean;
 }
 
+function FiltersContent({
+  filters,
+  onFiltersChange,
+}: {
+  filters: ListingSearchFiltersType;
+  onFiltersChange: (filters: ListingSearchFiltersType) => void;
+}) {
+  return (
+    <ListingSearchFilters
+      initialFilters={filters}
+      onFiltersChange={onFiltersChange}
+    />
+  );
+}
+
 export function SearchPageClient({
   filters,
   listings,
@@ -94,13 +109,6 @@ export function SearchPageClient({
     });
   };
 
-  const FiltersContent = () => (
-    <ListingSearchFilters
-      initialFilters={filters}
-      onFiltersChange={handleFiltersChange}
-    />
-  );
-
   return (
     <div className="min-h-screen bg-background">
       <LandingNav isAuth={isAuth} />
@@ -123,7 +131,10 @@ export function SearchPageClient({
               <h2 className="font-semibold mb-4 capitalize">
                 {t("common:sections.filters")}
               </h2>
-              <FiltersContent />
+              <FiltersContent
+                onFiltersChange={handleFiltersChange}
+                filters={filters}
+              />
             </div>
           </aside>
 
@@ -165,7 +176,10 @@ export function SearchPageClient({
                       </SheetTitle>
                     </SheetHeader>
                     <div className="flex-1 overflow-y-auto p-4">
-                      <FiltersContent />
+                      <FiltersContent
+                        onFiltersChange={handleFiltersChange}
+                        filters={filters}
+                      />
                     </div>
                   </SheetContent>
                 </Sheet>
