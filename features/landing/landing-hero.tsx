@@ -152,8 +152,7 @@ export function LandingHero({ lang = "es" }: LandingHeroProps) {
               }}
             >
               {t("hero.title_1")},<br />
-              <span className="text-primary">{t("hero.title_2")}</span>,<br />&{" "}
-              {t("hero.title_3")}
+              {t("hero.title_2")},<br />& {t("hero.title_3")}
             </h1>
 
             <p

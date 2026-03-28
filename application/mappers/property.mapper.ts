@@ -1,12 +1,12 @@
 import { PropertyEntity } from "@/domain/entities/property.entity";
 import { PropertyType } from "@/domain/entities/property.enums";
 
-export function mapPropertyRowToEntity(row: any): PropertyEntity {
+export function mapPropertyRowToEntity(row: PropertyEntity): PropertyEntity {
   return {
     ...row,
     id: row.id,
     property_type: row.property_type as PropertyType,
-  }
+  };
 }
 
 /**
@@ -24,11 +24,14 @@ export interface PropertyDetailDTO {
  * Transforma PropertyEntity a DTO de presentación
  * Extrae URLs de imágenes y formatea datos para UI
  */
-export function mapPropertyToDetailDTO(property: PropertyEntity): PropertyDetailDTO {
+export function mapPropertyToDetailDTO(
+  property: PropertyEntity,
+): PropertyDetailDTO {
   // Extraer URLs públicas de imágenes, filtrando nulos
-  const imageUrls = (property.property_images
-    ?.map((img) => img.public_url)
-    .filter((url): url is string => Boolean(url)) || []);
+  const imageUrls =
+    property.property_images
+      ?.map((img) => img.public_url)
+      .filter((url): url is string => Boolean(url)) || [];
 
   // Formatear ubicación completa
   const locationParts = [

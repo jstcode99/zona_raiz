@@ -4,7 +4,14 @@ const nextConfig: NextConfig = {
   reactStrictMode: true,
   trailingSlash: false,
   images: {
+    domains: ["images.unsplash.com", "picsum.photos"],
     remotePatterns: [
+      {
+        hostname: "images.unsplash.com",
+      },
+      {
+        hostname: "picsum.photos",
+      },
       {
         protocol: "http",
         hostname: "127.0.0.1",
@@ -12,15 +19,15 @@ const nextConfig: NextConfig = {
         pathname: "/storage/v1/object/public/**",
       },
       {
-        protocol: 'https',
-        hostname: '**.supabase.co',
-        pathname: '/storage/v1/object/public/**',
+        protocol: "https",
+        hostname: "**.supabase.co",
+        pathname: "/storage/v1/object/public/**",
       },
     ],
   },
   experimental: {
     serverActions: {
-      bodySizeLimit: '10mb', // puedes poner 5mb, 10mb, etc.
+      bodySizeLimit: "10mb", // puedes poner 5mb, 10mb, etc.
     },
   },
   logging: {

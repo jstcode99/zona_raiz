@@ -372,18 +372,25 @@ export class SupabaseListingAdapter implements ListingPort {
     return result;
   }
 
-  async findSimplePublished(limit: number = 10): Promise<ListingEntity[]> {
-    const query = this.supabase
-      .from("listings")
-      .select(
-        `
+  async findSimplePublished(
+    limit: number = 10,
+    realEstateId?: string,
+  ): Promise<ListingEntity[]> {
+    let query = this.supabase.from("listings").select(
+      `
         *,
         property:properties!inner(*, property_images(*)),
         real_estate_agent:real_estate_agents!inner(
           profile:profiles!inner(id, full_name, avatar_url, phone)
         )
       `,
-      )
+    );
+
+    if (realEstateId) {
+      query = query.eq("properties.real_estate_id", realEstateId);
+    }
+
+    query = query
       .eq("status", "active")
       .order("created_at", { ascending: false })
       .limit(limit);

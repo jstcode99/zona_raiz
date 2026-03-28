@@ -1,6 +1,8 @@
-import { EUserRole, ProfileEntity } from "@/domain/entities/profile.entity"
+import { EUserRole, ProfileEntity } from "@/domain/entities/profile.entity";
 
-export function mapRealEstateAgentRowToEntity(row: any): ProfileEntity {
+export function mapRealEstateAgentRowToEntity(
+  row: ProfileEntity,
+): ProfileEntity {
   return {
     id: row.id,
     email: row.email,
@@ -8,8 +10,6 @@ export function mapRealEstateAgentRowToEntity(row: any): ProfileEntity {
     avatar_url: row.avatar_url,
     phone: row.phone,
     role: row.role as EUserRole,
-    created_at: row.created_at
-  }
+    created_at: row.created_at,
+  };
 }
-
-

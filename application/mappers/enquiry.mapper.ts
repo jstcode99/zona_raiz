@@ -1,7 +1,16 @@
 import { EnquiryEntity } from "@/domain/entities/enquiry.entity";
 import { EnquirySource, EnquiryStatus } from "@/domain/entities/enquiry.enums";
+import { ListingEntity } from "@/domain/entities/listing.entity";
+import { ProfileEntity } from "@/domain/entities/profile.entity";
 
-export function mapEnquiryRowToEntity(row: any): EnquiryEntity {
+export function mapEnquiryRowToEntity(
+  row: EnquiryEntity & {
+    listing: ListingEntity;
+    assigned_to_profile: {
+      profile: ProfileEntity;
+    };
+  },
+): EnquiryEntity {
   return {
     id: row.id,
     listing_id: row.listing_id,

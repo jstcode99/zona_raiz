@@ -1,7 +1,9 @@
 import { RealEstateEntity } from "@/domain/entities/real-estate.entity";
 import { RealEstateInput } from "@/application/validation/real-estate.validation";
 
-export function mapRealEstateRowToEntity(row: any): RealEstateEntity {
+export function mapRealEstateRowToEntity(
+  row: RealEstateEntity,
+): RealEstateEntity {
   return {
     id: row.id,
     name: row.name,

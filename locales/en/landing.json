@@ -1,6 +1,6 @@
 {
   "nav": {
-    "brand": "ZonaRaiz",
+    "brand": "Zona raiz",
     "home": "Home",
     "listing": "Listings",
     "property": "Properties",
@@ -80,13 +80,13 @@
     "btn": "Subscribe"
   },
   "footer": {
-    "brand": "ZonaRaiz",
+    "brand": "Zona raiz",
     "tagline": "Your leading real estate advisor.",
     "about": "About Us",
     "terms": "Terms of Service",
     "privacy": "Privacy Policy",
     "contact": "Contact",
     "follow_us": "Follow Us",
-    "copyright": "2026 ZonaRaiz. All rights reserved."
+    "copyright": "2026 Zona raiz. All rights reserved."
   }
 }

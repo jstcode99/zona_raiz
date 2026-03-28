@@ -4,6 +4,7 @@ import { ProfileEntity } from "@/domain/entities/profile.entity";
 import { EAgentRole } from "@/domain/entities/real-estate-agent.entity";
 import { AgentPort } from "@/domain/ports/agent.port";
 import { LandingAgent } from "@/domain/types/landing.types";
+import { isEmpty } from "@/lib/utils";
 import { SupabaseClient } from "@supabase/supabase-js";
 
 export class SupabaseAgentAdapter implements AgentPort {
@@ -74,7 +75,7 @@ export class SupabaseAgentAdapter implements AgentPort {
 
     if (error) throw new Error(error.message);
 
-    const profiles = data.filter((a) => a.profile);
+    const profiles = data.filter((a) => !isEmpty(a));
     return profiles ? profiles.map((p) => mapAgentsTopRowToEntity(p)) : [];
   }
 }

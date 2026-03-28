@@ -1,6 +1,11 @@
 import { FavoriteEntity } from "@/domain/entities/favorite.entity";
 
-export function mapFavoriteRowToEntity(row: any): FavoriteEntity {
+export function mapFavoriteRowToEntity(row: {
+  id: string;
+  profile_id: string;
+  listing_id: string;
+  created_at: string;
+}): FavoriteEntity {
   return {
     id: row.id,
     profile_id: row.profile_id,
