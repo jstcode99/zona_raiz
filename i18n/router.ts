@@ -9,21 +9,37 @@ export function createRouter(lang: Lang) {
     Object.entries(ROUTES).map(([key, value]) => [
       key,
       (...params: string[]) => {
-        let path: string = value[lang];
-        params.forEach((param) => {
-          path = path.replace(/:[^/]+/, param);
-        });
-        if (`/${lang}` == path) {
-          return path;
+        const path: string = value[lang] ?? value["en"]; // fallback a "en" si lang es inválido
+
+        if (!path) {
+          console.error(
+            `[router] No path found for route "${key}" with lang "${lang}"`,
+          );
+          return "/";
         }
-        return `/${lang}${path}`;
+
+        let resolvedPath = path;
+
+        const dynamicSegments = resolvedPath.match(/:[^/]+/g) ?? [];
+        dynamicSegments.forEach((segment, index) => {
+          if (params[index] !== undefined) {
+            resolvedPath = resolvedPath.replace(
+              segment,
+              encodeURIComponent(params[index]),
+            );
+          }
+        });
+
+        if (resolvedPath === "/") return "/";
+        if (resolvedPath === `/${lang}`) return resolvedPath;
+
+        return `/${lang}${resolvedPath}`;
       },
     ]),
   ) as {
     [K in keyof typeof ROUTES]: (...params: string[]) => string;
   };
 }
-
 // ─────────────────────────────────────────────
 // Build search URL con segmentos dinámicos
 // ─────────────────────────────────────────────
