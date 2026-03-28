@@ -16,6 +16,8 @@ import {
   enquirySchema,
 } from "@/application/validation/enquiry.schema";
 import { flatten } from "@/lib/utils";
+import { s } from "vitest/dist/chunks/reporters.D7Jzd9GS.js";
+import { useEffect, useState } from "react";
 
 interface EnquiryFormProps {
   listingId: string;
@@ -24,6 +26,20 @@ interface EnquiryFormProps {
 
 export function EnquiryForm({ listingId, realEstateId }: EnquiryFormProps) {
   const { t } = useTranslation("listings");
+  const [ip, setIp] = useState("");
+
+  useEffect(() => {
+    fetch("https://api.ipify.org?format=json")
+      .then((response) => {
+        return response.json();
+      })
+      .then((res) => {
+        if ("ip" in res) {
+          setIp(res.ip);
+        }
+      })
+      .catch((err) => console.error("Problem fetching my IP", err));
+  }, []);
 
   const form = useForm<EnquiryFormValues>({
     resolver: yupResolver(enquirySchema) as any,
@@ -50,9 +66,11 @@ export function EnquiryForm({ listingId, realEstateId }: EnquiryFormProps) {
         listing_id: listingId,
         real_estate_id: realEstateId,
       });
-      const { whatsappUrl } = response?.data ?? {};
-      if (whatsappUrl) {
-        window.location.href = whatsappUrl as string;
+      if ("data" in response) {
+        if ("whatsappUrl" in response.data) {
+          const url = response.data.whatsappUrl as string;
+          if (url.trim().length) window.location.href = url;
+        }
       }
     },
     onError: (error) => {
@@ -64,6 +82,7 @@ export function EnquiryForm({ listingId, realEstateId }: EnquiryFormProps) {
   const onSubmit = (values: EnquiryFormValues) => {
     try {
       const formData = new FormData();
+      formData.append("ip", ip);
       const data = flatten(values, "", formData);
       mutation.action(data);
     } catch (error) {

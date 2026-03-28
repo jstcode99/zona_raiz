@@ -30,11 +30,9 @@ export const createEnquiryAction = withServerAction(
 
     const raw = Object.fromEntries(formData);
 
-    const realIp = cookieStore.get("x-forwarded-for") ?? cookieStore.get("ip");
-
     const hasIP = await cookiesService.hasIP();
-    if (!hasIP && realIp?.value) {
-      cookiesService.setSession(COOKIE_NAMES.IP_CLIENT, realIp?.value);
+    if (!hasIP) {
+      cookiesService.setSession(COOKIE_NAMES.IP_CLIENT, raw?.ip as string);
     }
 
     const input = await enquirySchema.validate(raw, {
@@ -61,35 +59,30 @@ export const createEnquiryAction = withServerAction(
       phone: input.phone as string | null,
       message: input.message as string | null,
       source: input.source as EnquirySource,
-      ip_address: realIp?.value ?? null,
+      ip_address: raw?.ip as string,
     });
 
-    // Consultar WhatsApp y redirigir si existe
-    if (realEstateId) {
-      try {
-        const realEstate = await realEstateService.getById(realEstateId);
-        if (realEstate?.whatsapp) {
-          const cleanNumber = realEstate.whatsapp.replace(/[^\d+]/g, "");
-          const encodeMessage = encodeURIComponent(
-            t("enquiries:whatsapp.default_message", {
-              name: input.name,
-            }) || `Hola, me interesa esta propiedad`,
-          );
+    const realEstate = await realEstateService.getById(realEstateId);
+    let whatsappUrl: string = "";
 
-          /**
-           * INTEGRAR MODULOS DE shor_url
-           */
+    if (realEstate?.whatsapp) {
+      const cleanNumber = realEstate.whatsapp.replace(/[^\d+]/g, "");
+      const encodeMessage = encodeURIComponent(
+        t("enquiries:whatsapp.default_message", {
+          name: input.name,
+        }) || `Hola, me interesa esta propiedad`,
+      );
 
-          const whatsappUrl = `https://wa.me/${cleanNumber}?text=${encodeMessage}`;
-          return { success: true, data: { whatsappUrl } };
-        }
-      } catch (err) {
-        throw err;
-      }
+      /**
+       * INTEGRAR MODULOS DE shor_url
+       */
+
+      whatsappUrl = `https://wa.me/${cleanNumber}?text=${encodeMessage}`;
+      return { success: true, data: { whatsappUrl } };
     }
 
     // Success without WhatsApp - the withServerAction will return { success: true }
-    return;
+    return { success: true, data: { whatsappUrl: null } };
   },
 );
 

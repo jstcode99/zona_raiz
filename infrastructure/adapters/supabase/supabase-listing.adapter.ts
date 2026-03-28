@@ -146,7 +146,7 @@ export class SupabaseListingAdapter implements ListingPort {
   async findById(id: string): Promise<ListingEntity | null> {
     const { data: row, error } = await this.supabase
       .from("listings")
-      .select("*")
+      .select("*,  property:properties(*, property_images(*))")
       .eq("id", id)
       .single();
 
