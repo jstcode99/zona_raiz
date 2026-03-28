@@ -17,6 +17,8 @@ export function LandingListings({
   const { t } = useTranslation("landing");
   const routes = useRoutes();
 
+  console.log(listings);
+
   return (
     <section className="py-16">
       <div className="max-w-6xl mx-auto px-6">

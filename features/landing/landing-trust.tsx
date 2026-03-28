@@ -61,7 +61,6 @@ export function LandingTrust({ stats, agentAvatars = [] }: LandingTrustProps) {
   const count = useCountUp(stats.totalListings ?? 0, inView);
   const displayAvatars = agentAvatars.slice(0, 3);
 
-  console.log(displayAvatars);
   return (
     <section className="py-12" ref={ref}>
       <div className="max-w-6xl mx-auto px-6">
@@ -100,7 +99,7 @@ export function LandingTrust({ stats, agentAvatars = [] }: LandingTrustProps) {
               >
                 {displayAvatars.map((agent, i) => (
                   <Image
-                    key={agent.id}
+                    key={i}
                     src={
                       agent?.avatar_url ||
                       "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=48&q=70"

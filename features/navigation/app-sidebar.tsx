@@ -16,6 +16,7 @@ import { Separator } from "@/components/ui/separator";
 import { useTranslation } from "react-i18next";
 import { FavoritesList } from "@/features/favorites/favorites-list";
 import { ListingEntity } from "@/domain/entities/listing.entity";
+import Logo from "@/assets/svg/logo";
 
 interface FavoriteWithListing {
   id: string;
@@ -44,7 +45,7 @@ export function AppSidebar({ ...props }: AppSidebarProps) {
         <div className="p-3 group-data-[collapsible=icon]:p-0">
           <div className="flex items-center gap-3">
             <div className="size-10 group-data-[collapsible=icon]:size-9 p-2 rounded-xl bg-linear-to-br from-gray-900 to-gray-700 flex items-center justify-center">
-              <Building2Icon className="text-white" />
+              <Logo />
             </div>
             <div>
               <h1 className="font-bold text-lg text-foreground group-data-[collapsible=icon]:hidden">

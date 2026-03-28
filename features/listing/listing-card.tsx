@@ -94,7 +94,7 @@ export function ListingCard({
                 transition: `opacity 0.4s ease ${delay + 150}ms, transform 0.4s ease ${delay + 150}ms`,
               }}
             >
-              <Badge variant="secondary" className="backdrop-blur-sm">
+              <Badge variant="secondary">
                 {getListingTypeLabel(listing.listing_type)}
               </Badge>
               {listing.featured && (
@@ -129,10 +129,10 @@ export function ListingCard({
               }}
             >
               <Badge
-                variant="outline"
+                variant="secondary"
                 className="backdrop-blur-sm text-foreground capitalize"
               >
-                {listing.currency} {listing.price.toLocaleString("es-ES")}
+                {listing.currency} {listing.price.toLocaleString("es-ES")} {` `}
                 {listing.price_negotiable && t("words:negotiable")}
               </Badge>
             </div>
