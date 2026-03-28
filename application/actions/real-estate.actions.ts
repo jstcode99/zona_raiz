@@ -47,7 +47,6 @@ export const createRealEstateAction = withServerAction(
 
     if (!id) throw new Error(t("real-estates:exceptions.register_error"));
 
-    console.log(id);
     cookiesService.setSession(COOKIE_NAMES.REAL_ESTATE, id);
     cookiesService.setSession(
       COOKIE_NAMES.REAL_ESTATE_ROLE,

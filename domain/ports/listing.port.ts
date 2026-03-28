@@ -54,7 +54,10 @@ export interface ListingPort {
     year: number,
     filters?: Omit<ListingCountFilters, "start_date" | "end_date">,
   ): Promise<Record<string, Record<string, number>>>;
-  findSimplePublished(limit?: number): Promise<ListingEntity[]>;
+  findSimplePublished(
+    limit?: number,
+    realEstateId?: string,
+  ): Promise<ListingEntity[]>;
   findCitiesWithActiveListings(): Promise<LandingCity[]>;
   getLandingStats(): Promise<LandingStats>;
 }

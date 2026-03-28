@@ -82,8 +82,12 @@ export class ListingService {
     return this.listingPort.count({ real_estate_id: realEstateId });
   }
 
-  findSimplePublished(limit: number = 10) {
-    return this.listingPort.findSimplePublished(limit);
+  findSimplePublished(limit: number = 10, realEstateId?: string) {
+    return this.listingPort.findSimplePublished(limit, realEstateId);
+  }
+
+  findSimplePublishedByRealEstate(limit: number = 10, realEstateId: string) {
+    return this.listingPort.findSimplePublished(limit, realEstateId);
   }
 
   private buildCacheKey(filters?: ListingSearchFilters): string {
@@ -301,6 +305,29 @@ export class ListingService {
     return unstable_cache(
       async () => this.listingPort.findSimplePublished(limit),
       [CACHE_TAGS.LISTING.KEYS.SIMPLE_PUBLISHED(limit)],
+      {
+        revalidate: 60,
+        tags: [
+          CACHE_TAGS.LISTING.PRINCIPAL,
+          CACHE_TAGS.LISTING.SIMPLE_PUBLISHED,
+        ],
+      },
+    )();
+  }
+
+  getCachedSimplePublishedByRealEstate(
+    realEstateId: string,
+    limit: number = 10,
+  ) {
+    return unstable_cache(
+      async () =>
+        this.listingPort.findSimplePublishedByRealEstate(realEstateId, limit),
+      [
+        CACHE_TAGS.LISTING.KEYS.SIMPLE_PUBLISHED_BY_REAL_ESTATE(
+          realEstateId,
+          limit,
+        ),
+      ],
       {
         revalidate: 60,
         tags: [

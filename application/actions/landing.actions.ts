@@ -32,6 +32,9 @@ export async function getLandingData(): Promise<LandingData> {
     listingService.getCachedCitiesWithActiveListings(),
     listingService.getCachedLandingStats(),
   ]);
+  console.log("\n");
+  console.log(listings, "listings.........");
+  console.log("\n");
 
   // Get top agents with avatars using agentService
   let agents: LandingAgent[] = [];

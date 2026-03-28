@@ -33,7 +33,9 @@ export function FavoriteToggleButton({
         const result = await toggleFavoriteAction(listingId);
         if (result.success) {
           toast.success(
-            previousFav ? t("status.favorite_removed") : t("status.favorite_added"),
+            previousFav
+              ? t("status.favorite_removed")
+              : t("status.favorite_added"),
           );
         } else {
           setIsFav(previousFav);

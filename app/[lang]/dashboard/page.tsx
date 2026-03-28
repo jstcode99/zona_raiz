@@ -212,7 +212,10 @@ export default async function page({ params }: props) {
     currentYear,
     { real_estate_id: realEstateId },
   );
-  const listings = listingService.getCachedSimplePublished(10);
+  const listings = listingService.findSimplePublishedByRealEstate(
+    10,
+    realEstateId,
+  );
 
   return (
     <div className="flex flex-1 flex-col">

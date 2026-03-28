@@ -57,7 +57,7 @@ export const FeaturedListingCard = ({ listing }: FeaturedListingCardProps) => {
         )}
 
         <div className="absolute top-3 left-3 flex gap-2">
-          <Badge variant="secondary" className="bg-white/90 backdrop-blur-sm">
+          <Badge variant="secondary">
             {getListingTypeLabel(listing.listing_type)}
           </Badge>
           {listing.featured && (
@@ -124,7 +124,7 @@ export function FeaturedListingsSlider({
   listings,
   ...props
 }: FeaturedListingsSliderProps) {
-  const { t } = useTranslation("common");
+  const { t } = useTranslation("dashboard");
 
   const scrollRef = useRef<HTMLDivElement>(null);
 
