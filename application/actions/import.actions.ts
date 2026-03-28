@@ -89,7 +89,6 @@ export const processImportAction = withServerAction(
       const obj: Record<string, unknown> = {};
       mapping.forEach((map, targetIndex) => {
         const targetHeader = expectedHeaders[targetIndex];
-        console.log(targetHeader);
         if (map.sourceIndex >= 0) {
           const value = row[map.sourceIndex];
           if (value !== null && value !== undefined && value !== "") {
