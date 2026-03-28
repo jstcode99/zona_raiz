@@ -114,6 +114,11 @@ export const ROUTES = {
     en: "/dashboard/listings",
   },
 
+  listings_public: {
+    es: "/publicacion/:slug",
+    en: "/listing/:slug",
+  },
+
   enquiries: {
     es: "/panel/consultas",
     en: "/dashboard/enquiries",
