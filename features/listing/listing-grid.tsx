@@ -56,6 +56,7 @@ export function ListingGrid({
         <ListingCard
           key={listing.id}
           listing={listing}
+          isPublic={true}
           isFavInitial={favoriteIds.includes(listing.id)}
         />
       ))}
