@@ -17,8 +17,6 @@ export function LandingListings({
   const { t } = useTranslation("landing");
   const routes = useRoutes();
 
-  console.log(listings);
-
   return (
     <section className="py-16">
       <div className="max-w-6xl mx-auto px-6">
@@ -38,6 +36,7 @@ export function LandingListings({
               key={listing.id}
               listing={listing}
               index={i}
+              isPublic={true}
               isFavInitial={favoriteIds?.includes(listing.id)}
             />
           ))}
