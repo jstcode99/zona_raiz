@@ -274,10 +274,7 @@ export class SupabaseListingAdapter implements ListingPort {
     let query = this.supabase
       .from("listings")
       .select(
-        `
-        *,
-        property:properties(*, property_images:property_images(*))
-      `,
+        "*,property:properties!inner(*, property_images:property_images(*))",
       )
       .eq("featured", true)
       .order("created_at", { ascending: false })
@@ -380,9 +377,8 @@ export class SupabaseListingAdapter implements ListingPort {
       `
         *,
         property:properties!inner(*, property_images(*)),
-        real_estate_agent:real_estate_agents!inner(
-          profile:profiles!inner(id, full_name, avatar_url, phone)
-        )
+        real_estate_agent:real_estate_agents(
+        profile:profiles!inner(id, full_name, avatar_url, phone))
       `,
     );
 
