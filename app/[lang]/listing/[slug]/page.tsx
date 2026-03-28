@@ -1,10 +1,10 @@
-import { ListingDetail } from "@/features/listing/listing-detail";
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
 import { appModule } from "@/application/modules/app.module";
 import { Lang } from "@/i18n/settings";
 import { cookies } from "next/headers";
 import { mapListingToDetailDTO } from "@/application/mappers/listing.mapper";
+import { ListingDetailClient } from "@/features/listing/listing-detail";
 
 interface Props {
   params: Promise<{ slug: string; lang: Lang }>;
@@ -66,6 +66,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function page({ params }: Props) {
   const cookieStore = await cookies();
   const { slug, lang } = await params;
+
   const { listingService, sessionService, favoriteService } = await appModule(
     lang,
     { cookies: cookieStore },
@@ -75,6 +76,11 @@ export default async function page({ params }: Props) {
   if (!listing) {
     notFound();
   }
+
+  let isAuth = false;
+  try {
+    isAuth = await sessionService.isAuth();
+  } catch {}
 
   let isFavInitial = false;
   try {
@@ -89,5 +95,11 @@ export default async function page({ params }: Props) {
   // Transformar a DTO de presentación para UI
   const listingDetailData = mapListingToDetailDTO(listing);
 
-  return <ListingDetail data={listingDetailData} isFavInitial={isFavInitial} />;
+  return (
+    <ListingDetailClient
+      data={listingDetailData}
+      // isFavInitial={isFavInitial}
+      // isAuth={isAuth}
+    />
+  );
 }
