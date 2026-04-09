@@ -1,15 +1,14 @@
 _format_version: "3.0"
-_transform: true
 
 services:
-  # Next.js Application
-  - name: nextjs
-    url: http://nextjs:3000
+  # PostgREST - Database API
+  - name: postgrest
+    url: http://postgrest:3000/
     routes:
-      - name: nextjs-route
-        paths:
-          - /
+      - name: postgrest-route
         strip_path: true
+        paths:
+          - /rest/v1/
     plugins:
       - name: cors
         config:
@@ -19,55 +18,124 @@ services:
             - GET
             - POST
             - PUT
-            - DELETE
             - PATCH
+            - DELETE
             - OPTIONS
           headers:
             - Accept
-            - Accept-Language
-            - Content-Type
             - Authorization
-            - X-Client-Info
-            - X-Supabase-Auth
+            - Content-Type
           credentials: true
           max_age: 3600
 
-  # PostgreSQL (Supabase DB)
-  - name: postgres
-    url: postgresql://postgres:5432/postgres
-    # Note: Direct DB access usually via Supabase APIs, not Kong
-
-  # MinIO Storage API
-  - name: minio
-    url: http://minio:9000
+  # GoTrue - Authentication
+  - name: gotrue
+    url: http://gotrue:9999/
     routes:
-      - name: minio-route
-        paths:
-          - /storage
+      - name: gotrue-route
         strip_path: true
+        paths:
+          - /auth/v1/
+    plugins:
+      - name: cors
+        config:
+          origins:
+            - "*"
+          methods:
+            - GET
+            - POST
+            - PUT
+            - PATCH
+            - DELETE
+            - OPTIONS
+          headers:
+            - Accept
+            - Authorization
+            - Content-Type
+          credentials: true
 
-  # Mailhog SMTP
-  - name: mailhog
-    url: http://mailhog:1025
+  # Storage API
+  - name: storage
+    url: http://storage:5000/
     routes:
-      - name: mailhog-route
-        paths:
-          - /mailhog
+      - name: storage-route
         strip_path: true
+        paths:
+          - /storage/v1/
+    plugins:
+      - name: cors
+        config:
+          origins:
+            - "*"
+          methods:
+            - GET
+            - POST
+            - PUT
+            - PATCH
+            - DELETE
+            - OPTIONS
+          headers:
+            - Accept
+            - Authorization
+            - Content-Type
+            - x-upsert
+          credentials: true
 
-# Consumers (API consumers)
+  # Next.js App
+  - name: nextjs
+    url: http://nextjs:3000/
+    routes:
+      - name: nextjs-route
+        strip_path: false
+        paths:
+          - /
+    plugins:
+      - name: cors
+        config:
+          origins:
+            - "*"
+          methods:
+            - GET
+            - POST
+            - PUT
+            - PATCH
+            - DELETE
+            - OPTIONS
+          headers:
+            - Accept
+            - Authorization
+            - Content-Type
+          credentials: true
+
 consumers:
-  - username: zona_raiz_app
-  - username: zona_raiz_admin
+  - username: anon
+    keyauth_credentials:
+      - key: dummy
+  - username: service_role
+    keyauth_credentials:
+      - key: dummy
 
-# Plugins
 plugins:
-  - name: rate-limiting
+  - name: cors
     config:
-      minute: 100
-      policy: local
-
-  - name: loggly
-    config:
-      http_endpoint: http://loki:3100/loki/api/v1/push
-      source: kong
+      origins:
+        - "*"
+      methods:
+        - GET
+        - POST
+        - PUT
+        - PATCH
+        - DELETE
+        - OPTIONS
+      headers:
+        - Accept
+        - Authorization
+        - Content-Type
+      exposed_headers:
+        - X-Total-Count
+        - X-Total-Pages
+        - X-Page
+        - X-Page-Size
+        - X-Range
+      credentials: true
+      max_age: 3600
