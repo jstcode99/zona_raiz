@@ -3,6 +3,7 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   trailingSlash: false,
+  output: "standalone",
   images: {
     domains: ["images.unsplash.com", "picsum.photos"],
     remotePatterns: [

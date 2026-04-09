@@ -1,0 +1,73 @@
+_format_version: "3.0"
+_transform: true
+
+services:
+  # Next.js Application
+  - name: nextjs
+    url: http://nextjs:3000
+    routes:
+      - name: nextjs-route
+        paths:
+          - /
+        strip_path: true
+    plugins:
+      - name: cors
+        config:
+          origins:
+            - "*"
+          methods:
+            - GET
+            - POST
+            - PUT
+            - DELETE
+            - PATCH
+            - OPTIONS
+          headers:
+            - Accept
+            - Accept-Language
+            - Content-Type
+            - Authorization
+            - X-Client-Info
+            - X-Supabase-Auth
+          credentials: true
+          max_age: 3600
+
+  # PostgreSQL (Supabase DB)
+  - name: postgres
+    url: postgresql://postgres:5432/postgres
+    # Note: Direct DB access usually via Supabase APIs, not Kong
+
+  # MinIO Storage API
+  - name: minio
+    url: http://minio:9000
+    routes:
+      - name: minio-route
+        paths:
+          - /storage
+        strip_path: true
+
+  # Mailhog SMTP
+  - name: mailhog
+    url: http://mailhog:1025
+    routes:
+      - name: mailhog-route
+        paths:
+          - /mailhog
+        strip_path: true
+
+# Consumers (API consumers)
+consumers:
+  - username: zona_raiz_app
+  - username: zona_raiz_admin
+
+# Plugins
+plugins:
+  - name: rate-limiting
+    config:
+      minute: 100
+      policy: local
+
+  - name: loggly
+    config:
+      http_endpoint: http://loki:3100/loki/api/v1/push
+      source: kong
