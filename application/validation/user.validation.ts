@@ -3,6 +3,7 @@ import i18next from "i18next";
 import { EUserRole } from "@/domain/entities/profile.entity";
 import { emailSchema } from "./base/email.schema";
 
+const { t } = i18next;
 export const userSchema = yup.object({
   email: emailSchema.required(
     i18next.t("validations:required", {

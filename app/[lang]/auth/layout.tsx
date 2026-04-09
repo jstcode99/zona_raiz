@@ -2,9 +2,6 @@ import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { AuthShape } from "@/assets/svg/auth-shape";
 import { PageTransition } from "@/components/ui/page-transtion";
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
 import BackButton from "@/components/ui/back-button";
 
 export default function AuthLayout({

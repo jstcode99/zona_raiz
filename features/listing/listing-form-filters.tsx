@@ -11,7 +11,6 @@ import countries from '@/lib/countries.json'
 import { PropertyType } from "@/domain/entities/property.enums"
 import { objectToSearchParams, toNumber } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
-import { PropertySearchFormInput } from "@/application/validation/property-search.schema"
 import {
   defaultListingValues,
   listingSearchSchema,

@@ -49,7 +49,7 @@ export function AppSidebar({ ...props }: AppSidebarProps) {
             </div>
             <div>
               <h1 className="font-bold text-lg text-foreground group-data-[collapsible=icon]:hidden">
-                <span className="text-base font-semibold">Zona Raiz</span>
+                <span className="text-base font-semibold">Zonaraíz</span>
               </h1>
               <p className="text-xs text-muted-foreground group-data-[collapsible=icon]:hidden">
                 {t("words.dashboard")}
