@@ -8,7 +8,7 @@ services:
       dockerfile: Dockerfile
       args:
         - NEXT_PUBLIC_SUPABASE_URL=${NEXT_PUBLIC_SUPABASE_URL:-http://localhost:8000}
-        - NEXT_PUBLIC_SUPABASE_ANON_KEY=${SUPABASE_ANON_KEY:-dummy}
+        - SUPABASE_PUBLISHABLE_DEFAULT_KEY=${SUPABASE_ANON_KEY:-dummy}
         - NEXT_PUBLIC_GOOGLE_CLIENT_ID=${NEXT_PUBLIC_GOOGLE_CLIENT_ID:-dummy}
         - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET:-dummy}
         - NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=${NEXT_PUBLIC_GOOGLE_MAPS_API_KEY:-dummy}
@@ -19,7 +19,7 @@ services:
     environment:
       - NODE_ENV=production
       - NEXT_PUBLIC_SUPABASE_URL=${NEXT_PUBLIC_SUPABASE_URL:-http://localhost:8000}
-      - NEXT_PUBLIC_SUPABASE_ANON_KEY=${SUPABASE_ANON_KEY}
+      - SUPABASE_PUBLISHABLE_DEFAULT_KEY=${SUPABASE_ANON_KEY}
       - SUPABASE_SERVICE_ROLE_KEY=${SUPABASE_SERVICE_ROLE_KEY}
       - SUPABASE_DB_URL=postgresql://postgres:${POSTGRES_PASSWORD}@postgres:5432/postgres
       - NEXT_PUBLIC_MINIO_ENDPOINT=minio:9000
@@ -64,7 +64,7 @@ services:
 
   # Kong API Gateway
   kong:
-    image: kong:3.4-alpine
+    image: kong:3.4
     container_name: zona_raiz_kong
     environment:
       - KONG_DATABASE=off
