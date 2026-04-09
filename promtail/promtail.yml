@@ -1,0 +1,56 @@
+server:
+  http_listen_address: :9080
+  grpc_listen_address: :9081
+
+positions:
+  filename: /tmp/promtail/positions.yaml
+
+clients:
+  - url: http://loki:3100/loki/api/v1/push
+    timeout: 10s
+
+scrape_configs:
+  # Nginx logs (via Kong)
+  - job_name: kong
+    static_configs:
+      - targets:
+          - localhost
+        labels:
+          job: kong
+          service: kong
+          environment: production
+
+  # Next.js logs
+  - job_name: nextjs
+    static_configs:
+      - targets:
+          - nextjs:3000
+        labels:
+          job: nextjs
+          service: zona_raiz
+          environment: production
+
+  # PostgreSQL logs
+  - job_name: postgres
+    static_configs:
+      - targets:
+          - postgres:5432
+        labels:
+          job: postgres
+          service: database
+          environment: production
+
+  # Docker logs
+  - job_name: docker
+    docker:
+      pipelines:
+        - journal
+    static_configs:
+      - targets:
+          - localhost
+        labels:
+          job: docker
+          environment: production
+    journal:
+      labels:
+        environment: production
