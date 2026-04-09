@@ -1,7 +1,7 @@
 ---
 description: Valida implementaciones ejecutando tests de Vitest, verificando patrones del proyecto y reportando con un veredicto claro. Invocar después del builder.
 mode: subagent
-model: opencode/mimo-v2-pro-free
+model: opencode/minimax-m2.5-free
 temperature: 0.1
 steps: 20
 permission:

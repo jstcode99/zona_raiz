@@ -1,7 +1,7 @@
 ---
 description: Crea, actualiza y organiza issues en Linear. No escribe código. Solo planificación y gestión de tareas. Siempre Linear — nunca GitHub Issues.
 mode: subagent
-model: openrouter/stepfun/step-3.5-flash:free
+model: openrouter/openai/gpt-oss-120b:free
 temperature: 0.1
 steps: 15
 permission:

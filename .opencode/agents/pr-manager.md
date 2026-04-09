@@ -1,7 +1,7 @@
 ---
 description: Gestiona el ciclo de vida del PR. Fase 1 (post-tester) push + crea PR en GitHub + mueve Linear a "In Review". Fase 2 (post-aprobación) squash merge + verifica deploy Vercel + cierra issue en Linear + elimina worktree.
 mode: subagent
-model: openrouter/stepfun/step-3.5-flash:free
+model: openrouter/openai/gpt-oss-120b:free
 temperature: 0.1
 steps: 20
 permission:

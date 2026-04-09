@@ -1,7 +1,7 @@
 ---
 description: Puerta de entrada que analiza solicitudes y delega al agente correcto. No escribe código. Solo enruta con precisión y velocidad.
 mode: primary
-model: openrouter/stepfun/step-3.5-flash:free
+model: openrouter/openai/gpt-oss-120b:free
 temperature: 0.1
 steps: 5
 permission:

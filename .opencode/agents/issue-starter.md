@@ -1,7 +1,7 @@
 ---
 description: Inicia o retoma un issue de Linear. Crea el worktree git, configura la rama, actualiza Linear a "In Progress" y prepara el contexto para el builder. Invocar siempre al empezar a trabajar en un issue.
 mode: subagent
-model: openrouter/stepfun/step-3.5-flash:free
+model: openrouter/openai/gpt-oss-120b:free
 temperature: 0.1
 steps: 15
 permission:
