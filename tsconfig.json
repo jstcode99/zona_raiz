@@ -42,7 +42,8 @@
     ".next/dev/types/**/*.ts",
     "**/*.mts",
     "**/*.d.ts",
-    "assets/svg/background-shape.sbvg",
+    "assets/svg/background-shape.svg",
+    "assets/svg/logo.svg",
   ],
   "exclude": ["node_modules"],
 }

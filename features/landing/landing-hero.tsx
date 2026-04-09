@@ -130,7 +130,7 @@ export function LandingHero({ lang = "es" }: LandingHeroProps) {
       </div>
 
       {/* Content */}
-      <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 min-h-[calc(100vh-64px)] flex items-center py-8 lg:py-0">
+      <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 min-h-[calc(100vh-64px)] flex items-center lg:py-0">
         <div className="flex flex-col lg:flex-row items-center lg:justify-between w-full gap-8 lg:gap-12">
           {/* Left — texto hero */}
           <div
