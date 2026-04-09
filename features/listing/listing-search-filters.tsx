@@ -112,22 +112,22 @@ export function ListingSearchFilters({
   ];
 
   return (
-    <Form form={form} onSubmit={() => {}} className="space-y-4">
+    <Form form={form} onSubmit={() => {}} className="space-y-3 bg-gray-500/10 p-4 rounded-md">
       <div className="flex gap-2 items-end">
         <Form.Input
           name="q"
           placeholder={`${t("placeholders.search_properties")}...`}
           className="flex-1 py-2"
         />
-        <Button type="button" size="sm" onClick={handleReset} variant="outline">
+        <Button type="button" size="sm" onClick={handleReset} variant="outline" className="px-2">
           <IconClearAll className="size-4" />
         </Button>
       </div>
 
       <Form.Set
         legend={
-          <span className="flex items-center gap-1 text-sm font-medium">
-            <IconTag className="size-4" />
+          <span className="flex items-center gap-1 text-xs font-medium text-muted-foreground">
+            <IconTag className="size-3" />
             {t("sections.type_listings")}
           </span>
         }
@@ -154,8 +154,8 @@ export function ListingSearchFilters({
 
       <Form.Set
         legend={
-          <span className="flex items-center gap-1 text-sm font-medium">
-            <IconMapPin className="size-4" />
+          <span className="flex items-center gap-1 text-xs font-medium text-muted-foreground">
+            <IconMapPin className="size-3" />
             {t("sections.location")}
           </span>
         }
@@ -225,8 +225,8 @@ export function ListingSearchFilters({
 
       <Form.Set
         legend={
-          <span className="flex items-center gap-1 text-sm font-medium">
-            <IconCurrencyDollar className="size-4" />
+          <span className="flex items-center gap-1 text-xs font-medium text-muted-foreground">
+            <IconCurrencyDollar className="size-3" />
             {t("sections.price_range")}
           </span>
         }
@@ -252,8 +252,8 @@ export function ListingSearchFilters({
 
       <Form.Set
         legend={
-          <span className="flex items-center gap-1 text-sm font-medium">
-            <IconHome className="size-4" />
+          <span className="flex items-center gap-1 text-xs font-medium text-muted-foreground">
+            <IconHome className="size-3" />
             {t("sections.type_properties")}
           </span>
         }
@@ -269,7 +269,7 @@ export function ListingSearchFilters({
             <ToggleGroupItem
               key={option.value}
               value={option.value}
-              className="text-xs px-2 py-1 data-[state=on]:bg-primary data-[state=on]:text-primary-foreground"
+              className="text-xs px-2 py-0.5 h-7 data-[state=on]:bg-primary data-[state=on]:text-primary-foreground"
             >
               {option.label}
             </ToggleGroupItem>
@@ -279,8 +279,8 @@ export function ListingSearchFilters({
 
       <Form.Set
         legend={
-          <span className="flex items-center gap-1 text-sm font-medium">
-            <IconBed className="size-4" />
+          <span className="flex items-center gap-1 text-xs font-medium text-muted-foreground">
+            <IconBed className="size-3" />
             {t("sections.rooms")}
           </span>
         }
@@ -297,7 +297,7 @@ export function ListingSearchFilters({
             <ToggleGroupItem
               key={option.value}
               value={option.value}
-              className="flex-1 text-xs data-[state=on]:bg-primary data-[state=on]:text-primary-foreground"
+              className="flex-1 text-xs py-0.5 h-7 data-[state=on]:bg-primary data-[state=on]:text-primary-foreground"
             >
               {option.label}
             </ToggleGroupItem>
@@ -307,8 +307,8 @@ export function ListingSearchFilters({
 
       <Form.Set
         legend={
-          <span className="flex items-center gap-1 text-sm font-medium">
-            <IconBath className="size-4" />
+          <span className="flex items-center gap-1 text-xs font-medium text-muted-foreground">
+            <IconBath className="size-3" />
             {t("sections.bathrooms")}
           </span>
         }
@@ -325,7 +325,7 @@ export function ListingSearchFilters({
             <ToggleGroupItem
               key={option.value}
               value={option.value}
-              className="flex-1 text-xs data-[state=on]:bg-primary data-[state=on]:text-primary-foreground"
+              className="flex-1 text-xs py-0.5 h-7 data-[state=on]:bg-primary data-[state=on]:text-primary-foreground"
             >
               {option.label}
             </ToggleGroupItem>
@@ -335,17 +335,18 @@ export function ListingSearchFilters({
 
       <Form.Set
         legend={
-          <span className="flex items-center gap-1 text-sm font-medium">
-            <IconCheckbox className="size-4" />
+          <span className="flex items-center gap-1 text-xs font-medium text-muted-foreground">
+            <IconCheckbox className="size-3" />
             {t("sections.amenities")}
           </span>
         }
       >
-        <div className="space-y-2 max-h-48 overflow-y-auto">
+        <div className="grid grid-cols-2 gap-x-4 gap-y-1.5 max-h-40 overflow-y-auto">
           {amenitiesOptions.map((amenity) => (
-            <div key={amenity.value} className="flex items-center gap-2">
+            <div key={amenity.value} className="flex items-center gap-1.5">
               <Checkbox
                 id={`amenity-${amenity.value}`}
+                className="size-3.5"
                 checked={values.amenities?.includes(amenity.value)}
                 onCheckedChange={(checked) => {
                   const current = values.amenities || [];
@@ -359,7 +360,7 @@ export function ListingSearchFilters({
               />
               <label
                 htmlFor={`amenity-${amenity.value}`}
-                className="text-sm cursor-pointer"
+                className="text-xs cursor-pointer"
               >
                 {amenity.label}
               </label>
