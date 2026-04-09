@@ -29,6 +29,7 @@
       "@/domain/*": ["./domain/*"],
       "@/features/*": ["./features/*"],
       "@/application/*": ["./application/*"],
+      "@/config/*": ["./config/*"],
       "@/shared/*": ["./shared/*"],
       "@/i18n/*": ["./i18n/*"],
       "@/locales/*": ["./locales/*"],
@@ -42,8 +43,7 @@
     ".next/dev/types/**/*.ts",
     "**/*.mts",
     "**/*.d.ts",
-    "assets/svg/background-shape.svg",
-    "assets/svg/logo.svg",
+    "assets/svg/background-shape.svg"
   ],
   "exclude": ["node_modules"],
 }

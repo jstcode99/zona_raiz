@@ -5,26 +5,24 @@ import { Resolver, useForm, useWatch } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Form } from "@/components/ui/form";
 import {
-  propertyTypeOptions,
   amenitiesOptions,
 } from "@/domain/entities/property.entity";
-import { ListingType } from "@/domain/entities/listing.enums";
+import { PropertyType } from "@/domain/entities/property.enums";
+import { PROPERTY_TYPES, LISTING_TYPES, LAND_TYPES } from "@/config/listing-selectors";
 import {
   IconMapPin,
   IconHome,
   IconClearAll,
   IconCurrencyDollar,
-  IconBed,
-  IconBath,
   IconCheckbox,
   IconTag,
   IconX,
+
 } from "@tabler/icons-react";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { Checkbox } from "@/components/ui/checkbox";
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-import { useListingOptions } from "./hooks/use-listing-options";
+import { CardHeader } from "@/components/ui/card";
 import { useTranslation } from "react-i18next";
 import {
   listingSearchFiltersSchema,
@@ -35,6 +33,7 @@ import {
 import { PlaceSearch, ParsedPlace } from "../places/place-search";
 import { useParams } from "next/navigation";
 import { CITY_LABELS, STATE_LABELS } from "@/lib/locations";
+import { cn } from "@/lib/utils";
 
 export { defaultFilters };
 export type { ListingSearchFiltersInput };
@@ -51,9 +50,11 @@ export function ListingSearchFilters({
   debounceMs = 300,
 }: ListingSearchFiltersProps) {
   const { t, i18n } = useTranslation("listings");
-  const { listingTypeOptions } = useListingOptions();
+  // Namespace separado para traducciones de landing (hero.property_types.*)
+  const { t: tLanding } = useTranslation("landing");
   const isExternalUpdate = useRef(false);
-  const { lang } = useParams();
+  const params = useParams();
+  const lang = typeof params.lang === "string" ? params.lang : "es";
 
   const form = useForm<ListingSearchFiltersInput>({
     resolver: yupResolver(
@@ -66,6 +67,9 @@ export function ListingSearchFilters({
   const { control, setValue, reset, watch } = form;
   const values = useWatch({ control });
   const priceRange = watch(["min_price", "max_price"]);
+
+  // Determinar si es tipo terreno/lote
+  const isLandType = values.type && LAND_TYPES.includes(values.type as PropertyType);
 
   // Notifica cambios con debounce
   useEffect(() => {
@@ -94,25 +98,8 @@ export function ListingSearchFilters({
     onFiltersChange(defaultListingSearchFiltersValues);
   };
 
-  const bedroomOptions = [
-    { label: t("actions.any"), value: "" },
-    { label: "1+", value: "1" },
-    { label: "2+", value: "2" },
-    { label: "3+", value: "3" },
-    { label: "4+", value: "4" },
-    { label: "5+", value: "5" },
-  ];
-
-  const bathroomOptions = [
-    { label: t("actions.any"), value: "" },
-    { label: "1+", value: "1" },
-    { label: "2+", value: "2" },
-    { label: "3+", value: "3" },
-    { label: "4+", value: "4" },
-  ];
-
   return (
-    <Form form={form} onSubmit={() => {}} className="space-y-3 bg-gray-500/10 p-4 rounded-md">
+    <Form form={form} onSubmit={() => {}} className="space-y-3">
       <div className="flex gap-2 items-end">
         <Form.Input
           name="q"
@@ -124,33 +111,30 @@ export function ListingSearchFilters({
         </Button>
       </div>
 
-      <Form.Set
-        legend={
-          <span className="flex items-center gap-1 text-xs font-medium text-muted-foreground">
-            <IconTag className="size-3" />
-            {t("sections.type_listings")}
-          </span>
-        }
-      >
-        <ToggleGroup
-          type="single"
-          value={values.listing_type || ""}
-          onValueChange={(value) =>
-            setValue("listing_type", (value as ListingType) || undefined)
-          }
-          className="flex gap-1"
-        >
-          {listingTypeOptions.map((option) => (
-            <ToggleGroupItem
-              key={option.value}
-              value={option.value}
-              className="flex-1 data-[state=on]:bg-primary data-[state=on]:text-primary-foreground"
+      {/* Listing Type - Tabs estilo hero */}
+      <CardHeader className="p-0 pb-3">
+        <span className="flex items-center gap-1 text-xs font-medium text-muted-foreground">
+          <IconTag className="size-3" />
+          {t("sections.type_listings")}
+        </span>
+        <div className="flex border-b rounded-md overflow-hidden">
+          {LISTING_TYPES.map((lt) => (
+            <button
+              key={lt.value}
+              type="button"
+              onClick={() => setValue("listing_type", lt.value)}
+              className={cn(
+                "flex-1 py-3 text-sm font-semibold transition-all duration-200",
+                values.listing_type === lt.value
+                  ? "text-primary border-b-2 border-primary bg-primary/5"
+                  : "text-muted-foreground hover:text-foreground bg-muted/30",
+              )}
             >
-              {option.label}
-            </ToggleGroupItem>
+              {tLanding(lt.label)}
+            </button>
           ))}
-        </ToggleGroup>
-      </Form.Set>
+        </div>
+      </CardHeader>
 
       <Form.Set
         legend={
@@ -250,88 +234,51 @@ export function ListingSearchFilters({
         </div>
       </Form.Set>
 
-      <Form.Set
-        legend={
-          <span className="flex items-center gap-1 text-xs font-medium text-muted-foreground">
-            <IconHome className="size-3" />
-            {t("sections.type_properties")}
-          </span>
-        }
-      >
-        <ToggleGroup
-          type="multiple"
-          value={values.type ? [values.type] : []}
-          onValueChange={(value) => setValue("type", value[0] || undefined)}
-          size="sm"
-          className="flex flex-wrap gap-1"
-        >
-          {propertyTypeOptions.map((option) => (
-            <ToggleGroupItem
-              key={option.value}
-              value={option.value}
-              className="text-xs px-2 py-0.5 h-7 data-[state=on]:bg-primary data-[state=on]:text-primary-foreground"
-            >
-              {option.label}
-            </ToggleGroupItem>
+      {/* Property Type - Pills estilo hero */}
+      <div>
+        <span className="flex items-center gap-1 text-xs font-medium text-muted-foreground pb-2">
+          <IconHome className="size-3" />
+          {t("sections.type_properties")}
+        </span>
+        <div className="flex flex-wrap gap-2">
+          {PROPERTY_TYPES.map(({ value, label, icon: Icon }) => (
+            <button
+              key={value}
+              type="button"
+              onClick={() =>
+                setValue("type", values.type === value ? undefined : value)
+              }
+              className={cn(
+                "flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border transition-all duration-200",
+                values.type === value
+                  ? "bg-primary text-primary-foreground border-primary scale-105 shadow-sm"
+                  : "bg-background text-foreground border-border hover:border-primary/50 hover:scale-[1.02]",
+              )}
+              >
+              <Icon className="size-3" />
+              {tLanding(label)}
+            </button>
           ))}
-        </ToggleGroup>
-      </Form.Set>
+        </div>
+      </div>
 
-      <Form.Set
-        legend={
-          <span className="flex items-center gap-1 text-xs font-medium text-muted-foreground">
-            <IconBed className="size-3" />
-            {t("sections.rooms")}
-          </span>
-        }
-      >
-        <ToggleGroup
-          type="single"
-          value={String(values.min_bedrooms || "")}
-          onValueChange={(value) =>
-            setValue("min_bedrooms", value ? Number(value) : undefined)
-          }
-          className="flex gap-1"
-        >
-          {bedroomOptions.map((option) => (
-            <ToggleGroupItem
-              key={option.value}
-              value={option.value}
-              className="flex-1 text-xs py-0.5 h-7 data-[state=on]:bg-primary data-[state=on]:text-primary-foreground"
-            >
-              {option.label}
-            </ToggleGroupItem>
-          ))}
-        </ToggleGroup>
-      </Form.Set>
-
-      <Form.Set
-        legend={
-          <span className="flex items-center gap-1 text-xs font-medium text-muted-foreground">
-            <IconBath className="size-3" />
-            {t("sections.bathrooms")}
-          </span>
-        }
-      >
-        <ToggleGroup
-          type="single"
-          value={String(values.min_bathrooms || "")}
-          onValueChange={(value) =>
-            setValue("min_bathrooms", value ? Number(value) : undefined)
-          }
-          className="flex gap-1"
-        >
-          {bathroomOptions.map((option) => (
-            <ToggleGroupItem
-              key={option.value}
-              value={option.value}
-              className="flex-1 text-xs py-0.5 h-7 data-[state=on]:bg-primary data-[state=on]:text-primary-foreground"
-            >
-              {option.label}
-            </ToggleGroupItem>
-          ))}
-        </ToggleGroup>
-      </Form.Set>
+      {/* Bedrooms y Bathrooms en grid - solo si no es terreno/lote */}
+      {!isLandType && (
+        <div className="grid grid-cols-2 gap-2">
+          <Form.Input
+            name="min_bedrooms"
+            type="number"
+            label={t("labels.bedrooms")}
+            placeholder={t("placeholders.min_bedrooms")}
+          />
+          <Form.Input
+            name="min_bathrooms"
+            type="number"
+            label={t("labels.bathrooms")}
+            placeholder={t("placeholders.min_bathrooms")}
+          />
+        </div>
+      )}
 
       <Form.Set
         legend={

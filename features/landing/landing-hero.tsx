@@ -20,14 +20,10 @@ import {
   LandingSearchFormInput,
   defaultLandingSearchValues,
 } from "@/application/validation/landing-search.schema";
+import { PROPERTY_TYPES, LISTING_TYPES } from "@/config/listing-selectors";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 import {
-  IconHome,
-  IconBuildingSkyscraper,
-  IconTree,
-  IconBuildingStore,
-  IconBuilding,
   IconArrowRight,
   IconBed,
   IconBath,
@@ -40,39 +36,6 @@ interface LandingHeroProps {
   cities?: LandingCity[];
   lang?: Lang;
 }
-
-const PROPERTY_TYPES = [
-  {
-    value: PropertyType.Apartment,
-    label: "hero.property_types.apartment",
-    icon: IconBuildingSkyscraper,
-  },
-  {
-    value: PropertyType.House,
-    label: "hero.property_types.house",
-    icon: IconHome,
-  },
-  {
-    value: PropertyType.Land,
-    label: "hero.property_types.land",
-    icon: IconTree,
-  },
-  {
-    value: PropertyType.Commercial,
-    label: "hero.property_types.commercial",
-    icon: IconBuildingStore,
-  },
-  {
-    value: PropertyType.Office,
-    label: "hero.property_types.office",
-    icon: IconBuilding,
-  },
-];
-
-const LISTING_TYPES = [
-  { value: ListingType.RENT, label: "hero.listing_types.rent" },
-  { value: ListingType.SALE, label: "hero.listing_types.sale" },
-];
 
 export function LandingHero({ lang = "es" }: LandingHeroProps) {
   const { t } = useTranslation("landing");
