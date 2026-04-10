@@ -1,0 +1,15 @@
+[Unit]
+Description=zona_raiz Next.js application
+After=network.target supabase.service
+Requires=supabase.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+WorkingDirectory=/opt/zona_raiz
+ExecStart=/usr/bin/docker compose -f scripts/docker-compose.yml up -d
+ExecStop=/usr/bin/docker compose -f scripts/docker-compose.yml down
+TimeoutStartSec=300
+
+[Install]
+WantedBy=multi-user.target

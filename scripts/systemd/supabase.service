@@ -1,0 +1,15 @@
+[Unit]
+Description=Supabase local stack (PostgreSQL, Kong, GoTrue, PostgREST, Realtime, Storage, Meta)
+After=docker.service
+Requires=docker.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+WorkingDirectory=/opt/zona_raiz
+ExecStart=/usr/bin/docker compose -f docker-compose.supabase.yml up -d
+ExecStop=/usr/bin/docker compose -f docker-compose.supabase.yml down
+TimeoutStartSec=0
+
+[Install]
+WantedBy=multi-user.target
