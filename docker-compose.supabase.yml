@@ -1,0 +1,164 @@
+version: "3.8"
+
+services:
+  # -------------------------------------------------
+  # PostgreSQL (Supabase‑custom)
+  # -------------------------------------------------
+  db:
+    image: supabase/postgres:17.6.1.104
+    container_name: supabase_db_zona_raiz
+    restart: unless-stopped
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # -------------------------------------------------
+  # Kong API Gateway (exposes the Supabase services)
+  # -------------------------------------------------
+  kong:
+    image: kong:2.8.5-alpine
+    container_name: supabase_kong_zona_raiz
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      KONG_DATABASE: "off"
+      KONG_DECLARATIVE_CONFIG: /etc/kong/kong.yml
+      KONG_PROXY_ACCESS_LOG: /dev/stdout
+      KONG_ADMIN_ACCESS_LOG: /dev/stdout
+      KONG_PROXY_ERROR_LOG: /dev/stderr
+      KONG_ADMIN_ERROR_LOG: /dev/stderr
+    ports:
+      - "8000:8000"   # HTTP API
+      - "8443:8443"   # HTTPS (if you add TLS later)
+    volumes:
+      - ./kong/kong.yml:/etc/kong/kong.yml:ro
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8001/status"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # -------------------------------------------------
+  # GoTrue – authentication
+  # -------------------------------------------------
+  gotrue:
+    image: supabase/gotrue:v2.186.0
+    container_name: supabase_auth_zona_raiz
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      GOTRUE_DB_DRIVER: "postgres"
+      GOTRUE_DB_DATABASE_URL: "postgres://postgres:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}"
+      GOTRUE_JWT_SECRET: ${SUPABASE_JWT_SECRET}
+      GOTRUE_SITE_URL: ${NEXT_PUBLIC_SUPABASE_URL}
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9999/health"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # -------------------------------------------------
+  # PostgREST – REST API
+  # -------------------------------------------------
+  postgrest:
+    image: supabase/postgrest:v14.6
+    container_name: supabase_rest_zona_raiz
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      PGRST_DB_URI: "postgres://postgres:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}"
+      PGRST_DB_SCHEMAS: "public"
+      PGRST_DB_ANON_ROLE: "anon"
+      PGRST_JWT_SECRET: ${SUPABASE_JWT_SECRET}
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # -------------------------------------------------
+  # Realtime – websockets
+  # -------------------------------------------------
+  realtime:
+    image: supabase/realtime:v2.78.18
+    container_name: supabase_realtime_zona_raiz
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_NAME: ${POSTGRES_DB}
+      DB_USER: postgres
+      DB_PASSWORD: ${POSTGRES_PASSWORD}
+      JWT_SECRET: ${SUPABASE_JWT_SECRET}
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:4000/api/health"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # -------------------------------------------------
+  # Storage API – S3‑compatible bucket
+  # -------------------------------------------------
+  storage:
+    image: supabase/storage-api:v1.44.2
+    container_name: supabase_storage_zona_raiz
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      POSTGRES_HOST: db
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      ANON_KEY: ${SUPABASE_ANON_KEY}
+      SERVICE_ROLE_KEY: ${SUPABASE_SERVICE_ROLE_KEY}
+      JWT_SECRET: ${SUPABASE_JWT_SECRET}
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # -------------------------------------------------
+  # Meta – database schema management (optional but useful)
+  # -------------------------------------------------
+  meta:
+    image: supabase/postgres-meta:v0.95.2
+    container_name: supabase_pg_meta_zona_raiz
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      PG_META_DB_HOST: db
+      PG_META_DB_PORT: 5432
+      PG_META_DB_NAME: ${POSTGRES_DB}
+      PG_META_DB_USER: postgres
+      PG_META_DB_PASSWORD: ${POSTGRES_PASSWORD}
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  db_data:
