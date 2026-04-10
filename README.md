@@ -23,20 +23,20 @@ Plataforma inmobiliaria multi-tenant con Next.js 16 + Supabase.
 |------|-------------|
 | Frontend | Next.js 16, React 19, TypeScript |
 | Estilos | Tailwind CSS, shadcn/ui, Radix UI |
-| Base de datos | PostgreSQL 15 (Supabase self-hosted) |
+| Base de datos | PostgreSQL 15 (Supabase) |
 | Auth | Supabase Auth + Google OAuth |
 | Storage | MinIO (S3-compatible) |
 | Formularios | React Hook Form + Yup |
 | Testing | Vitest |
 | i18n | i18next |
-| Despliegue | Docker, Digital Ocean |
+| Despliegue | Docker, Vercel/Docker |
 
 ## 📋 Requisitos
 
 - Node.js 20.x
 - pnpm 10.x
-- Docker (para desarrollo local con Supabase)
-- PostgreSQL 15 (producción)
+- Docker (para despliegue con contenedor)
+- Supabase (cloud o self-hosted)
 
 ## 🏃‍♂️ Inicio rápido
 
@@ -59,7 +59,9 @@ pnpm supabase:db:push
 pnpm dev
 ```
 
-### Producción con Docker
+### Produccion con Docker
+
+El proyecto se despliega como un contenedor Docker independente. Supabase debe estar disponible como servicio externo (cloud o self-hosted).
 
 ```bash
 # Clonar repositorio
@@ -69,10 +71,6 @@ cd zona_raiz
 # Configurar variables de entorno
 cp .env.example .env
 # Editar .env con valores de producción
-
-# Deploy automático
-chmod +x deploy-do.sh
-./deploy-do.sh
 ```
 
 Ver [DEPLOY.md](DEPLOY.md) para documentación completa de despliegue.
@@ -95,23 +93,24 @@ zona_raiz/
 
 ## 🐳 Docker
 
-### Servicios incluidos
-
-| Servicio | Puerto | Descripción |
-|----------|--------|-------------|
-| Next.js | 3000 | Aplicación principal |
-| PostgreSQL | 5432 | Base de datos |
-| MinIO | 9000/9001 | Storage (S3-compatible) |
-| Kong | 8000/8001 | API Gateway |
-| Mailhog | 1025/8025 | SMTP mock (desarrollo) |
-| Loki | 3100 | Agregación de logs |
-| Grafana | 3001 | Dashboard de logs |
-| Promtail | - | Recolector de logs |
-
-### Comandos Docker
+### Construir y ejecutar el contenedor
 
 ```bash
-# Iniciar servicios
+# Construir la imagen
+docker build -t zona_raiz:latest .
+
+# Ejecutar el contenedor
+docker run -d \
+  --name zona_raiz \
+  -p 3000:3000 \
+  --env-file .env \
+  zona_raiz:latest
+```
+
+### Con Docker Compose
+
+```bash
+# Iniciar el servicio
 docker compose up -d
 
 # Ver logs
@@ -120,9 +119,26 @@ docker compose logs -f
 # Detener servicios
 docker compose down
 
-# Reiniciar un servicio
+# Reiniciar el servicio
 docker compose restart nextjs
 ```
+
+### Variables de entorno requeridas
+
+| Variable | Descripcion | Ejemplo |
+|---------|-------------|---------|
+| `NEXT_PUBLIC_SUPABASE_URL` | URL de Supabase (Kong) | `https://your-project.supabase.co` |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Clave anonima de Supabase | `eyJhbGciOiJIUzI1NiIs...` |
+| `SUPABASE_SERVICE_ROLE_KEY` | Clave service role (SECRETA) | `eyJhbGciOiJIUzI1NiIs...` |
+| `NEXT_PUBLIC_GOOGLE_CLIENT_ID` | Client ID de Google OAuth | `943984157945-xxxx.apps.googleusercontent.com` |
+| `GOOGLE_CLIENT_SECRET` | Client secret de Google (SECRETO) | `your_google_client_secret` |
+| `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY` | API key de Google Maps | `your_google_maps_api_key` |
+
+### Puertos
+
+| Servicio | Puerto | Descripcion |
+|----------|--------|-------------|
+| Next.js | 3000 | Aplicación principal |
 
 ## 🔧 Scripts disponibles
 
@@ -136,30 +152,9 @@ docker compose restart nextjs
 | `pnpm supabase:start` | Iniciar Supabase local |
 | `pnpm supabase:db:push` | Enviar migraciones |
 
-## 📝 Variables de entorno
-
-Ver `.env.example` para todas las variables disponibles.
-
-## 🧪 Testing
-
-```bash
-# Ejecutar tests
-pnpm test
-
-# Tests en watch mode
-pnpm test:watch
-
-# Coverage
-pnpm test:coverage
-```
-
 ## 🌐 Endpoints
 
 - **App**: http://localhost:3000 (desarrollo) | http://tu-dominio.com (producción)
-- **Grafana**: http://localhost:3001
-- **MinIO Console**: http://localhost:9001
-- **Mailhog**: http://localhost:8025
-- **Kong**: http://localhost:8000
 
 ## 📄 Licencia
 
