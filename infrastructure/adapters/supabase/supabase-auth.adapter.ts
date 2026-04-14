@@ -47,7 +47,7 @@ export class SupabaseAuthAdapter implements AuthPort {
       email,
       password,
     })
-    
+
     if (error) throw error
     if (!data.user) throw new Error("User not found")
 
@@ -113,11 +113,7 @@ export class SupabaseAuthAdapter implements AuthPort {
     const { data, error } = await supabaseAdmin.auth.signInWithOAuth({
       provider,
       options: {
-        redirectTo,
-        queryParams: {
-          access_type: "offline",
-          prompt: "consent",
-        },
+        redirectTo: redirectTo
       },
     })
 
