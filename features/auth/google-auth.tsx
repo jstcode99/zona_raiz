@@ -33,7 +33,7 @@ export default function GoogleAuth({ disabled }: GoogleAuthProps) {
         document.cookie = "oauth_redirect_url=; Max-Age=0";
         window.location.href = redirectUrl;
       } else {
-        toast.error(t("errors.googleSignIn"));
+        toast.error(t("exceptions.google_signin"));
       }
     },
     onError: (error) => {
