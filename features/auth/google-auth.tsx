@@ -7,6 +7,7 @@ import { useTranslation } from "react-i18next";
 import { useServerMutation } from "@/shared/hooks/use-server-mutation.hook";
 import { signInWithGoogleAction } from "@/application/actions/auth.actions";
 import { toast } from "sonner";
+import { s } from "vitest/dist/chunks/reporters.D7Jzd9GS.js";
 
 interface GoogleAuthProps {
   disabled?: boolean;
@@ -17,11 +18,12 @@ export default function GoogleAuth({ disabled }: GoogleAuthProps) {
 
   const { action: handleGoogleSignIn, isPending } = useServerMutation({
     action: signInWithGoogleAction,
-    onSuccess: (result) => {
-      if (result) {
-        const url = decodeURIComponent(result.data.redirectUrl);
-        if (url) {
-          window.location.href = url;
+    onSuccess: (response) => {
+      if ("data" in response) {
+        if ("redirectUrl" in response.data) {
+          const url = decodeURIComponent(response.data.redirectUrl as string);
+          console.log(url);
+          if (url.trim().length) window.location.href = url;
         }
       }
     },

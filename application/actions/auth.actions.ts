@@ -29,9 +29,7 @@ export const signInWithGoogleAction = withServerAction(
       redirectTo,
     );
 
-    return {
-      redirectUrl,
-    }
+    return { success: true, data: { redirectUrl } };
   },
 );
 
