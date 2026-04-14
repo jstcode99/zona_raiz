@@ -79,6 +79,22 @@ export class SupabaseAuthAdapter implements AuthPort {
     return { userId: data.user.id }
   }
 
+  async setSessionFromAccessToken(
+    accessToken: string,
+    refreshToken: string,
+  ): Promise<{ userId: string }> {
+    const { data, error } = await this.supabase.auth.setSession({
+      access_token: accessToken,
+      refresh_token: refreshToken,
+    })
+
+    if (error) throw error
+
+    if (!data.user) throw new Error("User not found")
+
+    return { userId: data.user.id }
+  }
+
   async verifyOtp(token: string, type: "signup" | "recovery" | "email_change" | "email"): Promise<{ userId: string }> {
     const { data: { user }, error } = await this.supabase.auth.verifyOtp({
       type: type as "signup" | "recovery" | "email_change" | "email",

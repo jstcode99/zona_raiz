@@ -7,6 +7,7 @@ import { useTranslation } from "react-i18next";
 import { useServerMutation } from "@/shared/hooks/use-server-mutation.hook";
 import { signInWithGoogleAction } from "@/application/actions/auth.actions";
 import { toast } from "sonner";
+import { useParams } from "next/navigation";
 
 interface GoogleAuthProps {
   disabled?: boolean;
@@ -22,6 +23,7 @@ function getCookie(name: string): string | null {
 
 export default function GoogleAuth({ disabled }: GoogleAuthProps) {
   const { t } = useTranslation("auth");
+  const { lang } = useParams<{ lang: string }>();
 
   const { action: handleGoogleSignIn, isPending } = useServerMutation({
     action: signInWithGoogleAction,
@@ -43,7 +45,9 @@ export default function GoogleAuth({ disabled }: GoogleAuthProps) {
 
   const onClick = () => {
     const formData = new FormData();
-    formData.set("redirectTo", `${window.location.origin}/auth/callback`);
+    // Include lang in the redirect URL
+    const langPrefix = lang ? `/${lang}` : "";
+    formData.set("redirectTo", `${window.location.origin}${langPrefix}/auth/callback`);
     handleGoogleSignIn(formData);
   };
 

@@ -25,10 +25,37 @@ export async function GET(request: NextRequest) {
   const token_hash = searchParams.get("token_hash");
   const type = searchParams.get("type");
 
+  // Extraer tokens del URL (pueden venir en query params o hash parseado por el cliente)
+  // Nota: El hash (#) no se envía al servidor, pero algunos setups de OAuth lo mandan como query param
+  const accessToken = searchParams.get("access_token");
+  const refreshToken = searchParams.get("refresh_token");
+
   let profile: ProfileEntity | null = null;
 
   /**
-   * OAuth login
+   * OAuth implicit flow - access_token en URL hash
+   */
+  if (accessToken && refreshToken) {
+    profile = await authService.setSessionFromAccessToken(
+      accessToken,
+      refreshToken,
+    );
+
+    if (!profile) {
+      return NextResponse.redirect(
+        `${origin}${routes.signin()}?error=${t("auth:exceptions.auth_error")}`,
+      );
+    }
+
+    if (profile.role) {
+      cookieStore.set(COOKIE_NAMES.ROLE, profile.role, COOKIE_OPTIONS);
+    }
+
+    return NextResponse.redirect(`${origin}${routes.onboarding()}`);
+  }
+
+  /**
+   * OAuth PKCE flow - code en query param
    */
   if (code) {
     profile = await authService.exchangeCodeForSession(code);

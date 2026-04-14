@@ -36,6 +36,18 @@ export class AuthService {
     return profile
   }
 
+  async setSessionFromAccessToken(
+    accessToken: string,
+    refreshToken: string,
+  ): Promise<ProfileEntity> {
+    const { userId } = await this.auth.setSessionFromAccessToken(
+      accessToken,
+      refreshToken,
+    )
+    const profile = await this.profiles.getProfileByUserId(userId)
+    return profile
+  }
+
 
   async verifyOtp(token: string, type: string): Promise<ProfileEntity> {
     const { userId } = await this.auth.verifyOtp(token, type)
