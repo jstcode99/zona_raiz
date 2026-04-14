@@ -31,7 +31,7 @@ export default function GoogleAuth({ disabled }: GoogleAuthProps) {
       if (redirectUrl) {
         // Clear the cookie after use
         document.cookie = "oauth_redirect_url=; Max-Age=0";
-        window.location.href = redirectUrl;
+        window.location.href = decodeURIComponent(redirectUrl);
       } else {
         toast.error(t("exceptions.google_signin"));
       }
