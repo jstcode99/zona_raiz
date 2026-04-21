@@ -104,7 +104,7 @@ export const updatePropertyAction = withServerAction(
   },
 );
 
-export const deletePropertyAction = withServerAction(async (id: string) => {
+export const deletePropertyAction = withServerAction(async (formData: FormData) => {
   const lang = await getLangServerSide();
   const cookieStore = await cookies();
   const routes = createRouter(lang);
@@ -112,6 +112,9 @@ export const deletePropertyAction = withServerAction(async (id: string) => {
   const t = i18n.getFixedT(lang);
 
   const { propertyService } = await appModule(lang, { cookies: cookieStore });
+
+  const id = formData.get("id") as string;
+  if (!id) throw new Error(t("common:exceptions.data_not_found"));
 
   const currentProperty = await propertyService.getById(id);
   if (!currentProperty) throw new Error(t("common:exceptions.data_not_found"));

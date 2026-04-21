@@ -32,6 +32,9 @@ import { PropertyType } from "@/domain/entities/property.enums"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { useTranslation } from "react-i18next"
 import { useRoutes } from "@/i18n/client-router"
+import { toast } from "sonner"
+import { deletePropertyAction } from "@/application/actions/property.action"
+import { useServerMutation } from "@/shared/hooks/use-server-mutation.hook"
 
 export type PropertyRow = BaseRow & {
   created_at: string
@@ -55,6 +58,16 @@ function PropertyRowActions({ propertyId, latitude, longitude }: { propertyId: s
   const routes = useRoutes()
   const hasCoords = latitude && longitude
 
+  const mutation = useServerMutation({
+    action: deletePropertyAction,
+    onSuccess: () => {
+      toast.success(t("common:columns.words.deleted"))
+    },
+    onError: (error) => {
+      toast.error(error.message || t("common:columns.words.error"))
+    },
+  })
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -62,6 +75,7 @@ function PropertyRowActions({ propertyId, latitude, longitude }: { propertyId: s
           variant="ghost"
           className="data-[state=open]:bg-muted text-muted-foreground flex size-8"
           size="icon"
+          disabled={mutation.isPending}
         >
           <IconDotsVertical className="size-4" />
           <span className="sr-only">{t("properties:columns.actions.open_menu")}</span>
@@ -91,7 +105,21 @@ function PropertyRowActions({ propertyId, latitude, longitude }: { propertyId: s
         ) : null}
         <DropdownMenuSeparator />
 
-        <DropdownMenuItem variant="destructive">
+        <DropdownMenuItem
+          variant="destructive"
+          onClick={() => {
+            const confirmed =
+              typeof window !== "undefined"
+                ? window.confirm(t("common:columns.words.confirm"))
+                : true
+
+            if (!confirmed) return
+
+            const data = new FormData()
+            data.append("id", propertyId)
+            mutation.action(data)
+          }}
+        >
           {t("properties:columns.actions.delete")}
         </DropdownMenuItem>
       </DropdownMenuContent>
