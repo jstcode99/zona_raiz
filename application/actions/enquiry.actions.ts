@@ -149,9 +149,10 @@ export const updateEnquiryStatusAction = withServerAction(
     const i18n = await initI18n(lang);
     const t = i18n.getFixedT(lang);
 
-    const { sessionService, enquiryService } = await appModule(lang, {
-      cookies: cookieStore,
-    });
+    const { sessionService, enquiryService, profileService } = await appModule(
+      lang,
+      { cookies: cookieStore },
+    );
 
     const id = formData.get("id") as string;
     const status = formData.get("status") as string;
@@ -179,7 +180,9 @@ export const updateEnquiryStatusAction = withServerAction(
 
     // Enviar notificación al agente asignado si hay cambio de estado
     if (inquiry.assigned_to) {
-      const agentProfile = await profileService.getById(inquiry.assigned_to);
+      const agentProfile = await profileService.getProfileByUserId(
+        inquiry.assigned_to,
+      );
       if (agentProfile && agentProfile.email) {
         await notificationService.enquiryStatusChanged({
           type: "enquiry_status_changed",
@@ -188,7 +191,7 @@ export const updateEnquiryStatusAction = withServerAction(
           agentName: agentProfile.full_name || "Agente",
           oldStatus: enquiryStatusLabels[oldStatus],
           newStatus: enquiryStatusLabels[status as EnquiryStatus],
-          listingTitle: inquiry.listing?.title,
+          listingTitle: inquiry.listing?.title ?? undefined,
           leadName: inquiry.name || undefined,
         });
       }
@@ -251,9 +254,11 @@ export const assignEnquiryAction = withServerAction(
     await enquiryService.update(id, { assigned_to });
 
     // Enviar notificación al agente asignado
-    const targetAgentProfile = await profileService.getById(assigned_to);
+    const targetAgentProfile = await profileService.getProfileByUserId(
+      assigned_to,
+    );
     if (targetAgentProfile && targetAgentProfile.email) {
-      const listingTitle = inquiry.listing?.title || undefined;
+      const listingTitle = inquiry.listing?.title ?? undefined;
       await notificationService.enquiryAssigned({
         type: "enquiry_assigned",
         enquiry: { ...inquiry, assigned_to },
