@@ -47,7 +47,7 @@ interface WizardTabsProps {
 }
 
 export const WizardTabs = forwardRef<WizardRef, WizardTabsProps>(
-  ({ children, submitText = i18next.t("words.save"), onSubmit }, ref) => {
+  ({ children, submitText = i18next.t("common:actions.save"), onSubmit }, ref) => {
     const tabs = Children.toArray(children).filter(
       isValidElement,
     ) as ReactElement<WizardTabProps>[];
@@ -112,14 +112,14 @@ export const WizardTabs = forwardRef<WizardRef, WizardTabsProps>(
           <div className="flex h-14 w-14 items-center justify-center rounded-full bg-primary text-primary-foreground">
             <Check className="h-6 w-6" />
           </div>
-          <h2 className="text-xl font-semibold text-foreground">Submitted!</h2>
+          <h2 className="text-xl font-semibold text-foreground">{i18next.t("common:labels.created_at")}</h2>
           <Button
             variant="outline"
             className="mt-2"
             onClick={reset}
             type="button"
           >
-            Start Over
+            {i18next.t("common:actions.reset")}
           </Button>
         </div>
       );
@@ -199,7 +199,7 @@ export const WizardTabs = forwardRef<WizardRef, WizardTabsProps>(
             type="button"
           >
             <ChevronLeft className="h-4 w-4" />
-            {i18next.t("common:words.previous")}
+            {i18next.t("common:actions.previous")}
           </Button>
 
           {!isLast ? (
@@ -209,7 +209,7 @@ export const WizardTabs = forwardRef<WizardRef, WizardTabsProps>(
               className="gap-1.5"
               type="button"
             >
-              {currentTab.props.nextText ?? i18next.t("common:words.next")}
+              {currentTab.props.nextText ?? i18next.t("common:actions.next")}
               <ChevronRight className="h-4 w-4" />
             </Button>
           ) : (

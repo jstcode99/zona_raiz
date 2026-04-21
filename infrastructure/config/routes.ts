@@ -148,6 +148,11 @@ export const ROUTES = {
     es: "/apartamentos",
     en: "/apartments",
   },
+
+  selectRealEstate: {
+    es: "/autenticacion/seleccionar-inmobiliaria",
+    en: "/auth/select-real-estate",
+  },
 } as const;
 
 type Lang = "es" | "en";
