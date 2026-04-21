@@ -63,6 +63,10 @@ export class ListingService {
     return this.listingPort.delete(id);
   }
 
+  deleteCascade(id: string) {
+    return this.listingPort.deleteCascade(id);
+  }
+
   findFeatured(limit?: number, realEstateId?: string) {
     return this.listingPort.findFeatured(limit, realEstateId);
   }

@@ -110,7 +110,14 @@
   "exceptions": {
     "create_fail": "Error al crear publicación",
     "update_fail": "Error al actualizar publicación",
+    "delete_fail": "Error al eliminar publicación",
     "properties_not_found": "Propiedades no encontradas"
+  },
+  "messages": {
+    "created": "Publicación creada exitosamente",
+    "updated": "Publicación actualizada exitosamente",
+    "deleted": "Publicación eliminada exitosamente",
+    "error": "Error al guardar la publicación"
   },
   "detail": {
     "breadcrumb": {
@@ -192,5 +199,12 @@
     "office": "Oficina",
     "warehouse": "Bodega",
     "other": "Otro"
+  },
+  "delete_dialog": {
+    "title": "Eliminar publicación",
+    "description": "¿Estás seguro de que deseas eliminar esta publicación? Esta acción no se puede deshacer y eliminará todos los datos asociados.",
+    "cancel": "Cancelar",
+    "confirm": "Eliminar",
+    "deleting": "Eliminando..."
   }
 }

@@ -26,6 +26,20 @@ import { ListingEntity } from "@/domain/entities/listing.entity";
 import { useRoutes } from "@/i18n/client-router";
 import { useTranslation } from "react-i18next";
 import { useListingOptions } from "./hooks/use-listing-options";
+import { useServerMutation } from "@/shared/hooks/use-server-mutation.hook";
+import { deleteListingAction } from "@/application/actions/listing.actions";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { useState } from "react";
+import { toast } from "sonner";
 
 export type ListingRow = BaseRow & {
   created_at: string;
@@ -33,9 +47,93 @@ export type ListingRow = BaseRow & {
     property: PropertyEntity;
   };
 
-export const getListingColumns = (): ColumnDef<ListingRow>[] => {
+function ListingRowActions({ listingId }: { listingId: string }) {
+  const { t } = useTranslation("listings");
   const routes = useRoutes();
-  const { t, i18n } = useTranslation("listings");
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+
+  const { action: deleteAction, isPending: isDeleting } = useServerMutation({
+    action: deleteListingAction,
+    onSuccess: () => {
+      toast.success(t("messages.deleted"));
+      setShowDeleteDialog(false);
+    },
+    onError: (err) => {
+      toast.error(err.message);
+    },
+  });
+
+  return (
+    <>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button
+            variant="ghost"
+            className="data-[state=open]:bg-muted text-muted-foreground flex size-8"
+            size="icon"
+            disabled={isDeleting}
+          >
+            <IconDotsVertical className="size-4" />
+            <span className="sr-only">{t("columns.actions.open_menu")}</span>
+          </Button>
+        </DropdownMenuTrigger>
+
+        <DropdownMenuContent align="end" className="w-44">
+          <Link href={routes.listing(listingId)}>
+            <DropdownMenuItem>
+              {t("columns.actions.edit_listing")}
+            </DropdownMenuItem>
+          </Link>
+
+          <DropdownMenuItem>
+            {t("columns.actions.view_public")}
+          </DropdownMenuItem>
+
+          <DropdownMenuSeparator />
+
+          <DropdownMenuItem
+            variant="destructive"
+            onSelect={() => setShowDeleteDialog(true)}
+          >
+            {t("columns.actions.delete")}
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+
+      <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              {t("delete_dialog.title")}
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              {t("delete_dialog.description")}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>
+              {t("delete_dialog.cancel")}
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={(e) => {
+                e.preventDefault();
+                const formData = new FormData();
+                formData.append("id", listingId);
+                deleteAction(formData);
+              }}
+              disabled={isDeleting}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {isDeleting ? t("delete_dialog.deleting") : t("delete_dialog.confirm")}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
+  );
+}
+
+export const getListingColumns = (): ColumnDef<ListingRow>[] => {
   const { getListingTypeLabel, getListingStatusLabel } = useListingOptions();
 
   return [
@@ -44,8 +142,13 @@ export const getListingColumns = (): ColumnDef<ListingRow>[] => {
     // =========================
     {
       id: "property",
-      header: () => t("columns.headers.property"),
+      header: () => {
+        const { t } = useTranslation("listings");
+        return t("columns.headers.property");
+      },
       cell: ({ row }) => {
+        const { t } = useTranslation("listings");
+        const routes = useRoutes();
         const property = row.original.property;
 
         return (
@@ -73,8 +176,12 @@ export const getListingColumns = (): ColumnDef<ListingRow>[] => {
     // =========================
     {
       id: "pricing",
-      header: () => t("columns.headers.pricing"),
+      header: () => {
+        const { t } = useTranslation("listings");
+        return t("columns.headers.pricing");
+      },
       cell: ({ row }) => {
+        const { t, i18n } = useTranslation("listings");
         const {
           listing_type,
           price,
@@ -118,8 +225,12 @@ export const getListingColumns = (): ColumnDef<ListingRow>[] => {
     // =========================
     {
       accessorKey: "status",
-      header: () => t("columns.headers.status"),
+      header: () => {
+        const { t } = useTranslation("listings");
+        return t("columns.headers.status");
+      },
       cell: ({ row }) => {
+        const { t } = useTranslation("listings");
         const { status, featured, featured_until } = row.original;
 
         return (
@@ -139,7 +250,7 @@ export const getListingColumns = (): ColumnDef<ListingRow>[] => {
             {featured && featured_until && (
               <span className="text-[11px] text-muted-foreground">
                 {t("words.until")}{" "}
-                {new Date(featured_until).toLocaleDateString(i18n.language)}
+                {new Date(featured_until).toLocaleDateString()}
               </span>
             )}
           </div>
@@ -152,7 +263,10 @@ export const getListingColumns = (): ColumnDef<ListingRow>[] => {
     // =========================
     {
       id: "metrics",
-      header: () => t("columns.headers.metrics"),
+      header: () => {
+        const { t } = useTranslation("listings");
+        return t("columns.headers.metrics");
+      },
       cell: ({ row }) => {
         const { views_count, enquiries_count, whatsapp_clicks } = row.original;
 
@@ -182,8 +296,12 @@ export const getListingColumns = (): ColumnDef<ListingRow>[] => {
     // =========================
     {
       id: "dates",
-      header: () => t("columns.headers.dates"),
+      header: () => {
+        const { t } = useTranslation("listings");
+        return t("columns.headers.dates");
+      },
       cell: ({ row }) => {
+        const { t, i18n } = useTranslation("listings");
         const { created_at, published_at, available_from } = row.original;
 
         return (
@@ -219,41 +337,7 @@ export const getListingColumns = (): ColumnDef<ListingRow>[] => {
       header: "",
       cell: ({ row }) => {
         const { id } = row.original;
-
-        return (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="ghost"
-                className="data-[state=open]:bg-muted text-muted-foreground flex size-8"
-                size="icon"
-              >
-                <IconDotsVertical className="size-4" />
-                <span className="sr-only">
-                  {t("columns.actions.open_menu")}
-                </span>
-              </Button>
-            </DropdownMenuTrigger>
-
-            <DropdownMenuContent align="end" className="w-44">
-              <Link href={routes.listing(id)}>
-                <DropdownMenuItem>
-                  {t("columns.actions.edit_listing")}
-                </DropdownMenuItem>
-              </Link>
-
-              <DropdownMenuItem>
-                {t("columns.actions.view_public")}
-              </DropdownMenuItem>
-
-              <DropdownMenuSeparator />
-
-              <DropdownMenuItem variant="destructive">
-                {t("columns.actions.delete")}
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        );
+        return <ListingRowActions listingId={id} />;
       },
     },
   ];

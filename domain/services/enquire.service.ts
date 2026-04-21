@@ -38,6 +38,10 @@ export class EnquiryService {
     return this.enquiry.delete(id);
   }
 
+  deleteByListingId(listingId: string) {
+    return this.enquiry.deleteByListingId(listingId);
+  }
+
   count(filters?: EnquiryFilters) {
     return this.enquiry.count(filters);
   }

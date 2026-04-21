@@ -12,5 +12,6 @@ export interface FavoritePort {
     profileId: string,
     listingId: string,
   ): Promise<void>;
+  deleteByListingId(listingId: string): Promise<void>;
   count(filters?: any): Promise<number>;
 }

@@ -29,4 +29,7 @@ export interface PropertyImagePort {
   // Batch mutations
   updateDisplayOrder(updates: Array<{ id: string; display_order: number }>): Promise<void>;
   setPrimary(propertyId: string, imageId: string): Promise<void>;
+
+  // Cascade delete for property (deletes files from storage + DB records)
+  deleteByPropertyId(propertyId: string): Promise<void>;
 }

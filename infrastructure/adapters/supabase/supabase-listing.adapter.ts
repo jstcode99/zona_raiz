@@ -485,4 +485,14 @@ export class SupabaseListingAdapter implements ListingPort {
       totalCities: uniqueCities.size,
     };
   }
+
+  async deleteCascade(id: string): Promise<void> {
+    // 1. Delete the listing record (ON DELETE CASCADE handles favorites and enquiries FK)
+    const { error: listingError } = await this.supabase
+      .from("listings")
+      .delete()
+      .eq("id", id);
+
+    if (listingError) throw new Error(listingError.message);
+  }
 }

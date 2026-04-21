@@ -133,14 +133,25 @@ export const updateListingAction = withServerAction(
   },
 );
 
-export const deleteListingAction = withServerAction(async (id: string) => {
+export const deleteListingAction = withServerAction(async (formData: FormData) => {
   const lang = await getLangServerSide();
   const cookieStore = await cookies();
   const routes = createRouter(lang);
   const i18n = await initI18n(lang);
   const t = i18n.getFixedT(lang);
 
-  const { listingService, propertyService } = await appModule(lang, {
+  const id = formData.get("id");
+  if (typeof id !== "string" || !id) {
+    throw new Error(t("common:exceptions.invalid_data"));
+  }
+
+  const {
+    listingService,
+    propertyService,
+    favoriteService,
+    enquiryService,
+    propertyImageService,
+  } = await appModule(lang, {
     cookies: cookieStore,
   });
 
@@ -150,17 +161,36 @@ export const deleteListingAction = withServerAction(async (id: string) => {
   const property = await propertyService.getById(currentListing.property_id);
   const realEstateId = property?.real_estate_id;
 
-  await listingService.delete(id);
+  // Cascade delete: limpiar datos asociados
+  // 1. Eliminar favorites (referencia listing_id)
+  await favoriteService.deleteByListingId(id);
+
+  // 2. Eliminar enquiries (referencia listing_id)
+  await enquiryService.deleteByListingId(id);
+
+  // 3. Eliminar imágenes del property + archivos en storage
+  if (property?.id) {
+    await propertyImageService.deleteByPropertyId(property.id);
+  }
+
+  // 4. Eliminar el listing (ON DELETE CASCADE en BD limpia los FK locales de listing)
+  await listingService.deleteCascade(id);
 
   revalidatePath(routes.dashboard());
   revalidatePath(routes.listings());
-  revalidatePath(routes.listing(id));
 
   // Invalidar tags específicos del cache
   revalidateTag(CACHE_TAGS.LISTING.PRINCIPAL, { expire: 0 });
   revalidateTag(CACHE_TAGS.LISTING.ALL, { expire: 0 });
   revalidateTag(CACHE_TAGS.LISTING.COUNT, { expire: 0 });
   revalidateTag(CACHE_TAGS.LISTING.DETAIL(id), { expire: 0 });
+  revalidateTag(CACHE_TAGS.FAVORITE.PRINCIPAL, { expire: 0 });
+  revalidateTag(CACHE_TAGS.ENQUIRY.PRINCIPAL, { expire: 0 });
+  revalidateTag(CACHE_TAGS.PROPERTY_IMAGE.PRINCIPAL, { expire: 0 });
+  if (property?.id) {
+    revalidateTag(CACHE_TAGS.PROPERTY_IMAGE.BY_PROPERTY(property.id), { expire: 0 });
+    revalidateTag(CACHE_TAGS.PROPERTY.DETAIL(property.id), { expire: 0 });
+  }
   if (realEstateId) {
     revalidateTag(CACHE_TAGS.REAL_ESTATE.DETAIL(realEstateId), { expire: 0 });
   }

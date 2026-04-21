@@ -110,7 +110,14 @@
   "exceptions": {
     "create_fail": "Failed to create listing",
     "update_fail": "Failed to update listing",
+    "delete_fail": "Failed to delete listing",
     "properties_not_found": "Properties not found"
+  },
+  "messages": {
+    "created": "Listing created successfully",
+    "updated": "Listing updated successfully",
+    "deleted": "Listing deleted successfully",
+    "error": "Error saving listing"
   },
   "detail": {
     "breadcrumb": {
@@ -192,5 +199,12 @@
     "office": "Office",
     "warehouse": "Warehouse",
     "other": "Other"
+  },
+  "delete_dialog": {
+    "title": "Delete listing",
+    "description": "Are you sure you want to delete this listing? This action cannot be undone and will remove all associated data.",
+    "cancel": "Cancel",
+    "confirm": "Delete",
+    "deleting": "Deleting..."
   }
 }

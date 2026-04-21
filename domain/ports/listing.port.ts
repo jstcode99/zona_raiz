@@ -60,4 +60,5 @@ export interface ListingPort {
   ): Promise<ListingEntity[]>;
   findCitiesWithActiveListings(): Promise<LandingCity[]>;
   getLandingStats(): Promise<LandingStats>;
+  deleteCascade(id: string): Promise<void>;
 }

@@ -123,6 +123,15 @@ export class SupabaseEnquiryAdapter implements EnquiryPort {
     if (error) throw error;
   }
 
+  async deleteByListingId(listingId: string): Promise<void> {
+    const { error } = await this.supabase
+      .from("enquiries")
+      .delete()
+      .eq("listing_id", listingId);
+
+    if (error) throw error;
+  }
+
   async count(filters?: EnquiryFilters): Promise<number> {
     let query = this.supabase
       .from("enquiries")

@@ -44,6 +44,10 @@ export class PropertyImageService {
     return this.propertyImagePort.delete(id);
   }
 
+  deleteByPropertyId(propertyId: string) {
+    return this.propertyImagePort.deleteByPropertyId(propertyId);
+  }
+
   deleteFile(public_url: string) {
     return this.propertyImagePort.deleteFile(public_url);
   }

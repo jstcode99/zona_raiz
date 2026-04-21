@@ -243,6 +243,14 @@ export const CACHE_TAGS = {
     BY_REAL_ESTATE: (realEstateId: string) =>
       `enquiry:real-estate:${realEstateId}`,
   },
+
+  // Favorites
+  FAVORITE: {
+    PRINCIPAL: "favorites",
+    ALL: "favorite-all",
+    BY_PROFILE: (profileId: string) => `favorite:profile:${profileId}`,
+    BY_LISTING: (listingId: string) => `favorite:listing:${listingId}`,
+  },
 } as const;
 
 // ==========================================
