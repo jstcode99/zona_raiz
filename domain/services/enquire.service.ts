@@ -1,6 +1,9 @@
 import { EnquiryPort, EnquiryFilters } from "../ports/enquiry.port";
 import { EnquiryEntity } from "../entities/enquiry.entity";
 import { EnquiryStatus } from "../entities/enquiry.enums";
+import { unstable_cache } from "next/cache";
+import { CACHE_TAGS } from "@/infrastructure/config/constants";
+import { Lang } from "@/i18n/settings";
 
 export type CreateEnquiryInput = Omit<
   EnquiryEntity,
@@ -8,10 +11,29 @@ export type CreateEnquiryInput = Omit<
 >;
 
 export class EnquiryService {
-  constructor(private readonly enquiry: EnquiryPort) {}
+  constructor(
+    private readonly enquiry: EnquiryPort,
+    private readonly lang: Lang = "es",
+  ) {}
 
+  // Sin cache — para mutations y reads directos
   all(filters?: EnquiryFilters) {
     return this.enquiry.all(filters);
+  }
+
+  // Con cache — para reads en Server Components
+  getCachedAll(filters?: EnquiryFilters) {
+    const cacheKey = filters
+      ? `${CACHE_TAGS.ENQUIRY.ALL}:${JSON.stringify(filters)}`
+      : CACHE_TAGS.ENQUIRY.ALL;
+    return unstable_cache(
+      async () => this.enquiry.all(filters),
+      [cacheKey],
+      {
+        revalidate: 300,
+        tags: [CACHE_TAGS.ENQUIRY.PRINCIPAL, CACHE_TAGS.ENQUIRY.ALL],
+      },
+    )();
   }
 
   create(data: CreateEnquiryInput) {

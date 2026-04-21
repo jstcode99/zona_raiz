@@ -10,6 +10,8 @@ import { initI18n } from "@/i18n/server";
 import { enquirySchema } from "@/application/validation/enquiry.schema";
 import { CACHE_TAGS, COOKIE_NAMES } from "@/infrastructure/config/constants";
 import { EnquirySource, EnquiryStatus } from "@/domain/entities/enquiry.enums";
+import { notificationService } from "@/infrastructure/notifications/notification.service";
+import { enquiryStatusLabels } from "@/domain/entities/enquiry.entity";
 
 export const createEnquiryAction = withServerAction(
   async (formData: FormData) => {
@@ -172,7 +174,26 @@ export const updateEnquiryStatusAction = withServerAction(
     if (!isAdmin && !isCoordinator && !isAssignedAgent)
       throw new Error(t("common:exceptions.unauthorized"));
 
+    const oldStatus = inquiry.status;
     await enquiryService.update(id, { status: status as EnquiryStatus });
+
+    // Enviar notificación al agente asignado si hay cambio de estado
+    if (inquiry.assigned_to) {
+      const agentProfile = await profileService.getById(inquiry.assigned_to);
+      if (agentProfile && agentProfile.email) {
+        await notificationService.enquiryStatusChanged({
+          type: "enquiry_status_changed",
+          enquiry: { ...inquiry, status: status as EnquiryStatus },
+          agentEmail: agentProfile.email,
+          agentName: agentProfile.full_name || "Agente",
+          oldStatus: enquiryStatusLabels[oldStatus],
+          newStatus: enquiryStatusLabels[status as EnquiryStatus],
+          listingTitle: inquiry.listing?.title,
+          leadName: inquiry.name || undefined,
+        });
+      }
+    }
+
     revalidatePath(routes.enquiries());
 
     // Invalidar tags específicos del cache
@@ -228,6 +249,20 @@ export const assignEnquiryAction = withServerAction(
     if (!targetAgent) throw new Error(t("common:exceptions.unauthorized"));
 
     await enquiryService.update(id, { assigned_to });
+
+    // Enviar notificación al agente asignado
+    const targetAgentProfile = await profileService.getById(assigned_to);
+    if (targetAgentProfile && targetAgentProfile.email) {
+      const listingTitle = inquiry.listing?.title || undefined;
+      await notificationService.enquiryAssigned({
+        type: "enquiry_assigned",
+        enquiry: { ...inquiry, assigned_to },
+        agentEmail: targetAgentProfile.email,
+        agentName: targetAgentProfile.full_name || "Agente",
+        listingTitle,
+        leadName: inquiry.name || undefined,
+      });
+    }
 
     revalidatePath(routes.enquiries());
 
