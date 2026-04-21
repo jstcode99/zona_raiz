@@ -18,5 +18,6 @@ export interface EnquiryPort {
   findByListingId(listingId: string): Promise<EnquiryEntity[]>;
   findByAgentId(agentId: string): Promise<EnquiryEntity[]>;
   delete(id: string): Promise<void>;
+  deleteByListingId(listingId: string): Promise<void>;
   count(filters?: EnquiryFilters): Promise<number>;
 }

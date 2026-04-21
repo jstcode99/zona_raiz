@@ -95,6 +95,14 @@ export class SupabaseFavoriteAdapter implements FavoritePort {
     if (error) throw error;
   }
 
+  async deleteByListingId(listingId: string): Promise<void> {
+    const { error } = await this.supabase
+      .from("favorites")
+      .delete()
+      .eq("listing_id", listingId);
+    if (error) throw error;
+  }
+
   async count(filters?: any): Promise<number> {
     let query = this.supabase
       .from("favorites")

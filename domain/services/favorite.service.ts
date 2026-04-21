@@ -38,6 +38,10 @@ export class FavoriteService {
     return this.repo.deleteByProfileAndListing(profileId, listingId);
   }
 
+  deleteByListingId(listingId: string) {
+    return this.repo.deleteByListingId(listingId);
+  }
+
   async toggle(profileId: string, listingId: string): Promise<boolean> {
     const isFav = await this.exists(profileId, listingId);
     if (isFav) {

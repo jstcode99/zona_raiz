@@ -196,4 +196,46 @@ export class SupabasePropertyImageAdapter implements PropertyImagePort {
             throw new Error(setError.message);
         }
     }
+
+    async deleteByPropertyId(propertyId: string): Promise<void> {
+        // 1. Get all image records for this property
+        const { data: images, error: fetchError } = await this.supabase
+            .from("property_images")
+            .select("id, public_url")
+            .eq("property_id", propertyId);
+
+        if (fetchError) {
+            throw new Error(fetchError.message);
+        }
+
+        // 2. Delete files from storage in parallel
+        const storagePaths = (images || [])
+            .map((img: { public_url: string }) => {
+                // Extract the storage path from public_url
+                // public_url format: https://xxx.supabase.co/storage/v1/object/public/property-images/{propertyId}/{filename}
+                const path = img.public_url.split("/property-images/")[1];
+                return path;
+            })
+            .filter(Boolean);
+
+        if (storagePaths.length > 0) {
+            const { error: storageError } = await this.supabase.storage
+                .from(STORAGE_BUCKETS.PROPERTIES)
+                .remove(storagePaths);
+
+            if (storageError) {
+                throw new Error(storageError.message);
+            }
+        }
+
+        // 3. Delete records from DB
+        const { error: dbError } = await this.supabase
+            .from("property_images")
+            .delete()
+            .eq("property_id", propertyId);
+
+        if (dbError) {
+            throw new Error(dbError.message);
+        }
+    }
 }
