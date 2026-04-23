@@ -31,9 +31,9 @@ export type RealEstateInput = yup.InferType<typeof realEstateSchema>;
 export type LogoInput = yup.InferType<typeof logoRealEstateSchema>;
 
 export const defaultRealEstateValues = {
-  name: "Zonaraíz",
-  description: "Zonaraíz colombia",
-  whatsapp: "+57 3168314191",
+  name: "",
+  description: "",
+  whatsapp: "",
   street: "",
   city: "",
   state: "",
