@@ -46,11 +46,11 @@ export const defaultSignInValues: SignInFormInput = {
 };
 
 export const defaultSignUpValues: SignUpFormInput = {
-  full_name: 'juan sebastian',
-  email: 'jstorres0211@gmail.com',
-  phone: '+57 3168314191',
-  password: 'wEUpZ#8RqT@ne-f',
-  password_confirmation: 'wEUpZ#8RqT@ne-f',
+  full_name: '',
+  email: '',
+  phone: '',
+  password: '',
+  password_confirmation: '',
   type_register: true,
   captchaToken: undefined,
 };
