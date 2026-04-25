@@ -19,10 +19,23 @@ export const signInWithGoogleAction = withServerAction(
   async (formData: FormData) => {
     const lang = await getLangServerSide();
     const cookieStore = await cookies();
-    const { authService } = await appModule(lang, { cookies: cookieStore });
+    const { authService, cookiesService } = await appModule(lang, { cookies: cookieStore });
     const routes = createRouter(lang);
 
-    const redirectTo = `${process.env.NEXT_PUBLIC_APP_URL}${routes.callback()}`;
+    // Leer user_type del FormData
+    const userType = formData.get("user_type") as string | null;
+    const isRealEstate = userType === "real-estate";
+
+    // Guardar preferencias en cookie para el callback
+    if (userType) {
+      cookiesService.setSession(COOKIE_NAMES.OAUTH_USER_TYPE, userType);
+    }
+
+    // Incluir role en la URL de callback si existe (client o real-estate)
+    const baseRedirectTo = `${process.env.NEXT_PUBLIC_APP_URL}${routes.callback()}`;
+    const redirectTo = userType
+      ? `${baseRedirectTo}?role=${encodeURIComponent(userType)}`
+      : baseRedirectTo;
 
     const redirectUrl = await authService.signInWithOAuth(
       "google",
