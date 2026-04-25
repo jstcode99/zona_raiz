@@ -13,6 +13,8 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./"),
+      "@/components/ui": path.resolve(__dirname, "./app/components/ui"),
+      "@/app/components/ui": path.resolve(__dirname, "./app/components/ui"),
     },
   },
 });

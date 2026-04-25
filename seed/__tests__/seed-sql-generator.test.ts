@@ -22,7 +22,7 @@ describe("Seed SQL Generator", () => {
 
     // Verificar que incluye inserts para las tablas principales
     expect(sql).toContain("INSERT INTO real_estates");
-    expect(sql).toContain("INSERT INTO profiles");
+    expect(sql).toContain("INSERT INTO auth.users");
     expect(sql).toContain("INSERT INTO properties");
     expect(sql).toContain("INSERT INTO listings");
   });

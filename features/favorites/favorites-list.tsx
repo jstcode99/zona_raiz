@@ -4,8 +4,8 @@ import { Heart } from "lucide-react";
 import Link from "next/link";
 import { useRoutes } from "@/i18n/client-router";
 import { useTranslation } from "react-i18next";
-import { Card } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { Card } from "@/app/components/ui/card";
+import { Badge } from "@/app/components/ui/badge";
 import { ListingEntity } from "@/domain/entities/listing.entity";
 
 export interface FavoriteWithListing {

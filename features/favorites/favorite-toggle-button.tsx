@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { Heart } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/app/components/ui/button";
 import { toggleFavoriteAction } from "@/application/actions/favorite.action";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
