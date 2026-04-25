@@ -14,6 +14,7 @@ export class SupabaseAuthAdapter implements AuthPort {
         data: {
           full_name: input.full_name,
           phone: input.phone,
+          // Role is set via trigger based on type_register boolean in metadata
           role: input.type_register ? EUserRole.RealEstate : EUserRole.Client
         },
       },
@@ -30,16 +31,8 @@ export class SupabaseAuthAdapter implements AuthPort {
       throw new Error("Registration failed")
     }
 
-    if (input.type_register) {
-      const { error: roleError } = await this.supabase
-        .from("profiles")
-        .update({ role: EUserRole.RealEstate })
-        .eq("id", data.user.id)
-
-      if (roleError) {
-        console.error("Role update error:", roleError)
-      }
-    }
+    // Profile is created automatically via trigger handle_new_user()
+    // No manual profile update needed - the trigger handles role assignment
   }
 
   async signIn(email: string, password: string) {
@@ -110,10 +103,23 @@ export class SupabaseAuthAdapter implements AuthPort {
   async signInWithOAuth(provider: OAuthProvider, redirectTo: string): Promise<string> {
     const supabaseAdmin = await SupabaseAdminClient()
 
+    // Extract the role from redirectTo URL params if present
+    const url = new URL(redirectTo)
+    const userRole = url.searchParams.get("role")
+    
+    // Use state parameter to preserve the role through the OAuth flow
+    // This is more reliable than URL query params which might get lost during redirects
+    const state = userRole ? JSON.stringify({ user_type: userRole }) : undefined
+    
+    // Clean the redirectTo URL (remove role param since we're passing it via state)
+    const cleanRedirectTo = url.origin + url.pathname
+
     const { data, error } = await supabaseAdmin.auth.signInWithOAuth({
       provider,
       options: {
-        redirectTo: redirectTo
+        redirectTo: cleanRedirectTo,
+        scopes: "email profile openid",
+        ...(state && { state }),
       },
     })
 

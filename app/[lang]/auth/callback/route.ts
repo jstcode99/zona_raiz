@@ -57,14 +57,35 @@ export async function GET(request: NextRequest) {
   const token_hash = searchParams.get("token_hash");
   const type = searchParams.get("type");
 
-  // Extraer tokens del URL (pueden venir en query params o hash parseado por el cliente)
+  // Extraer tokens del URL (puedenvenir en query params o hash parseado por el cliente)
   // Nota: El hash (#) no se envía al servidor, pero algunos setups de OAuth lo mandan como query param
   const accessToken = searchParams.get("access_token");
   const refreshToken = searchParams.get("refresh_token");
 
-  // Extraer role de GoogleAuth (puede ser "client" o "real-estate")
+  // Extraer role desde múltiples fuentes:
+  // 1. URL query param (?role=...)
+  // 2. Cookie (backup para OAuth)
   const roleParam = searchParams.get("role");
-  const userRole: EUserRole = roleParam === "real-estate" ? EUserRole.RealEstate : EUserRole.Client;
+  const oauthUserType = cookieStore.get(COOKIE_NAMES.OAUTH_USER_TYPE)?.value;
+  
+  // state viene codificado desde Supabase OAuth
+  let stateRole: string | undefined;
+  const stateParam = searchParams.get("state");
+  if (stateParam) {
+    try {
+      const decoded = JSON.parse(Buffer.from(stateParam, "base64").toString("utf-8"));
+      stateRole = decoded?.user_type;
+    } catch {
+      // Ignore state parse errors
+    }
+  }
+  
+  // Priority: roleParam > stateRole > oauthUserType
+  const effectiveRole = roleParam || stateRole || oauthUserType;
+  
+  const userRole: EUserRole = effectiveRole === "real-estate" 
+    ? EUserRole.RealEstate 
+    : EUserRole.Client;
 
   let profile: ProfileEntity | null = null;
 
@@ -83,14 +104,18 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Aplicar role enviado desde GoogleAuth si existe
-    if (roleParam && profile) {
+    // Aplicar role enviado desde GoogleAuth si existe (URL, state, o cookie)
+    const hasRoleInput = !!effectiveRole;
+    if (hasRoleInput && profile) {
       await profileService.updateRole(profile.id, userRole);
     }
 
     if (profile.role) {
       cookieStore.set(COOKIE_NAMES.ROLE, profile.role, COOKIE_OPTIONS);
     }
+
+    // Limpiar cookie de OAuth
+    cookieStore.delete(COOKIE_NAMES.OAUTH_USER_TYPE);
 
     // Manejar selección de real estate
     return handleRealEstateSelection(
@@ -113,14 +138,18 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Aplicar role enviado desde GoogleAuth si existe
-    if (roleParam && profile) {
+    // Aplicar role enviado desde GoogleAuth si existe (URL, state, o cookie)
+    const hasRoleInput = !!effectiveRole;
+    if (hasRoleInput && profile) {
       await profileService.updateRole(profile.id, userRole);
     }
 
     if (profile.role) {
       cookieStore.set(COOKIE_NAMES.ROLE, profile.role, COOKIE_OPTIONS);
     }
+
+    // Limpiar cookie de OAuth
+    cookieStore.delete(COOKIE_NAMES.OAUTH_USER_TYPE);
 
     // Manejar selección de real estate
     return handleRealEstateSelection(

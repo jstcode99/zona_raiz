@@ -24,14 +24,14 @@ export const signInWithGoogleAction = withServerAction(
 
     // Leer user_type del FormData
     const userType = formData.get("user_type") as string | null;
-    const isRealEstate = userType === "real-estate";
 
-    // Guardar preferencias en cookie para el callback
+    // Guardar preferencias en cookie para el callback (backup)
     if (userType) {
       cookiesService.setSession(COOKIE_NAMES.OAUTH_USER_TYPE, userType);
     }
 
-    // Incluir role en la URL de callback si existe (client o real-estate)
+    // Incluir role en la URL de callback (client o real-estate)
+    // Esta URL params es el mecanismo principal para pasar el role
     const baseRedirectTo = `${process.env.NEXT_PUBLIC_APP_URL}${routes.callback()}`;
     const redirectTo = userType
       ? `${baseRedirectTo}?role=${encodeURIComponent(userType)}`
@@ -59,6 +59,8 @@ export const signUpAction = withServerAction(async (formData: FormData) => {
   const { authService } = await appModule(lang, { cookies: cookieStore });
 
   await authService.signUp(input);
+
+  return { success: true };
 });
 
 export const signInAction = withServerAction(async (formData: FormData) => {
