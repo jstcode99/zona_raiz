@@ -31,8 +31,8 @@ export const stateField = yup
 export const postalCodeField = yup
   .string()
   .matches(
-    /^\d{5}(-\d{4})?$/,
-    "El código postal debe tener formato válido (ej: 12345 o 12345-6789)",
+    /^\d{5,6}(-\d{4,6})?$/,
+    "El código postal debe tener formato válido (ej: 123456 o 123456-67898)",
   );
 
 export const countryField = yup
