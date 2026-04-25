@@ -231,7 +231,7 @@ export const getListingColumns = (): ColumnDef<ListingRow>[] => {
       },
       cell: ({ row }) => {
         const { t } = useTranslation("listings");
-        const { status, featured, featured_until } = row.original;
+        const { status, featured } = row.original;
 
         return (
           <div className="flex flex-col gap-1">
@@ -245,13 +245,6 @@ export const getListingColumns = (): ColumnDef<ListingRow>[] => {
                 <IconStar className="size-3" />
                 {t("words.featured")}
               </Badge>
-            )}
-
-            {featured && featured_until && (
-              <span className="text-[11px] text-muted-foreground">
-                {t("words.until")}{" "}
-                {new Date(featured_until).toLocaleDateString()}
-              </span>
             )}
           </div>
         );

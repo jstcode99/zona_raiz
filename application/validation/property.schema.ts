@@ -27,7 +27,6 @@ export const propertySchema = yup
     title: titleSchema.required(
       i18next.t("validations:required", { attribute: "title" }),
     ),
-    slug: slugSchema,
     description: descriptionSchema,
     property_type: propertyTypeSchema.required(
       i18next.t("validations:required", { attribute: "property_type" }),
@@ -50,7 +49,6 @@ export type PropertyInput = yup.InferType<typeof propertySchema>;
 
 export const defaultPropertyValues: PropertyInput = {
   title: "",
-  slug: "",
   description: "",
   property_type: PropertyType.Other,
   street: "",

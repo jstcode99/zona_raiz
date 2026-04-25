@@ -20,6 +20,7 @@ export const PROPERTIES_MAP: Record<string, PropertyType> = {
   locales: PropertyType.Commercial,
   oficinas: PropertyType.Office,
   bodegas: PropertyType.Warehouse,
+  estados: PropertyType.State,
   otros: PropertyType.Other,
   // EN
   houses: PropertyType.House,
@@ -30,6 +31,7 @@ export const PROPERTIES_MAP: Record<string, PropertyType> = {
   commercial: PropertyType.Commercial,
   offices: PropertyType.Office,
   warehouses: PropertyType.Warehouse,
+  states: PropertyType.State,
   other: PropertyType.Other,
 };
 
@@ -50,5 +52,6 @@ export const PROPERTIES_SLUG: Record<
   [PropertyType.Commercial]: { es: "locales", en: "commercial" },
   [PropertyType.Office]: { es: "oficinas", en: "offices" },
   [PropertyType.Warehouse]: { es: "bodegas", en: "warehouses" },
+  [PropertyType.State]: { es: "estados", en: "states" },
   [PropertyType.Other]: { es: "otros", en: "other" },
 };
