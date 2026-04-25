@@ -113,7 +113,7 @@ export function PlaceSearch({
   onSelect,
 }: PlaceSearchProps) {
   const router = useRouter();
-  const { t } = useTranslation("places");
+  const { t } = useTranslation("components");
   const ready = useGooglePlaces();
   const serviceRef = useRef<google.maps.places.AutocompleteService | null>(
     null,
@@ -285,7 +285,7 @@ export function PlaceSearch({
   return (
     <div className={`relative ${className ?? ""}`}>
       <Command shouldFilter={false} className="rounded-xl border shadow-sm">
-        <div className="flex items-center px-3 gap-2 min-h-[44px]">
+        <div className="flex items-center px-3 gap-2 min-h-11">
           {loading ? (
             <IconLoader2 className="size-4 text-muted-foreground animate-spin shrink-0" />
           ) : (
@@ -321,11 +321,11 @@ export function PlaceSearch({
             <CommandList>
               {predictions.length === 0 && !loading && (
                 <CommandEmpty className="py-4 text-center text-sm text-muted-foreground">
-                  {t("no_results")}
+                  {t("places.no_results")}
                 </CommandEmpty>
               )}
               {predictions.length > 0 && (
-                <CommandGroup heading={t("results_heading")}>
+                <CommandGroup heading={t("places.results_heading")}>
                   {predictions.map((p) => (
                     <CommandItem
                       key={p.place_id}

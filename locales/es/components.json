@@ -19,6 +19,11 @@
     "max_file_quantity": "Max 5 Archivos",
     "formats_files": "Solo PNG o JPG"
   },
+  "places": {
+    "results_heading": "Resultados",
+    "search_placeholder": "Buscar un lugar...",
+    "no_results": "No se encontraron resultados"
+  },
   "import": {
     "drag_drop": "Arrastra un archivo Excel o CSV aquí",
     "drop_here": "Suelta el archivo aquí",
