@@ -19,7 +19,16 @@ vi.mock("sonner", () => ({
 // Mock react-i18next
 vi.mock("react-i18next", () => ({
   useTranslation: () => ({
-    t: (key: string) => key,
+    t: (key: string) => {
+      // Return Spanish translations for common keys
+      const translations: Record<string, string> = {
+        "sections.no_favorites": "No tienes favoritos",
+        "sections.favorites": "Favoritos",
+        "listings.sale": "Venta",
+        "listings.rent": "Renta",
+      };
+      return translations[key] || key;
+    },
   }),
 }));
 
@@ -55,8 +64,8 @@ vi.mock("next/link", () => ({
   }) => <a href={href}>{children}</a>,
 }));
 
-// Mock @/components/ui/button
-vi.mock("@/components/ui/button", () => ({
+// Mock @/app/components/ui/button
+vi.mock("@/app/components/ui/button", () => ({
   Button: ({ children, onClick, disabled, className, ...props }: any) => (
     <button
       onClick={onClick}
@@ -69,8 +78,8 @@ vi.mock("@/components/ui/button", () => ({
   ),
 }));
 
-// Mock @/components/ui/card
-vi.mock("@/components/ui/card", () => ({
+// Mock @/app/components/ui/card
+vi.mock("@/app/components/ui/card", () => ({
   Card: ({ children, className, ...props }: any) => (
     <div className={className} {...props}>
       {children}
@@ -78,8 +87,8 @@ vi.mock("@/components/ui/card", () => ({
   ),
 }));
 
-// Mock @/components/ui/badge
-vi.mock("@/components/ui/badge", () => ({
+// Mock @/app/components/ui/badge
+vi.mock("@/app/components/ui/badge", () => ({
   Badge: ({ children, className, ...props }: any) => (
     <span className={className} {...props}>
       {children}

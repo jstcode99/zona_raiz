@@ -50,6 +50,7 @@ export const propertyTypeIcons: Record<PropertyType, React.ReactNode> = {
   [PropertyType.Commercial]: <IconBuildingSkyscraper className="size-4" />,
   [PropertyType.Office]: <IconBriefcase className="size-4" />,
   [PropertyType.Warehouse]: <IconBuildingWarehouse className="size-4" />,
+  [PropertyType.State]: <IconMapPin className="size-4" />,
   [PropertyType.Other]: <IconHome className="size-4" />,
 }
 

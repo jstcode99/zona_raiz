@@ -92,10 +92,6 @@ export function ListingForm({
     try {
       const formData = new FormData();
       const data = flatten(values, "", formData);
-      // Asegurar que keywords se envíe como JSON string
-      if (values.keywords) {
-        data.set("keywords", JSON.stringify(values.keywords));
-      }
       mutation.action(data);
     } catch (error) {
       console.error(error);

@@ -240,6 +240,7 @@ export class SupabasePropertyAdapter implements PropertyPort {
             [PropertyType.Commercial]: 0,
             [PropertyType.Office]: 0,
             [PropertyType.Warehouse]: 0,
+            [PropertyType.State]: 0,
             [PropertyType.Other]: 0,
         }
 

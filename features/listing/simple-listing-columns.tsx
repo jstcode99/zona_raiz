@@ -94,7 +94,7 @@ export function getSimpleListingColumns(): ColumnDef<SimpleListingRow>[] {
       id: "status",
       header: () => t("columns.headers.status"),
       cell: ({ row }) => {
-        const { status, featured, featured_until } = row.original;
+        const { status, featured } = row.original;
 
         return (
           <div className="flex flex-col gap-1">
@@ -107,13 +107,6 @@ export function getSimpleListingColumns(): ColumnDef<SimpleListingRow>[] {
               >
                 {t("words.featured")}
               </Badge>
-            )}
-
-            {featured && featured_until && (
-              <span className="text-[11px] text-muted-foreground">
-                {t("words.until")}{" "}
-                {new Date(featured_until).toLocaleDateString(i18n.language)}
-              </span>
             )}
           </div>
         );

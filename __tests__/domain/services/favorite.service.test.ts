@@ -17,6 +17,7 @@ describe("FavoriteService", () => {
       create: vi.fn(),
       delete: vi.fn(),
       deleteByProfileAndListing: vi.fn(),
+      deleteByListingId: vi.fn(),
       count: vi.fn(),
     };
     service = new FavoriteService(mockRepo);
