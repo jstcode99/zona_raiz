@@ -99,11 +99,11 @@ export const FeaturedListingCard = ({ listing }: FeaturedListingCardProps) => {
               <span>{property.bathrooms}</span>
             </div>
           )}
-          {property.total_area && (
+          {property.lot_area && (
             <div className="flex items-center gap-1 text-sm text-muted-foreground">
               <Maximize2 className="size-4" />
               <span>
-                {property.total_area} {t("words.area_unit")}
+                {property.lot_area} {t("words.area_unit")}
               </span>
             </div>
           )}

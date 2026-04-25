@@ -177,7 +177,7 @@ export const defaultMyEntityValues: MyEntityInput = {
 };
 ```
 
-Schemas base disponibles en `application/validation/base/`: `name`, `email`, `phone`, `slug`, `price`, `description`, `title`, `id`, `image`, `file`, `password`, `confirm-password`, `address`, `latitude`, `bedrooms`, `bathrooms`, `total_area`, `built_area`, `lot_area`, `floors`, `year_built`, `parking_spots`, `amenities`, `status`, `whatsapp`, y más.
+Schemas base disponibles en `application/validation/base/`: `name`, `email`, `phone`, `slug`, `price`, `description`, `title`, `id`, `image`, `file`, `password`, `confirm-password`, `address`, `latitude`, `bedrooms`, `bathrooms`, `built_area`, `lot_area`, `floors`, `year_built`, `parking_spots`, `amenities`, `status`, `whatsapp`, y más.
 
 ## TypeScript
 

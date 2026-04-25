@@ -65,11 +65,11 @@ export const PropertyCard = ({ property, images = [] }: PropertyCardProps) => {
               <span>{property.bathrooms}</span>
             </div>
           )}
-          {property.total_area && (
+          {property.lot_area && (
             <div className="flex items-center gap-1 text-sm text-muted-foreground">
               <Maximize2 className="w-4 h-4" />
               <span>
-                {property.total_area} {t("properties:detail.labels.area_unit")}
+                {property.lot_area} {t("properties:detail.labels.area_unit")}
               </span>
             </div>
           )}

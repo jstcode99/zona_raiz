@@ -8,7 +8,6 @@ import { longitudeSchema } from "../base/longitude.schema";
 import { neighborhoodSchema } from "../base/neighborhood.schema";
 import { bedroomsSchema } from "../base/bedrooms.schema";
 import { bathroomsSchema } from "../base/bathrooms.schema";
-import { totalAreaSchema } from "../base/total_area.schema";
 import { builtAreaSchema } from "../base/built_area.schema";
 import { lotAreaSchema } from "../base/lot_area.schema";
 import { floorsSchema } from "../base/floors.schema";
@@ -33,7 +32,6 @@ export const propertyImportSchema = yup
     neighborhood: neighborhoodSchema.nullable(),
     bedrooms: bedroomsSchema.nullable(),
     bathrooms: bathroomsSchema.nullable(),
-    total_area: totalAreaSchema.nullable(),
     built_area: builtAreaSchema.nullable(),
     lot_area: lotAreaSchema.nullable(),
     floors: floorsSchema.nullable(),
@@ -59,7 +57,6 @@ export const propertyImportHeaders = [
   "neighborhood",
   "bedrooms",
   "bathrooms",
-  "total_area",
   "built_area",
   "lot_area",
   "floors",
@@ -86,7 +83,6 @@ export const propertyImportHeadersES = [
   "barrio",
   "habitaciones",
   "baños",
-  "área_total",
   "área_construida",
   "área_lote",
   "pisos",

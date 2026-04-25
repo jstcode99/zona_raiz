@@ -46,7 +46,6 @@ export function generateFakeProperties(
         ? 0
         : faker.number.int({ min: 1, max: 5 });
 
-    const totalArea = faker.number.int({ min: 50, max: 1000 });
     const builtArea = faker.number.int({ min: 40, max: 800 });
     const lotArea =
       propertyType === PropertyType.House || propertyType === PropertyType.Land
@@ -86,7 +85,6 @@ export function generateFakeProperties(
       longitude: location.longitude(),
       bedrooms,
       bathrooms,
-      total_area: totalArea,
       built_area: builtArea,
       lot_area: lotArea,
       floors: floors,

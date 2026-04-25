@@ -25,7 +25,6 @@ export interface PropertyEntity {
 
   bedrooms: number | null;
   bathrooms: number | null;
-  total_area: number | null;
   built_area: number | null;
   lot_area: number | null;
   floors: number | null;
@@ -63,6 +62,7 @@ export const propertyTypeLabels: Record<PropertyType, string> = {
   [PropertyType.Commercial]: "Comercial",
   [PropertyType.Office]: "Oficina",
   [PropertyType.Warehouse]: "Bodega",
+  [PropertyType.State]: "Finca",
   [PropertyType.Other]: "Otro",
 };
 

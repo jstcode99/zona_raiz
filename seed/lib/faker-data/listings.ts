@@ -6,7 +6,7 @@ import { faker } from "@faker-js/faker";
 import type { SeedListing } from "../../types";
 import { ListingStatus, ListingType } from "@/domain/entities/listing.enums";
 import { currencyOptions } from "@/domain/entities/currency.enums";
-import { keywordsOptions, listingTypeOptions } from "@/domain/entities/listing.entity";
+import { listingTypeOptions } from "@/domain/entities/listing.entity";
 
 /**
  * Genera listados fake.
@@ -39,17 +39,10 @@ export function generateFakeListings(
     ]);
 
     const featured = faker.datatype.boolean({ probability: 0.2 });
-    const keywords = faker.helpers.arrayElements(keywordsOptions, 3);
 
     const featuredUntil = faker.datatype.boolean({ probability: 0.2 })
       ? faker.date.future({ years: 0.5 }).toISOString()
       : undefined;
-
-    const metaTitle = `${property.title} - ${
-      listingType === ListingType.SALE ? "Venta" : "Alquiler"
-    }`;
-
-    const metaDescription = faker.lorem.sentence();
 
     const viewsCount = faker.number.int({ min: 0, max: 1000 });
     const enquiriesCount = faker.number.int({ min: 0, max: 50 });
@@ -80,10 +73,7 @@ export function generateFakeListings(
       expenses_included: expensesIncluded,
       status,
       featured,
-      keywords,
       featured_until: featuredUntil,
-      meta_title: metaTitle,
-      meta_description: metaDescription,
       views_count: viewsCount,
       enquiries_count: enquiriesCount,
       whatsapp_clicks: whatsappClicks,

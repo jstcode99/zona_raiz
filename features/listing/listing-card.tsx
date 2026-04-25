@@ -172,10 +172,10 @@ export function ListingCard({
                   <span>{property.bathrooms}</span>
                 </div>
               )}
-              {property.total_area && (
+              {property.lot_area && (
                 <div className="flex items-center gap-1 text-sm text-muted-foreground">
                   <Maximize className="size-4" />
-                  <span>{property.total_area} m²</span>
+                  <span>{property.lot_area} m²</span>
                 </div>
               )}
             </div>

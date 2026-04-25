@@ -46,11 +46,11 @@ export const PropertyDetail = ({ data }: PropertyDetailProps) => {
               </span>
             </div>
           )}
-          {property.total_area && (
+          {property.lot_area && (
             <div className="flex items-center gap-3">
               <Maximize2 className="w-5 h-5 stroke-[1.25] text-muted-foreground" />
               <span className="text-sm font-medium">
-                {property.total_area} m²
+                {property.lot_area} m²
               </span>
             </div>
           )}

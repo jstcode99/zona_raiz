@@ -11,7 +11,6 @@ import { longitudeSchema } from "./base/longitude.schema";
 import { neighborhoodSchema } from "./base/neighborhood.schema";
 import { bedroomsSchema } from "./base/bedrooms.schema";
 import { bathroomsSchema } from "./base/bathrooms.schema";
-import { totalAreaSchema } from "./base/total_area.schema";
 import { builtAreaSchema } from "./base/built_area.schema";
 import { lotAreaSchema } from "./base/lot_area.schema";
 import { floorsSchema } from "./base/floors.schema";
@@ -38,7 +37,6 @@ export const propertySchema = yup
     neighborhood: neighborhoodSchema.nullable(),
     bedrooms: bedroomsSchema.nullable(),
     bathrooms: bathroomsSchema.nullable(),
-    total_area: totalAreaSchema.nullable(),
     built_area: builtAreaSchema.nullable(),
     lot_area: lotAreaSchema.nullable(),
     floors: floorsSchema.nullable(),
@@ -65,7 +63,6 @@ export const defaultPropertyValues: PropertyInput = {
   neighborhood: "",
   bedrooms: 0,
   bathrooms: 0,
-  total_area: 0,
   built_area: 0,
   lot_area: 0,
   floors: 0,

@@ -11,9 +11,7 @@ export const listingImportHeaders = [
   "currency",
   "price_negotiable",
   "status",
-  "meta_title",
-  "meta_description",
-  "keywords",
+
   "virtual_tour_url",
   "video_url",
   "available_from",

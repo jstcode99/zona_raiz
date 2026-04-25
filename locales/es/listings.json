@@ -5,9 +5,9 @@
     "listing_type": "Tipo de listado",
     "price_negotiable": "Precio negociable",
     "expenses_amount": "Valor de administracion",
+    "currency": "Moneda",
     "expenses_included": "Gastos incluidos",
     "featured": "Destacar propiedad",
-    "keywords": "Palabras clave",
     "virtual_tour_url": "URL de tour virtual",
     "video_url": "URL de video",
     "available_from": "Disponible desde",
@@ -45,7 +45,7 @@
     "filters": "Filtros",
     "type_properties": "Tipo de propiedades",
     "type_listings": "Tipo de Publicaciones",
-    "basic-info": "Basic info",
+    "basic-info": "Información básica",
     "price_range": "Rango de precio",
     "rooms": "Cantidad de habitaciones",
     "bathrooms": "Cantidad de banos",
@@ -64,11 +64,6 @@
     "clear_amenities": "Limpiar amenidades",
     "clear_filters": "Limpiar",
     "any": "Cualquiera"
-  },
-  "messages": {
-    "created": "Publicación creada exitosamente",
-    "updated": "Publicación actualizada exitosamente",
-    "error": "Error al guardar la publicación"
   },
   "status": {
     "no_results": "No se encontraron resultados",

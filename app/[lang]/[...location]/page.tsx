@@ -131,16 +131,7 @@ function buildJsonLd(listings: ListingEntity[], canonicalUrl: string) {
             }
           : {}),
         numberOfRooms: listing.property.bedrooms ?? undefined,
-        numberOfBathroomsTotal: listing.property.bathrooms ?? undefined,
-        ...(listing.property.total_area
-          ? {
-              floorSize: {
-                "@type": "QuantitativeValue",
-                value: listing.property.total_area,
-                unitCode: "MTK",
-              },
-            }
-          : {}),
+        numberOfBathroomsTotal: listing.property.bathrooms ?? undefined
       },
     })),
   };

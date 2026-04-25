@@ -112,16 +112,6 @@ const synonyms: Record<string, string[]> = {
     "urbanizacion",
     "urbanización",
   ],
-  total_area: [
-    "area_total",
-    "área_total",
-    "area",
-    "área",
-    "superficie_total",
-    "superficie",
-    "mt2",
-    "m2",
-  ],
   built_area: [
     "area_construida",
     "área_construida",
@@ -189,26 +179,6 @@ const synonyms: Record<string, string[]> = {
     "disponible",
     "available",
     "estado_listado",
-  ],
-  meta_title: [
-    "titulo_seo",
-    "seo_title",
-    "titulo_meta",
-    "og_title",
-    "page_title",
-  ],
-  meta_description: [
-    "descripcion_seo",
-    "seo_description",
-    "descripcion_meta",
-    "og_description",
-  ],
-  keywords: [
-    "palabras_clave",
-    "tags",
-    "etiquetas",
-    "palabras_claves",
-    "seo_keywords",
   ],
   virtual_tour_url: [
     "tour_virtual",

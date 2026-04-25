@@ -225,7 +225,6 @@ export class SupabaseImportJobAdapter implements ImportJobPort {
 
           bedrooms: row.bedrooms ? parseInt(String(row.bedrooms)) : null,
           bathrooms: row.bathrooms ? parseInt(String(row.bathrooms)) : null,
-          total_area: row.total_area ? Number(row.total_area) : null,
           built_area: row.built_area ? Number(row.built_area) : null,
           lot_area: row.lot_area ? Number(row.lot_area) : null,
           floors: row.floors ? parseInt(String(row.floors)) : null,
@@ -351,9 +350,6 @@ export class SupabaseImportJobAdapter implements ImportJobPort {
           currency: String(row.currency || Currency.COP),
           price_negotiable: Boolean(row.price_negotiable),
           status: row.status || PropertyStatus.Draft,
-          meta_title: row.meta_title || null,
-          meta_description: row.meta_description || null,
-          keywords,
           whatsapp_contact: String(row.whatsapp_contact || ""),
           expenses_amount: row.expenses_amount
             ? Number(row.expenses_amount)

@@ -50,7 +50,6 @@ describe("FavoritesList", () => {
           neighborhood: "Test Neighborhood",
           bedrooms: 2,
           bathrooms: 1,
-          total_area: 100,
           built_area: 80,
           lot_area: 200,
           floors: 1,

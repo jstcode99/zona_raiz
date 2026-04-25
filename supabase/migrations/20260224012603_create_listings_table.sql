@@ -20,9 +20,6 @@ create table if not exists public.listings (
   featured_until timestamptz,
 
   -- SEO y Marketing
-  meta_title text,
-  meta_description text,
-  keywords jsonb default '[]'::jsonb,
   virtual_tour_url text,
   video_url text,
 

@@ -21,7 +21,6 @@ create table if not exists public.properties (
   -- Características físicas
   bedrooms integer,
   bathrooms integer,
-  total_area decimal(10, 2),
   built_area decimal(10, 2),
   lot_area decimal(10, 2),
   floors integer,

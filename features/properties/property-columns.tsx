@@ -216,13 +216,12 @@ export const PropertyColumns: ColumnDef<PropertyRow>[] = [
     },
     cell: ({ row }) => {
       const { t } = useTranslation("properties")
-      const { bedrooms, bathrooms, built_area, total_area, floors, parking_spots } = row.original
+      const { bedrooms, bathrooms, built_area, floors, parking_spots } = row.original
 
       const features = []
       if (bedrooms !== null) features.push({ icon: IconBed, value: `${bedrooms} ${t("properties:columns.labels.bedrooms")}` })
       if (bathrooms !== null) features.push({ icon: IconBath, value: `${bathrooms} ${t("properties:columns.labels.bathrooms")}` })
       if (built_area !== null) features.push({ icon: IconRuler, value: `${built_area}m²` })
-      else if (total_area !== null) features.push({ icon: IconRuler, value: `${total_area} ${t("properties:columns.labels.total_area")}` })
       if (parking_spots !== null) features.push({ icon: IconCar, value: `${parking_spots} ${t("properties:columns.labels.parking_spots")}` })
 
       if (features.length === 0) return <span className="text-xs text-muted-foreground">—</span>

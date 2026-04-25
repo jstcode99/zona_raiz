@@ -96,13 +96,6 @@ export function PropertyFeaturesForm() {
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             <UnitInput
-              name="total_area"
-              label={t("labels.total_area")}
-              placeholder="120.50"
-              unit="m²"
-              step="0.01"
-            />
-            <UnitInput
               name="built_area"
               label={t("labels.built_area")}
               placeholder="100.00"

@@ -42,7 +42,6 @@ export function PropertyForm({
     features: [
       "bedrooms",
       "bathrooms",
-      "total_area",
       "built_area",
       "lot_area",
       "floors",

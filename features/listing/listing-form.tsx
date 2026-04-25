@@ -34,7 +34,7 @@ export function ListingForm({
   defaultValues = defaultPropertyValues,
 }: ListingFormProps) {
   const { t } = useTranslation("listings");
-  const { listingTypeOptions, listingStatusOptions, keywordsOptions } =
+  const { listingTypeOptions, listingStatusOptions } =
     useListingOptions();
 
   const isUpdateMode = !!id;
@@ -107,9 +107,9 @@ export function ListingForm({
     <Form
       form={form}
       onSubmit={handleSubmit}
-      className="space-y-3 max-w-5xl mx-auto"
+      className="space-x-4 space-y-4 max-w-5xl mx-auto"
     >
-      <Form.Set legend={t("sections.basic-info")} className="my-3">
+      <Form.Set legend={t("sections.basic-info")} className="border p-4 rounded-xl">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
           <Form.Select
             name="listing_type"
@@ -139,7 +139,7 @@ export function ListingForm({
           />
         </div>
       </Form.Set>
-      <Form.Set legend={t("basic-info")} className="my-3">
+      <Form.Set legend={t("sections.basic-info")} className="border p-4 rounded-xl">
         <div className="flex flex-col sm:flex-row gap-4 sm:gap-6">
           <Form.Checkbox
             name="price_negotiable"
@@ -160,24 +160,7 @@ export function ListingForm({
           />
         </div>
       </Form.Set>
-      <Form.Set legend={t("sections.basic-info")} className="my-3">
-        <Form.Input name="meta_title" label={t("labels.meta_title")} />
-
-        <Form.Textarea
-          name="meta_description"
-          label={t("labels.meta_description")}
-          rows={4}
-        />
-
-        <Form.Combobox
-          name="keywords"
-          label={t("labels.keywords")}
-          multiple
-          options={keywordsOptions}
-          placeholder={t("placeholders.add_keyword")}
-        />
-      </Form.Set>
-      <Form.Set legend={t("basic-info")} className="my-3">
+      <Form.Set legend={t("sections.basic-info")} className="border p-4 rounded-xl">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
           <Form.Url
             name="virtual_tour_url"
@@ -187,7 +170,7 @@ export function ListingForm({
           <Form.Url name="video_url" label={t("labels.video_url")} />
         </div>
       </Form.Set>
-      <Form.Set legend={t("sections.basic-info")} className="my-3">
+      <Form.Set legend={t("sections.basic-info")} className="border p-4 rounded-xl">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
           <Form.Date
             name="available_from"

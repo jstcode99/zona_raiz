@@ -23,72 +23,6 @@ export const createListingSchema = yup.object({
     .mixed<ListingStatus>()
     .oneOf(Object.values(ListingStatus))
     .default(ListingStatus.DRAFT),
-  meta_title: yup
-    .string()
-    .required(
-      i18next.t("validations:required", {
-        attribute: "meta_title",
-      }),
-    )
-    .min(
-      10,
-      i18next.t("validations:min.string", {
-        attribute: "meta_title",
-        min: "10",
-      }),
-    )
-    .max(
-      100,
-      i18next.t("validations:max.string", {
-        attribute: "meta_title",
-        max: "100",
-      }),
-    ),
-  meta_description: yup
-    .string()
-    .required(
-      i18next.t("validations:required", {
-        attribute: "meta_description",
-      }),
-    )
-    .min(
-      10,
-      i18next.t("validations:min.string", {
-        attribute: "meta_description",
-        min: "10",
-      }),
-    )
-    .max(
-      500,
-      i18next.t("validations:max.string", {
-        attribute: "meta_description",
-        max: "500",
-      }),
-    ),
-  keywords: yup
-    .array()
-    .of(
-      yup.object({
-        label: yup.string().required(),
-        value: yup.string().required(),
-      }),
-    )
-    .transform((value, originalValue) => {
-      if (typeof originalValue === "string") {
-        try {
-          return JSON.parse(originalValue);
-        } catch {
-          return [];
-        }
-      }
-      return value;
-    })
-    .default([])
-    .required(
-      i18next.t("validations:required", {
-        attribute: "keywords",
-      }),
-    ),
   virtual_tour_url: yup
     .string()
     .url(
@@ -103,7 +37,8 @@ export const createListingSchema = yup.object({
         max: "200",
       }),
     )
-    .default(""),
+    .default("")
+    .optional(),
   video_url: yup
     .string()
     .url(
@@ -117,7 +52,9 @@ export const createListingSchema = yup.object({
         attribute: "video_url",
         max: "200",
       }),
-    ),
+    )
+    .default("")
+    .optional(),
   available_from: yup.date().min(
     new Date(),
     i18next.t("validations:date", {
@@ -167,11 +104,8 @@ export const defaultPropertyValues: CreateListingInput = {
   currency: Currency.COP,
   price_negotiable: false,
   status: ListingStatus.DRAFT,
-  meta_title: "fqfut755k44vy",
-  meta_description: "fqfut755k44vy",
-  keywords: [],
-  virtual_tour_url: "https://fqfut755k44vy.ok.kimi.link/",
-  video_url: "https://fqfut755k44vy.ok.kimi.link/",
+  video_url: "",
+  virtual_tour_url: "",
   available_from: new Date(),
   minimum_contract_duration: 12,
   whatsapp_contact: "+57 3168314191",
