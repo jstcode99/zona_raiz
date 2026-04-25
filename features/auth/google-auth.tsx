@@ -7,7 +7,6 @@ import { useTranslation } from "react-i18next";
 import { useServerMutation } from "@/shared/hooks/use-server-mutation.hook";
 import { signInWithGoogleAction } from "@/application/actions/auth.actions";
 import { toast } from "sonner";
-import { s } from "vitest/dist/chunks/reporters.D7Jzd9GS.js";
 
 interface GoogleAuthProps {
   disabled?: boolean;
