@@ -582,8 +582,9 @@ function AutocompleteField({
 
 function guessCountry(countries: CountryOption[]) {
   if (typeof navigator === "undefined") return countries[0];
-  const lang = navigator.language?.toUpperCase() || "";
-  const match = countries.find((c) => lang.includes(c.code));
+  const userRegion = navigator.language.split('-')[1]?.toUpperCase();
+  if (!userRegion) return countries[0];
+  const match = countries.find((c) => c.code === userRegion);
   return match || countries[0];
 }
 
@@ -615,22 +616,29 @@ function PhoneField({
         return (
           <InputGroup>
             <Select
-              value={(field.value || initial).split(" ")[0]}
-              onValueChange={(dial) => {
-                const number = (field.value || "")
-                  .split(" ")
-                  .slice(1)
-                  .join(" ");
-                field.onChange(`${dial} ${number}`.trim());
+              value={
+                countries.find((c) => (field.value || "").startsWith(c.dial))?.code ||
+                (typeof initial === "string" ? initial : initial.code)
+              }
+              onValueChange={(code) => {
+                const currentParts = (field.value || "").split(" ");
+                const number = currentParts.length > 1 ? currentParts.slice(1).join(" ") : "";
+                const selectedCountry = countries.find((c) => c.code === code);
+                const newDial = selectedCountry?.dial || "";
+                field.onChange(`${newDial} ${number}`.trim());
               }}
             >
               <SelectTrigger className="w-25 rounded-r-none">
                 <SelectValue />
               </SelectTrigger>
+
               <SelectContent>
                 {countries.map((c) => (
-                  <SelectItem key={c.code} value={c.dial}>
-                    {c.flag} {c.dial}
+                  <SelectItem key={c.code} value={c.code}>
+                    <span className="flex items-center gap-2">
+                      <span>{c.flag}</span>
+                      <span>{c.dial}</span>
+                    </span>
                   </SelectItem>
                 ))}
               </SelectContent>
