@@ -7,6 +7,7 @@ export enum PropertyType {
   Commercial = "commercial",
   Office = "office",
   Warehouse = "warehouse",
+  State = "state",
   Other = "other",
 }
 export const propertyTypeValues: string[] = Object.values(PropertyType);

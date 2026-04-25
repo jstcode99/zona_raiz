@@ -7,6 +7,7 @@ import {
   IconBuildingStore,
   IconBuilding,
 } from "@tabler/icons-react";
+import { LandPlot } from "lucide-react";
 
 export const PROPERTY_TYPES = [
   {
@@ -33,6 +34,11 @@ export const PROPERTY_TYPES = [
     value: PropertyType.Office,
     label: "hero.property_types.office",
     icon: IconBuilding,
+  },
+  {
+    value: PropertyType.State,
+    label: "hero.property_types.state",
+    icon: LandPlot,
   },
 ];
 

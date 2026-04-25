@@ -22,30 +22,30 @@ export const passwordSchema = yup
   )
   .minLowercase(
     1,
-    i18next.t("password.mixed", {
+    i18next.t("validations:password.mixed", {
       attribute: "password",
     }),
   )
   .minUppercase(
     1,
-    i18next.t("password.mixed", {
+    i18next.t("validations:password.mixed", {
       attribute: "password",
     }),
   )
   .minNumbers(
     1,
-    i18next.t("password.numbers", {
+    i18next.t("validations:password.numbers", {
       attribute: "password",
     }),
   )
   .minSymbols(
     1,
-    i18next.t("password.symbols", {
+    i18next.t("validations:password.symbols", {
       attribute: "password",
     }),
   )
   .required(
-    i18next.t("validations:required", {
+    i18next.t("validations:validations:required", {
       attribute: "password",
     }),
   );
