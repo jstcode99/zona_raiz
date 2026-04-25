@@ -23,6 +23,7 @@ export interface ListingEntity {
 
   available_from?: string | null;
   minimum_contract_duration?: number | null;
+  whatsapp_contact?: string | null;
 
   views_count: number;
   enquiries_count: number;
