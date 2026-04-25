@@ -423,12 +423,12 @@ function FileDropField({
               onChange={(e) => handleFiles(e.target.files)}
             />
 
-            <p className="text-sm opacity-70">{t("words.drop_file")}</p>
+            <p className="text-sm opacity-70">{t("common:words.drop_file")}</p>
 
             {field.value && (
               <p className="text-xs mt-2">
                 {multiple
-                  ? `${field.value.length} ${t("words.drop_file")}`
+                  ? `${field.value.length} ${t("common:words.drop_file")}`
                   : field.value.name}
               </p>
             )}
@@ -771,8 +771,8 @@ function ComboboxField({
   onSearch,
   multiple = false,
   disabled = false,
-  placeholder = t("words.select"),
-  searchPlaceholder = t("words.search"),
+  placeholder = t("common:words.select"),
+  searchPlaceholder = t("common:words.search"),
   debounce = 300,
   renderItem,
 }: {
@@ -890,12 +890,12 @@ function ComboboxField({
           <ComboboxContent>
             {loading && (
               <div className="p-2 text-sm opacity-70">
-                {t("words.search")}...
+                {t("common:words.search")}...
               </div>
             )}
 
             {!loading && items.length === 0 && (
-              <ComboboxEmpty>{t("words.without_results")}</ComboboxEmpty>
+              <ComboboxEmpty>{t("common:words.without_results")}</ComboboxEmpty>
             )}
 
             <ComboboxList>
