@@ -8,6 +8,7 @@ create type property_type as enum (
     'commercial',
     'office',
     'warehouse',
+    'state'
     'other'
 );
 
