@@ -52,6 +52,6 @@ export const PROPERTIES_SLUG: Record<
   [PropertyType.Commercial]: { es: "locales", en: "commercial" },
   [PropertyType.Office]: { es: "oficinas", en: "offices" },
   [PropertyType.Warehouse]: { es: "bodegas", en: "warehouses" },
-  [PropertyType.State]: { es: "estados", en: "states" },
+  [PropertyType.State]: { es: "fincas", en: "states" },
   [PropertyType.Other]: { es: "otros", en: "other" },
 };
