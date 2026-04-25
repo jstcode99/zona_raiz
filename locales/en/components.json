@@ -16,7 +16,7 @@
     "alt": "Alternative text",
     "caption": "Description",
     "max_file_size": "Limit de MB 50",
-    "max_file_quantity": "Max 5 files",
+    "max_file_quantity": "Max files",
     "formats_files": "Only PNG or JPG"
   },
   "places": {

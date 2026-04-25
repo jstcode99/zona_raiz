@@ -37,7 +37,7 @@ export function PropertyForm({
   const isUpdateMode = Boolean(id);
 
   const stepFields = {
-    ceo: ["title", "slug", "description", "property_type"],
+    ceo: ["title", "description", "property_type"],
     location: ["street", "city", "state", "postal_code", "country", "latitude", "longitude"],
     features: [
       "bedrooms",
@@ -59,25 +59,11 @@ export function PropertyForm({
 
   const wizardRef = useRef<WizardRef>(null)
 
-
   const {
     trigger,
     reset,
-    setValue,
-    control,
     setError
   } = form;
-
-  // Auto-generar slug desde el título
-  const title = useWatch({ control, name: "title" });
-  const currentSlug = useWatch({ control, name: "slug" });
-
-  useEffect(() => {
-    if (title) {
-      const slug = generateSlug(title);
-      setValue("slug", slug, { shouldValidate: true });
-    }
-  }, [title, currentSlug, isUpdateMode, setValue]);
 
   const mutation = useServerMutation({
     action: (formData: FormData) => {
@@ -148,7 +134,7 @@ export function PropertyForm({
       >
         <WizardTab
           id="ceo"
-          title="ceo"
+          title={t("sections.basic_info")}
           canNext={() => trigger(stepFields.ceo)}
         >
           <PropertyCeoForm />
@@ -156,7 +142,7 @@ export function PropertyForm({
 
         <WizardTab
           id="location"
-          title="Mapa"
+          title={t("sections.location")}
           canNext={() => trigger(stepFields.location)}
         >
           <PropertyLocationForm />
@@ -164,7 +150,7 @@ export function PropertyForm({
 
         <WizardTab
           id="features"
-          title="Detalles"
+          title={t("sections.features")}
           canNext={() => trigger(stepFields.features)}
         >
           <PropertyFeaturesForm />

@@ -25,7 +25,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const property = listing.property;
   const firstImage = property.property_images?.[0]?.public_url;
   const title = `${property.title} - ${listing.listing_type === "rent" ? "Renta" : "Venta"} en ${property.city}`;
-  const description = `${property.title} en ${property.city}, ${property.state}. ${property.bedrooms ? `${property.bedrooms} dormitorios` : ""} ${property.bathrooms ? `${property.bathrooms} baños` : ""} ${property.total_area ? `${property.total_area}m²` : ""}. ${listing.currency} ${listing.price.toLocaleString("es-ES")}`;
+  const description = `${property.title} en ${property.city}, ${property.state}. ${property.bedrooms ? `${property.bedrooms} dormitorios` : ""} ${property.bathrooms ? `${property.bathrooms} baños` : ""} . ${listing.currency} ${listing.price.toLocaleString("es-ES")}`;
 
   return {
     title,

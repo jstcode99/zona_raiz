@@ -1,7 +1,7 @@
 "use client";
 import { useTranslation } from "react-i18next";
 import { Form } from "@/components/ui/form";
-import { amenitiesOptions } from "@/domain/entities/property.entity";
+import { amenitiesOptions, propertyTypeOptions } from "@/domain/entities/property.entity";
 import { Home, LucideIcon, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -69,6 +69,11 @@ export function PropertyFeaturesForm() {
       <section>
         <SectionHeader icon={Home} legend={t("sections.features")} />
         <div className="space-y-3">
+          <Form.Select
+              name="property_type"
+              label={t("labels.property_type")}
+              options={propertyTypeOptions}
+          />
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             <UnitInput
               name="bedrooms"
