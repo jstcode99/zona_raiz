@@ -19,12 +19,10 @@ export const createEnquiryAction = withServerAction(
     const cookieStore = await cookies();
     const i18n = await initI18n(lang);
     const t = i18n.getFixedT(lang);
-    const routes = createRouter(lang);
 
     const {
       listingService,
       enquiryService,
-      realEstateService,
       cookiesService,
     } = await appModule(lang, {
       cookies: cookieStore,
@@ -44,7 +42,6 @@ export const createEnquiryAction = withServerAction(
 
     // real_estate_id viene del formulario (property.real_estate_id)
     // Se usa SOLO para consultar el WhatsApp, NO se guarda en BD
-    const realEstateId = input.real_estate_id;
     const listingId = input.listing_id;
     const listing = await listingService.getCachedById(listingId);
 
@@ -52,7 +49,6 @@ export const createEnquiryAction = withServerAction(
       return { success: false, error: "Listing not found" };
     }
 
-    const urlListing = routes.listings_public(listing.property.slug);
     // Create the inquiry (sin real_estate_id - no se guarda en la tabla)
     await enquiryService.create({
       listing_id: input.listing_id,
@@ -64,11 +60,10 @@ export const createEnquiryAction = withServerAction(
       ip_address: raw?.ip as string,
     });
 
-    const realEstate = await realEstateService.getById(realEstateId);
     let whatsappUrl: string = "";
 
-    if (realEstate?.whatsapp) {
-      const cleanNumber = realEstate.whatsapp.replace(/[^\d+]/g, "");
+    if (listing?.whatsapp_contact) {
+      const cleanNumber = listing?.whatsapp_contact.replace(/[^\d+]/g, "");
       const encodeMessage = encodeURIComponent(
         t("enquiries:whatsapp.default_message", {
           name: input.name,
