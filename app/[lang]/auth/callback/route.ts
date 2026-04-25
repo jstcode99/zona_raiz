@@ -4,7 +4,7 @@ import {
   COOKIE_NAMES,
   COOKIE_OPTIONS,
 } from "@/infrastructure/config/constants";
-import { ProfileEntity } from "@/domain/entities/profile.entity";
+import { ProfileEntity, EUserRole } from "@/domain/entities/profile.entity";
 import { initI18n } from "@/i18n/server";
 import { createRouter } from "@/i18n/router";
 import { appModule } from "@/application/modules/app.module";
@@ -49,7 +49,7 @@ export async function GET(request: NextRequest) {
   const routes = createRouter(lang);
   const cookieStore = await cookies();
 
-  const { authService, sessionService } = await appModule(lang, {
+  const { authService, sessionService, profileService } = await appModule(lang, {
     cookies: cookieStore,
   });
 
@@ -61,6 +61,10 @@ export async function GET(request: NextRequest) {
   // Nota: El hash (#) no se envía al servidor, pero algunos setups de OAuth lo mandan como query param
   const accessToken = searchParams.get("access_token");
   const refreshToken = searchParams.get("refresh_token");
+
+  // Extraer role de GoogleAuth (puede ser "client" o "real-estate")
+  const roleParam = searchParams.get("role");
+  const userRole: EUserRole = roleParam === "real-estate" ? EUserRole.RealEstate : EUserRole.Client;
 
   let profile: ProfileEntity | null = null;
 
@@ -77,6 +81,11 @@ export async function GET(request: NextRequest) {
       return NextResponse.redirect(
         `${origin}${routes.signin()}?error=${t("auth:exceptions.auth_error")}`,
       );
+    }
+
+    // Aplicar role enviado desde GoogleAuth si existe
+    if (roleParam && profile) {
+      await profileService.updateRole(profile.id, userRole);
     }
 
     if (profile.role) {
@@ -102,6 +111,11 @@ export async function GET(request: NextRequest) {
       return NextResponse.redirect(
         `${origin}${routes.signin()}?error=${t("auth:exceptions.auth_error")}`,
       );
+    }
+
+    // Aplicar role enviado desde GoogleAuth si existe
+    if (roleParam && profile) {
+      await profileService.updateRole(profile.id, userRole);
     }
 
     if (profile.role) {

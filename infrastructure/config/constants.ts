@@ -53,6 +53,7 @@ export const COOKIE_NAMES = {
   REAL_ESTATE: "real_estate_id",
   REAL_ESTATE_ROLE: "real_estate_role",
   IP_CLIENT: "ip_client",
+  OAUTH_USER_TYPE: "oauth_user_type",
 } as const;
 
 // ==========================================
