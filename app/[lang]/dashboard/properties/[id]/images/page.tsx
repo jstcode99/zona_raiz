@@ -65,13 +65,13 @@ export default async function page({ params }: props) {
             </div>
             <div className="mt-6 grid grid-cols-3 gap-4">
               <div className="border rounded-lg p-4 text-center">
-                <p className="text-2xl font-bold">25MB</p>
+                <p className="text-2xl font-bold">5MB</p>
                 <p className="text-xs uppercase tracking-wider mt-1 opacity-70">
                   {t("components:property_images.max_file_size")}
                 </p>
               </div>
               <div className="border rounded-lg p-4 text-center">
-                <p className="text-2xl font-bold">10</p>
+                <p className="text-2xl font-bold">5</p>
                 <p className="text-xs uppercase tracking-wider mt-1 opacity-70">
                   {t("components:property_images.max_file_quantity")}
                 </p>
