@@ -46,7 +46,8 @@
       "house": "House",
       "land": "Land",
       "commercial": "Local",
-      "office": "Office"
+      "office": "Office",
+      "state": "State"
     }
   },
   "trust": {

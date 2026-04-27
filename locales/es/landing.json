@@ -46,7 +46,8 @@
       "house": "Casa",
       "land": "Lote",
       "commercial": "Local",
-      "office": "Oficina"
+      "office": "Oficina",
+      "state": "Finca"
     }
   },
   "trust": {
